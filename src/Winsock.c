@@ -1,71 +1,94 @@
-/*
-*   Socket programming with winsock
-*/
-
-#include "stdio.h"
+#include <stdio.h>
 #include "winsock2.h"
-#include "windows.h"
+
+#pragma comment(lib,"ws2_32.lib")       //Winsock Library
 
 #define LOCAL_HOST_ADD  "127.0.0.1"
 #define DEFAULT_PORT    8080
 
-#pragma comment(lib,"ws2_32.lib") //Winsock Library
-
-void InitWinsock(WSADATA *wsaData)
+void main()
 {
-    if(WSAStartup(MAKEWORD(2,2), wsaData) != 0)
-        printf("Failed. Error Code : %d",WSAGetLastError());
-    else
-        printf("Initialised.");
-}
-
-void main(int argc , char *argv[])
-{
+    /****************Initialize Winsock.****************/
+    printf( "\n1. Initialising Winsock..............." );
     WSADATA wsaData;
-    SOCKET s, new_socket;
-    struct sockaddr_in server, client;
-    int c;
-    char *message;
+    int iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
+    if ( iResult != NO_ERROR )
+    {
+        printf( "\n>>>Error at WSAStartup()\n" );
+        WSACleanup();
+        return;
+    }
+    else
+        printf( "Initialised\n" );
 
-    printf("\nInitialising Winsock...");
+    /****************Create a socket.****************/
+    printf( "2. Creating socket...................." );
+    SOCKET sock;
+    sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+    if ( sock == INVALID_SOCKET )
+    {
+        printf( ">>>Error at socket(): %ld\n", WSAGetLastError() );
+        WSACleanup();
+        return;
+    }
+    else
+        printf( "Socket created\n" );
 
-    InitWinsock(&wsaData);
+    /****************Bind the socket.****************/
+    printf( "3. Binding socket....................." );
+    struct sockaddr_in service;
+    service.sin_family = AF_INET;
+    service.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
+    service.sin_port = htons( DEFAULT_PORT );
+    if ( bind( sock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
+    {
+        printf( ">>>Error at bind(): %ld\n", WSAGetLastError() );
+        closesocket(sock);
+        return;
+    }
+    else
+        printf( "Bind done\n" );
 
-    if((s = socket(AF_INET , SOCK_STREAM , 0 )) == INVALID_SOCKET)
-        printf("\nCould not create socket : %d", WSAGetLastError());
+    /****************Listen on the socket.****************/
+    printf( "4. Listening to socket................" );
+    if ( listen( sock, 1 ) == SOCKET_ERROR )
+        printf( ">>>Error listening on socket\n");
+    else
+        printf( "Listening...\n" );
 
-    printf("\nSocket created.\n");
+    /****************Accept connections.****************/
+    printf( "5. Waiting for incoming connections..." );
+    SOCKET acceptSocket;
+    while (1)
+    {
+        acceptSocket = SOCKET_ERROR;
+        while ( acceptSocket == SOCKET_ERROR )
+            acceptSocket = accept( sock, NULL, NULL );
 
-    //Prepare the sockaddr_in structure
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(DEFAULT_PORT);
+        if ( acceptSocket == INVALID_SOCKET )
+            printf( ">>>Error at accept(): %ld\n" , WSAGetLastError() );
+        else
+            printf( "Connection accepted\n" );
+        sock = acceptSocket;
+        break;
+    }
 
-    //Bind
-    if( bind(s ,(struct sockaddr *)&server , sizeof(server)) == SOCKET_ERROR)
-        printf("Bind failed with error code : %d" , WSAGetLastError());
+    /****************Send and receive data.****************/
+    int bytesSent;
+    int bytesRecv = SOCKET_ERROR;
+    char sendbuf[32] = "Server: Sending Data.";
+    char recvbuf[32] = "";
 
-    puts("Bind done");
+    // while ( (bytesRecv = recv( sock, recvbuf, 32, 0 )) != SOCKET_ERROR);
+    bytesRecv = recv( sock, recvbuf, 32, 0 );
+    printf( "Bytes Recv: %ld\n", bytesRecv );
 
-    //Listen to incoming connections
-    listen(s , 3);
+    //bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
+    //printf( "Bytes Sent: %ld\n", bytesSent );
 
-    //Accept and incoming connection
-    puts("Waiting for incoming connections...");
+	/****************Close our socket entirely****************/
+	closesocket(sock);
 
-    c = sizeof(struct sockaddr_in);
-    new_socket = accept(s , (struct sockaddr *)&client, &c);
-    if (new_socket == INVALID_SOCKET)
-        printf("accept failed with error code : %d" , WSAGetLastError());
-
-    puts("Connection accepted");
-
-/*    //Reply to client
-    message = "Hello Client , I have received your connection. But I have to go now, bye\n";
-    send(new_socket , message , strlen(message) , 0);
-
-    getchar(); */
-
-    closesocket(s);
-    WSACleanup();
+	/****************Cleanup Winsock****************/
+	WSACleanup();
 }
