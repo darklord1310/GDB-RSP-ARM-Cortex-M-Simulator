@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "gdbAndArmSimulator.h"
+#include "ARM_Cortex_M_Simulator.h"
 
 void setUp(void)
 {
