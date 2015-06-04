@@ -1,12 +1,113 @@
 #include "InstructionDecoding.h"
 #include <stdio.h>
 
-void Instruction_16bits(unsigned int instruction)
+
+/*  This function will get the number of bits based on the range given by user from the instructions
+ *  
+ *  Input :     higherRange     is the higher limit of the stream of bits to be obtain
+ *              lowerRange      is the lower limit of the stream of bits to be obtain
+ *
+ *  Return :    the stream of bits that obtain
+ *
+ *  Note:       It is possible also for this function to only get a single bit
+ *              If the higherRange and lowerRange is the same
+ *
+ */
+unsigned int getStreamOfBits(unsigned int instruction, int higherRange, int lowerRange)
+{
+    unsigned int StreamOfBits;
+    unsigned int mask = setMask(higherRange);               //get the mask to mask off the bits before 
+                                                            //the higher limit 
+                                                            
+    StreamOfBits = ( instruction & mask ) ;
+    StreamOfBits = StreamOfBits >> lowerRange;
+   
+    return StreamOfBits;
+    
+}
+
+
+/*	This will set the mask which is needed according to the bitPosition
+ *  Eg. if bitPosition is 16
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                               ^      
+ *                                 |      
+ *                                16     
+ *
+ *  Then this function will provide the mask to mask off the bits before bit16 
+ *  It will provide and return a mask of 0x0001FFFF
+ *
+ */
+unsigned int setMask(int bitPosition)
+{
+	int i;
+	unsigned int mask = 0x00;									//initialize the mask to be 0x00 first, then slowly
+																//shift to left to the get the mask we wanted
+																
+	unsigned int timeToLoop = (31 - bitPosition) / 4;			//to determine how many times need to shift left, use
+																//the MSB which is 31 minus the bitPosition and divide by 4
+	
+	for(i = 0; i < timeToLoop ; i++)
+	{
+		mask = (mask << 4) |  0x00;								//shift left and OR with 0 to create the mask
+	}
+
+	if( ( (31 - bitPosition) % 4) != 0)                         //to handle if the bitPosition+1 is multiple of 4
+	{
+		switch ( (31 - bitPosition) % 4 )
+		{
+			case 1 : mask = (mask << 4) | 0b0111;
+                     break;
+			case 2 : mask = (mask << 4) | 0x03;
+                     break;
+			case 3 : mask = (mask << 4) | 0b0001;
+                     break;
+		}
+        
+        timeToLoop = (bitPosition - 0) / 4;                     //determine how many times to shift left again to fill it with 0x0f
+
+		for(i = 0; i < timeToLoop ; i++)
+        {
+            mask = (mask << 4) |  0x0f;							//shift left and OR with 0x0f to create the mask
+        }
+	}
+    else
+    {
+        timeToLoop = (bitPosition + 1) / 4;                     //determine how many times to shift left again to fill it with 0x0f
+        for(i = 0; i < timeToLoop ; i++)
+        {
+            mask = (mask << 4) |  0x0f;							//shift left and OR with 0x0f to create the mask
+        }
+    }
+	return mask;
+}
+
+
+
+/*	This function is to check the instruction is 32 bits or 16 bits
+ *
+ *	hw1[15:11] 
+ *				0b11100 Thumb 16-bit unconditional branch instruction, defined in all Thumb architectures.
+ *				0bxxxxx Thumb 16-bit instructions.	
+ *				0b111xx Thumb 32-bit instructions, defined in Thumb-2, see Instruction encoding for 32-bit		
+ *
+ * Return : bit_32 if 32 bits
+ *			bit_16 if 16 bits
+ *
+ */
+int is32or16instruction(unsigned int instruction)
 {
 	
-	
-	
-	
+	if( getStreamOfBits(instruction, 31, 29) == 0b111 )                 // if first 3 bits are 111, it is possible to be a 32bits instruction      
+    {                                                                   // further checking is needed
+		if( getStreamOfBits(instruction, 28, 27) == 0b00)                                       
+			return bit_16;
+		else
+			return bit_32;
+        
+	}
+    else
+        return bit_16;
 	
 }
 
@@ -30,129 +131,14 @@ void Instruction_32bits(unsigned int instruction)
 
 
 
-
-/*	This function is to check the instruction is 32 bits or 16 bits
- *
- *	hw1[15:11] 
- *				0b11100 Thumb 16-bit unconditional branch instruction, defined in all Thumb architectures.
- *				0bxxxxx Thumb 16-bit instructions.	
- *				0b111xx Thumb 32-bit instructions, defined in Thumb-2, see Instruction encoding for 32-bit		
- *
- * Return : 0 if 32 bits
- *			1 if 16 bits
- *
- */
-int is32or16instruction(unsigned int instruction)
+void Instruction_16bits(unsigned int instruction)
 {
-	unsigned int firstFewBits;
 	
-	firstFewBits = getFirstFewBitsFromInstruction(instruction, 5);
-
-	if(firstFewBits == 0b11100)											// if first 5 bits are 11100, then confirm is 16bits instruction
-		return bit_16;
-	else
-	{
-		firstFewBits = getFirstFewBitsFromInstruction(instruction, 3);	
-		if( firstFewBits == 0b111)
-			return bit_32;
-		else
-			return bit_16;
-	}
+	
+	
 	
 	
 }
 
 
 
-/*	This function is responsible to get the first few bits from instruction, this will help to 
- *	categorize the instructions 
- *
- *	How many bits to get can be control by the user
- * 
- *
- *	Input  : noOfbits		the number of bits to get 
- *			 instruction	is the ARM instruction
- *
- *  Return : the first few bits get
- *			 
- *
- */
-unsigned int getFirstFewBitsFromInstruction(unsigned int instruction, int noOfbits)
-{
-	unsigned int firstFewbits;
-	
-	switch(noOfbits)
-	{
-		case 3:	firstFewbits = getFirst3BitsFromInstruction(instruction);
-				break;
-		
-		case 4:	firstFewbits = getFirst4BitsFromInstruction(instruction);
-				break;
-				
-		case 5:	firstFewbits = getFirst5BitsFromInstruction(instruction);
-				break;
-				
-		case 6:	firstFewbits = getFirst6BitsFromInstruction(instruction);
-				break;
-		
-	}
-	
-	return firstFewbits;	
-}
-
-
-
-unsigned int getFirst3BitsFromInstruction(unsigned int instruction)
-{
-	unsigned int first3bits;
-	unsigned int maskToClear = 0xE0000000;				//provide the mask to retain only the bit from 29 to 0
-														//other bits are set to be 0
-
-	first3bits = instruction & maskToClear;	
-	first3bits = instruction >> 29;						//shift left 29 times until bit 29 is now bit 0
-	
-	return first3bits;
-}
-	
-	
-	
-unsigned int getFirst4BitsFromInstruction(unsigned int instruction)
-{
-	unsigned int first4bits;
-	unsigned int maskToClear = 0xF0000000;				//provide the mask to retain only the bit from 28 to 0
-														//other bits are set to be 0
-
-	first4bits = instruction & maskToClear;	
-	first4bits = instruction >> 28;						//shift left 28 times until bit 28 is now bit 0
-	
-	return first4bits;
-	
-}
-
-
-unsigned int getFirst5BitsFromInstruction(unsigned int instruction)
-{
-	unsigned int first5bits;
-	unsigned int maskToClear = 0xF8000000;				//provide the mask to retain only the bit from 27 to 0
-														//other bits are set to be 0
-
-	first5bits = instruction & maskToClear;	
-	first5bits = instruction >> 27;						//shift left 27 times until bit 27 is now bit 0
-	
-	return first5bits;
-
-}
-
-
-unsigned int getFirst6BitsFromInstruction(unsigned int instruction)
-{
-	unsigned int first6bits;
-	unsigned int maskToClear = 0xFC000000;				//provide the mask to retain only the bit from 26 to 0
-														//other bits are set to be 0
-
-	first6bits = instruction & maskToClear;	
-	first6bits = instruction >> 26;						//shift left 26 times until bit 26 is now bit 0
-	
-	return first6bits;
-	
-}

@@ -10,45 +10,293 @@ void tearDown(void)
 }
 
 
-void test_getFirst3BitsFromInstruction_given_0xE0101110_should_return_0x07()
+
+/*
+ *  Eg. if bitPosition is 16
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                               ^      
+ *                                 |      
+ *                                16  
+ *
+ */ 
+void test_setMask_given_bitPosition_16_should_return_0x0001ffff()
 {
-	unsigned int dummy = 0xE0101110;
-	unsigned int return_value = getFirst3BitsFromInstruction(dummy);
-	
-	TEST_ASSERT_EQUAL(return_value , 0x07);
-	
-	
+	unsigned int mask;
+	mask = setMask(16);
+    
+    TEST_ASSERT_EQUAL(0x0001ffff,mask);
 }
 
 
-void test_getFirst4BitsFromInstruction_given_0xF1110011_should_return_0x0F()
+
+/*
+ *  Eg. if bitPosition is 17
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                              ^      
+ *                                |      
+ *                               17  
+ *
+ */ 
+void test_setMask_given_bitPosition_17_should_return_0x0003ffff()
 {
-	unsigned int dummy = 0xF1110011;
-	unsigned int return_value = getFirst4BitsFromInstruction(dummy);
-	
-	TEST_ASSERT_EQUAL(return_value , 0x0f);
-	
+	unsigned int mask;
+	mask = setMask(17);
+    
+    TEST_ASSERT_EQUAL(0x0003ffff,mask);
 }
 
 
-void test_getFirst5BitsFromInstruction_given_0xF8101011_should_return_0x1F()
+/*
+ *  Eg. if bitPosition is 18
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                             ^      
+ *                               |      
+ *                              18 
+ *
+ */ 
+void test_setMask_given_bitPosition_18_should_return_0x0007ffff()
 {
-	unsigned int dummy = 0xF8101011;
-	unsigned int return_value = getFirst5BitsFromInstruction(dummy);
-	
-	TEST_ASSERT_EQUAL(return_value , 0x1F);
-	
+	unsigned int mask;
+	mask = setMask(18);
+    
+    TEST_ASSERT_EQUAL(0x0007ffff,mask);
 }
 
 
-void test_getFirst6BitsFromInstruction_given_0xFC001011_should_return_0x3F()
+/*
+ *  Eg. if bitPosition is 19
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                            ^      
+ *                              |      
+ *                             19
+ *
+ */ 
+void test_setMask_given_bitPosition_19_should_return_0x000fffff()
 {
-	unsigned int dummy = 0xFC001011;
-	unsigned int return_value = getFirst6BitsFromInstruction(dummy);
-	
-	TEST_ASSERT_EQUAL(return_value , 0x3F);
-	
+	unsigned int mask;
+	mask = setMask(19);
+    
+    TEST_ASSERT_EQUAL(0x000fffff,mask);
 }
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 19
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	    ^      
+ *      |      
+ *     31
+ *
+ */ 
+void test_setMask_given_bitPosition_31_should_return_0xffffffff()
+{
+	unsigned int mask;
+	mask = setMask(31);
+    
+    TEST_ASSERT_EQUAL(0xffffffff,mask);
+}
+
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 19
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                                                            ^      
+ *                                                              |      
+ *                                                              3
+ *
+ */ 
+void test_setMask_given_bitPosition_3_should_return_0x0000000f()
+{
+	unsigned int mask;
+	mask = setMask(3);
+    
+    TEST_ASSERT_EQUAL(0x0000000f,mask);
+}
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 19
+ *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
+ *	                                                               ^      
+ *                                                                 |      
+ *                                                                 0
+ *
+ */ 
+void test_setMask_given_bitPosition_0_should_return_0x00000001()
+{
+	unsigned int mask;
+	mask = setMask(0);
+    
+    TEST_ASSERT_EQUAL(0x00000001,mask);
+}
+
+
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	    ^  ^    
+ *      |  |    
+ *     31  28
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_31_lowerRange_28_should_return_0x04()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 31, 28);
+    TEST_ASSERT_EQUAL(0x04 , result);
+}
+
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	            ^         ^    
+ *              |         |    
+ *             27        21
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_21_should_return_0x37()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 27, 21);
+    TEST_ASSERT_EQUAL(0x37 , result);
+}
+
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	            ^        ^    
+ *              |        |    
+ *             27       22
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_22_should_return_0x1b()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 27, 22);
+    TEST_ASSERT_EQUAL(0x1b , result);
+}
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	            ^       ^    
+ *              |       |    
+ *             27      23
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_23_should_return_0x0d()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 27, 23);
+    TEST_ASSERT_EQUAL(0x0d , result);
+}
+
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	                                             ^         ^    
+ *                                               |         |    
+ *                                              10         4
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_10_lowerRange_4_should_return_0x6a()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 10, 4);
+    TEST_ASSERT_EQUAL(0x6a , result);
+}
+
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	                                              ^        ^    
+ *                                                |        |    
+ *                                                9        4
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x2a()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 9, 4);
+    TEST_ASSERT_EQUAL(0x2a , result);
+}
+
+
+
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	                                               ^       ^    
+ *                                                 |       |    
+ *                                                 8       4
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x0a()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 8, 4);
+    TEST_ASSERT_EQUAL(0x0a , result);
+}
+
+
+
+//boundary test
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	                                                              ^^    
+ *                                                               | |    
+ *                                                              1  0
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_1_lowerRange_0_should_return_0x03()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 1, 0);
+    TEST_ASSERT_EQUAL(0x03 , result);
+}
+
+
+//boundary test, single bit
+/*
+ *  Eg. 
+ *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
+ *	                      ^   
+ *                        |                                          
+ *                       21 
+ *
+ */ 
+void test_getStreamOfBits_given_0x46E81EA7_higherRange_21_lowerRange_21_should_return_0x01()
+{
+    unsigned int dummy = 0x46E81EA7;
+    
+    unsigned int result = getStreamOfBits(dummy, 21, 21);
+    TEST_ASSERT_EQUAL(0x01 , result);
+}
+
 
 
 void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
@@ -63,19 +311,14 @@ void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
 }
 
 
+
 void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 {
 	unsigned int value = 0x46E80000;			// an example of instruction taken from KEIL assembler
 												// which is  MOV R8, SP
-	
+
 	value = is32or16instruction(value);
 	
 	TEST_ASSERT_EQUAL( bit_16, value);
-	
-}
-
-void test_InstructionDecoding_32bits()
-{
-	
 	
 }
