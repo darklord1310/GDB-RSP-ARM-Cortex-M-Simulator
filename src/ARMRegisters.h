@@ -5,8 +5,8 @@ typedef struct CoreRegister CoreRegister;
 typedef struct RegisterData RegisterData;
 
 
-#define numberOfRegister 13
-#define registerSize	 32
+#define numberOfRegister 13					//register start from R0 - R12
+#define registerSize	 32					//all registers are 32 bits wide
 
 struct RegisterData
 {
