@@ -148,10 +148,10 @@ void test_setMask_given_bitPosition_0_should_return_0x00000001()
  */   
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_31_lowerRange_28_should_return_0x04()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 31, 28);
-    TEST_ASSERT_EQUAL(0x04 , result);
+  unsigned int result = getStreamOfBits(dummy, 31, 28);
+  TEST_ASSERT_EQUAL(0x04 , result);
 }
 
 
@@ -165,10 +165,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_31_lowerRange_28_should_r
  */   
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_21_should_return_0x37()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 27, 21);
-    TEST_ASSERT_EQUAL(0x37 , result);
+  unsigned int result = getStreamOfBits(dummy, 27, 21);
+  TEST_ASSERT_EQUAL(0x37 , result);
 }
 
 
@@ -182,10 +182,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_21_should_r
  */ 
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_22_should_return_0x1b()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 27, 22);
-    TEST_ASSERT_EQUAL(0x1b , result);
+  unsigned int result = getStreamOfBits(dummy, 27, 22);
+  TEST_ASSERT_EQUAL(0x1b , result);
 }
 
 
@@ -198,10 +198,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_22_should_r
  */ 
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_23_should_return_0x0d()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 27, 23);
-    TEST_ASSERT_EQUAL(0x0d , result);
+  unsigned int result = getStreamOfBits(dummy, 27, 23);
+  TEST_ASSERT_EQUAL(0x0d , result);
 }
 
 
@@ -215,10 +215,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_23_should_r
  */ 
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_10_lowerRange_4_should_return_0x6a()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 10, 4);
-    TEST_ASSERT_EQUAL(0x6a , result);
+  unsigned int result = getStreamOfBits(dummy, 10, 4);
+  TEST_ASSERT_EQUAL(0x6a , result);
 }
 
 
@@ -232,10 +232,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_10_lowerRange_4_should_re
  */ 
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x2a()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 9, 4);
-    TEST_ASSERT_EQUAL(0x2a , result);
+  unsigned int result = getStreamOfBits(dummy, 9, 4);
+  TEST_ASSERT_EQUAL(0x2a , result);
 }
 
 
@@ -267,10 +267,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_ret
  */ 
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_1_lowerRange_0_should_return_0x03()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 1, 0);
-    TEST_ASSERT_EQUAL(0x03 , result);
+  unsigned int result = getStreamOfBits(dummy, 1, 0);
+  TEST_ASSERT_EQUAL(0x03 , result);
 }
 
 
@@ -284,10 +284,10 @@ void test_getStreamOfBits_given_0x46E81EA7_higherRange_1_lowerRange_0_should_ret
  */ 
 void test_getStreamOfBits_given_0x46E81EA7_higherRange_21_lowerRange_21_should_return_0x01()
 {
-    unsigned int dummy = 0x46E81EA7;
+  unsigned int dummy = 0x46E81EA7;
     
-    unsigned int result = getStreamOfBits(dummy, 21, 21);
-    TEST_ASSERT_EQUAL(0x01 , result);
+  unsigned int result = getStreamOfBits(dummy, 21, 21);
+  TEST_ASSERT_EQUAL(0x01 , result);
 }
 
 
@@ -310,8 +310,8 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 	unsigned int value = 0x46E80000;      // an example of instruction taken from KEIL assembler
                                         // which is  MOV R8, SP
 
-	value = is32or16instruction(value);
+  value = is32or16instruction(value);
 	
-	TEST_ASSERT_EQUAL( bit_16, value);
+  TEST_ASSERT_EQUAL( bit_16, value);
 	
 }
