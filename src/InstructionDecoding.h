@@ -4,7 +4,7 @@
 
 #include "MOV_instruction.h"
 
-typedef enum { bit_32, bit_16} instructionType;
+typedef enum { INSTRUCTION32bits, INSTRUCTION16bits} instructionType;
 
 
 void Instruction_16bits(unsigned int instruction);
