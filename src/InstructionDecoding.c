@@ -48,12 +48,12 @@ unsigned int setMask(int bitPosition)
                                                           //the MSB which is 31 minus the bitPosition and divide by 4
 	
   for(i = 0; i < timeToLoop ; i++)
-	{
+  {
 		mask = (mask << 4) |  0x00;                           //shift left and OR with 0 to create the mask
-	}
+  }
 
   if( ( (31 - bitPosition) % 4) != 0)                     //to handle if the bitPosition+1 is multiple of 4
-	{
+  {
       switch ( (31 - bitPosition) % 4 )
       {
         case 1 : mask = (mask << 4) | 0b0111;
@@ -64,13 +64,13 @@ unsigned int setMask(int bitPosition)
                  break;
       }
         
-      timeToLoop = (bitPosition - 0) / 4;                 //determine how many times to shift left again to fill it with 0x0f
+      timeToLoop = (bitPosition - 0) / 4;                //determine how many times to shift left again to fill it with 0x0f
 
       for(i = 0; i < timeToLoop ; i++)
       {
-          mask = (mask << 4) |  0x0f;							       //shift left and OR with 0x0f to create the mask
+          mask = (mask << 4) |  0x0f;                    //shift left and OR with 0x0f to create the mask
       }
-	}
+  }
   else
   {
       timeToLoop = (bitPosition + 1) / 4;               //determine how many times to shift left again to fill it with 0x0f
