@@ -11,7 +11,7 @@ void tearDown(void)
 
 void test_initCoreRegister_will_create_CoreRegister(void)
 {
-	CoreRegister *coreReg = initCoreRegister();
+  CoreRegister *coreReg = initCoreRegister();
     
   TEST_ASSERT_NOT_NULL(coreReg);
   TEST_ASSERT_NOT_NULL(coreReg->reg);

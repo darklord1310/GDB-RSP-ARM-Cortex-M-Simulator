@@ -15,7 +15,7 @@ CoreRegister *initCoreRegister()
     coreReg->reg[i].data = 0;
   }
 	
-	return coreReg;
+  return coreReg;
 }
 
 

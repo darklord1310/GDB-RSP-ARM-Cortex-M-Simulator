@@ -1,0 +1,59 @@
+#include "getMask.h"
+
+
+
+
+/*  This will set the mask which is needed according to the bitPosition
+ *  Eg. if bitPosition is 16
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *                       ^      
+ *                       |      
+ *                      16     
+ *
+ *  Then this function will provide the mask to mask off the bits before bit16 
+ *  It will provide and return a mask of 0x0001FFFF
+ *
+ */
+unsigned int getMask(int bitPosition)
+{
+  int i;
+  unsigned int mask = 0x00;     //initialize the mask to be 0x00 first, then slowly
+                                //shift to left to the get the mask we wanted
+																
+  unsigned int timeToLoop = (31 - bitPosition) / 4;       //to determine how many times need to shift left, use
+                                                          //the MSB which is 31 minus the bitPosition and divide by 4
+	
+  for(i = 0; i < timeToLoop ; i++)
+  {
+        mask = (mask << 4) |  0x00;                       //shift left and OR with 0 to create the mask
+  }
+
+  if( ( (31 - bitPosition) % 4) != 0)                     //to handle if the bitPosition+1 is multiple of 4
+  {
+      switch ( (31 - bitPosition) % 4 )
+      {
+        case 1 : mask = (mask << 4) | 0b0111;
+                 break;
+        case 2 : mask = (mask << 4) | 0x03;
+                 break;
+        case 3 : mask = (mask << 4) | 0b0001;
+                 break;
+      }
+        
+      timeToLoop = (bitPosition - 0) / 4;                //determine how many times to shift left again to fill it with 0x0f
+
+      for(i = 0; i < timeToLoop ; i++)
+      {
+          mask = (mask << 4) |  0x0f;                    //shift left and OR with 0x0f to create the mask
+      }
+  }
+  else
+  {
+      timeToLoop = (bitPosition + 1) / 4;               //determine how many times to shift left again to fill it with 0x0f
+      for(i = 0; i < timeToLoop ; i++)
+      {
+          mask = (mask << 4) |  0x0f;                   //shift left and OR with 0x0f to create the mask
+      }
+  }
+  return mask;
+}
