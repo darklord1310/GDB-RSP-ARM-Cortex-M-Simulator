@@ -3,7 +3,7 @@
 
 
 
-/*  This will set the mask which is needed according to the bitPosition
+/*  This will get the mask which is needed according to the bitPosition
  *  Eg. if bitPosition is 16
  *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
  *                       ^      
@@ -16,17 +16,9 @@
  */
 unsigned int getMask(int bitPosition)
 {
-  int i;
+  int i, timeToLoop;
   unsigned int mask = 0x00;     //initialize the mask to be 0x00 first, then slowly
-                                //shift to left to the get the mask we wanted
-																
-  unsigned int timeToLoop = (31 - bitPosition) / 4;       //to determine how many times need to shift left, use
-                                                          //the MSB which is 31 minus the bitPosition and divide by 4
-	
-  for(i = 0; i < timeToLoop ; i++)
-  {
-        mask = (mask << 4) |  0x00;                       //shift left and OR with 0 to create the mask
-  }
+                                //shift to left to get the mask we wanted
 
   if( ( (31 - bitPosition) % 4) != 0)                     //to handle if the bitPosition+1 is multiple of 4
   {

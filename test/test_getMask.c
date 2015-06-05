@@ -106,7 +106,7 @@ void test_getMask_given_bitPosition_31_should_return_0xffffffff()
  *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
  *                                            ^
  *                                            |
- *                                           31
+ *                                            3
  *
  */
 void test_getMask_given_bitPosition_3_should_return_0x0000000f()
