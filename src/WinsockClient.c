@@ -34,58 +34,48 @@ void main()
     else
         printf( "Socket created\n" );
 
-    /****************Bind the socket.****************/
-    printf( "3. Binding socket....................." );
-    struct sockaddr_in service;
-    service.sin_family = AF_INET;
-    service.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
-    service.sin_port = htons( DEFAULT_PORT );
-    if ( bind( sock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
+    /****************Connect to a server.****************/
+    printf( "3. Connecting to server..............." );
+    struct sockaddr_in clientService;
+    clientService.sin_family = AF_INET;
+    clientService.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
+    clientService.sin_port = htons( DEFAULT_PORT );
+    if ( connect( sock, (SOCKADDR*) &clientService, sizeof(clientService) ) == SOCKET_ERROR )
     {
-        printf( ">>>Error at bind(): %ld\n", WSAGetLastError() );
-        closesocket(sock);
+        printf( ">>>Failed to connect.\n" );
+        WSACleanup();
         return;
     }
     else
-        printf( "Bind done\n" );
-
-    /****************Listen on the socket.****************/
-    printf( "4. Listening to socket................" );
-    if ( listen( sock, 1 ) == SOCKET_ERROR )
-        printf( ">>>Error listening on socket\n");
-    else
-        printf( "Listening...\n" );
-
-    /****************Accept connections.****************/
-    printf( "5. Waiting for incoming connections..." );
-    SOCKET acceptSocket;
-    while (1)
-    {
-        acceptSocket = SOCKET_ERROR;
-        while ( acceptSocket == SOCKET_ERROR )
-            acceptSocket = accept( sock, NULL, NULL );
-
-        if ( acceptSocket == INVALID_SOCKET )
-            printf( ">>>Error at accept(): %ld\n" , WSAGetLastError() );
-        else
-            printf( "Connection accepted\n" );
-        sock = acceptSocket;
-        break;
-    }
-
-    /****************Socket "keep-alive".****************/
-/*    int iOption = 1; // Turn on keep-alive, 0 = disables, 1 = enables
-    if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (const char *) &iOption,  sizeof(int)) == SOCKET_ERROR)
-       printf( "Set keepalive: Keepalive option failed" );
-    else
-        printf( "Socket keep alive\n" ); */
+        printf( "Server connected\n" );
 
     /****************Send and receive data.****************/
     int bytesSent;
     int bytesRecv = SOCKET_ERROR;
-    char sendbuf[100] = "Server: Sending Data.";
+    char sendbuf[100] = "Client: Sending data.";
     char recvbuf[100] = "";
 
+    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
+    printf( "\nBytes Sent: %ld\n", bytesSent );
+    printf( "sendbuf: %s\n", sendbuf );
+
+    while( bytesRecv == SOCKET_ERROR )
+    {
+        bytesRecv = recv( sock, recvbuf, 100, 0 );
+
+        if ( bytesRecv == 0 || bytesRecv == WSAECONNRESET )
+        {
+            printf( "\nConnection Closed.\n");
+            break;
+        }
+
+        if (bytesRecv < 0)
+            return;
+
+        printf( "\nBytes Recv: %ld\n", bytesRecv );
+        printf( "recvbuf: %s\n", recvbuf );
+    }
+    /*
     // recv
     bytesRecv = recv( sock, recvbuf, 100, 0 );
     printf( "\nBytes Recv: %ld\n", bytesRecv );
@@ -93,19 +83,19 @@ void main()
     printf( "recvbuf: %s\n", recvbuf );
 
     // recv
-    // bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
+    bytesRecv = recv( sock, recvbuf, 100, 0 );
+    printf( "\nBytes Recv: %ld\n", bytesRecv );
+    recvbuf[bytesRecv] = '\0';
+    printf( "recvbuf: %s\n", recvbuf );
 
     // send
-    // strcpy( sendbuf, "+$PacketSize=4000;qXfer:auxv:read-;qXfer:features:read-;multiprocess-#a5" );
+    strcpy( sendbuf, "+$PacketSize=4000;qXfer:auxv:read-;qXfer:features:read-;multiprocess-#a5" );
     // strcpy( sendbuf, "+$PacketSize=119#cb" );
     // strcpy( sendbuf, "+$qSupported#37" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
     printf( "sendbuf: %s\n", sendbuf );
-/*
+
     // recv
     bytesRecv = recv( sock, recvbuf, 100, 0 );
     printf( "\nBytes Recv: %ld\n", bytesRecv );
@@ -124,7 +114,7 @@ void main()
     printf( "\nBytes Recv: %ld\n", bytesRecv );
     recvbuf[bytesRecv] = '\0';
     printf( "recvbuf: %s\n", recvbuf );
-    
+
     // send
     strcpy( sendbuf, "+$OK#9a" );
     // strcpy( sendbuf, "+$tnotrun:0#84" );
@@ -136,8 +126,8 @@ void main()
     bytesRecv = recv( sock, recvbuf, 100, 0 );
     printf( "\nBytes Recv: %ld\n", bytesRecv );
     recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-*/
+    printf( "recvbuf: %s\n", recvbuf ); */
+
 	/****************Close our socket entirely****************/
 	closesocket(sock);
 
