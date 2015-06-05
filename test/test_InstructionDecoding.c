@@ -74,7 +74,7 @@ void test_setMask_given_bitPosition_18_should_return_0x0007ffff()
  */
 void test_setMask_given_bitPosition_19_should_return_0x000fffff()
 {
-	unsigned int mask;
+  unsigned int mask;
   mask = setMask(19);
 
   TEST_ASSERT_EQUAL(0x000fffff,mask);
@@ -93,8 +93,8 @@ void test_setMask_given_bitPosition_19_should_return_0x000fffff()
  */
 void test_setMask_given_bitPosition_31_should_return_0xffffffff()
 {
-	unsigned int mask;
-	mask = setMask(31);
+  unsigned int mask;
+  mask = setMask(31);
 
   TEST_ASSERT_EQUAL(0xffffffff,mask);
 }
@@ -112,9 +112,9 @@ void test_setMask_given_bitPosition_31_should_return_0xffffffff()
  */
 void test_setMask_given_bitPosition_3_should_return_0x0000000f()
 {
-	unsigned int mask;
-	mask = setMask(3);
-
+  unsigned int mask;
+  mask = setMask(3);
+  
   TEST_ASSERT_EQUAL(0x0000000f,mask);
 }
 
