@@ -49,7 +49,7 @@ unsigned int setMask(int bitPosition)
 	
   for(i = 0; i < timeToLoop ; i++)
   {
-		mask = (mask << 4) |  0x00;                           //shift left and OR with 0 to create the mask
+        mask = (mask << 4) |  0x00;                       //shift left and OR with 0 to create the mask
   }
 
   if( ( (31 - bitPosition) % 4) != 0)                     //to handle if the bitPosition+1 is multiple of 4
