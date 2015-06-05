@@ -4,16 +4,16 @@
 
 CoreRegister *initCoreRegister()
 {
-	int i;
+  int i;
 	
-	CoreRegister *coreReg;
-	coreReg = malloc(sizeof(CoreRegister));
-	coreReg->reg = calloc( numberOfRegister, sizeof(RegisterData));
+  CoreRegister *coreReg;
+  coreReg = malloc(sizeof(CoreRegister));
+  coreReg->reg = calloc( numberOfRegister, sizeof(RegisterData));
 	
-	for(i = 0 ; i < numberOfRegister ; i ++ )
-    {
-        coreReg->reg[i].data = 0;
-    }
+  for(i = 0 ; i < numberOfRegister ; i ++ )
+  {
+    coreReg->reg[i].data = 0;
+  }
 	
 	return coreReg;
 }
@@ -22,5 +22,5 @@ CoreRegister *initCoreRegister()
 
 void destroyCoreRegister(CoreRegister *reg)
 {
-    free(reg);
+  free(reg);
 }
