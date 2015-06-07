@@ -134,3 +134,5 @@ void test_getMask_given_bitPosition_0_should_return_0x00000001()
 
   TEST_ASSERT_EQUAL(0x00000001,mask);
 }
+
+
