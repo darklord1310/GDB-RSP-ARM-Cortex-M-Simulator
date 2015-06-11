@@ -3,6 +3,7 @@
 #include "ARMRegisters.h"
 #include "getBits.h"
 #include "getMask.h"
+#include "ModifiedImmediateConstant.h"
 
 void setUp(void)
 {
@@ -93,4 +94,32 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf6435342_should_move_into_0x3
   
   destroyCoreRegister(coreReg);
   
+}
+
+// MOVW r5, 0xF360
+void test_MOVImmediate32bitsT3_given_instruction_0xf24f3560_should_move_into_0xf360_into_R5()
+{
+  unsigned int instruction = 0xf24f3560;
+  
+  CoreRegister *coreReg = initCoreRegister();
+  MOVImmediate32bitsT3(instruction, coreReg);
+  
+  TEST_ASSERT_EQUAL(0xf360, coreReg->reg[5].data);
+  
+  destroyCoreRegister(coreReg);
+  
+}
+
+
+// mov r5, #-1
+// status flag not implemented yet
+void test_MOVImmediate32bitsT2_given_instruction_0xf04f35ff_should_move_into_0xffffffff_into_R5()
+{
+  unsigned int instruction = 0xf04f35ff;
+  
+  CoreRegister *coreReg = initCoreRegister();
+  MOVImmediate32bitsT2(instruction, coreReg);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
+  
+  destroyCoreRegister(coreReg);
 }

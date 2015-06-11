@@ -1,6 +1,8 @@
 #include "MOV_32bitsInstruction.h"
 #include <stdio.h>
 
+
+
 /* Move Immediate Encoding T2
 
 MOV{S}<c>.W <Rd>,#<const>
@@ -25,14 +27,21 @@ where:
 */
 void MOVImmediate32bitsT2(unsigned int instruction, CoreRegister *coreReg)
 {
+  unsigned int ModifiedConstant, modifyControl;
   unsigned int imm8 = getBits(instruction, 7, 0);
   unsigned int Rd = getBits(instruction, 11, 8);
   unsigned int imm3 = getBits(instruction, 14, 12);
   unsigned int statusFlag = getBits(instruction, 20, 20);
   unsigned int i = getBits(instruction, 26, 26);
+  unsigned int bit7 = getBits(instruction, 7, 7);
   
-  
-  
+  modifyControl = ( imm3 << 1 ) | bit7;
+  modifyControl = ( i << 4) | modifyControl;
+  printf("modifyControl : %x\n", modifyControl);
+  printf("imm8 : %x\n", imm8);
+  ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
+  printf("modifiedConstant : %x\n", ModifiedConstant);
+  coreReg->reg[Rd].data = ModifiedConstant;
 }
 
 
