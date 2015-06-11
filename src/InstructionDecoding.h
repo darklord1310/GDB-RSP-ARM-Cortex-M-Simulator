@@ -11,9 +11,11 @@ typedef enum {SHITFADDSUBTRACTMOVECOMPARE, DATAPROCESSING, SPECIALDATAINSTRUCTIO
               GENERATESPRELATIVEADDRESS, MISCELLANEOUS16BITSINSTRUCTION, STOREMULTIPLEREGISTERS,
               LOADMULTIPLEREGISTERS, CONDITIONALBRANCH, UNCONDITIONALBRANCH} Instruction16bits;
 
-int is32or16instruction(unsigned int instruction);
-void ShiftAddSubctractMoveCompare(unsigned int instruction);
-int Categorize16bitsThumbInstruction(unsigned int instruction);
+typedef enum { IMMEDIATE, REGISTER} ImmediateOrRegister;
 
+int is32or16instruction(unsigned int instruction);
+int Categorize16bitsThumbInstruction(unsigned int instruction);
+void ShiftAddSubtractMoveCompare(unsigned int instruction);
+void ExecuteInstructionsFrom16bitsCategory(int category, unsigned int instruction);
 
 #endif // InstructionDecoding_H

@@ -5,7 +5,7 @@ typedef struct CoreRegister CoreRegister;
 typedef struct RegisterData RegisterData;
 
 
-#define numberOfRegister  15         //register start from R0 - R15
+#define numberOfRegister  15         //register start from R0 - R15, R0 to R12 are GPR, R13 is StackPointer, R14 is LinkRegister, R15 is ProgramCounter
 #define registerSize      32         //all registers are 32 bits wide
 
 struct RegisterData

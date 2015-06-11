@@ -32,6 +32,7 @@ int is32or16instruction(unsigned int instruction)
 
 
 /*  This function will categorize all the 16bits instructions and differentiate them into the groups shown below
+ *  There are total 77 16bits instructions 
  *  15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
  *  |                   |   
  *          op1       
@@ -39,7 +40,7 @@ int is32or16instruction(unsigned int instruction)
  *  Check opcode 1 first, then branch out
  *
  *  opcode 1
- *    00xxxx   --->  ShiftAddSubctractMoveCompare
+ *    00xxxx   --->  ShiftAddSubtractMoveCompare
  *    010000   --->  Data Processing
  *    010001   --->  SpecialDataInstructionAndBranchExchange
  *    01001x   --->  LoadFromLiteralPool
@@ -86,8 +87,30 @@ int Categorize16bitsThumbInstruction(unsigned int instruction)
 }
 
 
+void ExecuteInstructionsFrom16bitsCategory(int category, unsigned int instruction)
+{
+  switch(category)
+  {
+    case SHITFADDSUBTRACTMOVECOMPARE : ShiftAddSubtractMoveCompare(instruction);
+                                       break;
+    
+    
+    
+  }
+  
+  
+  
+}
 
 
+void ShiftAddSubtractMoveCompare(unsigned int instruction)
+{
+  unsigned int opcode = getBits(instruction, 29, 25);
+  
+
+    
+  
+}
 
 
 
