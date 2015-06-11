@@ -4,7 +4,7 @@
 #include "ARMRegisters.h"
 #include "getBits.h"
 
-void MOVImmediate16bits(unsigned int instruction, CoreRegister *coreReg);
+void MOVImmediate16bitsT1(unsigned int instruction, CoreRegister *coreReg);
 void MOVRegisterToRegister16bitsT2(unsigned int instruction, CoreRegister *coreReg);
 void MOVRegisterToRegister16bitsT1(unsigned int instruction, CoreRegister *coreReg);
 

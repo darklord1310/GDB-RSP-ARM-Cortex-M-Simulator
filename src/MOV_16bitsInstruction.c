@@ -1,7 +1,7 @@
 #include "MOV_16bitsInstruction.h"
 #include <stdio.h>
 
-/*Encoding T1
+/*Move Immediate Encoding T1
         MOVS <Rd>,#<imm8>               Outside IT block.
         MOV<c> <Rd>,#<imm8>             Inside IT block.
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
@@ -23,7 +23,7 @@ where:
         encoding T3 (if encoding T3 is required, use the MOVW syntax).
         The pre-UAL syntax MOV<c>S is equivalent to MOVS<c>.
 */
-void MOVImmediate16bits(unsigned int instruction, CoreRegister *coreReg)
+void MOVImmediate16bitsT1(unsigned int instruction, CoreRegister *coreReg)
 {
 	unsigned int imm8 = getBits(instruction, 23, 16);
 	unsigned int destinationRegister = getBits(instruction, 26, 24);
@@ -35,7 +35,7 @@ void MOVImmediate16bits(unsigned int instruction, CoreRegister *coreReg)
 
 
 /*
-  Encoding T2 
+  Move Register to Register Encoding T2 
         MOVS <Rd>,<Rm>
 
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
@@ -69,7 +69,7 @@ void MOVRegisterToRegister16bitsT2(unsigned int instruction, CoreRegister *coreR
 
 
 /*  
-  Encoding T1 
+  Move Register to Register Encoding T1 
         MOV<c> <Rd>,<Rm>
 
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0

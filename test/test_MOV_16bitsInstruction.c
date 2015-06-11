@@ -15,12 +15,12 @@ void tearDown(void)
 
 
 //test MOVS R1, #0xFF
-void test_MOVImmediate16bits_given_instruction_0x21FF0000_should_move_into_R1_with_0xFF(void)
+void test_MOVImmediate16bitsT1_given_instruction_0x21FF0000_should_move_into_R1_with_0xFF(void)
 {
   unsigned int instruction = 0x21ff0000;
   
   CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate16bits(instruction, coreReg);
+  MOVImmediate16bitsT1(instruction, coreReg);
   
   TEST_ASSERT_EQUAL(0xff, coreReg->reg[1].data);
   
@@ -29,12 +29,12 @@ void test_MOVImmediate16bits_given_instruction_0x21FF0000_should_move_into_R1_wi
 
 
 //test MOVS R7, #0x13
-void test_MOVImmediate16bits_given_instruction_0x27130000_should_move_into_R7_with_0x13(void)
+void test_MOVImmediate16bitsT1_given_instruction_0x27130000_should_move_into_R7_with_0x13(void)
 {
   unsigned int instruction = 0x27130000;
   
   CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate16bits(instruction, coreReg);
+  MOVImmediate16bitsT1(instruction, coreReg);
   
   TEST_ASSERT_EQUAL(0x13, coreReg->reg[7].data);
   
@@ -82,7 +82,7 @@ void test_MOVRegisterToRegister16bitsT1_given_instruction_0x461c0000_should_move
   CoreRegister *coreReg = initCoreRegister();           //initialize Register
   
   coreReg->reg[3].data = 0xff101c00;                    //set R3 to be 0xff101c00
-  MOVRegisterToRegister16bitsT1(instruction, coreReg);  //move r3 to r8
+  MOVRegisterToRegister16bitsT1(instruction, coreReg);  //move r3 to r4
   
   TEST_ASSERT_EQUAL(0xff101c00, coreReg->reg[4].data);
   TEST_ASSERT_EQUAL(0xff101c00, coreReg->reg[3].data);
