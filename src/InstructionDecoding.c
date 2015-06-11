@@ -31,6 +31,66 @@ int is32or16instruction(unsigned int instruction)
 
 
 
+/*  This function will categorize all the 16bits instructions and differentiate them into the groups shown below
+ *  15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
+ *  |                   |   
+ *          op1       
+ *
+ *  Check opcode 1 first, then branch out
+ *
+ *  opcode 1
+ *    00xxxx   --->  ShiftAddSubctractMoveCompare
+ *    010000   --->  Data Processing
+ *    010001   --->  SpecialDataInstructionAndBranchExchange
+ *    01001x   --->  LoadFromLiteralPool
+ *    0101xx   --->  LoadOrStoreSingleData
+ *    011xxx   ___|
+ *    100xxx   ___|
+ *    10100x   --->  GeneratePCRelativeAddress
+ *    10101x   --->  GenerateSPRelativeAddress
+ *    1011xx   --->  Miscellaneous16bitsInstruction
+ *    11000x   --->  StoreMultipleRegisters
+ *    11001x   --->  LoadMultipleRegisters
+ *    1101xx   --->  ConditionalBranch
+ *    11100x   --->  UnconditionalBranch
+ */
+int Categorize16bitsThumbInstruction(unsigned int instruction)
+{
+  unsigned int opcode1 = getBits(instruction, 31, 26);
+	
+  if( opcode1 < 16)
+    return SHITFADDSUBTRACTMOVECOMPARE;
+  else if( opcode1 == 0b010000)
+    return DATAPROCESSING;
+  else if( opcode1 == 0b010001)
+    return SPECIALDATAINSTRUCTIONANDBRANCHEXCHANGE;
+  else if( opcode1 < 20)
+    return LOADFROMLITERALPOOL;
+  else if( opcode1 < 40)
+    return LOADORSTORESINGLEDATA;
+  else if( opcode1 < 42)
+    return GENERATEPCRELATIVEADDRESS;
+  else if( opcode1 < 44)
+    return GENERATESPRELATIVEADDRESS;
+  else if( opcode1 < 48)
+    return MISCELLANEOUS16BITSINSTRUCTION;
+  else if( opcode1 < 50)
+    return STOREMULTIPLEREGISTERS;
+  else if( opcode1 < 52)
+    return LOADMULTIPLEREGISTERS;
+  else if( opcode1 < 56)
+    return CONDITIONALBRANCH;
+  else if( opcode1 < 58)
+    return UNCONDITIONALBRANCH;
+  
+}
+
+
+
+
+
+
+
 
 
 
