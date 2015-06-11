@@ -1,16 +1,21 @@
 #ifndef InstructionDecoding_H
 #define InstructionDecoding_H
 
+#include "getBits.h"
+#include "getMask.h"
 
-#include "MOV_instruction.h"
+typedef enum { INSTRUCTION32bits, INSTRUCTION16bits} instructionType;
 
-typedef enum { bit_32, bit_16} instructionType;
+typedef enum {SHITFADDSUBTRACTMOVECOMPARE, DATAPROCESSING, SPECIALDATAINSTRUCTIONANDBRANCHEXCHANGE,
+              LOADFROMLITERALPOOL, LOADORSTORESINGLEDATA, GENERATEPCRELATIVEADDRESS,
+              GENERATESPRELATIVEADDRESS, MISCELLANEOUS16BITSINSTRUCTION, STOREMULTIPLEREGISTERS,
+              LOADMULTIPLEREGISTERS, CONDITIONALBRANCH, UNCONDITIONALBRANCH} Instruction16bits;
 
+typedef enum { IMMEDIATE, REGISTER} ImmediateOrRegister;
 
-void Instruction_16bits(unsigned int instruction);
-void Instruction_32bits(unsigned int instruction);
 int is32or16instruction(unsigned int instruction);
-unsigned int getStreamOfBits(unsigned int instruction, int higherRange, int lowerRange);
-unsigned int setMask(int bitPosition);
+int Categorize16bitsThumbInstruction(unsigned int instruction);
+void ShiftAddSubtractMoveCompare(unsigned int instruction);
+void ExecuteInstructionsFrom16bitsCategory(int category, unsigned int instruction);
 
 #endif // InstructionDecoding_H

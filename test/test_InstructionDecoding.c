@@ -1,5 +1,7 @@
 #include "unity.h"
 #include "InstructionDecoding.h"
+#include "getBits.h"
+#include "getMask.h"
 
 void setUp(void)
 {
@@ -10,315 +12,345 @@ void tearDown(void)
 }
 
 
-
-/*
- *  Eg. if bitPosition is 16
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	                               ^      
- *                                 |      
- *                                16  
- *
- */ 
-void test_setMask_given_bitPosition_16_should_return_0x0001ffff()
-{
-	unsigned int mask;
-	mask = setMask(16);
-    
-    TEST_ASSERT_EQUAL(0x0001ffff,mask);
-}
-
-
-
-/*
- *  Eg. if bitPosition is 17
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	                              ^      
- *                                |      
- *                               17  
- *
- */ 
-void test_setMask_given_bitPosition_17_should_return_0x0003ffff()
-{
-	unsigned int mask;
-	mask = setMask(17);
-    
-    TEST_ASSERT_EQUAL(0x0003ffff,mask);
-}
-
-
-/*
- *  Eg. if bitPosition is 18
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	                             ^      
- *                               |      
- *                              18 
- *
- */ 
-void test_setMask_given_bitPosition_18_should_return_0x0007ffff()
-{
-	unsigned int mask;
-	mask = setMask(18);
-    
-    TEST_ASSERT_EQUAL(0x0007ffff,mask);
-}
-
-
-/*
- *  Eg. if bitPosition is 19
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	                            ^      
- *                              |      
- *                             19
- *
- */ 
-void test_setMask_given_bitPosition_19_should_return_0x000fffff()
-{
-	unsigned int mask;
-	mask = setMask(19);
-    
-    TEST_ASSERT_EQUAL(0x000fffff,mask);
-}
-
-
-//boundary test
-/*
- *  Eg. if bitPosition is 19
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	    ^      
- *      |      
- *     31
- *
- */ 
-void test_setMask_given_bitPosition_31_should_return_0xffffffff()
-{
-	unsigned int mask;
-	mask = setMask(31);
-    
-    TEST_ASSERT_EQUAL(0xffffffff,mask);
-}
-
-
-
-//boundary test
-/*
- *  Eg. if bitPosition is 19
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	                                                            ^      
- *                                                              |      
- *                                                              3
- *
- */ 
-void test_setMask_given_bitPosition_3_should_return_0x0000000f()
-{
-	unsigned int mask;
-	mask = setMask(3);
-    
-    TEST_ASSERT_EQUAL(0x0000000f,mask);
-}
-
-
-//boundary test
-/*
- *  Eg. if bitPosition is 19
- *		XXXX	XXXX	XXXX	XXXX	XXXX	XXXX	XXXX    XXXX		---> this is a 32 bits integer
- *	                                                               ^      
- *                                                                 |      
- *                                                                 0
- *
- */ 
-void test_setMask_given_bitPosition_0_should_return_0x00000001()
-{
-	unsigned int mask;
-	mask = setMask(0);
-    
-    TEST_ASSERT_EQUAL(0x00000001,mask);
-}
-
-
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	    ^  ^    
- *      |  |    
- *     31  28
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_31_lowerRange_28_should_return_0x04()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 31, 28);
-    TEST_ASSERT_EQUAL(0x04 , result);
-}
-
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	            ^         ^    
- *              |         |    
- *             27        21
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_21_should_return_0x37()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 27, 21);
-    TEST_ASSERT_EQUAL(0x37 , result);
-}
-
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	            ^        ^    
- *              |        |    
- *             27       22
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_22_should_return_0x1b()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 27, 22);
-    TEST_ASSERT_EQUAL(0x1b , result);
-}
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	            ^       ^    
- *              |       |    
- *             27      23
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_27_lowerRange_23_should_return_0x0d()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 27, 23);
-    TEST_ASSERT_EQUAL(0x0d , result);
-}
-
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	                                             ^         ^    
- *                                               |         |    
- *                                              10         4
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_10_lowerRange_4_should_return_0x6a()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 10, 4);
-    TEST_ASSERT_EQUAL(0x6a , result);
-}
-
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	                                              ^        ^    
- *                                                |        |    
- *                                                9        4
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x2a()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 9, 4);
-    TEST_ASSERT_EQUAL(0x2a , result);
-}
-
-
-
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	                                               ^       ^    
- *                                                 |       |    
- *                                                 8       4
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x0a()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 8, 4);
-    TEST_ASSERT_EQUAL(0x0a , result);
-}
-
-
-
-//boundary test
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	                                                              ^^    
- *                                                               | |    
- *                                                              1  0
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_1_lowerRange_0_should_return_0x03()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 1, 0);
-    TEST_ASSERT_EQUAL(0x03 , result);
-}
-
-
-//boundary test, single bit
-/*
- *  Eg. 
- *		0100	0110	1110	1000	0001	1110	1010    0111		---> this is a 32 bits integer
- *	                      ^   
- *                        |                                          
- *                       21 
- *
- */ 
-void test_getStreamOfBits_given_0x46E81EA7_higherRange_21_lowerRange_21_should_return_0x01()
-{
-    unsigned int dummy = 0x46E81EA7;
-    
-    unsigned int result = getStreamOfBits(dummy, 21, 21);
-    TEST_ASSERT_EQUAL(0x01 , result);
-}
-
-
-
 void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
 {
-	unsigned int value = 0xF05F0B0F;			// an example of instruction taken from KEIL assembler
-												// which is MOVS R11, #0xF
-	unsigned int result;
-	
-	result = is32or16instruction(value);
-	
-	TEST_ASSERT_EQUAL( bit_32, result);
+  unsigned int value = 0xF05F0B0F;      // an example of instruction taken from KEIL assembler
+                                        // which is MOVS R11, #0xF
+  unsigned int result;
+
+  result = is32or16instruction(value);
+
+  TEST_ASSERT_EQUAL( INSTRUCTION32bits, result);
 }
 
 
 
 void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 {
-	unsigned int value = 0x46E80000;			// an example of instruction taken from KEIL assembler
-												// which is  MOV R8, SP
+  unsigned int value = 0x46E80000;      // an example of instruction taken from KEIL assembler
+                                        // which is  MOV R8, SP
 
-	value = is32or16instruction(value);
-	
-	TEST_ASSERT_EQUAL( bit_16, value);
-	
+  value = is32or16instruction(value);
+
+  TEST_ASSERT_EQUAL( INSTRUCTION16bits, value);
+
 }
+
+/* opcode = 001100
+ * 00xxxx   --->  ShiftAddSubctractMoveCompare
+ * 
+ */
+void test_Categorize16bitsThumbInstruction_given_0x30101011_should_return_SHITFADDSUBTRACTMOVECOMPARE()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x30101011);
+  
+  TEST_ASSERT_EQUAL( SHITFADDSUBTRACTMOVECOMPARE, returnvalue);
+  
+}
+
+/* boundary test for SHITFADDSUBTRACTMOVECOMPARE 
+ * opcode = 001111 is the largest value which will fall into SHITFADDSUBTRACTMOVECOMPARE category
+ * 00xxxx   --->  ShiftAddSubctractMoveCompare
+ */
+void test_Categorize16bitsThumbInstruction_given_0x3c101011_should_return_SHITFADDSUBTRACTMOVECOMPARE()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x3c101011);
+  
+  TEST_ASSERT_EQUAL( SHITFADDSUBTRACTMOVECOMPARE, returnvalue);
+  
+}
+
+
+/* opcode = 0100 00
+ * 010000   --->  Data Processing
+ */
+void test_Categorize16bitsThumbInstruction_given_0x40101011_should_return_DATAPROCESSING()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x40101011);
+  
+  TEST_ASSERT_EQUAL( DATAPROCESSING, returnvalue);
+  
+}
+
+/* opcode = 0100 01 
+ * 010001   --->  SpecialDataInstructionAndBranchExchange
+ */
+void test_Categorize16bitsThumbInstruction_given_0x44101011_should_return_SPECIALDATAINSTRUCTIONANDBRANCHEXCHANGE()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x44101011);
+  
+  TEST_ASSERT_EQUAL( SPECIALDATAINSTRUCTIONANDBRANCHEXCHANGE, returnvalue);
+  
+}
+
+
+/* opcode = 0100 11 
+ * 01001x   --->  LoadFromLiteralPool
+ */
+void test_Categorize16bitsThumbInstruction_given_0x4c101011_should_return_LOADFROMLITERALPOOL()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x4c101011);
+  
+  TEST_ASSERT_EQUAL( LOADFROMLITERALPOOL, returnvalue);
+  
+}
+
+
+/* opcode = 0100 10 
+ * 01001x   --->  LoadFromLiteralPool
+ */
+void test_Categorize16bitsThumbInstruction_given_0x48101011_should_return_LOADFROMLITERALPOOL()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x48101011);
+  
+  TEST_ASSERT_EQUAL( LOADFROMLITERALPOOL, returnvalue);
+  
+}
+
+
+
+/* opcode = 0101 00 
+ *    0101xx   --->  LoadOrStoreSingleData
+ *    011xxx   ___|
+ *    100xxx   ___|
+ */
+void test_Categorize16bitsThumbInstruction_given_0x50101011_should_return_LOADORSTORESINGLEDATA()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x50101011);
+  
+  TEST_ASSERT_EQUAL( LOADORSTORESINGLEDATA, returnvalue);
+  
+}
+
+//boundary test for LOADORSTORESINGLEDATA
+/* opcode = 1001 11 
+ *    0101xx   --->  LoadOrStoreSingleData
+ *    011xxx   ___|
+ *    100xxx   ___|
+ */
+void test_Categorize16bitsThumbInstruction_given_0x9c101011_should_return_LOADORSTORESINGLEDATA()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0x9c101011);
+  
+  TEST_ASSERT_EQUAL( LOADORSTORESINGLEDATA, returnvalue);
+  
+}
+
+
+
+/* opcode = 1010 00 
+ * 10100x   --->  GeneratePCRelativeAddress
+ */
+void test_Categorize16bitsThumbInstruction_given_0xa0101011_should_return_GENERATEPCRELATIVEADDRESS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xa0101011);
+  
+  TEST_ASSERT_EQUAL( GENERATEPCRELATIVEADDRESS, returnvalue);
+  
+}
+
+
+
+/* opcode = 1010 01 
+ * 10100x   --->  GeneratePCRelativeAddress
+ */
+void test_Categorize16bitsThumbInstruction_given_0xa4101011_should_return_GENERATEPCRELATIVEADDRESS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xa4101011);
+  
+  TEST_ASSERT_EQUAL( GENERATEPCRELATIVEADDRESS, returnvalue);
+  
+}
+
+
+/* opcode = 1010 10 
+ * 10101x   --->  GenerateSPRelativeAddress
+ */
+void test_Categorize16bitsThumbInstruction_given_0xa4801011_should_return_GENERATESPRELATIVEADDRESS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xa8101011);
+  
+  TEST_ASSERT_EQUAL( GENERATESPRELATIVEADDRESS, returnvalue);
+  
+}
+
+
+/* opcode = 1010 11 
+ * 10101x   --->  GenerateSPRelativeAddress
+ */
+void test_Categorize16bitsThumbInstruction_given_0xac801011_should_return_GENERATESPRELATIVEADDRESS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xac101011);
+  
+  TEST_ASSERT_EQUAL( GENERATESPRELATIVEADDRESS, returnvalue);
+  
+}
+
+
+/* opcode = 1011 00 
+ * 1011xx   --->  Miscellaneous16bitsInstruction
+ */
+void test_Categorize16bitsThumbInstruction_given_0xb0801011_should_return_MISCELLANEOUS16BITSINSTRUCTION()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xb0101011);
+  
+  TEST_ASSERT_EQUAL( MISCELLANEOUS16BITSINSTRUCTION, returnvalue);
+  
+}
+
+
+/* opcode = 1011 11 
+ * 1011xx   --->  Miscellaneous16bitsInstruction
+ */
+void test_Categorize16bitsThumbInstruction_given_0xbc801011_should_return_MISCELLANEOUS16BITSINSTRUCTION()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xbc101011);
+  
+  TEST_ASSERT_EQUAL( MISCELLANEOUS16BITSINSTRUCTION, returnvalue);
+  
+}
+
+
+/* opcode = 1100 00 
+ * 11000x   --->  StoreMultipleRegisters
+ */
+void test_Categorize16bitsThumbInstruction_given_0xc0801011_should_return_STOREMULTIPLEREGISTERS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xc0101011);
+  
+  TEST_ASSERT_EQUAL( STOREMULTIPLEREGISTERS, returnvalue);
+  
+}
+
+
+
+/* opcode = 1100 01 
+ * 11000x   --->  StoreMultipleRegisters
+ */
+void test_Categorize16bitsThumbInstruction_given_0xc4801011_should_return_STOREMULTIPLEREGISTERS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xc4101011);
+  
+  TEST_ASSERT_EQUAL( STOREMULTIPLEREGISTERS, returnvalue);
+  
+}
+
+
+/* opcode = 1100 10 
+ * 11001x   --->  LoadMultipleRegisters
+ */
+void test_Categorize16bitsThumbInstruction_given_0xc8801011_should_return_LOADMULTIPLEREGISTERS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xc8101011);
+  
+  TEST_ASSERT_EQUAL( LOADMULTIPLEREGISTERS, returnvalue);
+  
+}
+
+
+
+/* opcode = 1100 11 
+ * 11001x   --->  LoadMultipleRegisters
+ */
+void test_Categorize16bitsThumbInstruction_given_0xcc801011_should_return_LOADMULTIPLEREGISTERS()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xcc101011);
+  
+  TEST_ASSERT_EQUAL( LOADMULTIPLEREGISTERS, returnvalue);
+  
+}
+
+
+
+/* opcode = 1101 00 
+ * 1101xx   --->  ConditionalBranch
+ */
+void test_Categorize16bitsThumbInstruction_given_0xd0801011_should_return_CONDITIONALBRANCH()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xd0101011);
+  
+  TEST_ASSERT_EQUAL( CONDITIONALBRANCH, returnvalue);
+  
+}
+
+
+/* opcode = 1101 11 
+ * 1101xx   --->  ConditionalBranch
+ */
+void test_Categorize16bitsThumbInstruction_given_0xdc801011_should_return_CONDITIONALBRANCH()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xdc101011);
+  
+  TEST_ASSERT_EQUAL( CONDITIONALBRANCH, returnvalue);
+  
+}
+
+
+/* opcode = 1110 00 
+ * 11100x   --->  UnconditionalBranch
+ */
+void test_Categorize16bitsThumbInstruction_given_0xe0801011_should_return_UNCONDITIONALBRANCH()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xe0101011);
+  
+  TEST_ASSERT_EQUAL( UNCONDITIONALBRANCH, returnvalue);
+  
+}
+
+
+/* opcode = 1110 01 
+ * 11100x   --->  UnconditionalBranch
+ */
+void test_Categorize16bitsThumbInstruction_given_0xe4801011_should_return_UNCONDITIONALBRANCH()
+{
+  unsigned int returnvalue; 
+  
+  returnvalue = Categorize16bitsThumbInstruction(0xe4101011);
+  
+  TEST_ASSERT_EQUAL( UNCONDITIONALBRANCH, returnvalue);
+  
+}
+
+
