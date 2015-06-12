@@ -37,10 +37,9 @@ void MOVImmediate32bitsT2(unsigned int instruction, CoreRegister *coreReg)
   
   modifyControl = ( imm3 << 1 ) | bit7;
   modifyControl = ( i << 4) | modifyControl;
-  printf("modifyControl : %x\n", modifyControl);
-  printf("imm8 : %x\n", imm8);
+
   ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
-  printf("modifiedConstant : %x\n", ModifiedConstant);
+
   coreReg->reg[Rd].data = ModifiedConstant;
 }
 
@@ -120,6 +119,7 @@ void MOVRegisterToRegister32bitsT3(unsigned int instruction, CoreRegister *coreR
   unsigned int Rm = getBits(instruction, 3, 0);
   unsigned int Rd = getBits(instruction, 11, 8);
   unsigned int i = getBits(instruction, 20, 20);
+  unsigned int statusFlag = getBits(instruction, 20, 20);
   
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
   

@@ -97,9 +97,6 @@ void ExecuteInstructionsFrom16bitsCategory(int category, unsigned int instructio
     
     
   }
-  
-  
-  
 }
 
 
@@ -107,7 +104,7 @@ void ShiftAddSubtractMoveCompare(unsigned int instruction)
 {
   unsigned int opcode = getBits(instruction, 29, 25);
   
-
+  
     
   
 }
