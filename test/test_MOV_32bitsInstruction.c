@@ -111,8 +111,20 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf24f3560_should_move_into_0xf
 }
 
 
+// mov r7, #0x2f00
+void test_MOVImmediate32bitsT2_given_instruction_0xf44f573c_should_move_into_0x2f00_into_R7()
+{
+  unsigned int instruction = 0xf44f573c;
+  
+  CoreRegister *coreReg = initCoreRegister();
+  MOVImmediate32bitsT2(instruction, coreReg);
+  TEST_ASSERT_EQUAL(0x2f00, coreReg->reg[7].data);
+  
+  destroyCoreRegister(coreReg);
+}
+
+
 // mov r5, #-1
-// status flag not implemented yet
 void test_MOVImmediate32bitsT2_given_instruction_0xf04f35ff_should_move_into_0xffffffff_into_R5()
 {
   unsigned int instruction = 0xf04f35ff;

@@ -17,6 +17,9 @@ case 01000        1bcdefgh 00000000 00000000 00000000
 case 01001        01bcdefg h0000000 00000000 00000000
 case 01010        001bcdef gh000000 00000000 00000000
 case 01011        0001bcde fgh00000 00000000 00000000
+    |
+    |                 continue shift right
+    v
 case 11101        00000000 00000000 000001bc defgh000
 case 11110        00000000 00000000 0000001b cdefgh00
 case 11111        00000000 00000000 00000001 bcdefgh0
@@ -45,112 +48,25 @@ unsigned int ModifyImmediateConstant(unsigned int ModifyControl, unsigned int in
     unsigned int returnValue = ModifyControlLessThan8(input_value);
     return returnValue;
   }
-  else if( ModifyControl == 8)
+  else if( ModifyControl >= 8)
   {
-    unsigned int returnValue = ModifyControlIs8(input_value);
+    unsigned int returnValue = SetFirstBitAndShiftRight(input_value, ModifyControl);
     return returnValue;
   }
-  else if( ModifyControl == 9)
-  {
-    unsigned int returnValue = ModifyControlIs9(input_value);
-    return returnValue;
-  }
-  else if( ModifyControl == 10)
-  {
-    unsigned int returnValue = ModifyControlIs10(input_value);
-    return returnValue;
-  }
-  else if( ModifyControl == 11)
-  {
-    unsigned int returnValue = ModifyControlIs11(input_value);
-    return returnValue;
-  }
-  else if( ModifyControl == 12)
-  {
-    unsigned int returnValue = ModifyControlIs12(input_value);
-    return returnValue;    
-  }
-  else if( ModifyControl == 13)
-  {
-    unsigned int returnValue = ModifyControlIs13(input_value);
-    return returnValue;     
-  }
-  else if( ModifyControl == 14)
-  {
-    unsigned int returnValue = ModifyControlIs14(input_value);
-    return returnValue;     
-  }
-  
+
 }
 
-
-
-unsigned int ModifyControlIs14(unsigned int input_value)
-{
-  input_value = ModifyControlIs8(input_value);
-  input_value = input_value >> 23;
-
-  return input_value;
-}
-
-
-
-unsigned int ModifyControlIs13(unsigned int input_value)
-{
-  input_value = ModifyControlIs8(input_value);
-  input_value = input_value >> 22;
-
-  return input_value;
-}
-
-
-
-
-unsigned int ModifyControlIs12(unsigned int input_value)
-{
-  input_value = ModifyControlIs8(input_value);
-  input_value = input_value >> 21;
-
-  return input_value;
-}
-
-
-
-unsigned int ModifyControlIs11(unsigned int input_value)
-{
-  input_value = ModifyControlIs8(input_value);
-  input_value = input_value >> 3;
-
-  return input_value;
-}
-
-
-
-unsigned int ModifyControlIs10(unsigned int input_value)
-{
-  input_value = ModifyControlIs8(input_value);
-  input_value = input_value >> 2;
-
-  return input_value;
-}
-
-
-
-unsigned int ModifyControlIs9(unsigned int input_value)
-{
-  input_value = ModifyControlIs8(input_value);
-  input_value = input_value >> 1;
-
-  return input_value;
-}
-
-
-
-unsigned int ModifyControlIs8(unsigned int input_value)
+/*  This function will set the first bit to 1 and then shift the whole
+ *  8bits value to the bit 31 to 24. And shift it to the right according
+ *  to the timesOfShiting-8
+ *
+ *  Return: the modified inputValue after set and shift right
+ */
+unsigned int SetFirstBitAndShiftRight(unsigned int input_value, unsigned int timesOfShifting)
 {
   input_value = input_value | 0b10000000;
   input_value = input_value << 24;
-
+  input_value = input_value >> ( timesOfShifting - 8);
   return input_value;
 }
 

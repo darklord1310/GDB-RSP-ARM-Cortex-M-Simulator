@@ -9,68 +9,25 @@ void tearDown(void)
 {
 }
 
-void test_ModifyControlIs14_given_0x12_should_return_0x00000124()
+//upper boundary case
+void test_SetFirstBitAndShiftRight_given_0x12_and_modifyControl_0b11111_should_return_0x00000124()
 {
   unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs14(input_value);
+  unsigned int modifyControl = 0b11111;
+  unsigned int result = SetFirstBitAndShiftRight(input_value, modifyControl);
   
   TEST_ASSERT_EQUAL(0x00000124, result);
   
 }
 
-void test_ModifyControlIs13_given_0x12_should_return_0x00000248()
+//lower boundary case
+void test_SetFirstBitAndShiftRight_given_0x12_and_modifyControl_0b01000_should_return_0x92000000()
 {
   unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs13(input_value);
-  
-  TEST_ASSERT_EQUAL(0x00000248, result);
-  
-}
-
-void test_ModifyControlIs12_given_0x12_should_return_0x00000490()
-{
-  unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs12(input_value);
-  
-  TEST_ASSERT_EQUAL(0x00000490, result);
-  
-}
-
-void test_ModifyControlIs11_given_0x12_should_return_0x12400000()
-{
-  unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs11(input_value);
-  
-  TEST_ASSERT_EQUAL(0x12400000, result);
-  
-}
-
-void test_ModifyControlIs10_given_0x12_should_return_0x24800000()
-{
-  unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs10(input_value);
-  
-  TEST_ASSERT_EQUAL(0x24800000, result);
-  
-}
-
-void test_ModifyControlIs9_given_0x12_should_return_0x49000000()
-{
-  unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs9(input_value);
-  
-  TEST_ASSERT_EQUAL(0x49000000, result);
-  
-}
-
-
-void test_ModifyControlIs8_given_0x12_should_return_0x92000000()
-{
-  unsigned int input_value = 0x12;
-  unsigned int result = ModifyControlIs8(input_value);
+  unsigned int modifyControl = 0b01000;
+  unsigned int result = SetFirstBitAndShiftRight(input_value, modifyControl);
   
   TEST_ASSERT_EQUAL(0x92000000, result);
-  
 }
 
 
@@ -105,9 +62,10 @@ void test_ModifyControlLessThan4_given_0x12_should_return_0x00120012()
 }
 
 
-
-
-void test_ModifyImmediateConstant_given_modifyControl_is_0000_input_is_0x1234_should_return_0x1234(void)
+void test_ModifyImmediateConstant_given_modifyControl_is_00000_input_is_0x1234_should_return_0x1234(void)
 {
+  unsigned int input_value = 0x1234;
+  unsigned int result = ModifyImmediateConstant(0b0000, input_value);
   
+  TEST_ASSERT_EQUAL(0x1234, result);
 }
