@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc gdbProxy.c -o gdbProxy.exe -lws2_32

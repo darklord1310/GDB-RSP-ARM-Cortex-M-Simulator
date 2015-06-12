@@ -112,7 +112,8 @@ void main()
      *      ==>  $PacketSize=3fff;qXfer:memory-map:read+;qXfer:features:read+#f0
      */
     // strcpy( sendbuf, "+$PacketSize=3fff;qXfer:memory-map:read+;qXfer:features:read-;QStartNoAckMode+#08" );
-    strcpy( sendbuf, "+$PacketSize=3fff;qXfer:memory-map:read+;qXfer:features:read+#f0" );
+    strcpy( sendbuf, "+$PacketSize=171;qXfer:memory-map:read+;qXfer:features:read+#24" );
+    // strcpy( sendbuf, "+$PacketSize=4000;multiprocess+#84" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
     printf( "sendbuf: %s\n", sendbuf );
@@ -146,7 +147,7 @@ void main()
 
     /*
      *  Response packet
-     *      ==>  $T1#85
+     *      ==>  $T0#84
      */
     strcpy( sendbuf, "+$T0#84" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
@@ -292,7 +293,7 @@ void main()
      *  Response packet
      *      ==>  $1#31
      */
-    strcpy( sendbuf, "+$1#31" );
+    strcpy( sendbuf, "+$l#31" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
     printf( "sendbuf: %s\n", sendbuf );
@@ -389,7 +390,7 @@ void main()
     
     /*
      *  Recv packet
-     *      ==>  $Hc-1#09
+     *      ==>  $qC#b4
      */
     bytesRecv = recv( sock, recvbuf, 100, 0 );
     printf( "\nBytes Recv: %ld\n", bytesRecv );
@@ -398,7 +399,7 @@ void main()
     
     /*
      *  Response packet
-     *      ==>  $OK#9a
+     *      ==>  $#00
      */
     strcpy( sendbuf, "+$#00" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
@@ -434,10 +435,9 @@ void main()
     
     /*
      *  Response packet
-     *      ==>  $00000000000000000000000000000000000000000000000000000000000000000
-     *            000000000000000000000000000000000000000000000000000000010890240#18
+     *      ==>  $00000000000000000000000000000000000#90
      */
-    strcpy( sendbuf, "+$00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010890240#18" );
+    strcpy( sendbuf, "+$00000000000000000000000000000000000#90" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
     printf( "sendbuf: %s\n", sendbuf );
@@ -446,7 +446,7 @@ void main()
      *  Recv packet
      *      ==>  + (ACK)
      */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
+    // bytesRecv = recv( sock, recvbuf, 100, 0 );
     // printf( "\nBytes Recv: %ld\n", bytesRecv );
     // recvbuf[bytesRecv] = '\0';
     // printf( "recvbuf: %s\n", recvbuf );
@@ -455,21 +455,30 @@ void main()
      *  Response packet
      *      ==>  + (ACK)
      */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
+    // strcpy( sendbuf, "+" );
+    // bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
     // printf( "\nBytes Sent: %ld\n", bytesSent );
     // printf( "sendbuf: %s\n", sendbuf );
     
     /*
      *  Recv packet
-     *      ==>  $g#67
+     *      ==>  $pf#d6
      */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-
-	/****************Close our socket entirely****************/
+    // bytesRecv = recv( sock, recvbuf, 100, 0 );
+    // printf( "\nBytes Recv: %ld\n", bytesRecv );
+    // recvbuf[bytesRecv] = '\0';
+    // printf( "recvbuf: %s\n", recvbuf );
+    
+    /*
+     *  Response packet
+     *      ==>  $00000000000000000000000000000000000#90
+     */
+    // strcpy( sendbuf, "+$00#c0" );
+    // bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
+    // printf( "\nBytes Sent: %ld\n", bytesSent );
+    // printf( "sendbuf: %s\n", sendbuf );
+    
+    /****************Close our socket entirely****************/
 	closesocket(sock);
 
 	/****************Cleanup Winsock****************/
