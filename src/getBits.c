@@ -12,14 +12,14 @@
  *              If the higherRange and lowerRange is the same
  *
  */
-unsigned int getBits(unsigned int instruction, int higherRange, int lowerRange)
+uint32_t getBits(uint32_t instruction, int higherRange, int lowerRange)
 {
-    unsigned int StreamOfBits;
+    uint32_t StreamOfBits;
     assert(higherRange < 32);
     assert(higherRange >= lowerRange);
     assert(lowerRange >= 0);
     
-    unsigned int mask = getMask(higherRange);               //get the mask to mask off the bits before 
+    uint32_t mask = getMask(higherRange);               //get the mask to mask off the bits before 
                                                             //the higher limit 
 
     StreamOfBits = ( instruction & mask ) ;

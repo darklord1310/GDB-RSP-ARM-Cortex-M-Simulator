@@ -2,6 +2,7 @@
 #include "InstructionDecoding.h"
 #include "getBits.h"
 #include "getMask.h"
+#include <stdint.h>
 
 void setUp(void)
 {
@@ -14,9 +15,9 @@ void tearDown(void)
 
 void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
 {
-  unsigned int value = 0xF05F0B0F;      // an example of instruction taken from KEIL assembler
+  uint32_t value = 0xF05F0B0F;      // an example of instruction taken from KEIL assembler
                                         // which is MOVS R11, #0xF
-  unsigned int result;
+  uint32_t result;
 
   result = is32or16instruction(value);
 
@@ -27,7 +28,7 @@ void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
 
 void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 {
-  unsigned int value = 0x46E80000;      // an example of instruction taken from KEIL assembler
+  uint32_t value = 0x46E80000;      // an example of instruction taken from KEIL assembler
                                         // which is  MOV R8, SP
 
   value = is32or16instruction(value);
@@ -42,7 +43,7 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
  */
 void test_Categorize16bitsThumbInstruction_given_0x30101011_should_return_SHITFADDSUBTRACTMOVECOMPARE()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x30101011);
   
@@ -56,7 +57,7 @@ void test_Categorize16bitsThumbInstruction_given_0x30101011_should_return_SHITFA
  */
 void test_Categorize16bitsThumbInstruction_given_0x3c101011_should_return_SHITFADDSUBTRACTMOVECOMPARE()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x3c101011);
   
@@ -70,7 +71,7 @@ void test_Categorize16bitsThumbInstruction_given_0x3c101011_should_return_SHITFA
  */
 void test_Categorize16bitsThumbInstruction_given_0x40101011_should_return_DATAPROCESSING()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x40101011);
   
@@ -83,7 +84,7 @@ void test_Categorize16bitsThumbInstruction_given_0x40101011_should_return_DATAPR
  */
 void test_Categorize16bitsThumbInstruction_given_0x44101011_should_return_SPECIALDATAINSTRUCTIONANDBRANCHEXCHANGE()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x44101011);
   
@@ -97,7 +98,7 @@ void test_Categorize16bitsThumbInstruction_given_0x44101011_should_return_SPECIA
  */
 void test_Categorize16bitsThumbInstruction_given_0x4c101011_should_return_LOADFROMLITERALPOOL()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x4c101011);
   
@@ -111,7 +112,7 @@ void test_Categorize16bitsThumbInstruction_given_0x4c101011_should_return_LOADFR
  */
 void test_Categorize16bitsThumbInstruction_given_0x48101011_should_return_LOADFROMLITERALPOOL()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x48101011);
   
@@ -128,7 +129,7 @@ void test_Categorize16bitsThumbInstruction_given_0x48101011_should_return_LOADFR
  */
 void test_Categorize16bitsThumbInstruction_given_0x50101011_should_return_LOADORSTORESINGLEDATA()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x50101011);
   
@@ -144,7 +145,7 @@ void test_Categorize16bitsThumbInstruction_given_0x50101011_should_return_LOADOR
  */
 void test_Categorize16bitsThumbInstruction_given_0x9c101011_should_return_LOADORSTORESINGLEDATA()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0x9c101011);
   
@@ -159,7 +160,7 @@ void test_Categorize16bitsThumbInstruction_given_0x9c101011_should_return_LOADOR
  */
 void test_Categorize16bitsThumbInstruction_given_0xa0101011_should_return_GENERATEPCRELATIVEADDRESS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xa0101011);
   
@@ -174,7 +175,7 @@ void test_Categorize16bitsThumbInstruction_given_0xa0101011_should_return_GENERA
  */
 void test_Categorize16bitsThumbInstruction_given_0xa4101011_should_return_GENERATEPCRELATIVEADDRESS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xa4101011);
   
@@ -188,7 +189,7 @@ void test_Categorize16bitsThumbInstruction_given_0xa4101011_should_return_GENERA
  */
 void test_Categorize16bitsThumbInstruction_given_0xa4801011_should_return_GENERATESPRELATIVEADDRESS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xa8101011);
   
@@ -202,7 +203,7 @@ void test_Categorize16bitsThumbInstruction_given_0xa4801011_should_return_GENERA
  */
 void test_Categorize16bitsThumbInstruction_given_0xac801011_should_return_GENERATESPRELATIVEADDRESS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xac101011);
   
@@ -216,7 +217,7 @@ void test_Categorize16bitsThumbInstruction_given_0xac801011_should_return_GENERA
  */
 void test_Categorize16bitsThumbInstruction_given_0xb0801011_should_return_MISCELLANEOUS16BITSINSTRUCTION()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xb0101011);
   
@@ -230,7 +231,7 @@ void test_Categorize16bitsThumbInstruction_given_0xb0801011_should_return_MISCEL
  */
 void test_Categorize16bitsThumbInstruction_given_0xbc801011_should_return_MISCELLANEOUS16BITSINSTRUCTION()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xbc101011);
   
@@ -244,7 +245,7 @@ void test_Categorize16bitsThumbInstruction_given_0xbc801011_should_return_MISCEL
  */
 void test_Categorize16bitsThumbInstruction_given_0xc0801011_should_return_STOREMULTIPLEREGISTERS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xc0101011);
   
@@ -259,7 +260,7 @@ void test_Categorize16bitsThumbInstruction_given_0xc0801011_should_return_STOREM
  */
 void test_Categorize16bitsThumbInstruction_given_0xc4801011_should_return_STOREMULTIPLEREGISTERS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xc4101011);
   
@@ -273,7 +274,7 @@ void test_Categorize16bitsThumbInstruction_given_0xc4801011_should_return_STOREM
  */
 void test_Categorize16bitsThumbInstruction_given_0xc8801011_should_return_LOADMULTIPLEREGISTERS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xc8101011);
   
@@ -288,7 +289,7 @@ void test_Categorize16bitsThumbInstruction_given_0xc8801011_should_return_LOADMU
  */
 void test_Categorize16bitsThumbInstruction_given_0xcc801011_should_return_LOADMULTIPLEREGISTERS()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xcc101011);
   
@@ -303,7 +304,7 @@ void test_Categorize16bitsThumbInstruction_given_0xcc801011_should_return_LOADMU
  */
 void test_Categorize16bitsThumbInstruction_given_0xd0801011_should_return_CONDITIONALBRANCH()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xd0101011);
   
@@ -317,7 +318,7 @@ void test_Categorize16bitsThumbInstruction_given_0xd0801011_should_return_CONDIT
  */
 void test_Categorize16bitsThumbInstruction_given_0xdc801011_should_return_CONDITIONALBRANCH()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xdc101011);
   
@@ -331,7 +332,7 @@ void test_Categorize16bitsThumbInstruction_given_0xdc801011_should_return_CONDIT
  */
 void test_Categorize16bitsThumbInstruction_given_0xe0801011_should_return_UNCONDITIONALBRANCH()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xe0101011);
   
@@ -345,7 +346,7 @@ void test_Categorize16bitsThumbInstruction_given_0xe0801011_should_return_UNCOND
  */
 void test_Categorize16bitsThumbInstruction_given_0xe4801011_should_return_UNCONDITIONALBRANCH()
 {
-  unsigned int returnvalue; 
+  uint32_t returnvalue; 
   
   returnvalue = Categorize16bitsThumbInstruction(0xe4101011);
   

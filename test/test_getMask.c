@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "getMask.h"
+#include <stdint.h>
 
 void setUp(void)
 {
@@ -20,7 +21,7 @@ void tearDown(void)
  */
 void test_getMask_given_bitPosition_16_should_return_0x0001ffff()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(16);
 
   TEST_ASSERT_EQUAL(0x0001ffff,mask);
@@ -38,7 +39,7 @@ void test_getMask_given_bitPosition_16_should_return_0x0001ffff()
  */
 void test_getMask_given_bitPosition_17_should_return_0x0003ffff()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(17);
 
   TEST_ASSERT_EQUAL(0x0003ffff,mask);
@@ -55,7 +56,7 @@ void test_getMask_given_bitPosition_17_should_return_0x0003ffff()
  */
 void test_getMask_given_bitPosition_18_should_return_0x0007ffff()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(18);
 
   TEST_ASSERT_EQUAL(0x0007ffff,mask);
@@ -73,7 +74,7 @@ void test_getMask_given_bitPosition_18_should_return_0x0007ffff()
  */
 void test_getMask_given_bitPosition_19_should_return_0x000fffff()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(19);
 
   TEST_ASSERT_EQUAL(0x000fffff,mask);
@@ -92,7 +93,7 @@ void test_getMask_given_bitPosition_19_should_return_0x000fffff()
  */
 void test_getMask_given_bitPosition_31_should_return_0xffffffff()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(31);
 
   TEST_ASSERT_EQUAL(0xffffffff,mask);
@@ -111,7 +112,7 @@ void test_getMask_given_bitPosition_31_should_return_0xffffffff()
  */
 void test_getMask_given_bitPosition_3_should_return_0x0000000f()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(3);
   
   TEST_ASSERT_EQUAL(0x0000000f,mask);
@@ -129,7 +130,7 @@ void test_getMask_given_bitPosition_3_should_return_0x0000000f()
  */
 void test_getMask_given_bitPosition_0_should_return_0x00000001()
 {
-  unsigned int mask;
+  uint32_t mask;
   mask = getMask(0);
 
   TEST_ASSERT_EQUAL(0x00000001,mask);

@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "getBits.h"
 #include "getMask.h"
+#include <stdint.h>
 
 void setUp(void)
 {
@@ -19,9 +20,9 @@ void tearDown(void)
  */
 void test_getBits_given_0x46E81EA7_higherRange_31_lowerRange_28_should_return_0x04()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 31, 28);
+  uint32_t result = getBits(dummy, 31, 28);
   TEST_ASSERT_EQUAL(0x04 , result);
 }
 
@@ -36,9 +37,9 @@ void test_getBits_given_0x46E81EA7_higherRange_31_lowerRange_28_should_return_0x
  */
 void test_getBits_given_0x46E81EA7_higherRange_27_lowerRange_21_should_return_0x37()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 27, 21);
+  uint32_t result = getBits(dummy, 27, 21);
   TEST_ASSERT_EQUAL(0x37 , result);
 }
 
@@ -53,9 +54,9 @@ void test_getBits_given_0x46E81EA7_higherRange_27_lowerRange_21_should_return_0x
  */
 void test_getBits_given_0x46E81EA7_higherRange_27_lowerRange_22_should_return_0x1b()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 27, 22);
+  uint32_t result = getBits(dummy, 27, 22);
   TEST_ASSERT_EQUAL(0x1b , result);
 }
 
@@ -69,9 +70,9 @@ void test_getBits_given_0x46E81EA7_higherRange_27_lowerRange_22_should_return_0x
  */
 void test_getBits_given_0x46E81EA7_higherRange_27_lowerRange_23_should_return_0x0d()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 27, 23);
+  uint32_t result = getBits(dummy, 27, 23);
   TEST_ASSERT_EQUAL(0x0d , result);
 }
 
@@ -86,9 +87,9 @@ void test_getBits_given_0x46E81EA7_higherRange_27_lowerRange_23_should_return_0x
  */
 void test_getBits_given_0x46E81EA7_higherRange_10_lowerRange_4_should_return_0x6a()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 10, 4);
+  uint32_t result = getBits(dummy, 10, 4);
   TEST_ASSERT_EQUAL(0x6a , result);
 }
 
@@ -103,9 +104,9 @@ void test_getBits_given_0x46E81EA7_higherRange_10_lowerRange_4_should_return_0x6
  */
 void test_getBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x2a()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 9, 4);
+  uint32_t result = getBits(dummy, 9, 4);
   TEST_ASSERT_EQUAL(0x2a , result);
 }
 
@@ -120,9 +121,9 @@ void test_getBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x2a
  */
 void test_getBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x0a()
 {
-    unsigned int dummy = 0x46E81EA7;
+    uint32_t dummy = 0x46E81EA7;
 
-    unsigned int result = getBits(dummy, 8, 4);
+    uint32_t result = getBits(dummy, 8, 4);
     TEST_ASSERT_EQUAL(0x0a , result);
 }
 
@@ -138,9 +139,9 @@ void test_getBits_given_0x46E81EA7_higherRange_9_lowerRange_4_should_return_0x0a
  */
 void test_getBits_given_0x46E81EA7_higherRange_1_lowerRange_0_should_return_0x03()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 1, 0);
+  uint32_t result = getBits(dummy, 1, 0);
   TEST_ASSERT_EQUAL(0x03 , result);
 }
 
@@ -155,8 +156,8 @@ void test_getBits_given_0x46E81EA7_higherRange_1_lowerRange_0_should_return_0x03
  */
 void test_getBits_given_0x46E81EA7_higherRange_21_lowerRange_21_should_return_0x01()
 {
-  unsigned int dummy = 0x46E81EA7;
+  uint32_t dummy = 0x46E81EA7;
 
-  unsigned int result = getBits(dummy, 21, 21);
+  uint32_t result = getBits(dummy, 21, 21);
   TEST_ASSERT_EQUAL(0x01 , result);
 }

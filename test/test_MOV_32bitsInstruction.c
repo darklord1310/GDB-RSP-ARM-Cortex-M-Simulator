@@ -4,6 +4,7 @@
 #include "getBits.h"
 #include "getMask.h"
 #include "ModifiedImmediateConstant.h"
+#include <stdint.h>
 
 void setUp(void)
 {
@@ -23,7 +24,7 @@ void tearDown(void)
  */
 void test_MOVImmediate32bitsT3_given_instruction_0xf2400542_should_move_into_0x42_into_R5()
 {
-  unsigned int instruction = 0xf2400542;
+  uint32_t instruction = 0xf2400542;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT3(instruction, coreReg);
@@ -43,7 +44,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf2400542_should_move_into_0x4
  */
 void test_MOVImmediate32bitsT3_given_instruction_0xf2405c42_should_move_into_0x542_into_R12()
 {
-  unsigned int instruction = 0xf2405c42;
+  uint32_t instruction = 0xf2405c42;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT3(instruction, coreReg);
@@ -64,7 +65,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf2405c42_should_move_into_0x5
  */
 void test_MOVImmediate32bitsT3_given_instruction_0xf6405c42_should_move_into_0xd42_into_R12()
 {
-  unsigned int instruction = 0xf6405c42;
+  uint32_t instruction = 0xf6405c42;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT3(instruction, coreReg);
@@ -85,7 +86,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf6405c42_should_move_into_0xd
  */
 void test_MOVImmediate32bitsT3_given_instruction_0xf6435342_should_move_into_0x3d42_into_R3()
 {
-  unsigned int instruction = 0xf6435342;
+  uint32_t instruction = 0xf6435342;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT3(instruction, coreReg);
@@ -99,7 +100,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf6435342_should_move_into_0x3
 // MOVW r5, 0xF360
 void test_MOVImmediate32bitsT3_given_instruction_0xf24f3560_should_move_into_0xf360_into_R5()
 {
-  unsigned int instruction = 0xf24f3560;
+  uint32_t instruction = 0xf24f3560;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT3(instruction, coreReg);
@@ -114,7 +115,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf24f3560_should_move_into_0xf
 // mov r7, #0x2f00
 void test_MOVImmediate32bitsT2_given_instruction_0xf44f573c_should_move_into_0x2f00_into_R7()
 {
-  unsigned int instruction = 0xf44f573c;
+  uint32_t instruction = 0xf44f573c;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT2(instruction, coreReg);
@@ -127,7 +128,7 @@ void test_MOVImmediate32bitsT2_given_instruction_0xf44f573c_should_move_into_0x2
 // mov r5, #-1
 void test_MOVImmediate32bitsT2_given_instruction_0xf04f35ff_should_move_into_0xffffffff_into_R5()
 {
-  unsigned int instruction = 0xf04f35ff;
+  uint32_t instruction = 0xf04f35ff;
   
   CoreRegister *coreReg = initCoreRegister();
   MOVImmediate32bitsT2(instruction, coreReg);

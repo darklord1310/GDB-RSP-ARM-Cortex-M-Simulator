@@ -12,10 +12,10 @@
  *  It will provide and return a mask of 0x0001FFFF
  *
  */
-unsigned int getMask(int bitPosition)
+uint32_t getMask(int bitPosition)
 {
   int i;
-  unsigned int mask = 0x00;     //initialize the mask to be 0x00 first, then slowly
+  uint32_t mask = 0x00;     //initialize the mask to be 0x00 first, then slowly
                                 //shift to left to get the mask we wanted
    
   for(i = 0; i < bitPosition + 1; i++)

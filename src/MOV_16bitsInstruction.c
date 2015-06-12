@@ -23,10 +23,10 @@ where:
         encoding T3 (if encoding T3 is required, use the MOVW syntax).
         The pre-UAL syntax MOV<c>S is equivalent to MOVS<c>.
 */
-void MOVImmediate16bitsT1(unsigned int instruction, CoreRegister *coreReg)
+void MOVImmediate16bitsT1(uint32_t instruction, CoreRegister *coreReg)
 {
-	unsigned int imm8 = getBits(instruction, 23, 16);
-	unsigned int destinationRegister = getBits(instruction, 26, 24);
+	uint32_t imm8 = getBits(instruction, 23, 16);
+	uint32_t destinationRegister = getBits(instruction, 26, 24);
 	
 	coreReg->reg[destinationRegister].data = imm8;
 }
@@ -57,10 +57,10 @@ void MOVImmediate16bitsT1(unsigned int instruction, CoreRegister *coreReg)
                     <Rm> is the SP or PC.
   
 */
-void MOVRegisterToRegister16bitsT2(unsigned int instruction, CoreRegister *coreReg)
+void MOVRegisterToRegister16bitsT2(uint32_t instruction, CoreRegister *coreReg)
 {
-  unsigned int Rm = getBits(instruction, 21, 19);
-  unsigned int Rd = getBits(instruction, 18, 16);
+  uint32_t Rm = getBits(instruction, 21, 19);
+  uint32_t Rd = getBits(instruction, 18, 16);
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
 
 }
@@ -92,11 +92,11 @@ void MOVRegisterToRegister16bitsT2(unsigned int instruction, CoreRegister *coreR
             D       is the fourth bit for the Rd, if the address can be reach using 3 bits D = 0, else D = 1
   
 */
-void MOVRegisterToRegister16bitsT1(unsigned int instruction, CoreRegister *coreReg)
+void MOVRegisterToRegister16bitsT1(uint32_t instruction, CoreRegister *coreReg)
 {
-	unsigned int Rm = getBits(instruction, 22, 19);
-	unsigned int Rd = getBits(instruction, 18, 16);
-  unsigned int D = getBits(instruction, 23, 23);
+	uint32_t Rm = getBits(instruction, 22, 19);
+	uint32_t Rd = getBits(instruction, 18, 16);
+  uint32_t D = getBits(instruction, 23, 23);
 	
   Rd = ( D << 3 ) | Rd;     // this is to merge the D with Rd to make Rd becomes 4 bits
                             // Eg. new Rd = D Rd2 Rd1 Rd0

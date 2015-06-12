@@ -38,44 +38,60 @@ void initStatusRegister()
 }
 
 
-int checkFlag(int flagType)
+bool isNegative()
 {
-  unsigned int flag;
-  
-  switch(flagType)
-  {
-    case NEGATIVE : flag = getBits(StatusRegisters, 31, 31);
-                    return flag;
-
-    case ZERO     : flag = getBits(StatusRegisters, 30, 30);
-                    return flag;
-    
-    case CARRY    : flag = getBits(StatusRegisters, 29, 29);
-                    return flag;
-    
-    case OVERFLOW : flag = getBits(StatusRegisters, 28, 28);
-                    return flag;
-  }
+  if( getBits(StatusRegisters, 31, 31) )
+    return true;
+  else
+    return false;
 }
 
-
-void setFlag(int flagType)
+bool isZero()
 {
-  unsigned int flag;
-  
-  switch(flagType)
-  {
-    case NEGATIVE : StatusRegisters = StatusRegisters | 0x80000000;
-                    break;
-
-    case ZERO     : StatusRegisters = StatusRegisters | 0x40000000;
-                    break;
-    
-    case CARRY    : StatusRegisters = StatusRegisters | 0x20000000;
-                    break;
-    
-    case OVERFLOW : StatusRegisters = StatusRegisters | 0x10000000;
-                    break;
-  }
+  if( getBits(StatusRegisters, 30, 30) )
+    return true;
+  else
+    return false;
 }
+
+bool isCarry()
+{
+  if( getBits(StatusRegisters, 29, 29) )
+    return true;
+  else
+    return false;
+}
+
+bool isOverflow()
+{
+  if( getBits(StatusRegisters, 28, 28) )
+    return true;
+  else
+    return false;
+}
+
+void setCarryFlag()
+{
+  StatusRegisters = StatusRegisters | 0x20000000;
+}
+
+void setNegativeFlag()
+{
+  StatusRegisters = StatusRegisters | 0x80000000;
+
+}
+
+void setZeroFlag()
+{
+  StatusRegisters = StatusRegisters | 0x40000000;
+
+}
+
+void setOverflowFlag()
+{
+  StatusRegisters = StatusRegisters | 0x10000000;;
+
+}
+    
+
 

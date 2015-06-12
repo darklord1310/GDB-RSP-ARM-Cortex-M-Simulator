@@ -2,7 +2,8 @@
 #define getBits_H
 
 #include "getMask.h"
+#include <stdint.h>
 
-unsigned int getBits(unsigned int instruction, int higherRange, int lowerRange);
+uint32_t getBits(uint32_t instruction, int higherRange, int lowerRange);
 
 #endif // getBits_H
