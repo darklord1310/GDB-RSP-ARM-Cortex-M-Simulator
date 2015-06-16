@@ -13,7 +13,7 @@ typedef struct RegisterData RegisterData;
 
 struct RegisterData
 {
-  unsigned int data;
+  uint32_t data;
 };
 
 
@@ -23,6 +23,7 @@ struct CoreRegister
 };
 
 
+CoreRegister *coreReg;
 CoreRegister *initCoreRegister();
 
 

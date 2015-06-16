@@ -8,8 +8,6 @@
 
 uint32_t StatusRegisters;
 
-typedef enum { ZERO, CARRY, OVERFLOW, NEGATIVE} FlagType;
-
 bool isNegative();
 bool isZero();
 bool isCarry();

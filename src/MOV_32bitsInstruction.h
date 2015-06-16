@@ -6,8 +6,8 @@
 #include "ModifiedImmediateConstant.h"
 #include <stdint.h>
 
-void MOVImmediate32bitsT2(uint32_t instruction, CoreRegister *coreReg);
-void MOVImmediate32bitsT3(uint32_t instruction, CoreRegister *coreReg);
-void MOVRegisterToRegister32bitsT3(uint32_t instruction, CoreRegister *coreReg);
+void MOVImmediate32bitsT2(uint32_t instruction);
+void MOVImmediate32bitsT3(uint32_t instruction);
+void MOVRegisterToRegister32bitsT3(uint32_t instruction);
 
 #endif // MOV_32bitsInstruction_H

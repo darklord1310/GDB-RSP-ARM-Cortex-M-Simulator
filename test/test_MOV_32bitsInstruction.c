@@ -8,7 +8,7 @@
 
 void setUp(void)
 {
-  
+  coreReg = initCoreRegister();
 }
 
 void tearDown(void)
@@ -26,8 +26,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf2400542_should_move_into_0x4
 {
   uint32_t instruction = 0xf2400542;
   
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT3(instruction, coreReg);
+  MOVImmediate32bitsT3(instruction);
   
   TEST_ASSERT_EQUAL(0x42, coreReg->reg[5].data);
   
@@ -46,8 +45,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf2405c42_should_move_into_0x5
 {
   uint32_t instruction = 0xf2405c42;
   
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT3(instruction, coreReg);
+  MOVImmediate32bitsT3(instruction);
   
   TEST_ASSERT_EQUAL(0x542, coreReg->reg[12].data);
   
@@ -67,8 +65,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf6405c42_should_move_into_0xd
 {
   uint32_t instruction = 0xf6405c42;
   
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT3(instruction, coreReg);
+  MOVImmediate32bitsT3(instruction);
   
   TEST_ASSERT_EQUAL(0xd42, coreReg->reg[12].data);
   
@@ -88,8 +85,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf6435342_should_move_into_0x3
 {
   uint32_t instruction = 0xf6435342;
   
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT3(instruction, coreReg);
+  MOVImmediate32bitsT3(instruction);
   
   TEST_ASSERT_EQUAL(0x3d42, coreReg->reg[3].data);
   
@@ -102,8 +98,7 @@ void test_MOVImmediate32bitsT3_given_instruction_0xf24f3560_should_move_into_0xf
 {
   uint32_t instruction = 0xf24f3560;
   
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT3(instruction, coreReg);
+  MOVImmediate32bitsT3(instruction);
   
   TEST_ASSERT_EQUAL(0xf360, coreReg->reg[5].data);
   
@@ -117,8 +112,7 @@ void test_MOVImmediate32bitsT2_given_instruction_0xf44f573c_should_move_into_0x2
 {
   uint32_t instruction = 0xf44f573c;
   
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT2(instruction, coreReg);
+  MOVImmediate32bitsT2(instruction);
   TEST_ASSERT_EQUAL(0x2f00, coreReg->reg[7].data);
   
   destroyCoreRegister(coreReg);
@@ -129,9 +123,8 @@ void test_MOVImmediate32bitsT2_given_instruction_0xf44f573c_should_move_into_0x2
 void test_MOVImmediate32bitsT2_given_instruction_0xf04f35ff_should_move_into_0xffffffff_into_R5()
 {
   uint32_t instruction = 0xf04f35ff;
-  
-  CoreRegister *coreReg = initCoreRegister();
-  MOVImmediate32bitsT2(instruction, coreReg);
+
+  MOVImmediate32bitsT2(instruction);
   TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
   
   destroyCoreRegister(coreReg);

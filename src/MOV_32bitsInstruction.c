@@ -25,7 +25,7 @@ where:
           When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
           encoding T3 (if encoding T3 is required, use the MOVW syntax)
 */
-void MOVImmediate32bitsT2(uint32_t instruction, CoreRegister *coreReg)
+void MOVImmediate32bitsT2(uint32_t instruction)
 {
   uint32_t ModifiedConstant, modifyControl;
   uint32_t imm8 = getBits(instruction, 7, 0);
@@ -71,7 +71,7 @@ where:
           When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
           encoding T3 (if encoding T3 is required, use the MOVW syntax)
 */
-void MOVImmediate32bitsT3(uint32_t instruction, CoreRegister *coreReg)
+void MOVImmediate32bitsT3(uint32_t instruction)
 {
   uint32_t imm8 = getBits(instruction, 7, 0);
   uint32_t Rd = getBits(instruction, 11, 8);
@@ -114,6 +114,7 @@ where:
           When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
           encoding T3 (if encoding T3 is required, use the MOVW syntax)
 */
+/*
 void MOVRegisterToRegister32bitsT3(uint32_t instruction, CoreRegister *coreReg)
 {
   uint32_t Rm = getBits(instruction, 3, 0);
@@ -124,3 +125,4 @@ void MOVRegisterToRegister32bitsT3(uint32_t instruction, CoreRegister *coreReg)
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
   
 }
+*/

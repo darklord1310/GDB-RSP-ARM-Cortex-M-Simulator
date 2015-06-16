@@ -23,7 +23,7 @@ where:
         encoding T3 (if encoding T3 is required, use the MOVW syntax).
         The pre-UAL syntax MOV<c>S is equivalent to MOVS<c>.
 */
-void MOVImmediate16bitsT1(uint32_t instruction, CoreRegister *coreReg)
+void MOVImmediate16bitsT1(uint32_t instruction)
 {
 	uint32_t imm8 = getBits(instruction, 23, 16);
 	uint32_t destinationRegister = getBits(instruction, 26, 24);
@@ -57,7 +57,7 @@ void MOVImmediate16bitsT1(uint32_t instruction, CoreRegister *coreReg)
                     <Rm> is the SP or PC.
   
 */
-void MOVRegisterToRegister16bitsT2(uint32_t instruction, CoreRegister *coreReg)
+void MOVRegisterToRegister16bitsT2(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
@@ -92,7 +92,7 @@ void MOVRegisterToRegister16bitsT2(uint32_t instruction, CoreRegister *coreReg)
             D       is the fourth bit for the Rd, if the address can be reach using 3 bits D = 0, else D = 1
   
 */
-void MOVRegisterToRegister16bitsT1(uint32_t instruction, CoreRegister *coreReg)
+void MOVRegisterToRegister16bitsT1(uint32_t instruction)
 {
 	uint32_t Rm = getBits(instruction, 22, 19);
 	uint32_t Rd = getBits(instruction, 18, 16);
