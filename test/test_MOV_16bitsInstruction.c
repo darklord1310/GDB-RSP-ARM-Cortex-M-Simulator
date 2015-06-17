@@ -4,6 +4,7 @@
 #include "getBits.h"
 #include "getMask.h"
 #include <stdint.h>
+#include "StatusRegisters.h"
 
 void setUp(void)
 {

@@ -3,6 +3,7 @@
 
 #include "ARMRegisters.h"
 #include "getBits.h"
+#include "StatusRegisters.h"
 #include <stdint.h>
 
 void MOVImmediate16bitsT1(uint32_t instruction);

@@ -4,6 +4,7 @@
 /*Move Immediate Encoding T1
         MOVS <Rd>,#<imm8>               Outside IT block.
         MOV<c> <Rd>,#<imm8>             Inside IT block.
+
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
   |0   0   1 | 0   0 |    Rd     |           imm8               |
    
@@ -62,7 +63,7 @@ void MOVRegisterToRegister16bitsT2(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
-
+  updateStatusRegister(coreReg->reg[Rd].data);
 }
 
 
