@@ -8,5 +8,6 @@
 #include <stdint.h>
 
 void LSLImmediate16bitsT1(uint32_t instruction);
+void LSLRegisterToRegisterT1(uint32_t instruction);
 
 #endif // LSL_16bitsInstruction_H
