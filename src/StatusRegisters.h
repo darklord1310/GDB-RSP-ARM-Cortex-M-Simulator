@@ -17,5 +17,6 @@ void setZeroFlag();
 void setNegativeFlag();
 void setCarryFlag();
 void initStatusRegister();
+void updateStatusRegister(uint32_t value);
 
 #endif // StatusRegisters_H

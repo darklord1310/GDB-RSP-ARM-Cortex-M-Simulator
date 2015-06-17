@@ -92,6 +92,17 @@ void setOverflowFlag()
   StatusRegisters = StatusRegisters | 0x10000000;;
 
 }
-    
+
+
+void updateStatusRegister(uint32_t value)
+{
+  if(value == 0)
+    setZeroFlag();
+  
+  if(value == 0xffffffff)
+    setNegativeFlag();
+  
+  
+}
 
 

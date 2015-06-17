@@ -81,3 +81,27 @@ void test_setZeroFlag_StatusRegisters_should_get_0x40000000(void)
 
 }
 
+
+void test_updateStatusRegister_given_value_0_should_set_zero_flag()
+{
+  initStatusRegister();                          //initialize all to 0
+  TEST_ASSERT_EQUAL( 0 , StatusRegisters);
+  
+  uint32_t value = 0;
+  updateStatusRegister(value);
+  
+  TEST_ASSERT_EQUAL( 1 , isZero() );
+}
+
+
+void test_updateStatusRegister_given_value_ngeative_1_should_set_negative_flag()
+{
+  initStatusRegister();                          //initialize all to 0
+  TEST_ASSERT_EQUAL( 0 , StatusRegisters);
+  
+  uint32_t value = -1;
+  updateStatusRegister(value);
+  
+  TEST_ASSERT_EQUAL( 1 , isNegative() );
+}
+
