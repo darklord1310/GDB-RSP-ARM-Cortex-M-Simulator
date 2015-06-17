@@ -83,8 +83,8 @@ void test_MOVRegisterToRegister16bitsT2_given_instruction_0x00130000_should_move
   coreReg->reg[2].data = -1;                            //set R2 to be -1
   MOVRegisterToRegister16bitsT2(instruction);           //move r2 to r3
   
-  TEST_ASSERT_EQUAL(-1, coreReg->reg[2].data);
-  TEST_ASSERT_EQUAL(-1, coreReg->reg[3].data);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[2].data);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[3].data);
   TEST_ASSERT_EQUAL(true , isNegative() );              //zero flag should be updated
   destroyCoreRegister(coreReg);
 }
