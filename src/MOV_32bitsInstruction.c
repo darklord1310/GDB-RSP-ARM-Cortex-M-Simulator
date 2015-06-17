@@ -41,6 +41,10 @@ void MOVImmediate32bitsT2(uint32_t instruction)
   ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
 
   coreReg->reg[Rd].data = ModifiedConstant;
+  
+  if(statusFlag == 1)
+    updateStatusRegister(coreReg->reg[Rd].data);
+
 }
 
 
@@ -52,6 +56,7 @@ MOVW<c> <Rd>,#<imm16>
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 |1  1  1  1 0 |i| 1  0  0  1  0  0 |   imm4    |0|  imm3   |    Rd   |     imm8      |
 
+This instruction will not affect the status register
 largest value for the constant is 65536 which means 16 bits value
 
 16 bits = imm4 | i | imm3 | imm8
@@ -123,6 +128,9 @@ void MOVRegisterToRegister32bitsT3(uint32_t instruction, CoreRegister *coreReg)
   uint32_t statusFlag = getBits(instruction, 20, 20);
   
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
+  
+  if(statusFlag == 1)
+    updateStatusRegister(coreReg->reg[Rd].data);
   
 }
 */

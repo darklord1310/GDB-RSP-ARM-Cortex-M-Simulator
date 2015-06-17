@@ -4,6 +4,7 @@
 #include "getBits.h"
 #include "getMask.h"
 #include "ModifiedImmediateConstant.h"
+#include "StatusRegisters.h"
 #include <stdint.h>
 
 void setUp(void)
@@ -119,17 +120,27 @@ void test_MOVImmediate32bitsT2_given_instruction_0xf44f573c_should_move_into_0x2
 }
 
 
-// mov r5, #-1
-void test_MOVImmediate32bitsT2_given_instruction_0xf04f35ff_should_move_into_0xffffffff_into_R5()
+// mov r5, #-1 and statusRegister not set
+void test_MOVImmediate32bitsT2_given_instruction_0xf04f35ff_should_move_into_0xffffffff_into_R5_and_not_set_the_flag()
 {
   uint32_t instruction = 0xf04f35ff;
 
   MOVImmediate32bitsT2(instruction);
   TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
-  
+  TEST_ASSERT_EQUAL(0,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
 
+// mov r5, #-1 and statusRegister is set
+void test_MOVImmediate32bitsT2_given_instruction_0xf05f35ff_should_move_into_0xffffffff_into_R5_and_set_the_flag()
+{
+  uint32_t instruction = 0xf05f35ff;
+
+  MOVImmediate32bitsT2(instruction);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
+  TEST_ASSERT_EQUAL(1 , isNegative() );
+  destroyCoreRegister(coreReg);
+}
 
 

@@ -4,6 +4,7 @@
 
 #include "ARMRegisters.h"
 #include "getBits.h"
+#include "StatusRegisters.h"
 #include <stdint.h>
 
 void LSLImmediate16bitsT1(uint32_t instruction);

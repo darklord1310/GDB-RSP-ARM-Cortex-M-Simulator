@@ -5,6 +5,8 @@
         MOVS <Rd>,#<imm8>               Outside IT block.
         MOV<c> <Rd>,#<imm8>             Inside IT block.
 
+  Note : This instruction can never move any negative value
+  
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
   |0   0   1 | 0   0 |    Rd     |           imm8               |
    
@@ -17,12 +19,8 @@ where:
         <Rd>      Specifies the destination register. It can only cover until R7 because of 3 bits
         
         <const>   Specifies the immediate value to be placed in <Rd>. The range of allowed values is 0-255 for
-                  encoding T1 and 0-65535 for encoding T3. See Modified immediate constants in Thumb
-                  instructions on page A5-15 for the range of allowed values for encoding T2.
-        
-        When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
-        encoding T3 (if encoding T3 is required, use the MOVW syntax).
-        The pre-UAL syntax MOV<c>S is equivalent to MOVS<c>.
+                  encoding T1
+
 */
 void MOVImmediate16bitsT1(uint32_t instruction)
 {
@@ -38,7 +36,9 @@ void MOVImmediate16bitsT1(uint32_t instruction)
 /*
   Move Register to Register Encoding T2 
         MOVS <Rd>,<Rm>
-
+        
+  Note :  This can only applicable to those registers lower than R7
+  
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
   |0   0   0   0   0   0   0   0   0   0 |    Rm     |    Rd    |
   
@@ -72,7 +72,7 @@ void MOVRegisterToRegister16bitsT2(uint32_t instruction)
 /*  
   Move Register to Register Encoding T1 
         MOV<c> <Rd>,<Rm>
-
+        
    15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
   |0   1   0   0   0   1 | 1   0 | D |      Rm       |    Rd    |
     

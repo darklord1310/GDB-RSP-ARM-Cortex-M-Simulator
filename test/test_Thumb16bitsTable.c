@@ -2,6 +2,7 @@
 #include "Thumb16bitsTable.h"
 #include "MOV_16bitsInstruction.h"
 #include "ARMRegisters.h"
+#include "StatusRegisters.h"
 #include "getBits.h"
 #include "getMask.h"
 
