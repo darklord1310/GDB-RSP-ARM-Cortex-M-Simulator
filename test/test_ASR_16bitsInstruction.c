@@ -23,7 +23,7 @@ void test_ASRImmediate16bitsT1_given_0x1091_should_arithmetic_shift_right_r2_2_t
 {
 	uint32_t instruction = 0x10910000;
   
-  coreReg->reg[2].data = 0xf0f0f0f0;                    //set R2 to be 0xf0f0f0f0
+  coreReg->reg[2].data = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
   ASRImmediate16bitsT1(instruction);
           
   TEST_ASSERT_EQUAL(0xfc3c3c3c, coreReg->reg[1].data);        //after arithmetic shift right 5 times, should get 0xfc3c3c3c

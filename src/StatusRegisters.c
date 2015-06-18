@@ -18,12 +18,12 @@
                     1 = result of 0
                     0 = nonzero result.
                     
-  [29]	C	
+  [29]	C	(unsigned overflow)
         Carry or borrow flag:
                                 1 = carry true or borrow false
                                 0 = carry false or borrow true.
                                 
-  [28]	V	
+  [28]	V	(signed overflow)
         Overflow flag:
                         1 = overflow
                         0 = no overflow.
@@ -94,15 +94,53 @@ void setOverflowFlag()
 }
 
 
-void updateStatusRegister(uint32_t value)
+void updateZeroFlag(uint32_t value)
 {
   if(value == 0)
     setZeroFlag();
   
+}
+
+void updateNegativeFlag(uint32_t value)
+{
   if(value == 0xffffffff)
     setNegativeFlag();
   
+}
+
+void updateCarryFlag(uint32_t value1, uint32_t value2)
+{
+  int bit0 = 0, intermediateCarry = 0, i,adder;
   
+  for(i = 0; i < 32; i++)
+  {
+    adder = intermediateCarry + getBits(value1,bit0,bit0) + getBits(value2,bit0,bit0);
+    if(adder >= 2)
+      intermediateCarry = 1;
+    else
+      intermediateCarry = 0;
+    bit0++;
+  }
+
+  if( intermediateCarry == 1)
+    setCarryFlag();
 }
 
 
+/*
+1. If the sum of two numbers with the sign bits off yields a result number
+   with the sign bit on, the "overflow" flag is turned on.
+
+   0100 + 0100 = 1000 (overflow flag is turned on)
+
+2. If the sum of two numbers with the sign bits on yields a result number
+   with the sign bit off, the "overflow" flag is turned on.
+
+   1000 + 1000 = 0000 (overflow flag is turned on)
+*/
+void updateOverflowFlag(uint32_t value1, uint32_t value2, uint32_t sum)
+{
+
+  if( getBits(value1,31,31) == 1 && getBits(value2,31,31) == 1 && getBits(sum,31,31) == 0 )
+    setOverflowFlag();
+}

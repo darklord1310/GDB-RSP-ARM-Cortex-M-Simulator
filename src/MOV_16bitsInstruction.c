@@ -7,8 +7,8 @@
 
   Note : This instruction can never move any negative value
   
-   15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
-  |0   0   1 | 0   0 |    Rd     |           imm8               |
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |0   0  1| 0  0|   Rd   |         imm8          |               unused                |
    
 where:
         S         If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
@@ -39,8 +39,8 @@ void MOVImmediate16bitsT1(uint32_t instruction)
         
   Note :  This can only applicable to those registers lower than R7
   
-   15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
-  |0   0   0   0   0   0   0   0   0   0 |    Rm     |    Rd    |
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |0  0  0  0  0  0  0  0  0  0 |   Rm   |   Rd   |               unused                |
   
   
   where:
@@ -63,7 +63,9 @@ void MOVRegisterToRegister16bitsT2(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
-  updateStatusRegister(coreReg->reg[Rd].data);
+  updateZeroFlag(coreReg->reg[Rd].data);
+  updateNegativeFlag(coreReg->reg[Rd].data);
+
 }
 
 
@@ -73,8 +75,8 @@ void MOVRegisterToRegister16bitsT2(uint32_t instruction)
   Move Register to Register Encoding T1 
         MOV<c> <Rd>,<Rm>
         
-   15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
-  |0   1   0   0   0   1 | 1   0 | D |      Rm       |    Rd    |
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |0  1  0  0  0  1 | 1 0 |D|     Rm     |   Rd   |             unused                  |
     
   where:
             S       If present, specifies that the instruction updates the flags. Otherwise, the instruction does not

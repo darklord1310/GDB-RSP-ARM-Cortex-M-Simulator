@@ -43,7 +43,10 @@ void MOVImmediate32bitsT2(uint32_t instruction)
   coreReg->reg[Rd].data = ModifiedConstant;
   
   if(statusFlag == 1)
-    updateStatusRegister(coreReg->reg[Rd].data);
+  {
+    updateZeroFlag(coreReg->reg[Rd].data);
+    updateNegativeFlag(coreReg->reg[Rd].data);
+  }
 
 }
 

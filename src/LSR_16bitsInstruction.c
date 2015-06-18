@@ -7,9 +7,8 @@
       LSR<c> <Rd>,<Rm>,#<imm5>      Inside IT block
       
   Note : Can only shift 1 < n <= 32 times
-  
-   15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
-  |0   0   0 | 0   1 |        imm5       |    Rm     |    Rd    |
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |0  0  0 |0  1|     imm5      |   Rm  |    Rd   |             unused                 |
    
 where:
         S          If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
@@ -42,9 +41,9 @@ void LSRImmediate16bitsT1(uint32_t instruction)
 /*Logical Shift Right Register To Register Encoding T1
         LSRS <Rdn>,<Rm>       Outside IT block.
         LSR<c> <Rdn>,<Rm>     Inside IT block.
-       
-   15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
-  |0    1   0   0   0   0| 0   0   1   1 |    Rm     |    Rdn   |
+        
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |0   1  0  0  0  0| 0  0  1  1|   Rm   |   Rdn  |              unused                 |
    
 where:
           S             If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
