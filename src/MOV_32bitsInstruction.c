@@ -25,15 +25,15 @@ where:
           When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
           encoding T3 (if encoding T3 is required, use the MOVW syntax)
 */
-void MOVImmediate32bitsT2(unsigned int instruction, CoreRegister *coreReg)
+void MOVImmediate32bitsT2(uint32_t instruction)
 {
-  unsigned int ModifiedConstant, modifyControl;
-  unsigned int imm8 = getBits(instruction, 7, 0);
-  unsigned int Rd = getBits(instruction, 11, 8);
-  unsigned int imm3 = getBits(instruction, 14, 12);
-  unsigned int statusFlag = getBits(instruction, 20, 20);
-  unsigned int i = getBits(instruction, 26, 26);
-  unsigned int bit7 = getBits(instruction, 7, 7);
+  uint32_t ModifiedConstant, modifyControl;
+  uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t imm3 = getBits(instruction, 14, 12);
+  uint32_t statusFlag = getBits(instruction, 20, 20);
+  uint32_t i = getBits(instruction, 26, 26);
+  uint32_t bit7 = getBits(instruction, 7, 7);
   
   modifyControl = ( imm3 << 1 ) | bit7;
   modifyControl = ( i << 4) | modifyControl;
@@ -41,6 +41,13 @@ void MOVImmediate32bitsT2(unsigned int instruction, CoreRegister *coreReg)
   ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
 
   coreReg->reg[Rd].data = ModifiedConstant;
+  
+  if(statusFlag == 1)
+  {
+    updateZeroFlag(coreReg->reg[Rd].data);
+    updateNegativeFlag(coreReg->reg[Rd].data);
+  }
+
 }
 
 
@@ -52,6 +59,7 @@ MOVW<c> <Rd>,#<imm16>
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 |1  1  1  1 0 |i| 1  0  0  1  0  0 |   imm4    |0|  imm3   |    Rd   |     imm8      |
 
+This instruction will not affect the status register
 largest value for the constant is 65536 which means 16 bits value
 
 16 bits = imm4 | i | imm3 | imm8
@@ -71,15 +79,15 @@ where:
           When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
           encoding T3 (if encoding T3 is required, use the MOVW syntax)
 */
-void MOVImmediate32bitsT3(unsigned int instruction, CoreRegister *coreReg)
+void MOVImmediate32bitsT3(uint32_t instruction)
 {
-  unsigned int imm8 = getBits(instruction, 7, 0);
-  unsigned int Rd = getBits(instruction, 11, 8);
-  unsigned int imm3 = getBits(instruction, 14, 12);
-  unsigned int imm4 = getBits(instruction, 19, 16);
-  unsigned int i = getBits(instruction, 26, 26);
+  uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t imm3 = getBits(instruction, 14, 12);
+  uint32_t imm4 = getBits(instruction, 19, 16);
+  uint32_t i = getBits(instruction, 26, 26);
   
-  unsigned int constant;
+  uint32_t constant;
   
   constant = ( imm3 << 8 ) | imm8;
   constant = ( i << 11 ) | constant;
@@ -114,13 +122,18 @@ where:
           When both 32-bit encodings are available for an instruction, encoding T2 is preferred to
           encoding T3 (if encoding T3 is required, use the MOVW syntax)
 */
-void MOVRegisterToRegister32bitsT3(unsigned int instruction, CoreRegister *coreReg)
+/*
+void MOVRegisterToRegister32bitsT3(uint32_t instruction, CoreRegister *coreReg)
 {
-  unsigned int Rm = getBits(instruction, 3, 0);
-  unsigned int Rd = getBits(instruction, 11, 8);
-  unsigned int i = getBits(instruction, 20, 20);
-  unsigned int statusFlag = getBits(instruction, 20, 20);
+  uint32_t Rm = getBits(instruction, 3, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t i = getBits(instruction, 20, 20);
+  uint32_t statusFlag = getBits(instruction, 20, 20);
   
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;
   
+  if(statusFlag == 1)
+    updateStatusRegister(coreReg->reg[Rd].data);
+  
 }
+*/

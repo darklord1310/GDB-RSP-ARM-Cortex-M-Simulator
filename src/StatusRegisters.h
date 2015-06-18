@@ -3,12 +3,24 @@
 
 #include "getBits.h"
 #include "getMask.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-unsigned int StatusRegisters;
-typedef enum { ZERO, CARRY, OVERFLOW, NEGATIVE} FlagType;
+uint32_t StatusRegisters;
 
-int checkFlag(int flagType);
-void setFlag(int flagType);
+bool isNegative();
+bool isZero();
+bool isCarry();
+bool isOverflow();
+void setOverflowFlag();
+void setZeroFlag();
+void setNegativeFlag();
+void setCarryFlag();
 void initStatusRegister();
+void updateOverflowFlag();
+void updateZeroFlag();
+void updateNegativeFlag();
+void updateCarryFlag();
+
 
 #endif // StatusRegisters_H

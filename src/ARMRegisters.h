@@ -1,6 +1,9 @@
 #ifndef ARMRegisters_H
 #define ARMRegisters_H
 
+
+#include <stdint.h>
+
 typedef struct CoreRegister CoreRegister;
 typedef struct RegisterData RegisterData;
 
@@ -10,7 +13,7 @@ typedef struct RegisterData RegisterData;
 
 struct RegisterData
 {
-  int data;
+  uint32_t data;
 };
 
 
@@ -20,6 +23,7 @@ struct CoreRegister
 };
 
 
+CoreRegister *coreReg;
 CoreRegister *initCoreRegister();
 
 

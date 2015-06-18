@@ -6,7 +6,6 @@ CoreRegister *initCoreRegister()
 {
   int i;
 	
-  CoreRegister *coreReg;
   coreReg = malloc(sizeof(CoreRegister));
   coreReg->reg = calloc( numberOfRegister, sizeof(RegisterData));
 	

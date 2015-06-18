@@ -1,6 +1,7 @@
 #include "InstructionDecoding.h"
 #include <stdio.h>
-
+#include <assert.h>
+#include <stdint.h>
 
 /*  This function is to check the instruction is 32 bits or 16 bits
  *
@@ -13,7 +14,7 @@
  *           INSTRUCTION16bits if 16 bits
  *
  */
-int is32or16instruction(unsigned int instruction)
+int is32or16instruction(uint32_t instruction)
 {
 	
   if( getBits(instruction, 31, 29) == 0b111 )                 // if first 3 bits are 111, it is possible to be a 32bits instruction      
@@ -55,10 +56,12 @@ int is32or16instruction(unsigned int instruction)
  *    1101xx   --->  ConditionalBranch
  *    11100x   --->  UnconditionalBranch
  */
-int Categorize16bitsThumbInstruction(unsigned int instruction)
+int Categorize16bitsThumbInstruction(uint32_t instruction)
 {
-  unsigned int opcode1 = getBits(instruction, 31, 26);
-	
+  uint32_t opcode1 = getBits(instruction, 31, 26);
+  
+	assert(opcode1 < 58);
+  
   if( opcode1 < 16)
     return SHITFADDSUBTRACTMOVECOMPARE;
   else if( opcode1 == 0b010000)
@@ -83,11 +86,11 @@ int Categorize16bitsThumbInstruction(unsigned int instruction)
     return CONDITIONALBRANCH;
   else if( opcode1 < 58)
     return UNCONDITIONALBRANCH;
-  
 }
 
 
-void ExecuteInstructionsFrom16bitsCategory(int category, unsigned int instruction)
+/*
+void ExecuteInstructionsFrom16bitsCategory(int category, uint32_t instruction)
 {
   switch(category)
   {
@@ -100,15 +103,21 @@ void ExecuteInstructionsFrom16bitsCategory(int category, unsigned int instructio
 }
 
 
-void ShiftAddSubtractMoveCompare(unsigned int instruction)
+void ShiftAddSubtractMoveCompare(uint32_t instruction)
 {
-  unsigned int opcode = getBits(instruction, 29, 25);
+  uint32_t opcode = getBits(instruction, 29, 25);
   
+  if( opcode < 12)
+  {
+    extractDataFromInstruction();
+    
+  }
+  else if()
   
     
   
 }
-
+*/
 
 
 
