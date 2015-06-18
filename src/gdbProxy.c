@@ -5,7 +5,7 @@
 
 #define LOCAL_HOST_ADD  "127.0.0.1"
 #define SERVER_PORT     2009
-#define DEFAULT_PORT    8080
+#define DEFAULT_PORT    2010
 
 void main()
 {
@@ -63,13 +63,6 @@ void main()
     else
         printf( "Server connected\n" );
 
-    // int clientSent;
-    // int clientRecv = SOCKET_ERROR;
-    // char clientRecvBuf[100];
-
-    // strcpy( clientRecvBuf, '+' );
-    // clientSent = send( clientSock, clientRecvBuf, strlen(clientRecvBuf), 0 );
-
     /****************Socket "keep-alive".****************/
 /*    int iOption = 1; // Turn on keep-alive, 0 = disables, 1 = enables
     if (setsockopt(clientSock, SOL_SOCKET, SO_KEEPALIVE, (const char *) &iOption,  sizeof(int)) == SOCKET_ERROR)
@@ -121,25 +114,27 @@ void main()
     int serverRecv = SOCKET_ERROR;
     int clientSent;
     int clientRecv = SOCKET_ERROR;
-    char *packetBuf = NULL;
+    char packetBuf[100000] = "";
 
-    while( strcmp( packetBuf, "$k#6b" )) {
+    while( 1 ) {
     /*
-     *  Recv and Response packet to client and server
+     *  Recv ack from client and Response it to server and vice versa
      *      ==>  + (ACK)
      */
-    serverRecv = recv( listenSock, packetBuf, 100, 0 );
+    serverRecv = recv( listenSock, packetBuf, 100000, 0 );
     packetBuf[serverRecv] = '\0';
+    printf( "Sending packet: %s\n", packetBuf );
     serverSent = send( clientSock, packetBuf, strlen(packetBuf), 0 );
-    clientRecv = recv( clientSock, packetBuf, 100, 0 );
+    clientRecv = recv( clientSock, packetBuf, 100000, 0 );
     packetBuf[clientRecv] = '\0';
+    printf( "Packet received: %s\n", packetBuf );
     clientSent = send( listenSock, packetBuf, strlen(packetBuf), 0 );
 
     /*
      *  Recv packet from client, then
      *  Response packet to server
      */
-    serverRecv = recv( listenSock, packetBuf, 100, 0 );
+    serverRecv = recv( listenSock, packetBuf, 100000, 0 );
     packetBuf[serverRecv] = '\0';
     printf( "Sending packet: %s\n", packetBuf );
     clientSent = send( clientSock, packetBuf, strlen(packetBuf), 0 );
@@ -148,7 +143,7 @@ void main()
      *  Recv packet from server, then
      *  Response packet to client
      */
-    clientRecv = recv( clientSock, packetBuf, 100, 0 );
+    clientRecv = recv( clientSock, packetBuf, 100000, 0 );
     packetBuf[clientRecv] = '\0';
     printf( "Packet received: %s\n", packetBuf );
     serverSent = send( listenSock, packetBuf, strlen(packetBuf), 0 );

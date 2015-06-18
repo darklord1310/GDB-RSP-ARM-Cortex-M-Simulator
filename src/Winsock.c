@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <winsock2.h>
-// #include "ChkSumCal.h"
 
 #pragma comment(lib,<ws2_32.lib>)       //Winsock Library
 
 #define LOCAL_HOST_ADD  "127.0.0.1"
-#define DEFAULT_PORT    8080
+#define DEFAULT_PORT    2010
 
 void main()
 {
@@ -77,17 +76,17 @@ void main()
     /****************Send and receive data.****************/
     int bytesSent;
     int bytesRecv = SOCKET_ERROR;
-    char sendbuf[100] = "";
-    char recvbuf[100] = "";
+    char sendbuf[200] = "";
+    char recvbuf[200] = "";
 
     /*
      *  Recv packet
      *      ==>  + (ACK)
      */
     bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
+    // printf( "\nBytes Recv: %ld\n", bytesRecv );
+    // recvbuf[bytesRecv] = '\0';
+    // printf( "recvbuf: %s\n", recvbuf );
 
     /*
      *  Response packet
@@ -95,8 +94,8 @@ void main()
      */
     strcpy( sendbuf, "+" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
+    // printf( "\nBytes Sent: %ld\n", bytesSent );
+    // printf( "sendbuf: %s\n", sendbuf );
 
     /*
      *  Recv packet
@@ -109,374 +108,14 @@ void main()
 
     /*
      *  Response packet
-     *      ==>  $PacketSize=3fff;qXfer:memory-map:read+;qXfer:features:read+#f0
+     *      ==>  $qRelocInsn-#2b
      */
     // strcpy( sendbuf, "+$PacketSize=3fff;qXfer:memory-map:read+;qXfer:features:read-;QStartNoAckMode+#08" );
-    strcpy( sendbuf, "+$PacketSize=171;qXfer:memory-map:read+;qXfer:features:read+#24" );
-    // strcpy( sendbuf, "+$PacketSize=4000;multiprocess+#84" );
+    // strcpy( sendbuf, "+$PacketSize=171;qXfer:memory-map:read+;qXfer:features:read+#24" );
+    strcpy( sendbuf, "+$qRelocInsn-#2b" );
     bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
     printf( "sendbuf: %s\n", sendbuf );
-
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-
-    /*
-     *  Recv packet
-     *      ==>  $qTStatus#49
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  $T0#84
-     */
-    strcpy( sendbuf, "+$T0#84" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-
-    /*
-     *  Recv packet
-     *      ==>  $qTfV#81
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  $#00
-     */
-    strcpy( sendbuf, "+$#00" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-
-    /*
-     *  Recv packet
-     *      ==>  $?#3f
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $S05#b8
-     */
-    strcpy( sendbuf, "+$S05#b8" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $qfThreadInfo#bb
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $m01,02#5c
-     */
-    strcpy( sendbuf, "+$m01,02#5c" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $qAttached#8f
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $1#31
-     */
-    strcpy( sendbuf, "+$l#31" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $qsThreadInfo#c8
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $1#31
-     */
-    strcpy( sendbuf, "+$1#31" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $Hc-1#09
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $OK#9a
-     */
-    strcpy( sendbuf, "+$OK#9a" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $qC#b4
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $#00
-     */
-    strcpy( sendbuf, "+$#00" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    strcpy( sendbuf, "+" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $g#67
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $00000000000000000000000000000000000#90
-     */
-    strcpy( sendbuf, "+$00000000000000000000000000000000000#90" );
-    bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    // bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    // strcpy( sendbuf, "+" );
-    // bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
-    
-    /*
-     *  Recv packet
-     *      ==>  $pf#d6
-     */
-    // bytesRecv = recv( sock, recvbuf, 100, 0 );
-    // printf( "\nBytes Recv: %ld\n", bytesRecv );
-    // recvbuf[bytesRecv] = '\0';
-    // printf( "recvbuf: %s\n", recvbuf );
-    
-    /*
-     *  Response packet
-     *      ==>  $00000000000000000000000000000000000#90
-     */
-    // strcpy( sendbuf, "+$00#c0" );
-    // bytesSent = send( sock, sendbuf, strlen(sendbuf), 0 );
-    // printf( "\nBytes Sent: %ld\n", bytesSent );
-    // printf( "sendbuf: %s\n", sendbuf );
     
     /****************Close our socket entirely****************/
 	closesocket(sock);
