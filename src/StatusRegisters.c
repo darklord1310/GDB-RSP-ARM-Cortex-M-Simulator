@@ -1,5 +1,6 @@
 #include "StatusRegisters.h"
 #include <stdio.h>
+#include <assert.h>
 
 /*
   This function will initialize all the status register to 0
@@ -75,10 +76,20 @@ void setCarryFlag()
   StatusRegisters = StatusRegisters | 0x20000000;
 }
 
+void resetCarryFlag()
+{
+  StatusRegisters = StatusRegisters & 0xdfffffff;
+}
+
 void setNegativeFlag()
 {
   StatusRegisters = StatusRegisters | 0x80000000;
 
+}
+
+void resetNegativeFlag()
+{
+  StatusRegisters = StatusRegisters & 0x7fffffff;
 }
 
 void setZeroFlag()
@@ -87,10 +98,20 @@ void setZeroFlag()
 
 }
 
+void resetZeroFlag()
+{
+  StatusRegisters = StatusRegisters & 0xbfffffff;
+}
+
 void setOverflowFlag()
 {
-  StatusRegisters = StatusRegisters | 0x10000000;;
+  StatusRegisters = StatusRegisters | 0x10000000;
 
+}
+
+void resetOverflowFlag()
+{
+  StatusRegisters = StatusRegisters & 0xefffffff;
 }
 
 
@@ -98,17 +119,20 @@ void updateZeroFlag(uint32_t value)
 {
   if(value == 0)
     setZeroFlag();
-  
+  else
+    resetZeroFlag();
 }
 
 void updateNegativeFlag(uint32_t value)
 {
   if(value == 0xffffffff)
     setNegativeFlag();
-  
+  else
+    resetNegativeFlag();
 }
 
-void updateCarryFlag(uint32_t value1, uint32_t value2)
+
+void updateCarryFlagAddition(uint32_t value1, uint32_t value2)
 {
   int bit0 = 0, intermediateCarry = 0, i,adder;
   
@@ -124,6 +148,17 @@ void updateCarryFlag(uint32_t value1, uint32_t value2)
 
   if( intermediateCarry == 1)
     setCarryFlag();
+  else
+    resetCarryFlag();
+}
+
+
+void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2)
+{
+  if( value1 <= value2)
+    setCarryFlag();
+  else
+    resetCarryFlag();
 }
 
 

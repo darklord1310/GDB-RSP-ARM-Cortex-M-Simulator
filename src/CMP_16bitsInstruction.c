@@ -23,15 +23,15 @@ void CMPImmediate16bitsT1(uint32_t instruction)
   uint32_t Rn = getBits(instruction, 26, 24);
   
   //normal subtracting won't work
-  //uint32_t temp = coreReg->reg[Rn].data - imm8;
-  printf("imm8 : %x\n", imm8);
-  printf("imm8 : %x\n", ~imm8);
-  imm8 = ~imm8 + 0x00000001;                           //2's complement
-  printf("imm8 : %x\n", imm8);
-  uint32_t temp = coreReg->reg[Rn].data + imm8;
+  uint32_t temp = coreReg->reg[Rn].data - imm8;
+  //printf("imm8 : %x\n", imm8);
+  //printf("imm8 : %x\n", ~imm8);
+  //imm8 = ~imm8 + 0x00000001;                           //2's complement
+  //printf("imm8 : %x\n", imm8);
+  //uint32_t temp = coreReg->reg[Rn].data + imm8;
   
   updateZeroFlag(temp);
-  updateCarryFlag(temp , imm8);
+  updateCarryFlagSubtraction(temp , imm8);
   updateNegativeFlag(temp);
 }
 

@@ -16,11 +16,16 @@ void setOverflowFlag();
 void setZeroFlag();
 void setNegativeFlag();
 void setCarryFlag();
+void resetOverflowFlag();
+void resetCarryFlag();
+void resetNegativeFlag();
+void resetZeroFlag();
 void initStatusRegister();
-void updateOverflowFlag();
-void updateZeroFlag();
-void updateNegativeFlag();
-void updateCarryFlag();
+void updateOverflowFlag(uint32_t value1, uint32_t value2, uint32_t sum);
+void updateZeroFlag(uint32_t value);
+void updateNegativeFlag(uint32_t value);
+void updateCarryFlagAddition(uint32_t value1, uint32_t value2);
+void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2);
 
 
 #endif // StatusRegisters_H
