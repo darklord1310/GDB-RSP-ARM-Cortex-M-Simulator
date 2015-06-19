@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc Winsock.c -o Winsocks.exe -lws2_32
