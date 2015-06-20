@@ -125,13 +125,16 @@ void updateZeroFlag(uint32_t value)
 
 void updateNegativeFlag(uint32_t value)
 {
-  if(value == 0xffffffff)
+  if( getBits(value,31,31) == 1)
     setNegativeFlag();
   else
     resetNegativeFlag();
 }
 
+/* This will update the carry flag based on the addition result
+   of value1 and value2
 
+*/
 void updateCarryFlagAddition(uint32_t value1, uint32_t value2)
 {
   int bit0 = 0, intermediateCarry = 0, i,adder;
@@ -153,9 +156,13 @@ void updateCarryFlagAddition(uint32_t value1, uint32_t value2)
 }
 
 
+/* This will update the carry flag based on the subtraction result
+   of value1 and value2
+
+*/
 void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2)
 {
-  if( value1 <= value2)
+  if( value1 >= value2)
     setCarryFlag();
   else
     resetCarryFlag();
@@ -173,9 +180,27 @@ void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2)
 
    1000 + 1000 = 0000 (overflow flag is turned on)
 */
-void updateOverflowFlag(uint32_t value1, uint32_t value2, uint32_t sum)
+void updateOverflowFlag(uint32_t value1, uint32_t value2)
 {
-
-  if( getBits(value1,31,31) == 1 && getBits(value2,31,31) == 1 && getBits(sum,31,31) == 0 )
+  int carryFromBit30 = getCarry(value1,value2,30);
+  int carryFromBit31 = getCarry(value1,value2,31);
+  
+  if(   ( carryFromBit30 == 1 && carryFromBit31 == 0) || (carryFromBit30 == 0 && carryFromBit31 == 1)   )
     setOverflowFlag();
+  else
+    resetOverflowFlag();
 }
+
+
+/*  This will get the carry from the addition of the two value  
+ *
+ *  Return: the carrybit from the result of addition
+ */
+int getCarry(uint32_t value1, uint32_t value2, int bitSize)
+{
+  if( getBits(value1,bitSize,bitSize) == 1 && getBits(value2,bitSize,bitSize) == 1 )
+    return 1;
+  else 
+    return 0;
+}
+

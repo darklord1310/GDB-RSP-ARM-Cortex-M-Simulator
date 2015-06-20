@@ -2,7 +2,6 @@
 #define Thumb16bitsTable_H
 
 #include <stdint.h>
-#include "MOV_16bitsInstruction.h"
 
 
 typedef struct Thumb16bitsTableEntry Thumb16bitsTableEntry;
@@ -11,7 +10,6 @@ typedef struct Thumb16bitsTableEntry Thumb16bitsTableEntry;
 struct Thumb16bitsTableEntry{
   
     void (*execute)(uint32_t instruction);
-  
   
 };
 

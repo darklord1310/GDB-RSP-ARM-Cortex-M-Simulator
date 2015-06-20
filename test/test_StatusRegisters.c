@@ -106,9 +106,9 @@ void test_updateZeroFlag_given_value_0_should_set_zero_flag()
 }
 
 
-void test_updateNegativeFlag_given_value_negative_1_should_set_negative_flag()
+void test_updateNegativeFlag_given_value_negative_18000_should_set_negative_flag()
 {  
-  uint32_t value = -1;
+  uint32_t value = -18000;
   updateNegativeFlag(value);
   
   TEST_ASSERT_EQUAL( 1 , isNegative() );
@@ -136,38 +136,44 @@ void test_updateCarryFlagAddition_given_value1_0x0fffffff_and_value2_0x01_should
 }
 
 
-
-void test_updateCarryFlagSubtraction_given_value1_0x0fffffff_and_value2_0x01_should_not_set_carry_flag()
+void test_updateCarryFlagSubtraction_given_value1_0x0fffffff_and_value2_0x01_should_set_carry_flag()
 {
   
   uint32_t value1 = 0x0fffffff;
   uint32_t value2 = 0x01;
   updateCarryFlagSubtraction(value1,value2);
   
-  TEST_ASSERT_EQUAL( 0 , isCarry() );
+  TEST_ASSERT_EQUAL( 1 , isCarry() );
 }
 
 
-void test_updateCarryFlagSubtraction_given_value1_0x01_and_value2_0x0fffffff_should_set_carry_flag()
+void test_updateCarryFlagSubtraction_given_value1_0x01_and_value2_0x0fffffff_should_not_set_carry_flag()
 {
   
   uint32_t value1 = 0x01;
   uint32_t value2 = 0x0fffffff;
   updateCarryFlagSubtraction(value1,value2);
   
-  TEST_ASSERT_EQUAL( 1 , isCarry() );
+  TEST_ASSERT_EQUAL( 0 , isCarry() );
 }
 
 
-void test_updateOverflowFlag_given_value1_0x10000000_and_value2_0x10000000_sum_0x00_should_set_overflow_flag()
+void test_updateOverflowFlag_given_value1_0x10000000_and_value2_0x10000000_should_set_overflow_flag()
 {
-  
   uint32_t value1 = 0x80000000;
   uint32_t value2 = 0x80000000;
-  uint32_t sum = 0x0;
-  updateOverflowFlag(value1,value2,sum);
-  
+
+  updateOverflowFlag(value1,value2);
+
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
 }
 
+void test_updateOverflowFlag_given_value1_0x40000000_and_value2_0x40000000_should_set_overflow_flag()
+{
+  uint32_t value1 = 0x40000000;
+  uint32_t value2 = 0x40000000;
 
+  updateOverflowFlag(value1,value2);
+
+  TEST_ASSERT_EQUAL( 1 , isOverflow() );
+}

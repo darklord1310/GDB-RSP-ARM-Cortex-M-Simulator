@@ -61,11 +61,3 @@ void test_ModifyControlLessThan4_given_0x12_should_return_0x00120012()
   
 }
 
-
-void test_ModifyImmediateConstant_given_modifyControl_is_00000_input_is_0x1234_should_return_0x1234(void)
-{
-  unsigned int input_value = 0x1234;
-  unsigned int result = ModifyImmediateConstant(0b0000, input_value);
-  
-  TEST_ASSERT_EQUAL(0x1234, result);
-}
