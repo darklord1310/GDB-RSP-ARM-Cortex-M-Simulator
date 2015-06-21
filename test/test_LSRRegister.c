@@ -24,7 +24,7 @@ void test_LSRRegisterToRegister16bitsT1_given_0x40d1_should_shift_right_r1_19_ti
   
   coreReg->reg[1].data = 0xffffffff;                          //set R1 to be 0xffffffff
   coreReg->reg[2].data = 0x00000113;                          //set R2 to be 0x00000113
-  LSRRegisterToRegister16bitsT1(instruction);
+  LSRRegisterToRegisterT1(instruction);
           
   TEST_ASSERT_EQUAL(0x00000113, coreReg->reg[2].data);    
   TEST_ASSERT_EQUAL(0x00001fff, coreReg->reg[1].data);        //after shift right 19 times, should get 0x00001fff
