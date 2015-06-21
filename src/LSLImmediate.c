@@ -24,8 +24,8 @@ where:
 */
 void LSLImmediateT1(uint32_t instruction)
 {
-	uint32_t imm5 = getBits(instruction, 26 , 22);
-	uint32_t Rm = getBits(instruction, 21, 19);
+  uint32_t imm5 = getBits(instruction, 26 , 22);
+  uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
 	
   if(imm5 == 0)
@@ -39,7 +39,14 @@ void LSLImmediateT1(uint32_t instruction)
   }
 }
 
+/*  This function will perform the logical shift left for immediate
+  
+    Input:  immediate       the immediate, also indicate how many times to shift
+            Rm              source register
+            Rd              destination register
+            S               indicator for affecting the flag or not
 
+*/
 void executeLSLImmediate(uint32_t immediate, uint32_t Rm, uint32_t Rd, uint32_t S)
 {
   int lastBitShifted;

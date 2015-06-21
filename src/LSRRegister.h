@@ -6,6 +6,6 @@
 #include "StatusRegisters.h"
 #include <stdint.h>
 
-void LSRRegisterToRegister16bitsT1(uint32_t instruction);
+void LSRRegisterToRegisterT1(uint32_t instruction);
 
 #endif // LSRRegister_H

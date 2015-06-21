@@ -28,8 +28,8 @@
 */
 void MOVRegisterToRegisterT1(uint32_t instruction)
 {
-	uint32_t Rm = getBits(instruction, 22, 19);
-	uint32_t Rd = getBits(instruction, 18, 16);
+  uint32_t Rm = getBits(instruction, 22, 19);
+  uint32_t Rd = getBits(instruction, 18, 16);
   uint32_t D = getBits(instruction, 23, 23);
 	
   Rd = ( D << 3 ) | Rd;     // this is to merge the D with Rd to make Rd becomes 4 bits
@@ -76,6 +76,13 @@ void MOVRegisterToRegisterT2(uint32_t instruction)
 }
 
 
+/*  This function will perform the move immediate from Rm to Rd
+  
+    Input:  Rm              source register
+            Rd              destination register
+            S               indicator for affecting the flag or not
+
+*/
 void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
   coreReg->reg[Rd].data = coreReg->reg[Rm].data;

@@ -24,10 +24,10 @@ where:
 */
 void ASRImmediateT1(uint32_t instruction)
 {
-	uint32_t imm5 = getBits(instruction, 26 , 22);
-	uint32_t Rm = getBits(instruction, 21, 19);
+  uint32_t imm5 = getBits(instruction, 26 , 22);
+  uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
-	uint32_t MSBofRm = getBits( coreReg->reg[Rm].data, 31,31 );
+  uint32_t MSBofRm = getBits( coreReg->reg[Rm].data, 31,31 );
   
   //if(inITblock)
     //executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
@@ -35,7 +35,14 @@ void ASRImmediateT1(uint32_t instruction)
     executeASRImmediate(imm5, Rm, Rd, 1, MSBofRm);
 }
 
-/*
+
+/*  This function will perform the arithmetic shift right for immediate
+  
+    Input:  imm5        the immediate, also indicate how many times to shift
+            Rm          source register
+            Rd          destination register
+            StatusBit   indicator for affecting the flag or not
+            MSBofRm     MSB of source register
 
 */
 void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t StatusBit, uint32_t MSBofRm)

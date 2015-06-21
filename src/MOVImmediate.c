@@ -24,8 +24,8 @@ where:
 */
 void MOVImmediateT1(uint32_t instruction)
 {
-	uint32_t imm8 = getBits(instruction, 23, 16);
-	uint32_t destinationRegister = getBits(instruction, 26, 24);
+  uint32_t imm8 = getBits(instruction, 23, 16);
+  uint32_t destinationRegister = getBits(instruction, 26, 24);
 	
   //if(inITBlock)
     //executeMOVImmediate(uint32_t immediate, uint32_t Rd, 0);
@@ -118,7 +118,13 @@ void MOVImmediateT3(uint32_t instruction)
   executeMOVImmediate(constant, Rd, 0);
 }
 
+/*  This function will perform the move immediate
+  
+    Input:  immediate       the immediate going to move into Rd
+            Rd              destination register
+            S               indicator for affecting the flag or not
 
+*/
 void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
 {
   coreReg->reg[Rd].data = immediate;                              //move immediate into destination register

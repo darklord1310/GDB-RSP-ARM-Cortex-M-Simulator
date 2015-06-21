@@ -19,7 +19,7 @@
 */
 void CMPImmediateT1(uint32_t instruction)
 {
-	uint32_t imm8 = getBits(instruction, 23 , 16);
+  uint32_t imm8 = getBits(instruction, 23 , 16);
   uint32_t Rn = getBits(instruction, 26, 24);
 
   executeCMP(imm8, Rn );
@@ -44,7 +44,7 @@ void CMPImmediateT1(uint32_t instruction)
 */
 void CMPImmediateT2(uint32_t instruction)
 {
-	uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t imm8 = getBits(instruction, 7, 0);
   uint32_t imm3 = getBits(instruction, 14, 12);
   uint32_t i = getBits(instruction, 26, 26);
   uint32_t Rn = getBits(instruction, 19, 16);

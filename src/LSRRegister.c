@@ -20,9 +20,9 @@ where:
           
           <Rm>          Specifies the register whose bottom byte contains the amount to shift by.
 */
-void LSRRegisterToRegister16bitsT1(uint32_t instruction)
+void LSRRegisterToRegisterT1(uint32_t instruction)
 {
-	uint32_t Rm = getBits(instruction, 21, 19);
+  uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rdn = getBits(instruction, 18, 16);
 	
   unsigned int timesToShift = getBits( coreReg->reg[Rm].data ,7, 0);    //get the lowest byte from the Rm register
