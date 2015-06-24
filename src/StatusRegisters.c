@@ -170,37 +170,47 @@ void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2)
 
 
 /*
-1. If the sum of two numbers with the sign bits off yields a result number
-   with the sign bit on, the "overflow" flag is turned on.
+Overflow Rule for addition
 
-   0100 + 0100 = 1000 (overflow flag is turned on)
+    Overflow occurs if
 
-2. If the sum of two numbers with the sign bits on yields a result number
-   with the sign bit off, the "overflow" flag is turned on.
-
-   1000 + 1000 = 0000 (overflow flag is turned on)
+    (+A) + (+B) = −C
+    (−A) + (−B) = +C
+    
 */
-void updateOverflowFlag(uint32_t value1, uint32_t value2)
+void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t result)
 {
-  int carryFromBit30 = getCarry(value1,value2,30);
-  int carryFromBit31 = getCarry(value1,value2,31);
+  int signForValue1 = getBits(value1,31,31);
+  int signForValue2 = getBits(value2,31,31);
+  int signForResult = getBits(result,31,31);
   
-  if(   ( carryFromBit30 == 1 && carryFromBit31 == 0) || (carryFromBit30 == 0 && carryFromBit31 == 1)   )
+  if(   ( signForValue1 == 0 && signForValue2 == 0 && signForResult == 1) || ( signForValue1 == 1 && signForValue2 == 1 && signForResult == 0)   )
+    setOverflowFlag();
+  else
+    resetOverflowFlag();
+}
+
+/*
+Overflow Rule for subtraction
+
+    Overflow occurs if
+
+    (+A) − (−B) = −C
+    (−A) − (+B) = +C
+*/
+void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t result)
+{
+  int signForValue1 = getBits(value1,31,31);
+  int signForValue2 = getBits(value2,31,31);
+  int signForResult = getBits(result,31,31);
+  
+  if(   ( signForValue1 == 0 && signForValue2 == 1 && signForResult == 1) || ( signForValue1 == 1 && signForValue2 == 0 && signForResult == 0)   )
     setOverflowFlag();
   else
     resetOverflowFlag();
 }
 
 
-/*  This will get the carry from the addition of the two value  
- *
- *  Return: the carrybit from the result of addition
- */
-int getCarry(uint32_t value1, uint32_t value2, int bitSize)
-{
-  if( getBits(value1,bitSize,bitSize) == 1 && getBits(value2,bitSize,bitSize) == 1 )
-    return 1;
-  else 
-    return 0;
-}
+
+
 

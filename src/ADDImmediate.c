@@ -108,7 +108,7 @@ void executeADDImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
   {
     updateZeroFlag(coreReg->reg[Rd].data);
     updateNegativeFlag(coreReg->reg[Rd].data);
-    updateOverflowFlag(coreReg->reg[Rn].data, immediate);
+    updateOverflowFlagAddition(coreReg->reg[Rn].data, immediate, temp);
     updateCarryFlagAddition(coreReg->reg[Rn].data, immediate);
   }
 }

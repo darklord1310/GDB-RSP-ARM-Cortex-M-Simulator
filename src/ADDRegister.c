@@ -116,7 +116,7 @@ void executeADDRegister(uint32_t Rn, uint32_t Rd, uint32_t Rm, uint32_t S)
   {
     updateZeroFlag(coreReg->reg[Rd].data);
     updateNegativeFlag(coreReg->reg[Rd].data);
-    updateOverflowFlag(coreReg->reg[Rn].data, coreReg->reg[Rm].data);
+    updateOverflowFlagAddition(coreReg->reg[Rn].data, coreReg->reg[Rm].data, coreReg->reg[Rd].data);
     updateCarryFlagAddition(coreReg->reg[Rn].data, coreReg->reg[Rm].data);
   }
 }

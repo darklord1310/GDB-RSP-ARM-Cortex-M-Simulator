@@ -158,22 +158,49 @@ void test_updateCarryFlagSubtraction_given_value1_0x01_and_value2_0x0fffffff_sho
 }
 
 
-void test_updateOverflowFlag_given_value1_0x10000000_and_value2_0x10000000_should_set_overflow_flag()
+void test_updateOverflowFlagAddition_given_value1_0x80000000_and_value2_0x80000000_should_set_overflow_flag()
 {
   uint32_t value1 = 0x80000000;
   uint32_t value2 = 0x80000000;
+  uint32_t sum = value1 + value2;
 
-  updateOverflowFlag(value1,value2);
+  updateOverflowFlagAddition(value1,value2,sum);
 
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
 }
 
-void test_updateOverflowFlag_given_value1_0x40000000_and_value2_0x40000000_should_set_overflow_flag()
+
+void test_updateOverflowFlagAddition_given_value1_0x40000000_and_value2_0x40000000_should_set_overflow_flag()
 {
   uint32_t value1 = 0x40000000;
   uint32_t value2 = 0x40000000;
+  uint32_t sum = value1 + value2;
 
-  updateOverflowFlag(value1,value2);
+  updateOverflowFlagAddition(value1,value2,sum);
+
+  TEST_ASSERT_EQUAL( 1 , isOverflow() );
+}
+
+
+void test_updateOverflowFlagSubtraction_given_value1_0x40000000_and_value2_0x80000000_should_set_overflow_flag()
+{
+  uint32_t value1 = 0x40000000;
+  uint32_t value2 = 0x80000000;
+  uint32_t sum = value1 - value2;
+
+  updateOverflowFlagSubtraction(value1,value2,sum);
+
+  TEST_ASSERT_EQUAL( 1 , isOverflow() );
+}
+
+
+void test_updateOverflowFlagSubtraction_given_value1_0x80000000_and_value2_0x40000000_should_set_overflow_flag()
+{
+  uint32_t value1 = 0x80000000;
+  uint32_t value2 = 0x40000000;
+  uint32_t sum = value1 - value2;
+
+  updateOverflowFlagSubtraction(value1,value2,sum);
 
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
 }

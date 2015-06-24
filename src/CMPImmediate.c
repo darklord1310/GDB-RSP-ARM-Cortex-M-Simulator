@@ -72,7 +72,8 @@ void executeCMP(uint32_t value, uint32_t Rn )
   updateZeroFlag(temp);
   updateCarryFlagSubtraction(coreReg->reg[Rn].data , value);
   updateNegativeFlag(temp);
-  updateOverflowFlag(coreReg->reg[Rn].data, value);
+  updateOverflowFlagSubtraction(coreReg->reg[Rn].data, value, temp);
+
 }
 
 
