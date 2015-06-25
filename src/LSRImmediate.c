@@ -29,9 +29,9 @@ void LSRImmediateT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
 	
-  //if(inITblock)
-    //executeLSRImmediate(imm5, Rm, Rd, 0);
-  //else
+  if(inITBlock())
+    executeLSRImmediate(imm5, Rm, Rd, 0);
+  else
     executeLSRImmediate(imm5, Rm, Rd, 1);
 }
 

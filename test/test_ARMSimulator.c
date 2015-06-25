@@ -21,6 +21,9 @@
 
 void setUp(void)
 {
+  coreReg = initCoreRegister();
+  initStatusRegister();
+  initThumb16bitsOpcode00XXX();
 }
 
 void tearDown(void)
@@ -55,8 +58,17 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 
 void test_ARMSimulator()
 {
-  uint32_t instruction = 0x21FF0000;
-  ARMSimulator(instruction);
+  uint32_t instruction1 = 0x23FF0000;
+  uint32_t instruction2 = 0x24880000;
+  uint32_t instruction3 = 0x1b1a0000;
+  uint32_t instruction4 = 0x44140000;
+
+  
+  ARMSimulator(instruction1);
+  ARMSimulator(instruction2);
+  ARMSimulator(instruction3);
+  ARMSimulator(instruction4);
+
   printRegister();
 }
 

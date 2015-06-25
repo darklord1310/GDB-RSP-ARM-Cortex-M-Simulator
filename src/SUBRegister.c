@@ -41,9 +41,9 @@ void SUBRegisterToRegisterT1(uint32_t instruction)
   assert(Rn <= 0b111);
   assert(Rd <= 0b111);
   
- //if(inITblock)
-     //executeLSLImmediate(imm5, Rm, Rd, 0);
- //else
+ if(inITBlock())
+    executeSUBRegister(Rn, Rd, Rm, 0);
+ else
     executeSUBRegister(Rn, Rd, Rm, 1);
 }
 

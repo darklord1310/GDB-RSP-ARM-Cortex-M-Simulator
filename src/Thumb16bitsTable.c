@@ -1,6 +1,19 @@
 #include "Thumb16bitsTable.h"
 
-void initThumb16bitsTable()
+/*
+000xx Logical Shift Left LSL (immediate) on page A6-134
+001xx Logical Shift Right LSR (immediate) on page A6-138
+010xx Arithmetic Shift Right ASR (immediate) on page A6-36
+01100 Add register ADD (register) on page A6-24
+01101 Subtract register SUB (register) on page A6-246
+01110 Add 3-bit immediate ADD (immediate) on page A6-22
+01111 Subtract 3-bit immediate SUB (immediate) on page A6-244
+100xx Move MOV (immediate) on page A6-148
+101xx Compare CMP (immediate) on page A6-62
+110xx Add 8-bit immediate ADD (immediate) on page A6-22
+111xx Subtract 8-bit immediate SUB (immediate) on page A6-244
+*/
+void initThumb16bitsOpcode00XXX()
 {
   Thumb16Opcode00XXXX[0b00000] = LSLImmediateT1;
   Thumb16Opcode00XXXX[0b00001] = LSLImmediateT1;

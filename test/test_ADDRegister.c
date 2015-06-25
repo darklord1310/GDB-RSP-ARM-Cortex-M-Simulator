@@ -30,13 +30,13 @@ void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_3000_r4_is_2000_should_
   ADDRegisterToRegisterT1(instruction);
   
   TEST_ASSERT_EQUAL(0x1388, coreReg->reg[2].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
 //testing flag change
 //test ADDS R2, R3, R4 given R3 = 0xffffffff and R4 = 0x80000000
-void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_0xffffffff_r4_is_0xffffffff_should_get_0x1388_at_r2_OV_flag_set_C_flag_set(void)
+void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_0xffffffff_r4_is_0x80000000_should_get_0x7fffffff_at_r2_OV_flag_set_C_flag_set(void)
 {
   uint32_t instruction = 0x191a0000;
   
@@ -53,7 +53,7 @@ void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_0xffffffff_r4_is_0xffff
 
 
 //test ADD R3, R4 given R3 = 0xffffffff and R4 = 0x80000000
-void test_ADDRegisterToRegisterT2_given_0x4423_and_r3_is_0xffffffff_r4_is_0xffffffff_should_get_0x7fffffff_at_r3_status_flag_unchanged(void)
+void test_ADDRegisterToRegisterT2_given_0x4423_and_r3_is_0xffffffff_r4_is_0x80000000_should_get_0x7fffffff_at_r3_status_flag_unchanged(void)
 {
   uint32_t instruction = 0x44230000;
   
@@ -62,7 +62,7 @@ void test_ADDRegisterToRegisterT2_given_0x4423_and_r3_is_0xffffffff_r4_is_0xffff
   ADDRegisterToRegisterT2(instruction);
   
   TEST_ASSERT_EQUAL(0x7fffffff, coreReg->reg[3].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -77,6 +77,21 @@ void test_ADDRegisterToRegisterT2_given_0x44c2_and_r8_is_0xf_r10_is_0x80_should_
   ADDRegisterToRegisterT2(instruction);
   
   TEST_ASSERT_EQUAL(0x8f, coreReg->reg[10].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
+  destroyCoreRegister(coreReg);
+}
+
+
+//test ADD R4, R2 given R2 = 0x77 and R4 = 0x88
+void test_ADDRegisterToRegisterT2_given_0x4414_and_r2_is_0x77_r4_is_0x88_should_get_0xff_at_r4_status_flag_unchanged(void)
+{
+  uint32_t instruction = 0x44140000;
+  
+  coreReg->reg[2].data = 0x77;
+  coreReg->reg[4].data = 0x88;
+  ADDRegisterToRegisterT2(instruction);
+  
+  TEST_ASSERT_EQUAL(0xff, coreReg->reg[4].data);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }

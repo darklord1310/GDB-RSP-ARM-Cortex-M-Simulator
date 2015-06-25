@@ -5,9 +5,8 @@
 /*
   This function will initialize all the status register to 0
   
-  31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
- |N |Z |C |V |                           Reserved                                      |
-  
+  31 30 29 28 27 26  25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+ |N |Z |C |V |Q|IT[1:0]|T|  Reserved  |  GE[3:0]  |      IT[7:2]    |      Reserved     |                             
   
   [31]	N	
         Negative or less than flag:
@@ -29,15 +28,30 @@
                         1 = overflow
                         0 = no overflow.
                         
-  [27:0]	-	Reserved ( The bits are defined as UNK/SBZP )
-          
+  [24]  T     indicator to show whether in ARM/Thumb state, 1 for Thumb, 0 for ARM
+  
+  IT[7:5]     encodes the base condition (that is, the top 3 bits of the condition specified by the IT instruction) for
+              the current IT block, if any. It contains 0b000 when no IT block is active.
+              
+  IT[4:0]     encodes the number of instructions that are due to be conditionally executed, and whether the
+              condition for each is the base condition code or the inverse of the base condition code.
+              It contains 0b00000 when no IT block is active.
+
 */
 void initStatusRegister()
 {
-  StatusRegisters = 0x0000;
-    
+  StatusRegisters = 0x01000000;              //the T bits is set to 1 because we are always in Thumb state
+  
 }
 
+int inITBlock()
+{
+  uint32_t bit14to12 = getBits(StatusRegisters, 14,12);
+  if(bit14to12 == 0)            //outside IT block
+    return 0;
+  else
+    return 1;
+}
 
 bool isNegative()
 {

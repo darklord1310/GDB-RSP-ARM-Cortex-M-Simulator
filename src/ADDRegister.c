@@ -40,9 +40,9 @@ void ADDRegisterToRegisterT1(uint32_t instruction)
   assert(Rn <= 0b111);
   assert(Rd <= 0b111);
   
- //if(inITblock)
-     //executeLSLImmediate(imm5, Rm, Rd, 0);
- //else
+ if(inITBlock())
+    executeADDRegister(Rn, Rd, Rm, 0);
+ else
     executeADDRegister(Rn, Rd, Rm, 1);
 }
 
@@ -91,12 +91,8 @@ void ADDRegisterToRegisterT2(uint32_t instruction)
   if(Rdn == 0b1101 || Rm == 0b1101)
     ADDSPRegisterT1(instruction);
   else
-  {
-    //if(inITblock)
-      //executeLSLImmediate(imm5, Rm, Rd, 0);
-    //else
-      executeADDRegister(Rdn, Rdn, Rm, 0);
-  }
+    executeADDRegister(Rdn, Rdn, Rm, 0);
+  
 }
 
 

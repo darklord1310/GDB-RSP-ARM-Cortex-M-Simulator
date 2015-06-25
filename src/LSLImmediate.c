@@ -32,9 +32,9 @@ void LSLImmediateT1(uint32_t instruction)
     MOVRegisterToRegisterT2(instruction);
   else
   {
-    //if(inITblock)
-      //executeLSLImmediate(imm5, Rm, Rd, 0);
-    //else
+    if(inITBlock())
+      executeLSLImmediate(imm5, Rm, Rd, 0);
+    else
       executeLSLImmediate(imm5, Rm, Rd, 1);
   }
 }

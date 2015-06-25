@@ -28,7 +28,7 @@ void test_LSLImmediateT1_given_0x008A_should_shift_left_r1_2_times_and_write_to_
   
   TEST_ASSERT_EQUAL(0x01, coreReg->reg[1].data);        
   TEST_ASSERT_EQUAL(0x04, coreReg->reg[2].data);        //after shift 2 times, should get 0x04
-  TEST_ASSERT_EQUAL(0, StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000, StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -42,7 +42,7 @@ void test_LSLImmediateT1_given_0x0009_should_shift_left_r1_2_times_and_write_to_
   LSLImmediateT1(instruction);
          
   TEST_ASSERT_EQUAL(0x01, coreReg->reg[1].data);        //will execute MOVRegisterT2
-  TEST_ASSERT_EQUAL(0, StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000, StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 

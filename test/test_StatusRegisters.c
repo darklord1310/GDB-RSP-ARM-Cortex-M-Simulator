@@ -7,59 +7,59 @@
 
 void setUp(void)
 {
-  initStatusRegister();                          //initialize all to 0
+  initStatusRegister();                          //initialize the status register
 }
 
 void tearDown(void)
 {
 }
 
-void test_initStatusRegister_should_set_StatusRegisters_to_be_0(void)
+void test_initStatusRegister_should_set_StatusRegisters_to_be_0x01000000(void)
 {
   initStatusRegister();
   
-  TEST_ASSERT_EQUAL( 0 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x01000000 , StatusRegisters);
 }
 
 
-void test_setNegativeFlag_StatusRegisters_should_get_0x80000000(void)
+void test_setNegativeFlag_StatusRegisters_should_get_0x81000000(void)
 {  
   setNegativeFlag();                                //set NEGATIVE flag
   
-  TEST_ASSERT_EQUAL( 0x80000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x81000000 , StatusRegisters);
   TEST_ASSERT_EQUAL( 1 , isNegative() );
 
 }
 
 
 
-void test_setCarryFlag_StatusRegisters_should_get_0x20000000(void)
+void test_setCarryFlag_StatusRegisters_should_get_0x21000000(void)
 {
   setCarryFlag();                                //set CARRY flag
   
-  TEST_ASSERT_EQUAL( 0x20000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x21000000 , StatusRegisters);
   TEST_ASSERT_EQUAL( 1 , isCarry() );
 
 }
 
 
 
-void test_setOverflowFlag_StatusRegisters_should_get_0x10000000(void)
+void test_setOverflowFlag_StatusRegisters_should_get_0x11000000(void)
 {
   setOverflowFlag();                                //set OVERFLOW flag
   
-  TEST_ASSERT_EQUAL( 0x10000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x11000000 , StatusRegisters);
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
 
 }
 
 
 
-void test_setZeroFlag_StatusRegisters_should_get_0x40000000(void)
+void test_setZeroFlag_StatusRegisters_should_get_0x41000000(void)
 {
   setZeroFlag();                                //set ZERO flag
   
-  TEST_ASSERT_EQUAL( 0x40000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x41000000 , StatusRegisters);
   TEST_ASSERT_EQUAL( 1 , isZero() );
 
 }
@@ -203,4 +203,20 @@ void test_updateOverflowFlagSubtraction_given_value1_0x80000000_and_value2_0x400
   updateOverflowFlagSubtraction(value1,value2,sum);
 
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
+}
+
+void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
+{
+  StatusRegisters = 0x05001800;
+  int result = inITBlock();
+  
+  TEST_ASSERT_EQUAL(1, result);
+}
+
+void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
+{
+  StatusRegisters = 0xa1000000;
+  int result = inITBlock();
+  
+  TEST_ASSERT_EQUAL(0, result);
 }

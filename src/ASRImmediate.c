@@ -29,9 +29,9 @@ void ASRImmediateT1(uint32_t instruction)
   uint32_t Rd = getBits(instruction, 18, 16);
   uint32_t MSBofRm = getBits( coreReg->reg[Rm].data, 31,31 );
   
-  //if(inITblock)
-    //executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
-  //else
+  if(inITBlock())
+    executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
+  else
     executeASRImmediate(imm5, Rm, Rd, 1, MSBofRm);
 }
 

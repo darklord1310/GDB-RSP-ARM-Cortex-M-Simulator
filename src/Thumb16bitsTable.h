@@ -16,7 +16,7 @@
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
 
 
-void initThumb16bitsTable();
+void initThumb16bitsOpcode00XXX();
 
 
 #endif // Thumb16bitsTable_H

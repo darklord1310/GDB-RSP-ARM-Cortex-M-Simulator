@@ -28,7 +28,7 @@ void test_ADDImmediateT1_given_0x1dda_and_r3_is_0x01_should_get_0x08_at_r2_statu
   ADDImmediateT1(instruction);
   
   TEST_ASSERT_EQUAL(0x08, coreReg->reg[2].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -42,7 +42,7 @@ void test_ADDImmediateT1_given_0x1dda_and_r3_is_3000_should_get_0x07_at_r2_statu
   ADDImmediateT1(instruction);
   
   TEST_ASSERT_EQUAL(0xbbf, coreReg->reg[2].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -55,7 +55,7 @@ void test_ADDImmediateT2_given_0x3308_and_r3_is_3000_should_get_0xbc0_at_r3_stat
   ADDImmediateT2(instruction);
   
   TEST_ASSERT_EQUAL(0xbc0, coreReg->reg[3].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -69,7 +69,7 @@ void test_ADDImmediateT2_given_0x3300_and_r3_is_3000_should_get_3000_at_r3_statu
   ADDImmediateT2(instruction);
   
   TEST_ASSERT_EQUAL(3000, coreReg->reg[3].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -83,6 +83,6 @@ void test_ADDImmediateT2_given_0x33ff_and_r3_is_3000_should_get_0xbc0_at_r3_stat
   ADDImmediateT2(instruction);
   
   TEST_ASSERT_EQUAL(0xcb7, coreReg->reg[3].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }

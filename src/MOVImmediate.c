@@ -27,9 +27,9 @@ void MOVImmediateT1(uint32_t instruction)
   uint32_t imm8 = getBits(instruction, 23, 16);
   uint32_t destinationRegister = getBits(instruction, 26, 24);
 	
-  //if(inITBlock)
-    //executeMOVImmediate(uint32_t immediate, uint32_t Rd, 0);
-  //else
+  if(inITBlock())
+    executeMOVImmediate(imm8, destinationRegister, 0);
+  else
     executeMOVImmediate(imm8, destinationRegister, 1);
 }
 
@@ -117,6 +117,7 @@ void MOVImmediateT3(uint32_t instruction)
  
   executeMOVImmediate(constant, Rd, 0);
 }
+
 
 /*  This function will perform the move immediate
   

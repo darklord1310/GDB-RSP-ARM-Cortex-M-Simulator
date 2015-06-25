@@ -38,9 +38,9 @@ void SUBImmediateT1(uint32_t instruction)
   assert(Rn <= 0b111);
   assert(Rd <= 0b111);
 
-  //if(inITblock)
-     //executeLSLImmediate(imm5, Rm, Rd, 0);
- //else
+  if(inITBlock())
+    executeSUBImmediate(Rn, Rd, imm3, 0);
+ else
     executeSUBImmediate(Rn, Rd, imm3, 1);
   
 }
@@ -83,9 +83,9 @@ void SUBImmediateT2(uint32_t instruction)
   assert(Rdn <= 0b111);
 
 
-  //if(inITblock)
-    //executeADDImmediate(Rdn, Rdn, imm8, 0);
- //else
+  if(inITBlock())
+    executeSUBImmediate(Rdn, Rdn, imm8, 0);
+ else
     executeSUBImmediate(Rdn, Rdn, imm8, 1);
   
 }

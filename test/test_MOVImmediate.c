@@ -27,7 +27,7 @@ void test_MOVImmediateT1_given_instruction_0x21FF0000_should_move_0xFF_into_R1_a
   MOVImmediateT1(instruction);
   
   TEST_ASSERT_EQUAL(0xff, coreReg->reg[1].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -40,7 +40,7 @@ void test_MOVImmediateT1_given_instruction_0x27130000_should_move_0x13_into_R7_a
   MOVImmediateT1(instruction);
   
   TEST_ASSERT_EQUAL(0x13, coreReg->reg[7].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -52,7 +52,7 @@ void test_MOVImmediateT2_given_instruction_0xf44f573c_should_move_into_0x2f00_in
   
   MOVImmediateT2(instruction);
   TEST_ASSERT_EQUAL(0x2f00, coreReg->reg[7].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);  
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
@@ -64,7 +64,7 @@ void test_MOVImmediateT2_given_instruction_0xf04f35ff_should_move_into_0xfffffff
 
   MOVImmediateT2(instruction);
   TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
-  TEST_ASSERT_EQUAL(0,StatusRegisters);
+  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
   destroyCoreRegister(coreReg);
 }
 
