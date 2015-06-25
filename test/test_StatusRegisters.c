@@ -205,6 +205,18 @@ void test_updateOverflowFlagSubtraction_given_value1_0x80000000_and_value2_0x400
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
 }
 
+
+//ITT    EQ
+void test_inITBlock_given_statusRegister_0x01000400_should_return_1()
+{
+  StatusRegisters = 0x01000400;
+  int result = inITBlock();
+  
+  TEST_ASSERT_EQUAL(1, result);
+}
+
+
+//ITT    NE
 void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
 {
   StatusRegisters = 0x05001800;

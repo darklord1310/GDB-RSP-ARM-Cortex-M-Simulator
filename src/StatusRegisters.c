@@ -46,8 +46,9 @@ void initStatusRegister()
 
 int inITBlock()
 {
-  uint32_t bit14to12 = getBits(StatusRegisters, 14,12);
-  if(bit14to12 == 0)            //outside IT block
+  uint32_t IT26to25 = getBits(StatusRegisters, 26,25);
+  uint32_t IT15to10 = getBits(StatusRegisters, 15,10);
+  if(IT15to10 == 0 && IT26to25 == 0)            //outside IT block
     return 0;
   else
     return 1;
