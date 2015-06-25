@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-/*Add Immediate Encoding T1
+/*Add Immediate Encoding T1 (Add Immediate 3bits)
     ADDS <Rd>,<Rn>,#<imm3>      Outside IT block.
     ADD<c> <Rd>,<Rn>,#<imm3>    Inside IT block.
       
@@ -48,12 +48,12 @@ void ADDImmediateT1(uint32_t instruction)
 
 
 
-/*Add Immediate Encoding T2
+/*Add Immediate Encoding T2 (Add Immediate 8bits)
     ADDS <Rdn>,#<imm8>          Outside IT block.
     ADD<c> <Rdn>,#<imm8>        Inside IT block.
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |0  0   0| 1  0|   Rdn  |          imm8         |                unused               |
+  |0  0   1| 1  0|   Rdn  |          imm8         |                unused               |
 
 where :  
           S             If present, specifies that the instruction updates the flags. Otherwise, the instruction does not

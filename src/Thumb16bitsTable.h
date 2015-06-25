@@ -2,31 +2,21 @@
 #define Thumb16bitsTable_H
 
 #include <stdint.h>
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+
+void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
 
 
-typedef struct Thumb16bitsTableEntry Thumb16bitsTableEntry;
-
-
-struct Thumb16bitsTableEntry{
-  
-    void (*execute)(uint32_t instruction);
-  
-};
-
-
-Thumb16bitsTableEntry Thumb16Opcode00[64]; //= {
-  
-  //[0b00000] = {} ,
-  //[00001] = {} ,
-  //[0b10000] = { MOVImmediate16bitsT1}
-  //[10001] = { MOVImmediate16bitsT1},
-  //[10010] = { MOVImmediate16bitsT1},
-  //[10011] = { MOVImmediate16bitsT1}
-  
-  
-  
-//};
-
+void initThumb16bitsTable();
 
 
 #endif // Thumb16bitsTable_H

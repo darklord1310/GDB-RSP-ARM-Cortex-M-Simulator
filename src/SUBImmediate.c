@@ -52,7 +52,7 @@ void SUBImmediateT1(uint32_t instruction)
     SUB<c> <Rdn>,#<imm8>        Inside IT block.
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |0  0   0| 1  1|   Rdn  |          imm8         |                unused               |
+  |0  0   1| 1  1|   Rdn  |          imm8         |                unused               |
 
 where :  
           S             If present, specifies that the instruction updates the flags. Otherwise, the instruction does not

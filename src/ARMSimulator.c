@@ -1,7 +1,8 @@
-#include "InstructionDecoding.h"
+#include "ARMSimulator.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+
 
 /*  This function is to check the instruction is 32 bits or 16 bits
  *
@@ -16,7 +17,6 @@
  */
 int is32or16instruction(uint32_t instruction)
 {
-	
   if( getBits(instruction, 31, 29) == 0b111 )                 // if first 3 bits are 111, it is possible to be a 32bits instruction      
   {                                                           // further checking is needed
     if( getBits(instruction, 28, 27) == 0b00)                                       
@@ -27,7 +27,6 @@ int is32or16instruction(uint32_t instruction)
   else
       return INSTRUCTION16bits;
 }
-
 
 
 
@@ -56,70 +55,70 @@ int is32or16instruction(uint32_t instruction)
  *    1101xx   --->  ConditionalBranch
  *    11100x   --->  UnconditionalBranch
  */
-int Categorize16bitsThumbInstruction(uint32_t instruction)
+void Categorize16bitsThumbInstruction(uint32_t instruction)
 {
+  uint32_t opcode2;
   uint32_t opcode1 = getBits(instruction, 31, 26);
   
-	assert(opcode1 < 58);
+	assert(opcode1 < 58);         // because maximum opcode is 111001 which is 57, so cannot exceed 57
   
   if( opcode1 < 16)
-    return SHITFADDSUBTRACTMOVECOMPARE;
-  else if( opcode1 == 0b010000)
-    return DATAPROCESSING;
-  else if( opcode1 == 0b010001)
-    return SPECIALDATAINSTRUCTIONANDBRANCHEXCHANGE;
-  else if( opcode1 < 20)
-    return LOADFROMLITERALPOOL;
-  else if( opcode1 < 40)
-    return LOADORSTORESINGLEDATA;
-  else if( opcode1 < 42)
-    return GENERATEPCRELATIVEADDRESS;
-  else if( opcode1 < 44)
-    return GENERATESPRELATIVEADDRESS;
-  else if( opcode1 < 48)
-    return MISCELLANEOUS16BITSINSTRUCTION;
-  else if( opcode1 < 50)
-    return STOREMULTIPLEREGISTERS;
-  else if( opcode1 < 52)
-    return LOADMULTIPLEREGISTERS;
-  else if( opcode1 < 56)
-    return CONDITIONALBRANCH;
-  else if( opcode1 < 58)
-    return UNCONDITIONALBRANCH;
-}
-
-
-/*
-void ExecuteInstructionsFrom16bitsCategory(int category, uint32_t instruction)
-{
-  switch(category)
   {
-    case SHITFADDSUBTRACTMOVECOMPARE : ShiftAddSubtractMoveCompare(instruction);
-                                       break;
-    
-    
-    
+    opcode2 = getBits(instruction,29,25);
+    (*Thumb16Opcode00XXXX[opcode2])(instruction);
   }
+  //else if(opcode1 == 0b010000)
+
+
 }
 
 
-void ShiftAddSubtractMoveCompare(uint32_t instruction)
+void ARMSimulator(uint32_t instruction)
 {
-  uint32_t opcode = getBits(instruction, 29, 25);
+  coreReg = initCoreRegister();
+  initStatusRegister();
+  initThumb16bitsTable();
   
-  if( opcode < 12)
+  int check = is32or16instruction(instruction);
+
+  if(check == INSTRUCTION16bits)
   {
-    extractDataFromInstruction();
-    
+    Categorize16bitsThumbInstruction(instruction);
   }
-  else if()
   
-    
   
 }
-*/
 
 
+
+void printRegister()
+{
+  int i;
+  for(i = 0; i < 15; i++)
+  {
+    printf("r%d : %x\n", i, coreReg->reg[i].data);
+  }
+    
+  if( isCarry() )
+    printf("C : %d\n", 1);
+  else
+    printf("C : %d\n", 0);
+    
+  if( isNegative() )
+    printf("N : %d\n", 1);
+  else
+    printf("N : %d\n", 0);
+    
+  if( isOverflow() )
+    printf("OV : %d\n", 1);
+  else
+    printf("OV : %d\n", 0);
+    
+  if( isZero() )
+    printf("Z : %d\n", 1);
+  else
+    printf("Z : %d\n", 0);
+}
 
 
 
