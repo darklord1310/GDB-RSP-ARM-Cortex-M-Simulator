@@ -44,6 +44,15 @@ void destroyPacket(char *packet)
         free(packet);
 }
 
+/*
+ * This function convert HEX value to ASCII string
+ *
+ * Input:
+ *      regVal          register value in HEX form
+ *
+ * Return:
+ *      asciiString     HEX value in string form
+ */
 char *createdHexToString(unsigned int regVal)
 {
     // char asciiString[9] = "";
