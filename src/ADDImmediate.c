@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+
 /*Add Immediate Encoding T1 (Add Immediate 3bits)
     ADDS <Rd>,<Rn>,#<imm3>      Outside IT block.
     ADD<c> <Rd>,<Rn>,#<imm3>    Inside IT block.
@@ -40,7 +41,10 @@ void ADDImmediateT1(uint32_t instruction)
   assert(Rd <= 0b111);
 
  if(inITBlock())
+ {
+    uint32_t ITCond = getITCond();
     executeADDImmediate(Rn, Rd, imm3, 0);
+ }
  else
     executeADDImmediate(Rn, Rd, imm3, 1);
   

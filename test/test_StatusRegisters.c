@@ -225,6 +225,7 @@ void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
   TEST_ASSERT_EQUAL(1, result);
 }
 
+//no IT block
 void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
 {
   StatusRegisters = 0xa1000000;
@@ -232,3 +233,24 @@ void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
   
   TEST_ASSERT_EQUAL(0, result);
 }
+
+//ITT    EQ
+void test_getITCond_given_statusRegister_0x01000400_should_return_0000()
+{
+  StatusRegisters = 0x01000400;
+  uint32_t result =  getITCond();
+  
+  TEST_ASSERT_EQUAL(0b0000, result);
+}
+
+//ITT    NE
+void test_getITCond_given_statusRegister_0x05001800_should_return_0001()
+{
+  StatusRegisters = 0x05001800;
+  uint32_t result =  getITCond();
+  
+  TEST_ASSERT_EQUAL(0b0001, result);
+}
+
+
+
