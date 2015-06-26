@@ -239,6 +239,7 @@ void test_readSingleRegister_given_data_with_p10_packet_should_return_appropriat
 {
     char data[] = "$p10#d1";
     char *reply = NULL;
+    coreReg = initCoreRegister();
     initStatusRegister();
 
     createdHexToString_ExpectAndReturn(0x01000000, "01000000");
@@ -248,4 +249,32 @@ void test_readSingleRegister_given_data_with_p10_packet_should_return_appropriat
     reply = readSingleRegister(data);
 
     TEST_ASSERT_EQUAL_STRING("$01000000#81", reply);
+}
+
+void test_readAllRegister_given_data_with_p10_packet_should_return_appropriate_response(void)
+{
+    char *reply = NULL;
+    int i;
+    initStatusRegister();
+
+    for(i = 0; i < 17; i++)
+    {
+        if(i < 16)
+        {
+            createdHexToString_ExpectAndReturn(0x00000000, "00000000");
+            destroyHexToString_Expect("00000000");
+        }
+        else
+        {
+            createdHexToString_ExpectAndReturn(0x01000000, "01000000");
+            destroyHexToString_Expect("01000000");
+        }
+    }
+        
+    gdbCreateMsgPacket_ExpectAndReturn("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",  \
+                                       "$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81");
+
+    reply = readAllRegister();
+
+    TEST_ASSERT_EQUAL_STRING("$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81", reply);
 }

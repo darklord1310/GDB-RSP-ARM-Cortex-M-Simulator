@@ -23,12 +23,16 @@ char *serveRSP(char *data)
         case 's':   /* Step */
             break;
         case 'g':   /* Read all register */
+            packet = readAllRegister(data);
             break;
         case 'p':   /* Read single register */
+            packet = readSingleRegister(data);
             break;
         case 'P':   /* Write single register */
+            packet = gdbCreateMsgPacket("OK");
             break;
         case 'G':   /* Write all register */
+            packet = gdbCreateMsgPacket("OK");
             break;
         case 'm':   /* Read memory */
             break;

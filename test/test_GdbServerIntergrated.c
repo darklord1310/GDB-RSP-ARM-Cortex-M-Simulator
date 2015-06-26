@@ -3,6 +3,10 @@
 #include "gdbserver.h"
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"
+#include "ARMRegisters.h"
+#include "StatusRegisters.h"
+#include "getBits.h"
+#include "getMask.h"
 
 void setUp(void)
 {
@@ -140,6 +144,61 @@ void test_serveRSP_given_data_with_Hc0_should_return_empty_response(void)
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$#00", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_p3_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$p3#a3";
+    char *reply = NULL;
+    coreReg = initCoreRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$00000000#80", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_pd_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$pd#d4";
+    char *reply = NULL;
+    coreReg = initCoreRegister();
+
+    coreReg->reg[13-1].data = 0x11111111;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$11111111#88", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_p10_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$p10#d1";
+    char *reply = NULL;
+    initStatusRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$01000000#81", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_g_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$g#67";
+    char *reply = NULL;
+    coreReg = initCoreRegister();
+    initStatusRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81", reply);
 
     free(reply);
 }

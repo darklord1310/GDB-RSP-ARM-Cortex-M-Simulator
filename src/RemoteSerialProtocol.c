@@ -51,6 +51,16 @@ char *handleQueryPacket(char *data)
     return packet;
 }
 
+/*
+ * This function read one of the 17 ARM registers and response
+ * back the values of the request register
+ *
+ * Input:
+ *      data    packet receive from gdb client
+ *
+ * Return:
+ *      packet  complete packet with register values to reply to gdb client
+ */
 char *readSingleRegister(char *data)
 {
     char *packet = NULL;
@@ -61,7 +71,7 @@ char *readSingleRegister(char *data)
     sscanf(&data[2], "%2x", &regNum);
     printf("Reg no: %d\n", regNum);
 
-    /*
+    /* Testing
     if(regNum <= 12)        //R0 - R12 is GPR
         // regValue = 0x00000000;
         // regValue = coreReg->reg[regNum - 1].data;
@@ -81,23 +91,53 @@ char *readSingleRegister(char *data)
 
     printf("Reg val: %x\n", regValue);
 
-    /*
+    /* Testing
     for(i = 0; i < 8; i++)
     {
         asciiString[i] = hex[regValue >> (bits - 4) & maskBits];
         bits -= 4;
     }
     asciiString[8] = '\0'; */
+
     asciiString = createdHexToString(regValue);
     printf("ASCII String: %s\n", asciiString);
 
-    packet = gdbCreateMsgPacket(asciiString);  //simply reply to test
+    packet = gdbCreateMsgPacket(asciiString);
     destroyHexToString(asciiString);
 
     return packet;
 }
 
+/*
+ * This function read all of the 17 ARM registers and response
+ * back the value of all register
+ *
+ * Return:
+ *      packet  complete packet with all registers values to reply to gdb client
+ */
+
 char *readAllRegister()
 {
+    char *packet = NULL, fullRegValue[140] = "";
+    int i, j;
+    unsigned int regValue[17];
+    char *asciiString;
 
+    for(i = 0; i < 17; i++)
+    {
+        if(i < 16)
+            regValue[i] = coreReg->reg[i].data;
+        else
+            regValue[i] = StatusRegisters;
+
+        asciiString = createdHexToString(regValue[i]);
+
+        strcat(fullRegValue, asciiString);
+        // printf("Full reg val: %s\n", fullRegValue);
+        destroyHexToString(asciiString);
+    }
+
+    packet = gdbCreateMsgPacket(fullRegValue);
+
+    return packet;
 }
