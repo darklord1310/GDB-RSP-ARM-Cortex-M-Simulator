@@ -204,7 +204,9 @@ void test_readSingleRegister_given_data_with_p3_packet_should_return_appropriate
     char data[] = "$p3#a3";
     char *reply = NULL;
 
+    createdHexToString_ExpectAndReturn(0x00000000, "00000000");
     gdbCreateMsgPacket_ExpectAndReturn("00000000", "$00000000#80");
+    destroyHexToString_Expect("00000000");
 
     reply = readSingleRegister(data);
 
@@ -216,7 +218,9 @@ void test_readSingleRegister_given_data_with_pd_packet_should_return_appropriate
     char data[] = "$pd#d4";
     char *reply = NULL;
 
+    createdHexToString_ExpectAndReturn(0x11111111, "11111111");
     gdbCreateMsgPacket_ExpectAndReturn("11111111", "$11111111#88");
+    destroyHexToString_Expect("11111111");
 
     reply = readSingleRegister(data);
 
@@ -228,7 +232,9 @@ void test_readSingleRegister_given_data_with_p10_packet_should_return_appropriat
     char data[] = "$p10#d1";
     char *reply = NULL;
 
+    createdHexToString_ExpectAndReturn(0x44444444, "44444444");
     gdbCreateMsgPacket_ExpectAndReturn("44444444", "$44444444#a0");
+    destroyHexToString_Expect("44444444");
 
     reply = readSingleRegister(data);
 

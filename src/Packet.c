@@ -43,3 +43,25 @@ void destroyPacket(char *packet)
     if(packet != NULL)
         free(packet);
 }
+
+char *createdHexToString(unsigned int regVal)
+{
+    // char asciiString[9] = "";
+    char *asciiString = malloc(9);
+    int i, bits = 32, maskBits = 0xf;
+
+    for(i = 0; i < 8; i++)
+    {
+        asciiString[i] = hex[regVal >> (bits - 4) & maskBits];
+        bits -= 4;
+    }
+    asciiString[8] = '\0';
+
+    return asciiString;
+}
+
+void destroyHexToString(char *asciiString)
+{
+    if(asciiString != NULL)
+        free(asciiString);
+}

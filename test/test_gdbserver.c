@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "gdbserver.h"
 #include "mock_RemoteSerialProtocol.h"
+#include "mock_Packet.h"
 
 void setUp(void)
 {
