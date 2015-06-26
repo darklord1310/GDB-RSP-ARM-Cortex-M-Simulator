@@ -3,6 +3,8 @@
 #include <string.h>
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
+#include "ARMRegisters.h"
+#include "StatusRegisters.h"
 
 /*
  * This function handle all the query packet receive from
@@ -59,8 +61,10 @@ char *readSingleRegister(char *data)
     sscanf(&data[2], "%2x", &regNum);
     printf("Reg no: %d\n", regNum);
 
+    /*
     if(regNum <= 12)        //R0 - R12 is GPR
-        regValue = 0x00000000;
+        // regValue = 0x00000000;
+        // regValue = coreReg->reg[regNum - 1].data;
     else if(regNum == 13)   //R13 is Stack Pointer
         regValue = 0x11111111;
     else if(regNum == 14)   //R14 is Link Register
@@ -68,7 +72,12 @@ char *readSingleRegister(char *data)
     else if(regNum == 15)   //R15 is Program Counter
         regValue = 0x33333333;
     else if(regNum == 16)   //R16 is Special-purpose Program Status Registers
-        regValue = 0x44444444;
+        regValue = 0x44444444; */
+
+    if(regNum <= 15)
+        regValue = coreReg->reg[regNum - 1].data;
+    else
+        regValue = StatusRegisters;
 
     printf("Reg val: %x\n", regValue);
 
