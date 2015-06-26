@@ -141,3 +141,13 @@ char *readAllRegister()
 
     return packet;
 }
+
+void writeSingleRegister(char *data)
+{
+
+}
+
+void writeAllRegister()
+{
+
+}
