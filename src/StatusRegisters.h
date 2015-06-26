@@ -1,8 +1,7 @@
 #ifndef StatusRegisters_H
 #define StatusRegisters_H
 
-#include "getBits.h"
-#include "getMask.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 

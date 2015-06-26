@@ -1,4 +1,6 @@
 #include "StatusRegisters.h"
+#include "getBits.h"
+#include "getMask.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -52,6 +54,18 @@ int inITBlock()
     return 0;
   else
     return 1;
+}
+
+
+/*
+  This function will get the bits 15 to 12 which
+  is the IT[7:4] indicating the base condition
+
+*/
+uint32_t getITCond()
+{
+  return getBits(StatusRegisters, 15,12);
+  
 }
 
 bool isNegative()
