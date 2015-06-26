@@ -4,7 +4,7 @@
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
 #include "ARMRegisters.h"
-#include "StatusRegisters.h"
+// #include "StatusRegisters.h"
 
 /*
  * This function handle all the query packet receive from
@@ -69,7 +69,7 @@ char *readSingleRegister(char *data)
     char *asciiString;
 
     sscanf(&data[2], "%2x", &regNum);
-    printf("Reg no: %d\n", regNum);
+    // printf("Reg no: %d\n", regNum);
 
     /* Testing
     if(regNum <= 12)        //R0 - R12 is GPR
@@ -85,11 +85,11 @@ char *readSingleRegister(char *data)
         regValue = 0x44444444; */
 
     if(regNum <= 15)
-        regValue = coreReg->reg[regNum - 1].data;
+        regValue = coreReg[regNum - 1];
     else
-        regValue = StatusRegisters;
+        regValue = coreReg[xPSR];
 
-    printf("Reg val: %x\n", regValue);
+    // printf("Reg val: %x\n", regValue);
 
     /* Testing
     for(i = 0; i < 8; i++)
@@ -100,7 +100,7 @@ char *readSingleRegister(char *data)
     asciiString[8] = '\0'; */
 
     asciiString = createdHexToString(regValue);
-    printf("ASCII String: %s\n", asciiString);
+    // printf("ASCII String: %s\n", asciiString);
 
     packet = gdbCreateMsgPacket(asciiString);
     destroyHexToString(asciiString);
@@ -126,9 +126,9 @@ char *readAllRegister()
     for(i = 0; i < 17; i++)
     {
         if(i < 16)
-            regValue[i] = coreReg->reg[i].data;
+            regValue[i] = coreReg[i];
         else
-            regValue[i] = StatusRegisters;
+            regValue[i] = coreReg[i];
 
         asciiString = createdHexToString(regValue[i]);
 
@@ -144,7 +144,26 @@ char *readAllRegister()
 
 void writeSingleRegister(char *data)
 {
+    int regNum, i, j = 0, bits = 32;
+    char *addr = NULL;
+    unsigned int regValue = 0x00000000, temp;
 
+    sscanf(&data[2], "%2x", &regNum);
+    printf("Reg no: %d\n", regNum);
+    addr = strstr(data, "=") + 1;
+    printf("addr %s\n", addr);
+    
+    for(i = 0; i < 4; i++)
+    {
+        sscanf(&addr[j], "%2x", &temp);
+        regValue = regValue | temp << (bits - 8);
+        bits -= 8;
+        j += 2;
+    }
+    
+    printf("Reg val: %x\n", regValue);
+    
+    // coreReg-
 }
 
 void writeAllRegister()

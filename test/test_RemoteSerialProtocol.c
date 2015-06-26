@@ -3,9 +3,9 @@
 #include <string.h>
 #include "unity.h"
 #include "ARMRegisters.h"
-#include "StatusRegisters.h"
-#include "getBits.h"
-#include "getMask.h"
+// #include "StatusRegisters.h"
+// #include "getBits.h"
+// #include "getMask.h"
 #include "RemoteSerialProtocol.h"
 #include "mock_Packet.h"
 
@@ -203,43 +203,11 @@ void test_handleQueryPacket_given_data_with_unrecognized_RSP_query_should_return
     TEST_ASSERT_EQUAL_STRING("$#00", reply);
 }
 
-void test_readSingleRegister_given_data_with_p3_packet_should_return_appropriate_response(void)
-{
-    char data[] = "$p3#a3";
-    char *reply = NULL;
-    coreReg = initCoreRegister();
-
-    createdHexToString_ExpectAndReturn(0x00000000, "00000000");
-    gdbCreateMsgPacket_ExpectAndReturn("00000000", "$00000000#80");
-    destroyHexToString_Expect("00000000");
-
-    reply = readSingleRegister(data);
-
-    TEST_ASSERT_EQUAL_STRING("$00000000#80", reply);
-}
-
-void test_readSingleRegister_given_data_with_pd_packet_should_return_appropriate_response(void)
-{
-    char data[] = "$pd#d4";
-    char *reply = NULL;
-    coreReg = initCoreRegister();
-
-    coreReg->reg[13-1].data = 0x11111111;
-
-    createdHexToString_ExpectAndReturn(0x11111111, "11111111");
-    gdbCreateMsgPacket_ExpectAndReturn("11111111", "$11111111#88");
-    destroyHexToString_Expect("11111111");
-
-    reply = readSingleRegister(data);
-
-    TEST_ASSERT_EQUAL_STRING("$11111111#88", reply);
-}
-
 void test_readSingleRegister_given_data_with_p10_packet_should_return_appropriate_response(void)
 {
     char data[] = "$p10#d1";
     char *reply = NULL;
-    initStatusRegister();
+    initCoreRegister();
 
     createdHexToString_ExpectAndReturn(0x01000000, "01000000");
     gdbCreateMsgPacket_ExpectAndReturn("01000000", "$01000000#81");
@@ -254,8 +222,7 @@ void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(vo
 {
     char *reply = NULL;
     int i;
-    coreReg = initCoreRegister();
-    initStatusRegister();
+    initCoreRegister();
 
     for(i = 0; i < 17; i++)
     {
@@ -270,11 +237,22 @@ void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(vo
             destroyHexToString_Expect("01000000");
         }
     }
-        
+
     gdbCreateMsgPacket_ExpectAndReturn("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",  \
                                        "$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81");
 
     reply = readAllRegister();
 
     TEST_ASSERT_EQUAL_STRING("$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81", reply);
+}
+
+void test_writeSingleRegister_given_following_data_should_write_value_to_a_register(void)
+{
+    char data[] = "$P6=1052ffff#23";
+    char *reply = NULL;
+    initCoreRegister();
+
+    writeSingleRegister(data);
+
+    // TEST_ASSERT_EQUAL_STRING(0x1052ffff, coreReg->reg[5].data);
 }
