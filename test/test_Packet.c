@@ -33,3 +33,15 @@ void test_gdbCreateMsgPacket_given_string_of_data_should_return_a_complete_packe
 
     destroyPacket(packet);
 }
+
+void test_createdHexToString_given_regVal_should_return_string_of_the_regVal(void)
+{
+    unsigned int regVal = 0x00000000;
+    char *packet;
+
+    packet = createdHexToString(regVal);
+
+    TEST_ASSERT_EQUAL_STRING("00000000", packet);
+    
+    destroyHexToString(packet);
+}

@@ -3,6 +3,6 @@
 
 char *handleQueryPacket(char *data);
 char *readSingleRegister(char *data);
-char *readRegister();
+char *readAllRegister();
 
 #endif // RemoteSerialProtocol_H

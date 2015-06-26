@@ -4,8 +4,6 @@
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
 
-const char hex[] = "0123456789abcdef";
-
 /*
  * This function handle all the query packet receive from
  * gdb client and return the appropriate message back to it
@@ -54,8 +52,9 @@ char *handleQueryPacket(char *data)
 char *readSingleRegister(char *data)
 {
     char *packet = NULL;
-    int regNum, regValue, i = 0, bits = 32, maskBits = 0xf;
-    char asciiString[9] = "";
+    int regNum;//, i = 0, bits = 32, maskBits = 0xf;
+    unsigned int regValue;
+    char *asciiString;
 
     sscanf(&data[2], "%2x", &regNum);
     printf("Reg no: %d\n", regNum);
@@ -73,21 +72,23 @@ char *readSingleRegister(char *data)
 
     printf("Reg val: %x\n", regValue);
 
+    /*
     for(i = 0; i < 8; i++)
     {
         asciiString[i] = hex[regValue >> (bits - 4) & maskBits];
         bits -= 4;
     }
-    asciiString[8] = '\0';
-    
+    asciiString[8] = '\0'; */
+    asciiString = createdHexToString(regValue);
     printf("ASCII String: %s\n", asciiString);
 
     packet = gdbCreateMsgPacket(asciiString);  //simply reply to test
+    destroyHexToString(asciiString);
 
     return packet;
 }
 
-char *readRegister()
+char *readAllRegister()
 {
 
 }
