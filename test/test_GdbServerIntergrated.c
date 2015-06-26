@@ -189,7 +189,7 @@ void test_serveRSP_given_data_with_p10_packet_should_return_appropriate_response
     free(reply);
 }
 
-void test_serveRSP_given_data_with_g_packet_should_return_appropriate_response(void)
+void test_serveRSP_given_data_with_g_packet_should_return_appropriate_response_with_all_reg_val(void)
 {
     char data[] = "$g#67";
     char *reply = NULL;
