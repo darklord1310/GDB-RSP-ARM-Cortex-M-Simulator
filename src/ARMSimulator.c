@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+#include "getBits.h"
+#include "getMask.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
+#include "Thumb16bitsTable.h"
+#include "ConditionalExecution.h"
 
 
 /*  This function is to check the instruction is 32 bits or 16 bits

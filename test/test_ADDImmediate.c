@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "StatusRegisters.h"
+#include "ConditionalExecution.h"
 #include "ModifiedImmediateConstant.h"
 
 void setUp(void)

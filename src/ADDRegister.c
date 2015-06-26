@@ -1,5 +1,10 @@
 #include "ADDRegister.h"
 #include <assert.h>
+#include "ARMRegisters.h"
+#include "getBits.h"
+#include "StatusRegisters.h"
+#include "ADDSPRegister.h"
+#include "ModifiedImmediateConstant.h"
 
 /*Add Register To Register Encoding T1
     ADDS <Rd>,<Rn>,<Rm>     Outside IT block.

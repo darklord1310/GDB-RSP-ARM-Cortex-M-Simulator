@@ -1,6 +1,7 @@
 #include "unity.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"
+#include "ConditionalExecution.h"
 #include "StatusRegisters.h"
 #include "getBits.h"
 #include "getMask.h"

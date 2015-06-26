@@ -1,11 +1,8 @@
 #ifndef ADDImmediate_H
 #define ADDImmediate_H
 
-#include "ARMRegisters.h"
-#include "getBits.h"
-#include "StatusRegisters.h"
 #include <stdint.h>
-#include "ModifiedImmediateConstant.h"
+
 
 void ADDImmediateT1(uint32_t instruction);
 void ADDImmediateT2(uint32_t instruction);

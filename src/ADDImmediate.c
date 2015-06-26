@@ -1,4 +1,9 @@
 #include "ADDImmediate.h"
+#include "ARMRegisters.h"
+#include "getBits.h"
+#include "StatusRegisters.h"
+#include "ModifiedImmediateConstant.h"
+#include "ConditionalExecution.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -43,7 +48,8 @@ void ADDImmediateT1(uint32_t instruction)
  if(inITBlock())
  {
     uint32_t ITCond = getITCond();
-    executeADDImmediate(Rn, Rd, imm3, 0);
+    if( checkCondition(ITCond) )
+      executeADDImmediate(Rn, Rd, imm3, 0);
  }
  else
     executeADDImmediate(Rn, Rd, imm3, 1);
@@ -87,9 +93,12 @@ void ADDImmediateT2(uint32_t instruction)
   assert(imm8 <= 011111111);
   assert(Rdn <= 0b111);
 
-
   if(inITBlock())
-    executeADDImmediate(Rdn, Rdn, imm8, 0);
+  {
+    uint32_t ITCond = getITCond();
+    if( checkCondition(ITCond) )
+      executeADDImmediate(Rdn, Rdn, imm8, 0);
+  }
   else
     executeADDImmediate(Rdn, Rdn, imm8, 1);
   
