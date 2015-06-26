@@ -3,6 +3,8 @@
 #include <string.h>
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
+#include "ARMRegisters.h"
+#include "StatusRegisters.h"
 
 /*
  * This function handle all the query packet receive from
@@ -49,6 +51,16 @@ char *handleQueryPacket(char *data)
     return packet;
 }
 
+/*
+ * This function read one of the 17 ARM registers and response
+ * back the values of the request register
+ *
+ * Input:
+ *      data    packet receive from gdb client
+ *
+ * Return:
+ *      packet  complete packet with register values to reply to gdb client
+ */
 char *readSingleRegister(char *data)
 {
     char *packet = NULL;
@@ -59,8 +71,10 @@ char *readSingleRegister(char *data)
     sscanf(&data[2], "%2x", &regNum);
     printf("Reg no: %d\n", regNum);
 
+    /* Testing
     if(regNum <= 12)        //R0 - R12 is GPR
-        regValue = 0x00000000;
+        // regValue = 0x00000000;
+        // regValue = coreReg->reg[regNum - 1].data;
     else if(regNum == 13)   //R13 is Stack Pointer
         regValue = 0x11111111;
     else if(regNum == 14)   //R14 is Link Register
@@ -68,27 +82,62 @@ char *readSingleRegister(char *data)
     else if(regNum == 15)   //R15 is Program Counter
         regValue = 0x33333333;
     else if(regNum == 16)   //R16 is Special-purpose Program Status Registers
-        regValue = 0x44444444;
+        regValue = 0x44444444; */
+
+    if(regNum <= 15)
+        regValue = coreReg->reg[regNum - 1].data;
+    else
+        regValue = StatusRegisters;
 
     printf("Reg val: %x\n", regValue);
 
-    /*
+    /* Testing
     for(i = 0; i < 8; i++)
     {
         asciiString[i] = hex[regValue >> (bits - 4) & maskBits];
         bits -= 4;
     }
     asciiString[8] = '\0'; */
+
     asciiString = createdHexToString(regValue);
     printf("ASCII String: %s\n", asciiString);
 
-    packet = gdbCreateMsgPacket(asciiString);  //simply reply to test
+    packet = gdbCreateMsgPacket(asciiString);
     destroyHexToString(asciiString);
 
     return packet;
 }
 
+/*
+ * This function read all of the 17 ARM registers and response
+ * back the value of all register
+ *
+ * Return:
+ *      packet  complete packet with all registers values to reply to gdb client
+ */
+
 char *readAllRegister()
 {
+    char *packet = NULL, fullRegValue[140] = "";
+    int i, j;
+    unsigned int regValue[17];
+    char *asciiString;
 
+    for(i = 0; i < 17; i++)
+    {
+        if(i < 16)
+            regValue[i] = coreReg->reg[i].data;
+        else
+            regValue[i] = StatusRegisters;
+
+        asciiString = createdHexToString(regValue[i]);
+
+        strcat(fullRegValue, asciiString);
+        // printf("Full reg val: %s\n", fullRegValue);
+        destroyHexToString(asciiString);
+    }
+
+    packet = gdbCreateMsgPacket(fullRegValue);
+
+    return packet;
 }
