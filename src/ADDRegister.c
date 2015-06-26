@@ -111,13 +111,13 @@ void ADDRegisterToRegisterT2(uint32_t instruction)
 */
 void executeADDRegister(uint32_t Rn, uint32_t Rd, uint32_t Rm, uint32_t S)
 {
-  coreReg->reg[Rd].data = coreReg->reg[Rn].data + coreReg->reg[Rm].data;            //get the result of Rn + Rm
+  coreReg[Rd] = coreReg[Rn] + coreReg[Rm];            //get the result of Rn + Rm
   
   if(S == 1)
   {
-    updateZeroFlag(coreReg->reg[Rd].data);
-    updateNegativeFlag(coreReg->reg[Rd].data);
-    updateOverflowFlagAddition(coreReg->reg[Rn].data, coreReg->reg[Rm].data, coreReg->reg[Rd].data);
-    updateCarryFlagAddition(coreReg->reg[Rn].data, coreReg->reg[Rm].data);
+    updateZeroFlag(coreReg[Rd]);
+    updateNegativeFlag(coreReg[Rd]);
+    updateOverflowFlagAddition(coreReg[Rn], coreReg[Rm], coreReg[Rd]);
+    updateCarryFlagAddition(coreReg[Rn], coreReg[Rm]);
   }
 }

@@ -10,24 +10,18 @@ void tearDown(void)
 {
 }
 
-void test_initCoreRegister_will_create_CoreRegister(void)
+void test_initCoreRegister_reset_the_coreReg_correctly(void)
 {
-  coreReg = initCoreRegister();
-    
-  TEST_ASSERT_NOT_NULL(coreReg);
-  TEST_ASSERT_NOT_NULL(coreReg->reg);
-    
-  destroyCoreRegister(coreReg);
+  int i;
+  initCoreRegister();
+  
+  for(i = 0; i < numberOfRegister; i++)
+  {
+    if(i < 16)
+      TEST_ASSERT_EQUAL(0, coreReg[i]);
+    else
+      TEST_ASSERT_EQUAL(0x01000000, coreReg[i]);
+  }
+  
 }
 
-void test_write_8_into_R1_should_be_loaded_correctly()
-{
-  coreReg = initCoreRegister();
-	
-  coreReg->reg[1].data = 8;
-	
-	
-  TEST_ASSERT_EQUAL(8, coreReg->reg[1].data);
-	
-  destroyCoreRegister(coreReg);
-}

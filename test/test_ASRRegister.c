@@ -8,8 +8,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)
@@ -21,12 +20,10 @@ void test_ASRRegisterToRegister16bitsT1_given_0x4111_should_arithmetic_shift_rig
 {
   uint32_t instruction = 0x41110000;
   
-  coreReg->reg[1].data = 0xffffffff;                          //set R1 to be 0xffffffff
-  coreReg->reg[2].data = 0x00000113;                          //set R2 to be 0x00000113
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000113;                          //set R2 to be 0x00000113
   ASRRegisterToRegister16bitsT1(instruction);
           
-  TEST_ASSERT_EQUAL(0x00000113, coreReg->reg[2].data);    
-  TEST_ASSERT_EQUAL(0, coreReg->reg[1].data);                //after shift right 240 times, should get 0
- 
-  destroyCoreRegister(coreReg);
+  TEST_ASSERT_EQUAL(0x00000113, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0, coreReg[1]);                 //after shift right 240 times, should get 0
 }

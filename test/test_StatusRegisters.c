@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "StatusRegisters.h"
+#include "ARMRegisters.h"
 #include "getBits.h"
 #include "getMask.h"
 #include <stdbool.h>
@@ -7,59 +8,52 @@
 
 void setUp(void)
 {
-  initStatusRegister();                          //initialize the status register
+  initCoreRegister();                          //initialize the status register
 }
 
 void tearDown(void)
 {
 }
 
-void test_initStatusRegister_should_set_StatusRegisters_to_be_0x01000000(void)
-{
-  initStatusRegister();
-  
-  TEST_ASSERT_EQUAL( 0x01000000 , StatusRegisters);
-}
 
-
-void test_setNegativeFlag_StatusRegisters_should_get_0x81000000(void)
+void test_setNegativeFlag_xPSR_should_get_0x81000000(void)
 {  
   setNegativeFlag();                                //set NEGATIVE flag
   
-  TEST_ASSERT_EQUAL( 0x81000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x81000000 , coreReg[xPSR]);
   TEST_ASSERT_EQUAL( 1 , isNegative() );
 
 }
 
 
 
-void test_setCarryFlag_StatusRegisters_should_get_0x21000000(void)
+void test_setCarryFlag_xPSR_should_get_0x21000000(void)
 {
   setCarryFlag();                                //set CARRY flag
   
-  TEST_ASSERT_EQUAL( 0x21000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x21000000 , coreReg[xPSR]);
   TEST_ASSERT_EQUAL( 1 , isCarry() );
 
 }
 
 
 
-void test_setOverflowFlag_StatusRegisters_should_get_0x11000000(void)
+void test_setOverflowFlag_xPSR_should_get_0x11000000(void)
 {
   setOverflowFlag();                                //set OVERFLOW flag
   
-  TEST_ASSERT_EQUAL( 0x11000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x11000000 , coreReg[xPSR]);
   TEST_ASSERT_EQUAL( 1 , isOverflow() );
 
 }
 
 
 
-void test_setZeroFlag_StatusRegisters_should_get_0x41000000(void)
+void test_setZeroFlag_xPSR_should_get_0x41000000(void)
 {
   setZeroFlag();                                //set ZERO flag
   
-  TEST_ASSERT_EQUAL( 0x41000000 , StatusRegisters);
+  TEST_ASSERT_EQUAL( 0x41000000 , coreReg[xPSR]);
   TEST_ASSERT_EQUAL( 1 , isZero() );
 
 }
@@ -209,7 +203,7 @@ void test_updateOverflowFlagSubtraction_given_value1_0x80000000_and_value2_0x400
 //ITT    EQ
 void test_inITBlock_given_statusRegister_0x01000400_should_return_1()
 {
-  StatusRegisters = 0x01000400;
+  coreReg[xPSR] = 0x01000400;
   int result = inITBlock();
   
   TEST_ASSERT_EQUAL(1, result);
@@ -219,7 +213,7 @@ void test_inITBlock_given_statusRegister_0x01000400_should_return_1()
 //ITT    NE
 void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
 {
-  StatusRegisters = 0x05001800;
+  coreReg[xPSR] = 0x05001800;
   int result = inITBlock();
   
   TEST_ASSERT_EQUAL(1, result);
@@ -228,7 +222,7 @@ void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
 //no IT block
 void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
 {
-  StatusRegisters = 0xa1000000;
+  coreReg[xPSR] = 0xa1000000;
   int result = inITBlock();
   
   TEST_ASSERT_EQUAL(0, result);
@@ -237,7 +231,7 @@ void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
 //ITT    EQ
 void test_getITCond_given_statusRegister_0x01000400_should_return_0000()
 {
-  StatusRegisters = 0x01000400;
+  coreReg[xPSR] = 0x01000400;
   uint32_t result =  getITCond();
   
   TEST_ASSERT_EQUAL(0b0000, result);
@@ -246,11 +240,10 @@ void test_getITCond_given_statusRegister_0x01000400_should_return_0000()
 //ITT    NE
 void test_getITCond_given_statusRegister_0x05001800_should_return_0001()
 {
-  StatusRegisters = 0x05001800;
+  coreReg[xPSR] = 0x05001800;
   uint32_t result =  getITCond();
   
   TEST_ASSERT_EQUAL(0b0001, result);
 }
-
 
 

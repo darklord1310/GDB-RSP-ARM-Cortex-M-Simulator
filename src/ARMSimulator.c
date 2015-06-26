@@ -102,7 +102,7 @@ void printRegister()
   int i;
   for(i = 0; i < 15; i++)
   {
-    printf("r%d : %x\n", i, coreReg->reg[i].data);
+    printf("r%d : %x\n", i, coreReg[i]);
   }
     
   if( isCarry() )

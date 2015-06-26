@@ -8,8 +8,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)
@@ -17,19 +16,17 @@ void tearDown(void)
 }
 
 
-
 // test ASRS  R1, R2, #2 given R2, #0xf0f0f0f0
 void test_ASRImmediateT1_given_0x1091_should_arithmetic_shift_right_r2_2_times_and_write_to_R1_N_flag_is_set(void)
 {
 	uint32_t instruction = 0x10910000;
   
-  coreReg->reg[2].data = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
+  coreReg[2] = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
   ASRImmediateT1(instruction);
           
-  TEST_ASSERT_EQUAL(0xfc3c3c3c, coreReg->reg[1].data);        //after arithmetic shift right 5 times, should get 0xfc3c3c3c
-  TEST_ASSERT_EQUAL(0xf0f0f0f0, coreReg->reg[2].data);
+  TEST_ASSERT_EQUAL(0xfc3c3c3c, coreReg[1]);        //after arithmetic shift right 5 times, should get 0xfc3c3c3c
+  TEST_ASSERT_EQUAL(0xf0f0f0f0, coreReg[2]);
   TEST_ASSERT_EQUAL(1, isNegative() );
-  destroyCoreRegister(coreReg);
 
 }
 
@@ -40,14 +37,12 @@ void test_ASRImmediateT1_given_0x1011_should_arithmetic_shift_right_r2_32_times_
 {
 	uint32_t instruction = 0x10110000;
   
-  coreReg->reg[2].data = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
+  coreReg[2] = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
   ASRImmediateT1(instruction);
           
-  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[1].data);        //after arithmetic shift right 32 times, should get 0xffffffff
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);        //after arithmetic shift right 32 times, should get 0xffffffff
   TEST_ASSERT_EQUAL(1, isCarry() );
   TEST_ASSERT_EQUAL(1, isNegative() );
-  destroyCoreRegister(coreReg);
-
 }
 
 
@@ -58,12 +53,11 @@ void test_ASRImmediateT1_given_0x1051_should_arithmetic_shift_right_r2_1_times_a
 {
 	uint32_t instruction = 0x10510000;
   
-  coreReg->reg[2].data = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
+  coreReg[2] = 0xf0f0f0f0;                          //set R2 to be 0xf0f0f0f0
   ASRImmediateT1(instruction);
           
-  TEST_ASSERT_EQUAL(0xf8787878, coreReg->reg[1].data);        //after arithmetic shift right 1 times, should get 0xf8787878
+  TEST_ASSERT_EQUAL(0xf8787878, coreReg[1]);        //after arithmetic shift right 1 times, should get 0xf8787878
   TEST_ASSERT_EQUAL(1, isNegative() );
-  destroyCoreRegister(coreReg);
 
 }
 

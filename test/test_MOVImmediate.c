@@ -10,8 +10,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)
@@ -26,9 +25,8 @@ void test_MOVImmediateT1_given_instruction_0x21FF0000_should_move_0xFF_into_R1_a
   
   MOVImmediateT1(instruction);
   
-  TEST_ASSERT_EQUAL(0xff, coreReg->reg[1].data);
-  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
-  destroyCoreRegister(coreReg);
+  TEST_ASSERT_EQUAL(0xff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
@@ -39,9 +37,8 @@ void test_MOVImmediateT1_given_instruction_0x27130000_should_move_0x13_into_R7_a
   
   MOVImmediateT1(instruction);
   
-  TEST_ASSERT_EQUAL(0x13, coreReg->reg[7].data);
-  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
-  destroyCoreRegister(coreReg);
+  TEST_ASSERT_EQUAL(0x13, coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
@@ -51,9 +48,8 @@ void test_MOVImmediateT2_given_instruction_0xf44f573c_should_move_into_0x2f00_in
   uint32_t instruction = 0xf45f573c;
   
   MOVImmediateT2(instruction);
-  TEST_ASSERT_EQUAL(0x2f00, coreReg->reg[7].data);
-  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
-  destroyCoreRegister(coreReg);
+  TEST_ASSERT_EQUAL(0x2f00, coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
@@ -63,9 +59,8 @@ void test_MOVImmediateT2_given_instruction_0xf04f35ff_should_move_into_0xfffffff
   uint32_t instruction = 0xf04f35ff;
 
   MOVImmediateT2(instruction);
-  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
-  TEST_ASSERT_EQUAL(0x01000000,StatusRegisters);
-  destroyCoreRegister(coreReg);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
@@ -75,9 +70,8 @@ void test_MOVImmediateT2_given_instruction_0xf05f35ff_should_move_into_0xfffffff
   uint32_t instruction = 0xf05f35ff;
 
   MOVImmediateT2(instruction);
-  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[5].data);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[5]);
   TEST_ASSERT_EQUAL(1 , isNegative() );
-  destroyCoreRegister(coreReg);
 }
 
 
@@ -93,10 +87,8 @@ void test_MOVImmediateT3_given_instruction_0xf2400542_should_move_into_0x42_into
   
   MOVImmediateT3(instruction);
   
-  TEST_ASSERT_EQUAL(0x42, coreReg->reg[5].data);
-  
-  destroyCoreRegister(coreReg);
-  
+  TEST_ASSERT_EQUAL(0x42, coreReg[5]);
+
 }
 
 
@@ -112,10 +104,7 @@ void test_MOVImmediateT3_given_instruction_0xf2405c42_should_move_into_0x542_int
   
   MOVImmediateT3(instruction);
   
-  TEST_ASSERT_EQUAL(0x542, coreReg->reg[12].data);
-  
-  destroyCoreRegister(coreReg);
-  
+  TEST_ASSERT_EQUAL(0x542, coreReg[12]);
 }
 
 
@@ -132,10 +121,7 @@ void test_MOVImmediateT3_given_instruction_0xf6405c42_should_move_into_0xd42_int
   
   MOVImmediateT3(instruction);
   
-  TEST_ASSERT_EQUAL(0xd42, coreReg->reg[12].data);
-  
-  destroyCoreRegister(coreReg);
-  
+  TEST_ASSERT_EQUAL(0xd42, coreReg[12]);
 }
 
 
@@ -152,10 +138,7 @@ void test_MOVImmediateT3_given_instruction_0xf6435342_should_move_into_0x3d42_in
   
   MOVImmediateT3(instruction);
   
-  TEST_ASSERT_EQUAL(0x3d42, coreReg->reg[3].data);
-  
-  destroyCoreRegister(coreReg);
-  
+  TEST_ASSERT_EQUAL(0x3d42, coreReg[3]);
 }
 
 // MOVW r5, 0xF360
@@ -165,10 +148,7 @@ void test_MOVImmediateT3_given_instruction_0xf24f3560_should_move_into_0xf360_in
   
   MOVImmediateT3(instruction);
   
-  TEST_ASSERT_EQUAL(0xf360, coreReg->reg[5].data);
-  
-  destroyCoreRegister(coreReg);
-  
+  TEST_ASSERT_EQUAL(0xf360, coreReg[5]);
 }
 
 

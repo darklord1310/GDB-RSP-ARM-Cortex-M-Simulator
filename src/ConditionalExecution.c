@@ -1,5 +1,9 @@
 #include "ConditionalExecution.h"
 #include <assert.h>
+#include "getBits.h"
+#include "getMask.h"
+#include "ARMRegisters.h"
+#include "StatusRegisters.h"
 
 /* This function will handle for the conditional execution for thumb instructions
    Eg  if ADDNE, then this function will check if the condition is achieve or not
@@ -60,19 +64,19 @@ int checkCondition(uint32_t cond)
                 return 1;
               else
                 return 0;
-    case GE : if( getBits(StatusRegisters,31,31) == getBits(StatusRegisters,28,28))
+    case GE : if( getBits(coreReg[xPSR],31,31) == getBits(coreReg[xPSR],28,28))
                 return 1;
               else
                 return 0;
-    case LT : if( getBits(StatusRegisters,31,31) != getBits(StatusRegisters,28,28) )
+    case LT : if( getBits(coreReg[xPSR],31,31) != getBits(coreReg[xPSR],28,28) )
                 return 1;
               else
                 return 0;
-    case GT : if( !isZero() && (getBits(StatusRegisters,31,31) == getBits(StatusRegisters,28,28) ) )
+    case GT : if( !isZero() && (getBits(coreReg[xPSR],31,31) == getBits(coreReg[xPSR],28,28) ) )
                 return 1;
               else 
                 return 0;
-    case LE : if( isZero() && (getBits(StatusRegisters,31,31) != getBits(StatusRegisters,28,28) ) )
+    case LE : if( isZero() && (getBits(coreReg[xPSR],31,31) != getBits(coreReg[xPSR],28,28) ) )
                 return 1;
               else 
                 return 0;

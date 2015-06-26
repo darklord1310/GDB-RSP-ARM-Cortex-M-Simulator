@@ -19,8 +19,8 @@ uint32_t getBits(uint32_t instruction, int higherRange, int lowerRange)
     assert(higherRange >= lowerRange);
     assert(lowerRange >= 0);
     
-    uint32_t mask = getMask(higherRange);               //get the mask to mask off the bits before 
-                                                            //the higher limit 
+    uint32_t mask = getMaskforGetBits(higherRange);               //get the mask to mask off the bits before 
+                                                                  //the higher limit 
 
     StreamOfBits = ( instruction & mask ) ;
     StreamOfBits = StreamOfBits >> lowerRange;
@@ -28,3 +28,10 @@ uint32_t getBits(uint32_t instruction, int higherRange, int lowerRange)
     return StreamOfBits;
 }
 
+
+uint32_t setBits(uint32_t input_value, int higherRange, int lowerRange)
+{
+  
+  
+  
+}

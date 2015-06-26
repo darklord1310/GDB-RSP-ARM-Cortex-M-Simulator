@@ -1,9 +1,6 @@
 #ifndef ASRImmediate_H
 #define ASRImmediate_H
 
-#include "ARMRegisters.h"
-#include "getBits.h"
-#include "StatusRegisters.h"
 #include <stdint.h>
 
 void ASRImmediateT1(uint32_t instruction);

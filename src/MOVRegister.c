@@ -36,7 +36,6 @@ void MOVRegisterToRegisterT1(uint32_t instruction)
                             // Eg. new Rd = D Rd2 Rd1 Rd0
 
   executeMOVRegister(Rm, Rd, 0);
-
 }
 
 
@@ -85,12 +84,12 @@ void MOVRegisterToRegisterT2(uint32_t instruction)
 */
 void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  coreReg->reg[Rd].data = coreReg->reg[Rm].data;
+  coreReg[Rd] = coreReg[Rm];
   
   if(S == 1)
   {
-    updateZeroFlag(coreReg->reg[Rd].data);
-    updateNegativeFlag(coreReg->reg[Rd].data);
+    updateZeroFlag(coreReg[Rd]);
+    updateNegativeFlag(coreReg[Rd]);
   }
 }
 
@@ -126,10 +125,10 @@ void MOVRegisterToRegisterT3(uint32_t instruction, CoreRegister *coreReg)
   uint32_t i = getBits(instruction, 20, 20);
   uint32_t statusFlag = getBits(instruction, 20, 20);
   
-  coreReg->reg[Rd].data = coreReg->reg[Rm].data;
+  coreReg[Rd].data = coreReg[Rm].data;
   
   if(statusFlag == 1)
-    updateStatusRegister(coreReg->reg[Rd].data);
+    updateStatusRegister(coreReg[Rd].data);
   
 }
 */

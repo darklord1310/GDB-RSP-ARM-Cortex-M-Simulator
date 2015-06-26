@@ -128,16 +128,16 @@ void MOVImmediateT3(uint32_t instruction)
 */
 void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
 {
-  coreReg->reg[Rd].data = immediate;                              //move immediate into destination register
-  int MSBofImmediate = getBits(coreReg->reg[Rd].data,31,31);      //check the bit31 of the immediate, set carry flag
-                                                                  //accordingly
+  coreReg[Rd] = immediate;                              //move immediate into destination register
+  int MSBofImmediate = getBits(coreReg[Rd],31,31);      //check the bit31 of the immediate, set carry flag
+                                                        //accordingly
   if(S == 1)
   {
-    updateZeroFlag(coreReg->reg[Rd].data);
-    updateNegativeFlag(coreReg->reg[Rd].data);
-    if(immediate > 0xff)                                          //When an Operand2 constant is used with the instructions MOVS, MVNS, ANDS, ORRS, 
-    {                                                             //ORNS, EORS, BICS, TEQ or TST, the carry flag is updated to bit[31] of the constant
-                                                                  //if the constant is greater than 255 and can be produced by shifting an 8-bit value
+    updateZeroFlag(coreReg[Rd]);
+    updateNegativeFlag(coreReg[Rd]);
+    if(immediate > 0xff)                                //When an Operand2 constant is used with the instructions MOVS, MVNS, ANDS, ORRS, 
+    {                                                   //ORNS, EORS, BICS, TEQ or TST, the carry flag is updated to bit[31] of the constant
+                                                        //if the constant is greater than 255 and can be produced by shifting an 8-bit value
       if(MSBofImmediate == 1)
         setCarryFlag();
       else

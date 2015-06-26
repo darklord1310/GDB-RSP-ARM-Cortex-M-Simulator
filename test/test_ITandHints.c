@@ -1,5 +1,8 @@
 #include "unity.h"
 #include "ITandHints.h"
+#include "getBits.h"
+#include "getMask.h"
+#include "StatusRegisters.h"
 
 void setUp(void)
 {
@@ -9,7 +12,7 @@ void tearDown(void)
 {
 }
 
-void test_module_generator_needs_to_be_implemented(void)
+void test_ITandHints(void)
 {
-	TEST_IGNORE_MESSAGE("Implement me!");
+
 }

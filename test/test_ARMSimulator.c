@@ -22,8 +22,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
   initThumb16bitsOpcode00XXX();
 }
 

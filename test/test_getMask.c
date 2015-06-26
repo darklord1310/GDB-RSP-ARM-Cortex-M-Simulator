@@ -19,10 +19,10 @@ void tearDown(void)
  *                      16
  *
  */
-void test_getMask_given_bitPosition_16_should_return_0x0001ffff()
+void test_getMaskforGetBits_given_bitPosition_16_should_return_0x0001ffff()
 {
   uint32_t mask;
-  mask = getMask(16);
+  mask = getMaskforGetBits(16);
 
   TEST_ASSERT_EQUAL(0x0001ffff,mask);
 }
@@ -37,10 +37,10 @@ void test_getMask_given_bitPosition_16_should_return_0x0001ffff()
  *                     17
  *
  */
-void test_getMask_given_bitPosition_17_should_return_0x0003ffff()
+void test_getMaskforGetBits_given_bitPosition_17_should_return_0x0003ffff()
 {
   uint32_t mask;
-  mask = getMask(17);
+  mask = getMaskforGetBits(17);
 
   TEST_ASSERT_EQUAL(0x0003ffff,mask);
 }
@@ -54,10 +54,10 @@ void test_getMask_given_bitPosition_17_should_return_0x0003ffff()
  *                    18
  *
  */
-void test_getMask_given_bitPosition_18_should_return_0x0007ffff()
+void test_getMaskforGetBits_given_bitPosition_18_should_return_0x0007ffff()
 {
   uint32_t mask;
-  mask = getMask(18);
+  mask = getMaskforGetBits(18);
 
   TEST_ASSERT_EQUAL(0x0007ffff,mask);
 }
@@ -72,10 +72,10 @@ void test_getMask_given_bitPosition_18_should_return_0x0007ffff()
  *                   19
  *
  */
-void test_getMask_given_bitPosition_19_should_return_0x000fffff()
+void test_getMaskforGetBits_given_bitPosition_19_should_return_0x000fffff()
 {
   uint32_t mask;
-  mask = getMask(19);
+  mask = getMaskforGetBits(19);
 
   TEST_ASSERT_EQUAL(0x000fffff,mask);
 }
@@ -91,10 +91,10 @@ void test_getMask_given_bitPosition_19_should_return_0x000fffff()
  * 31
  *
  */
-void test_getMask_given_bitPosition_31_should_return_0xffffffff()
+void test_getMaskforGetBits_given_bitPosition_31_should_return_0xffffffff()
 {
   uint32_t mask;
-  mask = getMask(31);
+  mask = getMaskforGetBits(31);
 
   TEST_ASSERT_EQUAL(0xffffffff,mask);
 }
@@ -110,10 +110,10 @@ void test_getMask_given_bitPosition_31_should_return_0xffffffff()
  *                                            3
  *
  */
-void test_getMask_given_bitPosition_3_should_return_0x0000000f()
+void test_getMaskforGetBits_given_bitPosition_3_should_return_0x0000000f()
 {
   uint32_t mask;
-  mask = getMask(3);
+  mask = getMaskforGetBits(3);
   
   TEST_ASSERT_EQUAL(0x0000000f,mask);
 }
@@ -128,12 +128,21 @@ void test_getMask_given_bitPosition_3_should_return_0x0000000f()
  *                                               0
  *
  */
-void test_getMask_given_bitPosition_0_should_return_0x00000001()
+void test_getMaskforGetBits_given_bitPosition_0_should_return_0x00000001()
 {
   uint32_t mask;
-  mask = getMask(0);
+  mask = getMaskforGetBits(0);
 
   TEST_ASSERT_EQUAL(0x00000001,mask);
 }
 
+
+void test_getMaskforSetBits_given_bitPosition_3_and_0110_should_return_0xfffffff6()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(3 , 0b0110);
+
+  TEST_ASSERT_EQUAL(0xfffffff6,mask);
+  
+}
 

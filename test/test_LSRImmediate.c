@@ -8,8 +8,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)
@@ -22,13 +21,13 @@ void test_LSRImmediateT1_given_0x0812_should_shift_right_r2_32_times_and_write_t
 {
   uint32_t instruction = 0x08120000;
   
-  coreReg->reg[2].data = 0xffffffff;                    //set R2 to be 0xffffffff
+  coreReg[2] = 0xffffffff;                    //set R2 to be 0xffffffff
   LSRImmediateT1(instruction);
           
-  TEST_ASSERT_EQUAL(0x00, coreReg->reg[2].data);        //after shift right 32 times, should get 0x00
+  TEST_ASSERT_EQUAL(0x00, coreReg[2]);        //after shift right 32 times, should get 0x00
   TEST_ASSERT_EQUAL(1, isCarry());
   TEST_ASSERT_EQUAL(1, isZero());
-  destroyCoreRegister(coreReg);
+
 }
 
 
@@ -37,14 +36,13 @@ void test_LSRImmediateT1_given_0x0bd1_should_shift_right_r2_15_times_and_write_t
 {
   uint32_t instruction = 0x0bd10000;
   
-  coreReg->reg[2].data = 0xffffffff;                          //set R2 to be 0xffffffff
+  coreReg[2] = 0xffffffff;                          //set R2 to be 0xffffffff
   LSRImmediateT1(instruction);
           
-  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[2].data);    
-  TEST_ASSERT_EQUAL(0x0001ffff, coreReg->reg[1].data);        //after shift right 15 times, should get 0x0001ffff
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x0001ffff, coreReg[1]);        //after shift right 15 times, should get 0x0001ffff
   TEST_ASSERT_EQUAL(1, isCarry());
   
-  destroyCoreRegister(coreReg);
 }
 
 //minimum shift
@@ -53,14 +51,13 @@ void test_LSRImmediateT1_given_0x0851_should_shift_right_r2_1_times_and_write_to
 {
   uint32_t instruction = 0x08510000;
   
-  coreReg->reg[2].data = 0xffffffff;                          //set R2 to be 0xffffffff
+  coreReg[2] = 0xffffffff;                          //set R2 to be 0xffffffff
   LSRImmediateT1(instruction);
           
-  TEST_ASSERT_EQUAL(0xffffffff, coreReg->reg[2].data);    
-  TEST_ASSERT_EQUAL(0x7fffffff, coreReg->reg[1].data);        //after shift right 1 times, should get 0x7fffffff
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[1]);        //after shift right 1 times, should get 0x7fffffff
   TEST_ASSERT_EQUAL(1 , isCarry() );
 
-  destroyCoreRegister(coreReg);
 }
 
 

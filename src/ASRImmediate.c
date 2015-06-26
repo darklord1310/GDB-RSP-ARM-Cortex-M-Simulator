@@ -1,4 +1,7 @@
 #include "ASRImmediate.h"
+#include "ARMRegisters.h"
+#include "getBits.h"
+#include "StatusRegisters.h"
 #include <stdio.h>
 
 /*Arithmetic Shift Right Immediate Encoding T1
@@ -27,7 +30,7 @@ void ASRImmediateT1(uint32_t instruction)
   uint32_t imm5 = getBits(instruction, 26 , 22);
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
-  uint32_t MSBofRm = getBits( coreReg->reg[Rm].data, 31,31 );
+  uint32_t MSBofRm = getBits( coreReg[Rm], 31,31 );
   
   if(inITBlock())
     executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
@@ -51,7 +54,7 @@ void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t Statu
   uint32_t mask = MSBofRm << 31;                //create mask to make change the 0 shifted in to become
                                                 //MSB of Rm to achieve arithmetic shift
                                                 
-  uint32_t temp = coreReg->reg[Rm].data;        //create a dummy to prevent changing the register value
+  uint32_t temp = coreReg[Rm];                  //create a dummy to prevent changing the register value
   
   if( imm5 != 0)                                //if imm5 is not zero, means not maximum 32 shift
     timesToShift = imm5;
@@ -65,7 +68,7 @@ void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t Statu
     temp = ( temp >> 1 ) | mask;
   }
   
-  coreReg->reg[Rd].data = temp;
+  coreReg[Rd] = temp;
   
   if(StatusBit == 1)
   {

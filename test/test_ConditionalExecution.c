@@ -1,12 +1,13 @@
 #include "unity.h"
 #include "ConditionalExecution.h"
+#include "ARMRegisters.h"
 #include "StatusRegisters.h"
 #include "getBits.h"
 #include "getMask.h"
 
 void setUp(void)
 {
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)

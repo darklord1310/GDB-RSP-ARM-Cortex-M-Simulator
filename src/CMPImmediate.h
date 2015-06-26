@@ -1,10 +1,6 @@
 #ifndef CMPImmediate_H
 #define CMPImmediate_H
 
-#include "ARMRegisters.h"
-#include "getBits.h"
-#include "StatusRegisters.h"
-#include "ModifiedImmediateConstant.h"
 #include <stdint.h>
 
 void CMPImmediateT1(uint32_t instruction);

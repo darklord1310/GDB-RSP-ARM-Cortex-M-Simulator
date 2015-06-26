@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-uint32_t StatusRegisters;
 
 bool isNegative();
 bool isZero();
@@ -19,7 +18,6 @@ void resetOverflowFlag();
 void resetCarryFlag();
 void resetNegativeFlag();
 void resetZeroFlag();
-void initStatusRegister();
 void updateZeroFlag(uint32_t value);
 void updateNegativeFlag(uint32_t value);
 void updateCarryFlagAddition(uint32_t value1, uint32_t value2);
@@ -28,5 +26,6 @@ void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t resul
 void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t result);
 int inITBlock();
 uint32_t getITCond();
+void setITState(uint32_t IT7to2, uint32_t IT1to0);
 
 #endif // StatusRegisters_H

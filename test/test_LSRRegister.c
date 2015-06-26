@@ -9,8 +9,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)
@@ -22,12 +21,11 @@ void test_LSRRegisterToRegister16bitsT1_given_0x40d1_should_shift_right_r1_19_ti
 {
   uint32_t instruction = 0x40d10000;
   
-  coreReg->reg[1].data = 0xffffffff;                          //set R1 to be 0xffffffff
-  coreReg->reg[2].data = 0x00000113;                          //set R2 to be 0x00000113
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000113;                          //set R2 to be 0x00000113
   LSRRegisterToRegisterT1(instruction);
           
-  TEST_ASSERT_EQUAL(0x00000113, coreReg->reg[2].data);    
-  TEST_ASSERT_EQUAL(0x00001fff, coreReg->reg[1].data);        //after shift right 19 times, should get 0x00001fff
+  TEST_ASSERT_EQUAL(0x00000113, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x00001fff, coreReg[1]);        //after shift right 19 times, should get 0x00001fff
  
-  destroyCoreRegister(coreReg);
 }

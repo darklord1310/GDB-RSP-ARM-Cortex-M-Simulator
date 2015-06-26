@@ -100,14 +100,14 @@ void SUBImmediateT2(uint32_t instruction)
 */
 void executeSUBImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t S)
 {
-  uint32_t temp = coreReg->reg[Rn].data - immediate;            //get the result of Rn - immediate
-  coreReg->reg[Rd].data = temp;
+  uint32_t temp = coreReg[Rn] - immediate;            //get the result of Rn - immediate
+  coreReg[Rd] = temp;
   
   if(S == 1)
   {
-    updateZeroFlag(coreReg->reg[Rd].data);
-    updateNegativeFlag(coreReg->reg[Rd].data);
-    updateOverflowFlagSubtraction(coreReg->reg[Rn].data, immediate,temp);
-    updateCarryFlagSubtraction(coreReg->reg[Rn].data, immediate);
+    updateZeroFlag(coreReg[Rd]);
+    updateNegativeFlag(coreReg[Rd]);
+    updateOverflowFlagSubtraction(coreReg[Rn], immediate,temp);
+    updateCarryFlagSubtraction(coreReg[Rn], immediate);
   }
 }

@@ -30,7 +30,7 @@ void LSLRegisterToRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rdn = getBits(instruction, 18, 16);
 
-  unsigned int timesToShift = getBits( coreReg->reg[Rm].data ,7, 0);    //get the lowest byte from the Rm register
+  unsigned int timesToShift = getBits( coreReg[Rm] ,7, 0);    //get the lowest byte from the Rm register
 
-	coreReg->reg[Rdn].data =  coreReg->reg[Rdn].data << timesToShift;
+	coreReg[Rdn] = coreReg[Rdn] << timesToShift;
 }

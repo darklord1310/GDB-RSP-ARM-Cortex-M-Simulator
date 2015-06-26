@@ -50,19 +50,19 @@ void executeLSRImmediate(uint32_t immediate, uint32_t Rm, uint32_t Rd, uint32_t 
   
   if( immediate == 0)                                                       //if immediate is 0, means maximum shift, shift 32 times
   {
-    lastBitShifted = getBits(coreReg->reg[Rm].data,31,31);                  //this is to get the lastBitShifted out, the value will determine the carry flag
-    coreReg->reg[Rd].data = 0x0;                                            //the destination will have value of 0x0 for sure
+    lastBitShifted = getBits(coreReg[Rm],31,31);                            //this is to get the lastBitShifted out, the value will determine the carry flag
+    coreReg[Rd] = 0x0;                                                      //the destination will have value of 0x0 for sure
   }
   else
   {
-    lastBitShifted = getBits(coreReg->reg[Rm].data, immediate-1, immediate-1) ;  //this is to get the lastBitShifted out, the value will determine the carry flag
-    coreReg->reg[Rd].data = coreReg->reg[Rm].data >> immediate;
+    lastBitShifted = getBits(coreReg[Rm], immediate-1, immediate-1) ;       //this is to get the lastBitShifted out, the value will determine the carry flag
+    coreReg[Rd] = coreReg[Rm] >> immediate;
   }
   
   if(S == 1)                                                                //update status register
   {
-    updateNegativeFlag(coreReg->reg[Rd].data);
-    updateZeroFlag(coreReg->reg[Rd].data);
+    updateNegativeFlag(coreReg[Rd]);
+    updateZeroFlag(coreReg[Rd]);
     if(lastBitShifted == 1)
       setCarryFlag();
     else

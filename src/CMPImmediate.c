@@ -1,4 +1,8 @@
 #include "CMPImmediate.h"
+#include "ARMRegisters.h"
+#include "getBits.h"
+#include "StatusRegisters.h"
+#include "ModifiedImmediateConstant.h"
 #include <stdio.h>
 
 /*Compare Immediate Encoding T1
@@ -67,12 +71,12 @@ void CMPImmediateT2(uint32_t instruction)
 */
 void executeCMP(uint32_t value, uint32_t Rn )
 {
-  uint32_t temp = coreReg->reg[Rn].data - value;
+  uint32_t temp = coreReg[Rn] - value;
   
   updateZeroFlag(temp);
-  updateCarryFlagSubtraction(coreReg->reg[Rn].data , value);
+  updateCarryFlagSubtraction(coreReg[Rn] , value);
   updateNegativeFlag(temp);
-  updateOverflowFlagSubtraction(coreReg->reg[Rn].data, value, temp);
+  updateOverflowFlagSubtraction(coreReg[Rn], value, temp);
 
 }
 

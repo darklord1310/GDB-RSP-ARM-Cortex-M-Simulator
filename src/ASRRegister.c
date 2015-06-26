@@ -26,16 +26,16 @@ void ASRRegisterToRegister16bitsT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rdn = getBits(instruction, 18, 16);
 	
-  unsigned int timesToShift = getBits( coreReg->reg[Rm].data ,7, 0);    //get the lowest byte from the Rm register
-  unsigned int mask = ( getBits( coreReg->reg[Rm].data, 31,31 ) ) << 31;
-  uint32_t temp = coreReg->reg[Rm].data;
+  unsigned int timesToShift = getBits( coreReg[Rm] ,7, 0);    //get the lowest byte from the Rm register
+  unsigned int mask = ( getBits( coreReg[Rm], 31,31 ) ) << 31;
+  uint32_t temp = coreReg[Rm];
   
   for(i = 0; i < timesToShift; i++)
   {
     temp = ( temp >> 1 ) | mask;
   }
 
-  coreReg->reg[Rdn].data = temp;
+  coreReg[Rdn] = temp;
 }
 
 

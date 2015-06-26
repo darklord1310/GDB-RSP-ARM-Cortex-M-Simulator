@@ -9,8 +9,7 @@
 
 void setUp(void)
 {
-  coreReg = initCoreRegister();
-  initStatusRegister();
+  initCoreRegister();
 }
 
 void tearDown(void)
@@ -22,13 +21,12 @@ void test_SUBRegisterToRegisterT1_given_0x1b1a_and_r3_is_3000_r4_is_2000_should_
 {
   uint32_t instruction = 0x1b1a0000;
   
-  coreReg->reg[3].data = 3000;
-  coreReg->reg[4].data = 2000;
+  coreReg[3] = 3000;
+  coreReg[4] = 2000;
   SUBRegisterToRegisterT1(instruction);
   
-  TEST_ASSERT_EQUAL(0x3e8, coreReg->reg[2].data);
+  TEST_ASSERT_EQUAL(0x3e8, coreReg[2]);
   TEST_ASSERT_EQUAL(1,isCarry());
-  destroyCoreRegister(coreReg);
 }
 
 
@@ -38,11 +36,10 @@ void test_SUBRegisterToRegisterT1_given_0x1b1a_and_r3_is_0xffffffff_r4_is_0x8000
 {
   uint32_t instruction = 0x1b1a0000;
   
-  coreReg->reg[3].data = 0xffffffff;
-  coreReg->reg[4].data = 0x80000000;
+  coreReg[3] = 0xffffffff;
+  coreReg[4] = 0x80000000;
   SUBRegisterToRegisterT1(instruction);
   
-  TEST_ASSERT_EQUAL(0x7fffffff, coreReg->reg[2].data);
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[2]);
   TEST_ASSERT_EQUAL(1, isCarry() );
-  destroyCoreRegister(coreReg);
 }

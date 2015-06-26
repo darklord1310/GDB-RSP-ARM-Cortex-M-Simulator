@@ -1,6 +1,7 @@
 #include "LSLImmediate.h"
 #include <stdint.h>
 
+
 /*Logical Shift Left Immediate Encoding T1
       LSLS <Rd>,<Rm>,#<imm5>      Outside IT block.
       LSL<c> <Rd>,<Rm>,#<imm5>    Inside IT block
@@ -51,13 +52,13 @@ void executeLSLImmediate(uint32_t immediate, uint32_t Rm, uint32_t Rd, uint32_t 
 {
   int lastBitShifted;
   
-  lastBitShifted = getBits(coreReg->reg[Rm].data, 32-immediate, 32-immediate) ;  //this is to get the lastBitShifted out, the value will determine the carry flag
-  coreReg->reg[Rd].data = coreReg->reg[Rm].data << immediate;
+  lastBitShifted = getBits(coreReg[Rm], 32-immediate, 32-immediate) ;  //this is to get the lastBitShifted out, the value will determine the carry flag
+  coreReg[Rd] = coreReg[Rm] << immediate;
 
   if(S == 1)                                                                      //update status register
   {
-    updateNegativeFlag(coreReg->reg[Rd].data);
-    updateZeroFlag(coreReg->reg[Rd].data);
+    updateNegativeFlag(coreReg[Rd]);
+    updateZeroFlag(coreReg[Rd]);
     if(lastBitShifted == 1)
       setCarryFlag();
     else
