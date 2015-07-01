@@ -254,5 +254,5 @@ void test_writeSingleRegister_given_following_data_should_write_value_to_a_regis
 
     writeSingleRegister(data);
 
-    // TEST_ASSERT_EQUAL_STRING(0x1052ffff, coreReg->reg[5].data);
+    TEST_ASSERT_EQUAL(0x1052ffff, coreReg[6]);
 }

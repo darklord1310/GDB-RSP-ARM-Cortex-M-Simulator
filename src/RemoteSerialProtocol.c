@@ -163,10 +163,10 @@ void writeSingleRegister(char *data)
     
     printf("Reg val: %x\n", regValue);
     
-    // coreReg-
+    coreReg[regNum] = regValue;
 }
 
 void writeAllRegister()
 {
-
+    
 }
