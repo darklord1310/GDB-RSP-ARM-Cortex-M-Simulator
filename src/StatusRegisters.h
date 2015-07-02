@@ -26,6 +26,6 @@ void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t resul
 void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t result);
 int inITBlock();
 uint32_t getITCond();
-void setITState(uint32_t IT7to2, uint32_t IT1to0);
+void shiftITState();
 
 #endif // StatusRegisters_H
