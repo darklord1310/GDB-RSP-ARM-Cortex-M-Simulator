@@ -1,22 +1,39 @@
 #include "unity.h"
 #include "ADDImmediate.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "ModifiedImmediateConstant.h"
+#include "ConditionalExecution.h"
+#include "ITandHints.h"
+#include "StatusRegisters.h"
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "StatusRegisters.h"
-#include "ConditionalExecution.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
 #include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ARMSimulator.h"
+#include "ITandHints.h"
 
 void setUp(void)
 {
-  initCoreRegister();
+  initializeSimulator();
 }
 
 void tearDown(void)
 {
 }
+
 
 //boundary test, maximum immediate number allowed which is 7
 //test ADDS R2, R3, #0x07 given R3 = 0x01
@@ -25,7 +42,7 @@ void test_ADDImmediateT1_given_0x1dda_and_r3_is_0x01_should_get_0x08_at_r2_xPSR_
   uint32_t instruction = 0x1dda0000;
   
   coreReg[3] = 0x01;
-  ADDImmediateT1(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x08, coreReg[2]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
@@ -39,7 +56,7 @@ void test_ADDImmediateT1_given_0x1dda_and_r3_is_3000_should_get_0x07_at_r2_xPSR_
   uint32_t instruction = 0x1dda0000;
   
   coreReg[3] = 3000;
-  ADDImmediateT1(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xbbf, coreReg[2]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
@@ -52,7 +69,7 @@ void test_ADDImmediateT2_given_0x3308_and_r3_is_3000_should_get_0xbc0_at_r3_xPSR
   uint32_t instruction = 0x33080000;
   
   coreReg[3] = 3000;
-  ADDImmediateT2(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xbc0, coreReg[3]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
@@ -66,7 +83,7 @@ void test_ADDImmediateT2_given_0x3300_and_r3_is_3000_should_get_3000_at_r3_xPSR_
   uint32_t instruction = 0x33000000;
   
   coreReg[3] = 3000;
-  ADDImmediateT2(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(3000, coreReg[3]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
@@ -80,9 +97,11 @@ void test_ADDImmediateT2_given_0x33ff_and_r3_is_3000_should_get_0xbc0_at_r3_xPSR
   uint32_t instruction = 0x33ff0000;
   
   coreReg[3] = 3000;
-  ADDImmediateT2(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xcb7, coreReg[3]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 
 }
+
+

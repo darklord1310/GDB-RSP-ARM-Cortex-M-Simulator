@@ -18,10 +18,10 @@ void tearDown(void)
 void test_checkCondition_given_0000_and_Z_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0000;
+  cond = 0b0000;
   setZeroFlag();
   
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -30,10 +30,10 @@ void test_checkCondition_given_0000_and_Z_flag_set_should_return_1(void)
 void test_checkCondition_given_0000_and_Z_flag_not_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0000;
+  cond = 0b0000;
   resetZeroFlag();
   
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -42,10 +42,10 @@ void test_checkCondition_given_0000_and_Z_flag_not_set_should_return_0(void)
 void test_checkCondition_given_0001_and_Z_flag_not_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0001;
+  cond = 0b0001;
   resetZeroFlag();
   
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -54,10 +54,10 @@ void test_checkCondition_given_0001_and_Z_flag_not_set_should_return_1(void)
 void test_checkCondition_given_0001_and_Z_flag_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0001;
+  cond = 0b0001;
   setZeroFlag();
   
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -66,10 +66,10 @@ void test_checkCondition_given_0001_and_Z_flag_set_should_return_0(void)
 void test_checkCondition_given_0010_and_C_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0010;
+  cond = 0b0010;
   setCarryFlag();
   
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -78,10 +78,10 @@ void test_checkCondition_given_0010_and_C_flag_set_should_return_1(void)
 void test_checkCondition_given_0010_and_C_flag_not_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0010;
+  cond = 0b0010;
   resetCarryFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -90,10 +90,10 @@ void test_checkCondition_given_0010_and_C_flag_not_set_should_return_0(void)
 void test_checkCondition_given_0011_and_C_flag_not_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0011;
+  cond = 0b0011;
   resetCarryFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -102,10 +102,10 @@ void test_checkCondition_given_0011_and_C_flag_not_set_should_return_1(void)
 void test_checkCondition_given_0011_and_C_flag_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0011;
+  cond = 0b0011;
   setCarryFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -114,10 +114,10 @@ void test_checkCondition_given_0011_and_C_flag_set_should_return_0(void)
 void test_checkCondition_given_0100_and_N_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0100;
+  cond = 0b0100;
   setNegativeFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -126,10 +126,10 @@ void test_checkCondition_given_0100_and_N_flag_set_should_return_1(void)
 void test_checkCondition_given_0100_and_N_flag_not_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0100;
+  cond = 0b0100;
   resetNegativeFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -137,10 +137,10 @@ void test_checkCondition_given_0100_and_N_flag_not_set_should_return_0(void)
 void test_checkCondition_given_0101_and_N_flag_not_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0101;
+  cond = 0b0101;
   resetNegativeFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -148,10 +148,10 @@ void test_checkCondition_given_0101_and_N_flag_not_set_should_return_1(void)
 void test_checkCondition_given_0101_and_N_flag_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0101;
+  cond = 0b0101;
   setNegativeFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -160,10 +160,10 @@ void test_checkCondition_given_0101_and_N_flag_set_should_return_0(void)
 void test_checkCondition_given_0110_and_OV_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0110;
+  cond = 0b0110;
   setOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -171,10 +171,10 @@ void test_checkCondition_given_0110_and_OV_flag_set_should_return_1(void)
 void test_checkCondition_given_0110_and_OV_flag_reset_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0110;
+  cond = 0b0110;
   resetOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -182,10 +182,10 @@ void test_checkCondition_given_0110_and_OV_flag_reset_should_return_0(void)
 void test_checkCondition_given_0111_and_OV_flag_reset_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b0111;
+  cond = 0b0111;
   resetOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -194,10 +194,10 @@ void test_checkCondition_given_0111_and_OV_flag_reset_should_return_1(void)
 void test_checkCondition_given_0111_and_OV_flag_set_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b0111;
+  cond = 0b0111;
   setOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -206,11 +206,11 @@ void test_checkCondition_given_0111_and_OV_flag_set_should_return_0(void)
 void test_checkCondition_given_1000_and_C_flag_set_and_Z_flag_reset_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1000;
+  cond = 0b1000;
   setCarryFlag();
   resetZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -219,11 +219,11 @@ void test_checkCondition_given_1000_and_C_flag_set_and_Z_flag_reset_should_retur
 void test_checkCondition_given_1001_and_C_flag_reset_and_Z_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1001;
+  cond = 0b1001;
   resetCarryFlag();
   setZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -232,11 +232,11 @@ void test_checkCondition_given_1001_and_C_flag_reset_and_Z_flag_set_should_retur
 void test_checkCondition_given_1010_if_N_flag_and_OV_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1010;
+  cond = 0b1010;
   resetNegativeFlag();
   resetOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -245,11 +245,11 @@ void test_checkCondition_given_1010_if_N_flag_and_OV_flag_set_should_return_1(vo
 void test_checkCondition_given_1010_if_N_flag_and_OV_flag_reset_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1010;
+  cond = 0b1010;
   setNegativeFlag();
   setOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -258,11 +258,11 @@ void test_checkCondition_given_1010_if_N_flag_and_OV_flag_reset_should_return_1(
 void test_checkCondition_given_1010_if_N_flag_and_OV_flag_different_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b1010;
+  cond = 0b1010;
   resetNegativeFlag();
   setOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -271,11 +271,11 @@ void test_checkCondition_given_1010_if_N_flag_and_OV_flag_different_should_retur
 void test_checkCondition_given_1011_if_N_flag_reset_and_OV_flag_set_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1011;
+  cond = 0b1011;
   resetNegativeFlag();
   setOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -283,11 +283,11 @@ void test_checkCondition_given_1011_if_N_flag_reset_and_OV_flag_set_should_retur
 void test_checkCondition_given_1011_if_N_flag_set_and_OV_flag_reset_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1011;
+  cond = 0b1011;
   setNegativeFlag();
   resetOverflowFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -297,12 +297,12 @@ void test_checkCondition_given_1011_if_N_flag_set_and_OV_flag_reset_should_retur
 void test_checkCondition_given_1100_and_possiblilty1_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1100;
+  cond = 0b1100;
   resetNegativeFlag();
   resetOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -312,12 +312,12 @@ void test_checkCondition_given_1100_and_possiblilty1_should_return_1(void)
 void test_checkCondition_given_1100_and_possiblilty2_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1100;
+  cond = 0b1100;
   setNegativeFlag();
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -326,12 +326,12 @@ void test_checkCondition_given_1100_and_possiblilty2_should_return_1(void)
 void test_checkCondition_given_1100_and_possiblilty3_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b1100;
+  cond = 0b1100;
   resetNegativeFlag();
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -341,12 +341,12 @@ void test_checkCondition_given_1100_and_possiblilty3_should_return_0(void)
 void test_checkCondition_given_1100_and_possiblilty4_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b1100;
+  cond = 0b1100;
   setNegativeFlag();
   setOverflowFlag();
   setZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -356,12 +356,12 @@ void test_checkCondition_given_1100_and_possiblilty4_should_return_0(void)
 void test_checkCondition_given_1101_and_possiblilty1_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1101;
+  cond = 0b1101;
   resetNegativeFlag();
   setOverflowFlag();
   setZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -371,12 +371,12 @@ void test_checkCondition_given_1101_and_possiblilty1_should_return_1(void)
 void test_checkCondition_given_1101_and_possiblilty2_should_return_1(void)
 {
   //create test case
-  uint32_t cond = 0b1101;
+  cond = 0b1101;
   setNegativeFlag();
   resetOverflowFlag();
   setZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -385,12 +385,12 @@ void test_checkCondition_given_1101_and_possiblilty2_should_return_1(void)
 void test_checkCondition_given_1101_and_possiblilty3_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b1101;
+  cond = 0b1101;
   resetNegativeFlag();
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -400,12 +400,12 @@ void test_checkCondition_given_1101_and_possiblilty3_should_return_0(void)
 void test_checkCondition_given_1101_and_possiblilty4_should_return_0(void)
 {
   //create test case
-  uint32_t cond = 0b1101;
+  cond = 0b1101;
   setNegativeFlag();
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition(cond);
+	int result = checkCondition();
   TEST_ASSERT_EQUAL(0,result);
 }
 

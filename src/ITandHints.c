@@ -4,7 +4,7 @@
 #include "getMask.h"
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"
-
+#include "ConditionalExecution.h"
 
 /*If-Then Encoding T1 
     
@@ -62,4 +62,5 @@ void ITandHints(uint32_t instruction)
   coreReg[xPSR] = setBits(coreReg[xPSR], IT7to2, 15, 10);
   coreReg[xPSR] = setBits(coreReg[xPSR], IT1to0, 26, 25);
   
+  cond = getITCond();                                         //update the condition
 }

@@ -5,6 +5,7 @@
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"
 
+
 /* This function will handle for the conditional execution for thumb instructions
    Eg  if ADDNE, then this function will check if the condition is achieve or not
        if yes, return 1
@@ -18,7 +19,7 @@
  Return : 1    if condition is met
           0    if condition is not met
 */
-int checkCondition(uint32_t cond)
+int checkCondition()
 {
   assert(cond<15);
   

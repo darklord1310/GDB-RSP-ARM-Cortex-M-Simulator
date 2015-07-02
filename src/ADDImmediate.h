@@ -2,7 +2,15 @@
 #define ADDImmediate_H
 
 #include <stdint.h>
-
+#include "ModifiedImmediateConstant.h"
+#include "ConditionalExecution.h"
+#include "ITandHints.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+#include <assert.h>
+#include <stdio.h>
 
 void ADDImmediateT1(uint32_t instruction);
 void ADDImmediateT2(uint32_t instruction);

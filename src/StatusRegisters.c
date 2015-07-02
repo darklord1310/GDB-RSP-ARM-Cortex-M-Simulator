@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "ARMRegisters.h"
+#include "ConditionalExecution.h"
 
 
 /*
@@ -29,8 +30,12 @@ void shiftITState()
 {
   uint32_t IT1to0 = getBits(coreReg[xPSR], 26,25);        //get the IT[1:0] from coreReg[xPSR]
   uint32_t IT7to2 = getBits(coreReg[xPSR], 15,10);        //get the IT[7:2] from coreReg[xPSR]
-  uint32_t IT = (IT7to2 << 3) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
-  IT = IT << 1;                                           //shift the IT to left once
+  uint32_t IT = (IT7to2 << 2) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
+  
+  cond = setBits(cond , getBits(IT, 4, 4), 0, 0);         //update the condition
+  
+  uint32_t IT4to0 = getBits(IT,4,0) << 1;                 //get the IT[4:0] and perform the shifting
+  IT = setBits(IT, IT4to0, 4, 0);                         //set the IT bit 4 to 0 with the value shifted
   
   if( getBits(IT, 3,0) == 0)
   {

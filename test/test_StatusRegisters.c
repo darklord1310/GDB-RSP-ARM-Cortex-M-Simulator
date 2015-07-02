@@ -5,6 +5,8 @@
 #include "getMask.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 
 void setUp(void)
 {
@@ -201,7 +203,7 @@ void test_updateOverflowFlagSubtraction_given_value1_0x80000000_and_value2_0x400
 
 
 //ITT    EQ
-void test_inITBlock_given_statusRegister_0x01000400_should_return_1()
+void test_inITBlock_given_xPSR_0x01000400_should_return_1()
 {
   coreReg[xPSR] = 0x01000400;
   int result = inITBlock();
@@ -211,7 +213,7 @@ void test_inITBlock_given_statusRegister_0x01000400_should_return_1()
 
 
 //ITT    NE
-void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
+void test_inITBlock_given_xPSR_0x05001800_should_return_1()
 {
   coreReg[xPSR] = 0x05001800;
   int result = inITBlock();
@@ -220,7 +222,7 @@ void test_inITBlock_given_statusRegister_0x05001800_should_return_1()
 }
 
 //no IT block
-void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
+void test_inITBlock_given_xPSR_0xa1000000_should_return_0()
 {
   coreReg[xPSR] = 0xa1000000;
   int result = inITBlock();
@@ -229,21 +231,83 @@ void test_inITBlock_given_statusRegister_0xa1000000_should_return_0()
 }
 
 //ITT    EQ
-void test_getITCond_given_statusRegister_0x01000400_should_return_0000()
+void test_getITCond_given_xPSR_0xbf010000_should_return_0000()
 {
-  coreReg[xPSR] = 0x01000400;
+  ITandHints(0xbf010000);
   uint32_t result =  getITCond();
   
   TEST_ASSERT_EQUAL(0b0000, result);
 }
 
 //ITT    NE
-void test_getITCond_given_statusRegister_0x05001800_should_return_0001()
+void test_getITCond_given_xPSR_0xbf110000_should_return_0001()
 {
-  coreReg[xPSR] = 0x05001800;
+  ITandHints(0xbf110000);
   uint32_t result =  getITCond();
   
   TEST_ASSERT_EQUAL(0b0001, result);
 }
 
+
+//ITT    LE
+void test_getITCond_given_xPSR_0xbfd10000_should_return_1101()
+{
+  ITandHints(0xbfd10000);
+  uint32_t result =  getITCond();
+  
+  TEST_ASSERT_EQUAL(0b1101, result);
+}
+
+
+//testing shift 1 time
+void test_shiftITState_given_xPSR_0x07001000_shift_1_times_should_get_0x05000400()
+{
+  ITandHints(0xbf130000);
+  
+  //shift 1 time
+  shiftITState();
+  TEST_ASSERT_EQUAL(0x05000400, coreReg[xPSR]);
+}
+
+
+//testing shift 2 time
+void test_shiftITState_given_xPSR_0x03001000_shift_2_times_should_get_0x01000c00()
+{
+  ITandHints(0xbf130000);
+  
+  //shift 2 times
+  shiftITState();
+  shiftITState();
+  
+  TEST_ASSERT_EQUAL(0x01000c00, coreReg[xPSR]);
+}
+
+
+//testing shift 3 time
+void test_shiftITState_given_xPSR_0x03001000_shift_3_times_should_get_0x01001800()
+{
+  ITandHints(0xbf130000);
+  
+  //shift 2 times
+  shiftITState();
+  shiftITState();
+  shiftITState();
+
+  TEST_ASSERT_EQUAL(0x01001800, coreReg[xPSR]);
+}
+
+
+//testing shift 4 time , should expect 0x01000000
+void test_shiftITState_given_xPSR_0x03001000_shift_4_times_should_get_0x01000000()
+{
+  ITandHints(0xbf130000);
+  
+  //shift 2 times
+  shiftITState();
+  shiftITState();
+  shiftITState();
+  shiftITState();
+  
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
 

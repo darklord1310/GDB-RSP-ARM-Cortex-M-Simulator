@@ -7,10 +7,24 @@
 #include <stdbool.h>
 #include "StatusRegisters.h"
 #include "ModifiedImmediateConstant.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ARMSimulator.h"
+#include "ConditionalExecution.h"
+#include "ITandHints.h"
 
 void setUp(void)
 {
-  initCoreRegister();
+  initializeSimulator();
 }
 
 void tearDown(void)
@@ -25,7 +39,7 @@ void test_SUBImmediateT1_given_0x1fda_and_r3_is_0x01_should_get_0xfffffffa_at_r2
   uint32_t instruction = 0x1fda0000;
   
   coreReg[3] = 0x01;
-  SUBImmediateT1(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xfffffffa, coreReg[2]);
   TEST_ASSERT_EQUAL(0x01, coreReg[3]);
@@ -40,7 +54,7 @@ void test_SUBImmediateT1_given_0x1e1a_and_r3_is_3000_should_get_3000_at_r2_C_fla
   uint32_t instruction = 0x1e1a0000;
   
   coreReg[3] = 3000;
-  SUBImmediateT1(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(3000, coreReg[2]);
   TEST_ASSERT_EQUAL(1, isCarry() );
@@ -53,7 +67,7 @@ void test_SUBImmediateT2_given_0x3b08_and_r3_is_3000_should_get_0xbb0_at_r3_C_fl
   uint32_t instruction = 0x3b080000;
   
   coreReg[3] = 3000;
-  SUBImmediateT2(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xbb0, coreReg[3]);
   TEST_ASSERT_EQUAL(1, isCarry() );
@@ -67,7 +81,7 @@ void test_SUBImmediateT2_given_0x3b00_and_r3_is_3000_should_get_3000_at_r3_C_fla
   uint32_t instruction = 0x3b000000;
   
   coreReg[3] = 3000;
-  SUBImmediateT2(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(3000, coreReg[3]);
   TEST_ASSERT_EQUAL(1, isCarry() );
@@ -82,7 +96,7 @@ void test_SUBImmediateT2_given_0x3bff_and_r3_is_3000_should_get_0xab9_at_r3_C_fl
   uint32_t instruction = 0x3bff0000;
   
   coreReg[3] = 3000;
-  SUBImmediateT2(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xab9, coreReg[3]);
   TEST_ASSERT_EQUAL(1, isCarry() );

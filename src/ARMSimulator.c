@@ -82,8 +82,14 @@ void Categorize16bitsThumbInstruction(uint32_t instruction)
 void initializeSimulator()
 {
   initCoreRegister();
-  initThumb16bitsOpcode00XXX();  
+  initializeAllTable();
   
+}
+
+void initializeAllTable()
+{
+  initThumb16bitsOpcode00XXX();
+  initThumb16bitsOpcode1011XX();
 }
 
 

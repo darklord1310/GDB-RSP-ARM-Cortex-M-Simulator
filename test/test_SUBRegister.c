@@ -6,6 +6,7 @@
 #include "StatusRegisters.h"
 #include <stdint.h>
 #include "ModifiedImmediateConstant.h"
+#include "ITandHints.h"
 
 void setUp(void)
 {

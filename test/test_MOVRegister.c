@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "StatusRegisters.h"
 #include "ModifiedImmediateConstant.h"
+#include "ITandHints.h"
 
 void setUp(void)
 {
