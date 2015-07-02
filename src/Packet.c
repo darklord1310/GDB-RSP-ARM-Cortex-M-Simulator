@@ -49,22 +49,38 @@ void destroyPacket(char *packet)
  *
  * Input:
  *      regVal          register value in HEX form
+ *      bytes            number of bytes to convert to ASCII form
  *
  * Return:
  *      asciiString     HEX value in string form
  */
-char *createdHexToString(unsigned int regVal)
+char *createdHexToString(unsigned int regVal, int bytes)
 {
     // char asciiString[9] = "";
     char *asciiString = malloc(9);
     int i, bits = 32, maskBits = 0xf;
 
-    for(i = 0; i < 8; i++)
+    switch(bytes)
+    {
+        case 3:
+            regVal = regVal << 8;
+            break;
+        case 2:
+            regVal = regVal << 16;
+            break;
+        case 1:
+            regVal = regVal << 24;
+            break;
+        default:
+            break;
+    }
+    
+    for(i = 0; i < bytes * 2; i++)
     {
         asciiString[i] = hex[regVal >> (bits - 4) & maskBits];
         bits -= 4;
     }
-    asciiString[8] = '\0';
+    asciiString[bytes * 2] = '\0';
 
     return asciiString;
 }
