@@ -48,3 +48,18 @@ void initThumb16bitsOpcode00XXX()
   Thumb16Opcode00XXXX[0b11110] = SUBImmediateT2;
   Thumb16Opcode00XXXX[0b11111] = SUBImmediateT2;
 }
+
+
+void initThumb16bitsOpcode1011XX()
+{
+  Thumb16Opcode00XXXX[0b1111000] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111001] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111010] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111011] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111100] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111101] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111110] = ITandHints;
+  Thumb16Opcode00XXXX[0b1111111] = ITandHints;
+    
+  
+}

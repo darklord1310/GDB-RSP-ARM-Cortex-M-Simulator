@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "ITandHints.h"
+#include "ConditionalExecution.h"
 
 void setUp(void)
 {
@@ -230,21 +231,31 @@ void test_inITBlock_given_xPSR_0xa1000000_should_return_0()
 }
 
 //ITT    EQ
-void test_getITCond_given_xPSR_0x01000400_should_return_0000()
+void test_getITCond_given_xPSR_0xbf010000_should_return_0000()
 {
-  coreReg[xPSR] = 0x01000400;
+  ITandHints(0xbf010000);
   uint32_t result =  getITCond();
   
   TEST_ASSERT_EQUAL(0b0000, result);
 }
 
 //ITT    NE
-void test_getITCond_given_xPSR_0x05001800_should_return_0001()
+void test_getITCond_given_xPSR_0xbf110000_should_return_0001()
 {
-  coreReg[xPSR] = 0x05001800;
+  ITandHints(0xbf110000);
   uint32_t result =  getITCond();
   
   TEST_ASSERT_EQUAL(0b0001, result);
+}
+
+
+//ITT    LE
+void test_getITCond_given_xPSR_0xbfd10000_should_return_1101()
+{
+  ITandHints(0xbfd10000);
+  uint32_t result =  getITCond();
+  
+  TEST_ASSERT_EQUAL(0b1101, result);
 }
 
 
@@ -299,3 +310,4 @@ void test_shiftITState_given_xPSR_0x03001000_shift_4_times_should_get_0x01000000
   
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
+

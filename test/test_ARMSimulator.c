@@ -19,6 +19,7 @@
 #include "ADDRegister.h"
 #include "SUBRegister.h"
 #include "ADDSPRegister.h"
+#include "ITandHints.h"
 
 void setUp(void)
 {

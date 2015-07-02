@@ -12,11 +12,13 @@
 #include "ADDRegister.h"
 #include "SUBRegister.h"
 #include "ADDSPRegister.h"
+#include "ITandHints.h"
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
 
 
 void initThumb16bitsOpcode00XXX();
+void initThumb16bitsOpcode1011XX();
 
 
 #endif // Thumb16bitsTable_H

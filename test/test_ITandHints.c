@@ -4,6 +4,7 @@
 #include "getMask.h"
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"
+#include "ConditionalExecution.h"
 
 void setUp(void)
 {
@@ -22,6 +23,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf010000_should_chan
   ITandHints(instruction);
   
   TEST_ASSERT_EQUAL(0x03000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
@@ -33,6 +35,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf020000_should_chan
   ITandHints(instruction);
   
   TEST_ASSERT_EQUAL(0x05000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
@@ -43,6 +46,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf040000_should_chan
   
   ITandHints(instruction);
   TEST_ASSERT_EQUAL(0x01000400, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
@@ -53,6 +57,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf080000_should_chan
   
   ITandHints(instruction);
   TEST_ASSERT_EQUAL(0x01000800, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
@@ -63,4 +68,5 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf480000_should_chan
   
   ITandHints(instruction);
   TEST_ASSERT_EQUAL(0x01004800, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL( MI ,cond);
 }
