@@ -17,13 +17,16 @@ struct ROMData
 
 struct ROM
 {
-  ROMData *address;     // pointer to pointer which point to the ROMData
+  // ROMData *address;     // pointer to pointer which point to the ROMData
+  ROMData address[0xFFFFFFF];     // pointer to pointer which point to the ROMData
 };
 
 // ROM *rom;
+ROMData address[0xFFFFFFF];
 
-void resetROM();
+
 ROM *initROM();
+void resetROM();
 void destroyROM(ROM *rom);
 
 #endif // ROM_H

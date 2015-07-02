@@ -4,7 +4,7 @@
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
 #include "ARMRegisters.h"
-// #include "StatusRegisters.h"
+#include "ROM.h"
 
 /*
  * This function handle all the query packet receive from
@@ -193,7 +193,28 @@ void writeAllRegister(char *data)
 
 char *readMemory(char *data)
 {
+    char *packet = NULL, *comaAddr = NULL, *asciiString;
+    unsigned int addr, memoryContent = 0;
+    int i, byteLength, bits = 0;
 
+    sscanf(&data[2], "%8x", &addr);
+    // printf("addr: %x\n", addr);
+    comaAddr = strstr(data, ",");
+    sscanf(&comaAddr[1], "%1x", &byteLength);
+    printf("byteLength: %d\n", byteLength);
+    
+    for(i = 0; i < byteLength; i++)
+    {
+        memoryContent |= (address[addr].data & (0xff << bits));
+        bits += 8;
+    }
+    printf("memoryContent: %x\n", memoryContent);
+
+    asciiString = createdHexToString(memoryContent);
+    packet = gdbCreateMsgPacket(&asciiString[]);
+    destroyHexToString(asciiString);
+
+    return packet;
 }
 
 void writeMemory(char *data)

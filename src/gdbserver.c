@@ -2,6 +2,8 @@
 #include <winsock2.h>
 #include <malloc.h>
 #include "ServeRSP.h"
+#include "ARMRegisters.h"
+#include "ROM.h"
 
 #pragma comment(lib,<ws2_32.lib>)       //Winsock Library
 
@@ -10,6 +12,9 @@
 
 void main()
 {
+    initCoreRegister();
+    resetROM();
+
     /****************Initialize Winsock.****************/
     printf( "\n1. Initialising Winsock..............." );
     WSADATA wsaData;
@@ -81,7 +86,10 @@ void main()
     char *reply = NULL;
     char recvbuf[200] = "";
 
-    while(1)
+    // initCoreRegister();
+    // resetROM();
+
+    while(recvbuf[1] != 'k')
     {
     /*
      *  Recv packet

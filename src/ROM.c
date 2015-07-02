@@ -28,7 +28,7 @@ ROM *initROM()
   int i;
 
   ROM *rom = malloc(sizeof(ROM));
-  rom->address = calloc(sizeOfROM, sizeof(ROMData));
+  // rom->address = calloc(0xFFFFFFF, sizeof(ROMData));
   // rom->address = malloc(sizeof(ROMData) * sizeOfROM);
 
   return rom;
@@ -39,10 +39,10 @@ ROM *initROM()
 void resetROM()
 {
   int i;
-  // for(i = 0 ; i < sizeOfROM ; i ++ )
-  // {
-    // rom->address[i].data = 0;
-  // }
+  for(i = 0 ; i < 0xFFFFFFF ; i ++ )
+  {
+    address[i].data = 0;
+  }
 }
 
 
