@@ -24,6 +24,27 @@ int inITBlock()
 }
 
 
+
+void shiftITState()
+{
+  uint32_t IT1to0 = getBits(coreReg[xPSR], 26,25);        //get the IT[1:0] from coreReg[xPSR]
+  uint32_t IT7to2 = getBits(coreReg[xPSR], 15,10);        //get the IT[7:2] from coreReg[xPSR]
+  uint32_t IT = (IT7to2 << 3) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
+  IT = IT << 1;                                           //shift the IT to left once
+  
+  if( getBits(IT, 3,0) == 0)
+  {
+    coreReg[xPSR] = setBits( coreReg[xPSR], 0b00,26,25);
+    coreReg[xPSR] = setBits( coreReg[xPSR], 0b000000,15,10);     //set to IT state to 0 if IT[3:0] == 0
+  }
+  else
+  {
+    coreReg[xPSR] = setBits( coreReg[xPSR], getBits(IT, 1, 0) , 26 , 25);
+    coreReg[xPSR] = setBits( coreReg[xPSR], getBits(IT, 7, 2) , 15 , 10);
+  }
+}
+
+
 /*
   This function will get the bits 15 to 12 which
   is the IT[7:4] indicating the base condition
