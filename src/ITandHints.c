@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "ARMRegisters.h"
 #include "StatusRegisters.h"
 
 
@@ -49,17 +50,16 @@ where:
      E         T         E          NOT firstcond[0]    firstcond[0]          NOT firstcond[0]    1
      T         E         E            firstcond[0]      NOT firstcond[0]      NOT firstcond[0]    1
      E         E         E          NOT firstcond[0]    NOT firstcond[0]      NOT firstcond[0]    1
+     
+     
+    Shift until the mask[3:0] is 0b0000, then means out of the IT block
 */
 void ITandHints(uint32_t instruction)
 {
   uint32_t IT7to2 = getBits(instruction,23,18);               //IT[7:2]
   uint32_t IT1to0 = getBits(instruction,17,16);               //IT[1:0]
-  uint32_t mask = 0xffff;                                     //mask used to write IT7to2 and IT1to0 into
-                                                              //status register
-  
-  
 
-  
-  
+  coreReg[xPSR] = setBits(coreReg[xPSR], IT7to2, 15, 10);
+  coreReg[xPSR] = setBits(coreReg[xPSR], IT1to0, 26, 25);
   
 }

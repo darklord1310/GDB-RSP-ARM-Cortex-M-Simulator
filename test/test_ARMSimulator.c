@@ -22,8 +22,7 @@
 
 void setUp(void)
 {
-  initCoreRegister();
-  initThumb16bitsOpcode00XXX();
+  initializeSimulator();
 }
 
 void tearDown(void)
