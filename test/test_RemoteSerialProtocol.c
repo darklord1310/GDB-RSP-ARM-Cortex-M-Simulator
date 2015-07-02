@@ -281,3 +281,23 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     TEST_ASSERT_EQUAL(0xffffffff, coreReg[PC]);
     TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
+
+void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_r7_value(void)
+{
+    char data[] = "$s#73";
+    char *reply = NULL;
+
+    initCoreRegister();
+    coreReg[PC] = 0x080d0008;
+    coreReg[7] = 0x7cff0120;
+
+    createdHexToString_ExpectAndReturn(0x080d0008, "080d0008");
+    createdHexToString_ExpectAndReturn(0x7cff0120, "7cff0120");
+    destroyHexToString_Expect("080d0008");
+    destroyHexToString_Expect("7cff0120");
+    gdbCreateMsgPacket_ExpectAndReturn("T050f:080d0008;07:7cff0120", "$T050f:080d0008;07:7cff0120#52");
+
+    reply = step(data);
+
+    TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
+}

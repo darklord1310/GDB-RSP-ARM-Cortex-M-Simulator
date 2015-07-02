@@ -190,3 +190,42 @@ void writeAllRegister(char *data)
         coreReg[i] = regValue[i];
     }
 }
+
+char *readMemory(char *data)
+{
+
+}
+
+void writeMemory(char *data)
+{
+
+}
+
+char *step(char *data)
+{
+    char *packet = NULL;
+    char *trapSignal = "T05";
+    char *pcReg = "0f";
+    char *reg7 = "07";
+    char *pcValue = createdHexToString(coreReg[PC]);
+    char *r7Value = createdHexToString(coreReg[7]);
+    char msg[50] = "";
+
+    strcat(msg, trapSignal);
+    strcat(msg, pcReg);
+    strcat(msg, ":");
+    strcat(msg, pcValue);
+    strcat(msg, ";");
+    strcat(msg, reg7);
+    strcat(msg, ":");
+    strcat(msg, r7Value);
+
+    // printf("msg: %s\n", msg);
+
+    destroyHexToString(pcValue);
+    destroyHexToString(r7Value);
+
+    packet = gdbCreateMsgPacket(msg);
+
+    return packet;
+}

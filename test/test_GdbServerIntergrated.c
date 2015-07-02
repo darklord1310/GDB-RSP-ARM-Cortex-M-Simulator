@@ -1,12 +1,9 @@
 #include <malloc.h>
 #include "unity.h"
-#include "gdbserver.h"
+#include "ServeRSP.h"
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMRegisters.h"
-// #include "StatusRegisters.h"
-// #include "getBits.h"
-// #include "getMask.h"
 
 void setUp(void)
 {
@@ -216,4 +213,18 @@ void test_serveRSP_given_data_with_G_packet_should_return_appropriate_response(v
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
     free(reply);
+}
+
+void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$s#73";
+    char *reply = NULL;
+
+    initCoreRegister();
+    coreReg[PC] = 0x080d0008;
+    coreReg[7] = 0x7cff0120;
+
+    reply = step(data);
+
+    TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
 }

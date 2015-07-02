@@ -1,8 +1,6 @@
 #ifndef Packet_H
 #define Packet_H
 
-// const char hex[] = "0123456789abcdef";
-
 char *gdbCreateMsgPacket(char *data);
 void destroyPacket(char *packet);
 
