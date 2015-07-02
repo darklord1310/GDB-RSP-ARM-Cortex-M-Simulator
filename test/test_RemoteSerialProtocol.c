@@ -249,10 +249,35 @@ void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(vo
 void test_writeSingleRegister_given_following_data_should_write_value_to_a_register(void)
 {
     char data[] = "$P6=1052ffff#23";
-    char *reply = NULL;
     initCoreRegister();
 
     writeSingleRegister(data);
 
     TEST_ASSERT_EQUAL(0x1052ffff, coreReg[6]);
+}
+
+void test_writeAllRegister_given_following_data_should_write_value_to_all_register(void)
+{
+    char data[] = "$G00000000111111112222222233333333444444445555555566666666777777778888888899999999aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff01000000#c8";
+    initCoreRegister();
+
+    writeAllRegister(data);
+
+    TEST_ASSERT_EQUAL(0x00000000, coreReg[0]);
+    TEST_ASSERT_EQUAL(0x11111111, coreReg[1]);
+    TEST_ASSERT_EQUAL(0x22222222, coreReg[2]);
+    TEST_ASSERT_EQUAL(0x33333333, coreReg[3]);
+    TEST_ASSERT_EQUAL(0x44444444, coreReg[4]);
+    TEST_ASSERT_EQUAL(0x55555555, coreReg[5]);
+    TEST_ASSERT_EQUAL(0x66666666, coreReg[6]);
+    TEST_ASSERT_EQUAL(0x77777777, coreReg[7]);
+    TEST_ASSERT_EQUAL(0x88888888, coreReg[8]);
+    TEST_ASSERT_EQUAL(0x99999999, coreReg[9]);
+    TEST_ASSERT_EQUAL(0xaaaaaaaa, coreReg[10]);
+    TEST_ASSERT_EQUAL(0xbbbbbbbb, coreReg[11]);
+    TEST_ASSERT_EQUAL(0xcccccccc, coreReg[12]);
+    TEST_ASSERT_EQUAL(0xdddddddd, coreReg[SP]);
+    TEST_ASSERT_EQUAL(0xeeeeeeee, coreReg[LR]);
+    TEST_ASSERT_EQUAL(0xffffffff, coreReg[PC]);
+    TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }

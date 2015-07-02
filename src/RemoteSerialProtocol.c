@@ -115,15 +115,14 @@ char *readSingleRegister(char *data)
  * Return:
  *      packet  complete packet with all registers values to reply to gdb client
  */
-
 char *readAllRegister()
 {
     char *packet = NULL, fullRegValue[140] = "";
     int i, j;
-    unsigned int regValue[17];
+    unsigned int regValue[numberOfRegister];
     char *asciiString;
 
-    for(i = 0; i < 17; i++)
+    for(i = 0; i < numberOfRegister; i++)
     {
         if(i < 16)
             regValue[i] = coreReg[i];
@@ -142,6 +141,12 @@ char *readAllRegister()
     return packet;
 }
 
+/*
+ * This function write one of the 17 ARM registers
+ *
+ * Input:
+ *      data    packet receive from gdb client
+ */
 void writeSingleRegister(char *data)
 {
     int regNum, i, j = 0, bits = 32;
@@ -149,10 +154,10 @@ void writeSingleRegister(char *data)
     unsigned int regValue = 0x00000000, temp;
 
     sscanf(&data[2], "%2x", &regNum);
-    printf("Reg no: %d\n", regNum);
+    // printf("Reg no: %d\n", regNum);
     addr = strstr(data, "=") + 1;
-    printf("addr %s\n", addr);
-    
+    // printf("addr %s\n", addr);
+
     for(i = 0; i < 4; i++)
     {
         sscanf(&addr[j], "%2x", &temp);
@@ -160,13 +165,28 @@ void writeSingleRegister(char *data)
         bits -= 8;
         j += 2;
     }
-    
-    printf("Reg val: %x\n", regValue);
-    
+
+    // printf("Reg val: %x\n", regValue);
+
     coreReg[regNum] = regValue;
 }
 
-void writeAllRegister()
+/*
+ * This function write all of the 17 ARM registers
+ *
+ * Input:
+ *      data    packet receive from gdb client
+ */
+void writeAllRegister(char *data)
 {
-    
+    unsigned int regValue[numberOfRegister];
+    int i, j = 2;
+
+    for(i = 0; i < numberOfRegister; i++)
+    {
+        sscanf(&data[j], "%8x", &regValue[i]);
+        // printf("Reg val %d: %x\n", i, regValue[i]);
+        j += 8;
+        coreReg[i] = regValue[i];
+    }
 }
