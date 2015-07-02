@@ -3,7 +3,7 @@
 #include "ARMRegisters.h"
 #include "ConditionalExecution.h"
 #include "StatusRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdint.h>
 #include "Thumb16bitsTable.h"

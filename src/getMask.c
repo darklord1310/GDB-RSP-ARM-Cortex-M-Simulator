@@ -28,28 +28,33 @@ uint32_t getMaskforGetBits(int bitPosition)
 }
 
 
-uint32_t getMaskforSetBits(uint32_t valueToSet, int higherRange, int lowerRange)
+
+
+
+uint32_t getMaskforSetBits(uint32_t valueToSet, int bitPosition)
 {
-  unsigned int bitValue;
-  assert(higherRange > -1);
-  assert(lowerRange > -1);
-  assert(higherRange >= lowerRange);
-  //int temp_higher = higherRange;
-  //int temp_lower = lowerRange;
-  
   int i;
-  uint32_t mask = 0xffff;             //initialize the mask to be 0xffff first
-  mask = mask << higherRange + 1;
-  
-  /*
-  for(i = 0; i < higherRange ; i++)
+  assert(bitPosition <= 31); 
+  assert(valueToSet == 1 || valueToSet == 0);
+  uint32_t maskToSet0 = 0xffffffff;             //initialize the mask to be 0xffff first
+  uint32_t maskToSet1 = 0x0;                    //initialize the mask to be 0x0000 first
+
+  if(valueToSet == 1)
   {
-    bitValue = getBits(valueToSet, temp_higher, temp_lower);
-    mask = ( mask << 1 ) | 0x01;
-    
+    maskToSet1 = maskToSet1 | 0x01;
+    for(i = 0; i < bitPosition; i++)
+    {
+      maskToSet1 = maskToSet1 << 1;  
+    }
+    return maskToSet1;
   }
-  */
-  return mask;
-  
-  
+  else
+  {
+    maskToSet0 = maskToSet0 << 1 ;                     
+    for(i = 0; i < bitPosition; i++)
+    {
+      maskToSet0 = ( maskToSet0 << 1) | 1;
+    }
+    return maskToSet0;
+  }
 }

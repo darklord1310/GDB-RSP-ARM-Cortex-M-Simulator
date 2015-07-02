@@ -2,7 +2,7 @@
 #include "ADDRegister.h"
 #include "ARMRegisters.h"
 #include "ADDSPRegister.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdint.h>
 #include <stdbool.h>

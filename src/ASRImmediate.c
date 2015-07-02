@@ -1,6 +1,6 @@
 #include "ASRImmediate.h"
 #include "ARMRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include <stdio.h>
 

@@ -1,7 +1,7 @@
 #include "ADDRegister.h"
 #include <assert.h>
 #include "ARMRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include "ADDSPRegister.h"
 #include "ModifiedImmediateConstant.h"

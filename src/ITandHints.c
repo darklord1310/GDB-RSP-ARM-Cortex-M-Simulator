@@ -1,6 +1,6 @@
 #include "ITandHints.h"
 #include <assert.h>
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include "StatusRegisters.h"
 

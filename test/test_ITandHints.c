@@ -1,6 +1,6 @@
 #include "unity.h"
 #include "ITandHints.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include "StatusRegisters.h"
 

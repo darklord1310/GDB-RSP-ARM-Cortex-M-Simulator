@@ -11,7 +11,7 @@ typedef struct ROMData ROMData;
 
 struct ROMData
 {
-  uint32_t data;
+  int data;
   
 };
 

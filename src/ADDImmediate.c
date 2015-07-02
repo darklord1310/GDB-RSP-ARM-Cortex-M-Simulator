@@ -1,6 +1,6 @@
 #include "ADDImmediate.h"
 #include "ARMRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
