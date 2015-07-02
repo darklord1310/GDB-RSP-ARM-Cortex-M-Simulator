@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -78,13 +78,16 @@ void Categorize16bitsThumbInstruction(uint32_t instruction)
 
 }
 
+void initializeSimulator()
+{
+  initCoreRegister();
+  initThumb16bitsOpcode00XXX();  
+  
+}
+
 
 void ARMSimulator(uint32_t instruction)
 {
-  //coreReg = initCoreRegister();
-  //initStatusRegister();
-  //initThumb16bitsOpcode00XXX();
-  
   int check = is32or16instruction(instruction);
 
   if(check == INSTRUCTION16bits)

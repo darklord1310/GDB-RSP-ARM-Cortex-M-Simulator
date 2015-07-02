@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "ADDImmediate.h"
 #include "ARMRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdint.h>
 #include <stdbool.h>

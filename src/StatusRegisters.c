@@ -1,5 +1,5 @@
 #include "StatusRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdio.h>
 #include <assert.h>

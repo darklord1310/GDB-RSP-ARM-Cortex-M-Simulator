@@ -2,7 +2,7 @@
 #include "LSRImmediate.h"
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdint.h>
 

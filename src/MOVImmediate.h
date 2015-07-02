@@ -2,7 +2,7 @@
 #define MOVImmediate_H
 
 #include "ARMRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include <stdint.h>
 #include "ModifiedImmediateConstant.h"

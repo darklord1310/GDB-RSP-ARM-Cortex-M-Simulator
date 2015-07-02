@@ -137,12 +137,131 @@ void test_getMaskforGetBits_given_bitPosition_0_should_return_0x00000001()
 }
 
 
-void test_getMaskforSetBits_given_bitPosition_3_and_0110_should_return_0xfffffff6()
-{
-  //uint32_t mask;
-  // mask = getMaskforSetBits(3 , 0b0110);
 
-  //TEST_ASSERT_EQUAL(0xfffffff6,mask);
+/*
+ *  Eg. if bitPosition is 3
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *                                            ^
+ *                                            |
+ *                                            1
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_3_and_valueToSet_1_should_return_0x00000008()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(1,3);
+
+  TEST_ASSERT_EQUAL(0x00000008,mask);
   
 }
 
+
+/*
+ *  Eg. if bitPosition is 26
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *         ^
+ *         |
+ *         1
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_26_and_valueToSet_1_should_return_0x04000000()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(1,26);
+
+  TEST_ASSERT_EQUAL(0x04000000,mask);
+  
+}
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 31 and set to 1
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *  ^
+ *  |
+ *  1
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_31_and_valueToSet_1_should_return_0x80000000()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(1,31);
+
+  TEST_ASSERT_EQUAL(0x80000000,mask);
+  
+}
+
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 0 and set to 1
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *                                               ^
+ *                                               |
+ *                                               1
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_0_and_valueToSet_1_should_return_0x0000001()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(1,0);
+
+  TEST_ASSERT_EQUAL(0x00000001,mask);
+  
+}
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 0 and set to 0
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *                                               ^
+ *                                               |
+ *                                               0
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_0_and_valueToSet_0_should_return_0xfffffffe()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(0,0);
+
+  TEST_ASSERT_EQUAL(0xfffffffe,mask);
+}
+
+
+//boundary test
+/*
+ *  Eg. if bitPosition is 31 and set to 0
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *  ^
+ *  |
+ *  0
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_31_and_valueToSet_0_should_return_0x7fffffff()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(0,31);
+
+  TEST_ASSERT_EQUAL(0x7fffffff,mask);
+}
+
+
+
+/*
+ *  Eg. if bitPosition is 17 and set to 0
+ *  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  XXXX  ---> this is a 32 bits integer
+ *                      ^
+ *                      |
+ *                      0
+ *
+ */
+void test_getMaskforSetBits_given_bitPosition_17_and_valueToSet_0_should_return_0xfffdffff()
+{
+  uint32_t mask;
+  mask = getMaskforSetBits(0,17);
+
+  TEST_ASSERT_EQUAL(0xfffdffff,mask);
+}

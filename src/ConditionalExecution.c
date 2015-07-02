@@ -1,6 +1,6 @@
 #include "ConditionalExecution.h"
 #include <assert.h>
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"

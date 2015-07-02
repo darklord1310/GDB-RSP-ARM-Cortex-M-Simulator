@@ -29,9 +29,11 @@ char *serveRSP(char *data)
             packet = readSingleRegister(data);
             break;
         case 'P':   /* Write single register */
+            writeSingleRegister(data);
             packet = gdbCreateMsgPacket("OK");      //Write successfully
             break;
         case 'G':   /* Write all register */
+            writeAllRegister(data);
             packet = gdbCreateMsgPacket("OK");      //Write successfully
             break;
         case 'm':   /* Read memory */

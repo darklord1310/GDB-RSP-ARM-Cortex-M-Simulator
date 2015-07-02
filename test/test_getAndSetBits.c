@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdint.h>
 
@@ -160,4 +160,63 @@ void test_getBits_given_0x46E81EA7_higherRange_21_lowerRange_21_should_return_0x
 
   uint32_t result = getBits(dummy, 21, 21);
   TEST_ASSERT_EQUAL(0x01 , result);
+}
+
+
+
+/*
+ *   0100  0110  1110  1000  0001  1110  1010  0111  --> this is a 32 bits integer
+ *                ^    ^
+ *                |    |
+ *               21    18
+ *   Changed:     11  01
+ *
+ */
+void test_setBits_given_0x46E81EA7_higherRange_21_lowerRange_18_and_input_0b1101_should_return_0x46f41ea7()
+{
+  uint32_t input = 0b1101;
+  uint32_t setTarget = 0x46E81EA7;
+  
+  uint32_t result = setBits(setTarget, input, 21, 18);
+
+  TEST_ASSERT_EQUAL(0x46f41ea7 , result);
+}
+
+
+/*
+ *  0100  0110  1110  1000  0001  1110  1010  0111  --> this is a 32 bits integer
+ *                    ^             ^
+ *                    |             |
+ *                   19            9
+ *   Changed:         1111  1010  010
+ *
+ */
+void test_setBits_given_0x46E81EA7_higherRange_19_lowerRange_9_and_input_0b11111010010_should_return_0x46efa4a7()
+{
+  uint32_t input = 0b11111010010;
+  uint32_t setTarget = 0x46E81EA7;
+  
+  uint32_t result = setBits(setTarget, input, 19, 9);
+
+  TEST_ASSERT_EQUAL(0x46efa4a7, result);
+}
+
+
+//boundary test
+/*
+ *  0100  0110  1110  1000  0001  1110  1010  0111  --> this is a 32 bits integer
+ *                    ^             
+ *                    |             
+ *                   19            
+ *   Changed:         0
+ *
+ */
+void test_setBits_given_0x46E81EA7_higherRange_19_lowerRange_19_and_input_0b0_should_return_0x46E01EA7()
+{
+  uint32_t input = 0b0;
+  uint32_t setTarget = 0x46E81EA7;
+  
+  uint32_t result = setBits(setTarget, input, 19, 19);
+
+  TEST_ASSERT_EQUAL(0x46E01EA7, result);
 }

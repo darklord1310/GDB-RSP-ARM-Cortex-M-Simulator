@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "SUBRegister.h"
 #include "ARMRegisters.h"
-#include "getBits.h"
+#include "getAndSetBits.h"
 #include "getMask.h"
 #include "StatusRegisters.h"
 #include <stdint.h>

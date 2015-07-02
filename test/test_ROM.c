@@ -33,21 +33,20 @@ void test_initROM_should_initialize_the_ROM_properly()
 void xtest_resetROM_should_reset_all_the_ROM_data_to_0(void)
 {
   int i;
-  // rom = initROM();
-
-
+  rom = initROM();
+  /*
   //write some value into the ROM
-  // for(i = 0 ; i < sizeOfROM ; i ++ )
-  // {
-    // rom->address[i].data = 1234;
-  // }
+  for(i = 0 ; i < sizeOfROM ; i ++ )
+  {
+    rom->address[i].data = 1234;
+  }
+  */
 
-  
-	// resetROM();
-
-  // for(i = 0 ; i < sizeOfROM ; i ++ )
-  // {
-    // TEST_ASSERT_EQUAL(0,rom->address[i].data);
-  // }
-  
+	//resetROM();
+  /*
+  for(i = 0 ; i < sizeOfROM ; i ++ )
+  {
+    TEST_ASSERT_EQUAL(0,rom->address[i].data);
+  }
+  */
 }
