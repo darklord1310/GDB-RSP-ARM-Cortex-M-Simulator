@@ -1,12 +1,9 @@
 #include <malloc.h>
 #include "unity.h"
-#include "gdbserver.h"
+#include "ServeRSP.h"
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMRegisters.h"
-// #include "StatusRegisters.h"
-// #include "getBits.h"
-// #include "getMask.h"
 
 void setUp(void)
 {
@@ -172,4 +169,62 @@ void test_serveRSP_given_data_with_g_packet_should_return_appropriate_response_w
     TEST_ASSERT_EQUAL_STRING("$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81", reply);
 
     free(reply);
+}
+
+void test_serveRSP_given_data_with_P_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$P6=1052ffff#23";
+    char *reply = NULL;
+    initCoreRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x1052ffff, coreReg[6]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_G_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$G00000000111111112222222233333333444444445555555566666666777777778888888899999999aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff01000000#c8";
+    char *reply = NULL;
+    initCoreRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x00000000, coreReg[0]);
+    TEST_ASSERT_EQUAL(0x11111111, coreReg[1]);
+    TEST_ASSERT_EQUAL(0x22222222, coreReg[2]);
+    TEST_ASSERT_EQUAL(0x33333333, coreReg[3]);
+    TEST_ASSERT_EQUAL(0x44444444, coreReg[4]);
+    TEST_ASSERT_EQUAL(0x55555555, coreReg[5]);
+    TEST_ASSERT_EQUAL(0x66666666, coreReg[6]);
+    TEST_ASSERT_EQUAL(0x77777777, coreReg[7]);
+    TEST_ASSERT_EQUAL(0x88888888, coreReg[8]);
+    TEST_ASSERT_EQUAL(0x99999999, coreReg[9]);
+    TEST_ASSERT_EQUAL(0xaaaaaaaa, coreReg[10]);
+    TEST_ASSERT_EQUAL(0xbbbbbbbb, coreReg[11]);
+    TEST_ASSERT_EQUAL(0xcccccccc, coreReg[12]);
+    TEST_ASSERT_EQUAL(0xdddddddd, coreReg[SP]);
+    TEST_ASSERT_EQUAL(0xeeeeeeee, coreReg[LR]);
+    TEST_ASSERT_EQUAL(0xffffffff, coreReg[PC]);
+    TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
+{
+    char data[] = "$s#73";
+    char *reply = NULL;
+
+    initCoreRegister();
+    coreReg[PC] = 0x080d0008;
+    coreReg[7] = 0x7cff0120;
+
+    reply = step(data);
+
+    TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
 }

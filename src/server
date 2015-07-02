@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gcc gdbserver.c ServeRSP.c RemoteSerialProtocol.c Packet.c -o Winsocks.exe -lws2_32
