@@ -4,7 +4,7 @@
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
 #include "ARMRegisters.h"
-// #include "StatusRegisters.h"
+#include "ROM.h"
 
 /*
  * This function handle all the query packet receive from
@@ -99,7 +99,7 @@ char *readSingleRegister(char *data)
     }
     asciiString[8] = '\0'; */
 
-    asciiString = createdHexToString(regValue);
+    asciiString = createdHexToString(regValue, 4);
     // printf("ASCII String: %s\n", asciiString);
 
     packet = gdbCreateMsgPacket(asciiString);
@@ -129,7 +129,7 @@ char *readAllRegister()
         else
             regValue[i] = coreReg[i];
 
-        asciiString = createdHexToString(regValue[i]);
+        asciiString = createdHexToString(regValue[i], 4);
 
         strcat(fullRegValue, asciiString);
         // printf("Full reg val: %s\n", fullRegValue);
@@ -193,7 +193,28 @@ void writeAllRegister(char *data)
 
 char *readMemory(char *data)
 {
+    char *packet = NULL, *comaAddr = NULL, *asciiString;
+    unsigned int addr, memoryContent = 0;
+    int i, byteLength, bits = 0;
 
+    sscanf(&data[2], "%8x", &addr);
+    // printf("addr: %x\n", addr);
+    comaAddr = strstr(data, ",");
+    sscanf(&comaAddr[1], "%1x", &byteLength);
+    // printf("byteLength: %d\n", byteLength);
+
+    for(i = 0; i < byteLength; i++)
+    {
+        memoryContent |= (address[addr].data & (0xff << bits));
+        bits += 8;
+    }
+    // printf("memoryContent: %x\n", memoryContent);
+
+    asciiString = createdHexToString(memoryContent, byteLength);
+    packet = gdbCreateMsgPacket(asciiString);
+    destroyHexToString(asciiString);
+
+    return packet;
 }
 
 void writeMemory(char *data)
@@ -207,8 +228,8 @@ char *step(char *data)
     char *trapSignal = "T05";
     char *pcReg = "0f";
     char *reg7 = "07";
-    char *pcValue = createdHexToString(coreReg[PC]);
-    char *r7Value = createdHexToString(coreReg[7]);
+    char *pcValue = createdHexToString(coreReg[PC], 4);
+    char *r7Value = createdHexToString(coreReg[7], 4);
     char msg[50] = "";
 
     strcat(msg, trapSignal);

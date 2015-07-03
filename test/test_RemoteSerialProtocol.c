@@ -3,9 +3,7 @@
 #include <string.h>
 #include "unity.h"
 #include "ARMRegisters.h"
-// #include "StatusRegisters.h"
-// #include "getBits.h"
-// #include "getMask.h"
+#include "ROM.h"
 #include "RemoteSerialProtocol.h"
 #include "mock_Packet.h"
 
@@ -209,7 +207,7 @@ void test_readSingleRegister_given_data_with_p10_packet_should_return_appropriat
     char *reply = NULL;
     initCoreRegister();
 
-    createdHexToString_ExpectAndReturn(0x01000000, "01000000");
+    createdHexToString_ExpectAndReturn(0x01000000, 4, "01000000");
     gdbCreateMsgPacket_ExpectAndReturn("01000000", "$01000000#81");
     destroyHexToString_Expect("01000000");
 
@@ -228,12 +226,12 @@ void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(vo
     {
         if(i < 16)
         {
-            createdHexToString_ExpectAndReturn(0x00000000, "00000000");
+            createdHexToString_ExpectAndReturn(0x00000000, 4, "00000000");
             destroyHexToString_Expect("00000000");
         }
         else
         {
-            createdHexToString_ExpectAndReturn(0x01000000, "01000000");
+            createdHexToString_ExpectAndReturn(0x01000000, 4, "01000000");
             destroyHexToString_Expect("01000000");
         }
     }
@@ -291,8 +289,8 @@ void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_
     coreReg[PC] = 0x080d0008;
     coreReg[7] = 0x7cff0120;
 
-    createdHexToString_ExpectAndReturn(0x080d0008, "080d0008");
-    createdHexToString_ExpectAndReturn(0x7cff0120, "7cff0120");
+    createdHexToString_ExpectAndReturn(0x080d0008, 4, "080d0008");
+    createdHexToString_ExpectAndReturn(0x7cff0120, 4, "7cff0120");
     destroyHexToString_Expect("080d0008");
     destroyHexToString_Expect("7cff0120");
     gdbCreateMsgPacket_ExpectAndReturn("T050f:080d0008;07:7cff0120", "$T050f:080d0008;07:7cff0120#52");
@@ -300,4 +298,42 @@ void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_
     reply = step(data);
 
     TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
+}
+
+void test_readMemory_given_following_data_should_return_4_byte_value_in_memory_addr_given_by_data(void)
+{
+    char data[] = "$m8000f90,4#64";
+    char *reply = NULL;
+
+    initCoreRegister();
+    resetROM();
+
+    address[0x8000f90].data = 0xdff834d0;
+
+    createdHexToString_ExpectAndReturn(0xdff834d0, 4, "dff834d0");
+    gdbCreateMsgPacket_ExpectAndReturn("dff834d0", "$dff834d0#63");
+    destroyHexToString_Expect("dff834d0");
+
+    reply = readMemory(data);
+
+    TEST_ASSERT_EQUAL_STRING("$dff834d0#63", reply);
+}
+
+void test_readMemory_given_following_data_should_return_2_byte_value_in_memory_addr_given_by_data(void)
+{
+    char data[] = "$m8000d06,2#5d";
+    char *reply = NULL;
+
+    initCoreRegister();
+    resetROM();
+
+    address[0x8000d06].data = 0xdff84d4a;
+
+    createdHexToString_ExpectAndReturn(0x4d4a, 2, "4d4a");
+    gdbCreateMsgPacket_ExpectAndReturn("4d4a", "$4d4a#2d");
+    destroyHexToString_Expect("4d4a");
+
+    reply = readMemory(data);
+
+    TEST_ASSERT_EQUAL_STRING("$4d4a#2d", reply);
 }

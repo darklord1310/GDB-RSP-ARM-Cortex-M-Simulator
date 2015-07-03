@@ -39,6 +39,7 @@ char *serveRSP(char *data)
             packet = gdbCreateMsgPacket("OK");      //Write successfully
             break;
         case 'm':   /* Read memory */
+            packet = readMemory(data);
             break;
         case 'M':   /* Write memory */
             break;
@@ -51,7 +52,11 @@ char *serveRSP(char *data)
             break;
         case 'R':   /* Reset */
             break;
+        case 'k':   /* Kill request */
+            packet = gdbCreateMsgPacket("");
+            break;
         default:
+            packet = gdbCreateMsgPacket("");
             break;
     }
 

@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMRegisters.h"
+#include "ROM.h"
 
 void setUp(void)
 {
@@ -224,7 +225,37 @@ void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(v
     coreReg[PC] = 0x080d0008;
     coreReg[7] = 0x7cff0120;
 
-    reply = step(data);
+    reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
+}
+
+void test_serveRSP_given_data_with_m_packet_with_4_byte_length_should_return_appropriate_response(void)
+{
+    char data[] = "$m8000f90,4#64";
+    char *reply = NULL;
+
+    initCoreRegister();
+    resetROM();
+
+    address[0x8000f90].data = 0xdff834d0;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$dff834d0#63", reply);
+}
+
+void test_serveRSP_given_data_with_m_packet_with_2_byte_length_should_return_appropriate_response(void)
+{
+    char data[] = "$m8000d06,2#5d";
+    char *reply = NULL;
+
+    initCoreRegister();
+    resetROM();
+
+    address[0x8000d06].data = 0xdff84d4a;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$4d4a#2d", reply);
 }

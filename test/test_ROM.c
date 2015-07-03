@@ -10,7 +10,7 @@ void tearDown(void)
 }
 
 
-void test_initROM_should_initialize_the_ROM_properly()
+void xtest_initROM_should_initialize_the_ROM_properly()
 {
   ROM *rom = initROM();
   int i;
@@ -30,10 +30,10 @@ void test_initROM_should_initialize_the_ROM_properly()
 }
 
 
-void xtest_resetROM_should_reset_all_the_ROM_data_to_0(void)
+void test_resetROM_should_reset_all_the_ROM_data_to_0(void)
 {
   int i;
-  rom = initROM();
+  ROM *rom = initROM();
   /*
   //write some value into the ROM
   for(i = 0 ; i < sizeOfROM ; i ++ )
@@ -42,11 +42,10 @@ void xtest_resetROM_should_reset_all_the_ROM_data_to_0(void)
   }
   */
 
-	//resetROM();
-  /*
-  for(i = 0 ; i < sizeOfROM ; i ++ )
+  resetROM();
+
+  for(i = 0 ; i < 0xFFFFFFF ; i ++ )
   {
-    TEST_ASSERT_EQUAL(0,rom->address[i].data);
+    TEST_ASSERT_EQUAL(0, address[i].data);
   }
-  */
 }
