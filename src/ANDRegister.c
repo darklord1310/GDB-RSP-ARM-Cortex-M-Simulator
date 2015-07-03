@@ -1,5 +1,14 @@
 #include "ANDRegister.h"
 #include <assert.h>
+#include "ITandHints.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+#include "ModifiedImmediateConstant.h"
+#include "Thumb16bitsTable.h"
+#include "ConditionalExecution.h"
+
 
 /*And Register Encoding T1 
   ANDS      <Rdn>,<Rm>      Outside IT block.
@@ -34,18 +43,18 @@ void ANDRegisterT1(uint32_t instruction)
 {
   uint32_t Rm =  getBits(instruction,21,19);
   uint32_t Rdn = getBits(instruction,18,16);
-  assert(Rn <= 0b111);
+  assert(Rm <= 0b111);
   assert(Rdn <= 0b111);
 
  if(inITBlock())
  {  
     if( checkCondition(cond) )
-      executeANDRegister(Rn, Rdn, 0);
+      executeANDRegister(Rm, Rdn, 0);
 
     shiftITState();
  }
  else
-    executeANDRegister(Rn, Rdn, 1);
+    executeANDRegister(Rm, Rdn, 1);
 }
 
 
@@ -53,19 +62,19 @@ void ANDRegisterT1(uint32_t instruction)
 /* This instruction performs a bitwise AND of a register value and an optionally-shifted register value, and
    writes the result to the destination register.
 
-   Input: Rn          register value which will be perform AND operation
+   Input: Rm          register value which will be perform AND operation with value in Rdn
           Rdn         destination register
           S           if set will affect the status register
 */
-void executeANDRegister(uint32_t Rn, uint32_t Rdn, uint32_t S)
+void executeANDRegister(uint32_t Rm, uint32_t Rdn, uint32_t S)
 {
-  Rdn = Rdn & Rn;
+  Rdn = Rdn & Rm;
   
     
   if(S == 1)
   {
-    updateZeroFlag(coreReg[Rd]);
-    updateNegativeFlag(coreReg[Rd]);
+    updateZeroFlag(coreReg[Rdn]);
+    updateNegativeFlag(coreReg[Rdn]);
        
   } 
 }

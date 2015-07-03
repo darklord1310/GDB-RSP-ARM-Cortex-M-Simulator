@@ -10,8 +10,6 @@
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
-#include "ARMSimulator.h"
-#include "Thumb16bitsTable.h"
 
 
 void setUp(void)

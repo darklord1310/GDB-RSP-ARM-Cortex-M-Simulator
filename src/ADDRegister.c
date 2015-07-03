@@ -8,6 +8,7 @@
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 
+
 /*Add Register To Register Encoding T1
     ADDS <Rd>,<Rn>,<Rm>     Outside IT block.
     ADD<c> <Rd>,<Rn>,<Rm>   Inside IT block.
@@ -56,6 +57,7 @@ void ADDRegisterToRegisterT1(uint32_t instruction)
  else
     executeADDRegister(Rn, Rd, Rm, 1);
 }
+
 
 
 /*Add Register To Register Encoding T2

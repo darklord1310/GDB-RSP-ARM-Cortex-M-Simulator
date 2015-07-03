@@ -7,52 +7,16 @@
 #include <stdbool.h>
 #include "StatusRegisters.h"
 #include "ModifiedImmediateConstant.h"
-#include "Thumb16bitsTable.h"
-#include "LSLImmediate.h"
-#include "LSRImmediate.h"
-#include "MOVRegister.h"
-#include "ASRImmediate.h"
-#include "CMPImmediate.h"
-#include "ADDImmediate.h"
-#include "SUBImmediate.h"
-#include "ADDRegister.h"
-#include "SUBRegister.h"
-#include "ADDSPRegister.h"
 #include "ConditionalExecution.h"
-#include "ARMSimulator.h"
-#include "ITandHints.h"
+#include "ARMRegisters.h"
 
 void setUp(void)
 {
-  initializeSimulator();
+  initCoreRegister();
 }
 
 void tearDown(void)
 {
-}
-
-
-//test MOVS R1, #0xFF
-void test_MOVImmediateT1_given_instruction_0x21FF0000_should_move_0xFF_into_R1_all_flag_not_set(void)
-{
-  uint32_t instruction = 0x21ff0000;
-  
-  ARMSimulator(instruction);
-  
-  TEST_ASSERT_EQUAL(0xff, coreReg[1]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
-}
-
-
-//test MOVS R7, #0x13
-void test_MOVImmediateT1_given_instruction_0x27130000_should_move_0x13_into_R7_all_flag_not_set(void)
-{
-  uint32_t instruction = 0x27130000;
-  
-  ARMSimulator(instruction);
-  
-  TEST_ASSERT_EQUAL(0x13, coreReg[7]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 

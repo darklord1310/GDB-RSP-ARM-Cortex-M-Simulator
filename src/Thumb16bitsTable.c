@@ -50,6 +50,16 @@ void initThumb16bitsOpcode00XXXX()
 }
 
 
+
+void initThumb16bitsOpcode010000()
+{
+  Thumb16Opcode010000[0b0000] = ANDRegisterT1;
+    
+  
+}
+
+
+
 void initThumb16bitsOpcode1011XX()
 {
   Thumb16Opcode1011XX[0b1111000] = ITandHints;

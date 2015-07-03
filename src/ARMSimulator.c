@@ -74,10 +74,11 @@ void Categorize16bitsThumbInstruction(uint32_t instruction)
     opcode2 = getBits(instruction,29,25);
     (*Thumb16Opcode00XXXX[opcode2])(instruction);
   }
-  //else if(opcode1 == 0b010000)
-  //{
-      
-  //}
+  else if(opcode1 == 0b010000)
+  {
+    opcode2 = getBits(instruction,25,22);
+    (*Thumb16Opcode010000[opcode2])(instruction);
+  }
   else if(opcode1 < 48)
   {
     opcode2 = getBits(instruction,27,21);
@@ -97,6 +98,7 @@ void initializeSimulator()
 void initializeAllTable()
 {
   initThumb16bitsOpcode00XXXX();
+  initThumb16bitsOpcode010000();
   initThumb16bitsOpcode1011XX();
 }
 

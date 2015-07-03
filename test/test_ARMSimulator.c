@@ -20,6 +20,7 @@
 #include "SUBRegister.h"
 #include "ADDSPRegister.h"
 #include "ITandHints.h"
+#include "ANDRegister.h"
 
 void setUp(void)
 {
@@ -53,22 +54,6 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 
   TEST_ASSERT_EQUAL( INSTRUCTION16bits, value);
 
-}
-
-
-void test_ARMSimulator()
-{
-  initializeSimulator();
-  ARMSimulator(0x20110000);
-  ARMSimulator(0x21220000);
-  ARMSimulator(0x22330000); 
-  ARMSimulator(0xbf0f0000);
-  ARMSimulator(0x32020000);
-  ARMSimulator(0x300b0000);
-  ARMSimulator(0x350c0000);
-  ARMSimulator(0x310d0000);
-  printRegister();
-  //printRegister();
 }
 
 
