@@ -235,10 +235,9 @@ void test_serveRSP_given_data_with_m_packet_with_4_byte_length_should_return_app
     char data[] = "$m8000f90,4#64";
     char *reply = NULL;
 
-    initCoreRegister();
-    resetROM();
+    createROM();
 
-    address[0x8000f90].data = 0xdff834d0;
+    // address[0x8000f90].data = 0xdff834d0;
 
     reply = serveRSP(data);
 
@@ -250,10 +249,9 @@ void test_serveRSP_given_data_with_m_packet_with_2_byte_length_should_return_app
     char data[] = "$m8000d06,2#5d";
     char *reply = NULL;
 
-    initCoreRegister();
-    resetROM();
+    createROM();
 
-    address[0x8000d06].data = 0xdff84d4a;
+    // address[0x8000d06].data = 0xdff84d4a;
 
     reply = serveRSP(data);
 

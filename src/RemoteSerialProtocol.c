@@ -205,7 +205,7 @@ char *readMemory(char *data)
 
     for(i = 0; i < byteLength; i++)
     {
-        memoryContent |= (address[addr].data & (0xff << bits));
+        memoryContent |= (rom->address[addr].data & (0xff << bits));
         bits += 8;
     }
     // printf("memoryContent: %x\n", memoryContent);
