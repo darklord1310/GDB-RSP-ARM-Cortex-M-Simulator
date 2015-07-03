@@ -30,7 +30,11 @@ void LSRImmediateT1(uint32_t instruction)
   uint32_t Rd = getBits(instruction, 18, 16);
 	
   if(inITBlock())
-    executeLSRImmediate(imm5, Rm, Rd, 0);
+  {
+    if( checkCondition(cond) )
+      executeLSRImmediate(imm5, Rm, Rd, 0);
+    shiftITState();
+  }
   else
     executeLSRImmediate(imm5, Rm, Rd, 1);
 }

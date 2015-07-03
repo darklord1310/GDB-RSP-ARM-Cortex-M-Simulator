@@ -34,7 +34,11 @@ void LSLImmediateT1(uint32_t instruction)
   else
   {
     if(inITBlock())
-      executeLSLImmediate(imm5, Rm, Rd, 0);
+    {
+      if( checkCondition(cond) )
+        executeLSLImmediate(imm5, Rm, Rd, 0);
+      shiftITState();
+    }
     else
       executeLSLImmediate(imm5, Rm, Rd, 1);
   }

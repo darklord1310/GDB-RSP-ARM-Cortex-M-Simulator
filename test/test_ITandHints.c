@@ -5,10 +5,24 @@
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"
 #include "ConditionalExecution.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ARMSimulator.h"
 
 void setUp(void)
 {
-  initCoreRegister();
+  initializeSimulator();
 }
 
 void tearDown(void)
@@ -20,7 +34,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf010000_should_chan
 {
   uint32_t instruction = 0xbf010000;
   
-  ITandHints(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x03000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
@@ -32,7 +46,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf020000_should_chan
 {
   uint32_t instruction = 0xbf020000;
   
-  ITandHints(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x05000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
@@ -44,7 +58,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf040000_should_chan
 {
   uint32_t instruction = 0xbf040000;
   
-  ITandHints(instruction);
+  ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x01000400, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
 }
@@ -55,7 +69,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf080000_should_chan
 {
   uint32_t instruction = 0xbf080000;
   
-  ITandHints(instruction);
+  ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x01000800, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
 }
@@ -66,7 +80,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf480000_should_chan
 {
   uint32_t instruction = 0xbf480000;
   
-  ITandHints(instruction);
+  ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x01004800, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( MI ,cond);
 }

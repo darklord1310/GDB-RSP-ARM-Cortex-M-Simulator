@@ -2,6 +2,8 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 #include <stdio.h>
 
 /*Arithmetic Shift Right Immediate Encoding T1
@@ -33,7 +35,11 @@ void ASRImmediateT1(uint32_t instruction)
   uint32_t MSBofRm = getBits( coreReg[Rm], 31,31 );
   
   if(inITBlock())
-    executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
+  {
+    if( checkCondition(cond) )
+      executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
+    shiftITState();
+  }
   else
     executeASRImmediate(imm5, Rm, Rd, 1, MSBofRm);
 }

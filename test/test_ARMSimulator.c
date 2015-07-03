@@ -34,7 +34,7 @@ void tearDown(void)
 void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
 {
   uint32_t value = 0xF05F0B0F;      // an example of instruction taken from KEIL assembler
-                                        // which is MOVS R11, #0xF
+                                    // which is MOVS R11, #0xF
   uint32_t result;
 
   result = is32or16instruction(value);
@@ -47,7 +47,7 @@ void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
 void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 {
   uint32_t value = 0x46E80000;      // an example of instruction taken from KEIL assembler
-                                        // which is  MOV R8, SP
+                                    // which is  MOV R8, SP
 
   value = is32or16instruction(value);
 
@@ -58,18 +58,17 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 
 void test_ARMSimulator()
 {
-  uint32_t instruction1 = 0x23FF0000;
-  uint32_t instruction2 = 0x24880000;
-  uint32_t instruction3 = 0x1b1a0000;
-  uint32_t instruction4 = 0x44140000;
-
-  
-  ARMSimulator(instruction1);
-  ARMSimulator(instruction2);
-  ARMSimulator(instruction3);
-  ARMSimulator(instruction4);
-
+  initializeSimulator();
+  ARMSimulator(0x20110000);
+  ARMSimulator(0x21220000);
+  ARMSimulator(0x22330000); 
+  ARMSimulator(0xbf0f0000);
+  ARMSimulator(0x32020000);
+  ARMSimulator(0x300b0000);
+  ARMSimulator(0x350c0000);
+  ARMSimulator(0x310d0000);
   printRegister();
+  //printRegister();
 }
 
 

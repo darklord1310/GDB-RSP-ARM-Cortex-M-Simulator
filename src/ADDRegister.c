@@ -5,6 +5,8 @@
 #include "StatusRegisters.h"
 #include "ADDSPRegister.h"
 #include "ModifiedImmediateConstant.h"
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 
 /*Add Register To Register Encoding T1
     ADDS <Rd>,<Rn>,<Rm>     Outside IT block.
@@ -46,7 +48,11 @@ void ADDRegisterToRegisterT1(uint32_t instruction)
   assert(Rd <= 0b111);
   
  if(inITBlock())
-    executeADDRegister(Rn, Rd, Rm, 0);
+ {
+    if( checkCondition(cond) )
+      executeADDRegister(Rn, Rd, Rm, 0);
+    shiftITState();
+ }
  else
     executeADDRegister(Rn, Rd, Rm, 1);
 }

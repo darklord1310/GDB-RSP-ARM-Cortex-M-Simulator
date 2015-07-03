@@ -15,9 +15,10 @@
 #include "ITandHints.h"
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
+void (*Thumb16Opcode1011XX[128])(uint32_t instruction);
 
 
-void initThumb16bitsOpcode00XXX();
+void initThumb16bitsOpcode00XXXX();
 void initThumb16bitsOpcode1011XX();
 
 

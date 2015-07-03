@@ -96,7 +96,7 @@ void ADDImmediateT2(uint32_t instruction)
   { 
     if( checkCondition(cond) )
       executeADDImmediate(Rdn, Rdn, imm8, 0);
-    
+
     shiftITState();
   }
   else

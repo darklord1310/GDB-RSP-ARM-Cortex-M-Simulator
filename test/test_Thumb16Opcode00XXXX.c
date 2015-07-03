@@ -1,5 +1,4 @@
 #include "unity.h"
-#include "ADDImmediate.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "ModifiedImmediateConstant.h"
@@ -10,6 +9,7 @@
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include "Thumb16bitsTable.h"
+#include "ADDImmediate.h"
 #include "LSLImmediate.h"
 #include "LSRImmediate.h"
 #include "MOVRegister.h"
@@ -129,4 +129,34 @@ void test_ADDImmediateT1_and_T2_should_get_the_expected_result()
   TEST_ASSERT_EQUAL( 0x33, coreReg[2]);
   TEST_ASSERT_EQUAL( 0x07, coreReg[6]);
   TEST_ASSERT_EQUAL(coreReg[xPSR], 0x01000000);
+}
+
+
+//test ADDS R2, R3, R4 given R3 = 3000 and R4 = 2000
+void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_3000_r4_is_2000_should_get_0x1388_at_r2_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x191a0000;
+  
+  coreReg[3] = 3000;
+  coreReg[4] = 2000;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x1388, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+//testing flag change
+//test ADDS R2, R3, R4 given R3 = 0xffffffff and R4 = 0x80000000
+void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_0xffffffff_r4_is_0x80000000_should_get_0x7fffffff_at_r2_OV_flag_set_C_flag_set(void)
+{
+  uint32_t instruction = 0x191a0000;
+  
+  coreReg[3] = 0xffffffff;
+  coreReg[4] = 0x80000000;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[2]);
+  TEST_ASSERT_EQUAL(1, isOverflow() );
+  TEST_ASSERT_EQUAL(1, isCarry() );
 }

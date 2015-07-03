@@ -1,4 +1,6 @@
 #include "SUBRegister.h"
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 #include <assert.h>
 
 
@@ -42,7 +44,11 @@ void SUBRegisterToRegisterT1(uint32_t instruction)
   assert(Rd <= 0b111);
   
  if(inITBlock())
-    executeSUBRegister(Rn, Rd, Rm, 0);
+ {
+    if( checkCondition(cond) )
+      executeSUBRegister(Rn, Rd, Rm, 0);
+    shiftITState();
+ }
  else
     executeSUBRegister(Rn, Rd, Rm, 1);
 }

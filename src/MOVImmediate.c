@@ -1,4 +1,6 @@
 #include "MOVImmediate.h"
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 #include <stdio.h>
 
 /*Move Immediate Encoding T1
@@ -28,7 +30,11 @@ void MOVImmediateT1(uint32_t instruction)
   uint32_t destinationRegister = getBits(instruction, 26, 24);
 	
   if(inITBlock())
-    executeMOVImmediate(imm8, destinationRegister, 0);
+  {
+    if( checkCondition(cond) )
+      executeMOVImmediate(imm8, destinationRegister, 0);
+    shiftITState();
+  }
   else
     executeMOVImmediate(imm8, destinationRegister, 1);
 }

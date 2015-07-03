@@ -75,6 +75,14 @@ void Categorize16bitsThumbInstruction(uint32_t instruction)
     (*Thumb16Opcode00XXXX[opcode2])(instruction);
   }
   //else if(opcode1 == 0b010000)
+  //{
+      
+  //}
+  else if(opcode1 < 48)
+  {
+    opcode2 = getBits(instruction,27,21);
+    (*Thumb16Opcode1011XX[opcode2])(instruction);
+  }
 
 
 }
@@ -88,7 +96,7 @@ void initializeSimulator()
 
 void initializeAllTable()
 {
-  initThumb16bitsOpcode00XXX();
+  initThumb16bitsOpcode00XXXX();
   initThumb16bitsOpcode1011XX();
 }
 
@@ -134,6 +142,8 @@ void printRegister()
     printf("Z : %d\n", 1);
   else
     printf("Z : %d\n", 0);
+  
+  printf("xPSR: %x\n", coreReg[xPSR]);
 }
 
 

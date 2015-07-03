@@ -1,4 +1,6 @@
 #include "SUBImmediate.h"
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 #include <assert.h>
 
 /*Subtract Immediate Encoding T1
@@ -39,7 +41,11 @@ void SUBImmediateT1(uint32_t instruction)
   assert(Rd <= 0b111);
 
   if(inITBlock())
-    executeSUBImmediate(Rn, Rd, imm3, 0);
+  {
+    if( checkCondition(cond) )
+      executeSUBImmediate(Rn, Rd, imm3, 0);
+    shiftITState();
+  }
  else
     executeSUBImmediate(Rn, Rd, imm3, 1);
   
@@ -84,7 +90,11 @@ void SUBImmediateT2(uint32_t instruction)
 
 
   if(inITBlock())
-    executeSUBImmediate(Rdn, Rdn, imm8, 0);
+  {
+    if( checkCondition(cond) )
+      executeSUBImmediate(Rdn, Rdn, imm8, 0);
+    shiftITState();
+  }
  else
     executeSUBImmediate(Rdn, Rdn, imm8, 1);
   
