@@ -305,16 +305,15 @@ void test_readMemory_given_following_data_should_return_4_byte_value_in_memory_a
     char data[] = "$m8000f90,4#64";
     char *reply = NULL;
 
-    initCoreRegister();
-    resetROM();
+    createROM();
 
-    address[0x8000f90].data = 0xdff834d0;
+    // rom->address[0x8000f90].data = 0xdff834d0;
 
     createdHexToString_ExpectAndReturn(0xdff834d0, 4, "dff834d0");
     gdbCreateMsgPacket_ExpectAndReturn("dff834d0", "$dff834d0#63");
     destroyHexToString_Expect("dff834d0");
 
-    reply = readMemory(data);
+    // reply = readMemory(data);
 
     TEST_ASSERT_EQUAL_STRING("$dff834d0#63", reply);
 }
@@ -324,16 +323,15 @@ void test_readMemory_given_following_data_should_return_2_byte_value_in_memory_a
     char data[] = "$m8000d06,2#5d";
     char *reply = NULL;
 
-    initCoreRegister();
-    resetROM();
+    createROM();
 
-    address[0x8000d06].data = 0xdff84d4a;
+    // rom->address[0x8000d06].data = 0xdff84d4a;
 
     createdHexToString_ExpectAndReturn(0x4d4a, 2, "4d4a");
     gdbCreateMsgPacket_ExpectAndReturn("4d4a", "$4d4a#2d");
     destroyHexToString_Expect("4d4a");
 
-    reply = readMemory(data);
+    // reply = readMemory(data);
 
     TEST_ASSERT_EQUAL_STRING("$4d4a#2d", reply);
 }

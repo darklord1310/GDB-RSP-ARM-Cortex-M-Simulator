@@ -6,9 +6,11 @@
 typedef struct ROM ROM;
 typedef struct ROMData ROMData;
 
-// #define sizeOfROM       4294967296      
-#define sizeOfROM       0xFFFFFFFF      
-
+#define KILO_BYTE               1024
+#define TWO_HUND_FIFTY_SIX_KB   256 * KILO_BYTE
+#define ROM_BASE_ADDR           0x000000                                    //256kb of virtual memory
+#define RAM_BASE_ADDR           ROM_BASE_ADDR + TWO_HUND_FIFTY_SIX_KB + 1   //256kb  of virtual memory
+// #define sizeOfROM               0xFFFFFFFF
 
 struct ROMData
 {
@@ -17,16 +19,17 @@ struct ROMData
 
 struct ROM
 {
-  // ROMData *address;     // pointer to pointer which point to the ROMData
-  ROMData address[0xFFFFFFF];     // pointer to pointer which point to the ROMData
+  ROMData *address;     // pointer to pointer which point to the ROMData
 };
 
-// ROM *rom;
-ROMData address[0xFFFFFFF];
+ROM *rom;
+// ROMData address[0xFFFFFFF];
+// ROMData rom[TWO_HUND_FIFTY_SIX_KB];
+// ROMData ram[TWO_HUND_FIFTY_SIX_KB];
 
 
-ROM *initROM();
+void createROM();
 void resetROM();
-void destroyROM(ROM *rom);
+void destroyROM();
 
 #endif // ROM_H

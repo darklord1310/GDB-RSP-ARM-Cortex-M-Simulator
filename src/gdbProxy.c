@@ -114,27 +114,27 @@ void main()
     int serverRecv = SOCKET_ERROR;
     int clientSent;
     int clientRecv = SOCKET_ERROR;
-    char packetBuf[100000] = "";
+    char packetBuf[200] = "";
 
-    while( 1 ) {
+    while( packetBuf[1] != 'k' ) {
     /*
      *  Recv ack from client and Response it to server and vice versa
      *      ==>  + (ACK)
      */
-    serverRecv = recv( listenSock, packetBuf, 100000, 0 );
+    serverRecv = recv( listenSock, packetBuf, 200, 0 );
     packetBuf[serverRecv] = '\0';
-    printf( "Sending packet: %s\n", packetBuf );
+    // printf( "Sending packet: %s\n", packetBuf );
     serverSent = send( clientSock, packetBuf, strlen(packetBuf), 0 );
-    clientRecv = recv( clientSock, packetBuf, 100000, 0 );
+    clientRecv = recv( clientSock, packetBuf, 200, 0 );
     packetBuf[clientRecv] = '\0';
-    printf( "Packet received: %s\n", packetBuf );
+    // printf( "Packet received: %s\n", packetBuf );
     clientSent = send( listenSock, packetBuf, strlen(packetBuf), 0 );
 
     /*
      *  Recv packet from client, then
      *  Response packet to server
      */
-    serverRecv = recv( listenSock, packetBuf, 100000, 0 );
+    serverRecv = recv( listenSock, packetBuf, 200, 0 );
     packetBuf[serverRecv] = '\0';
     printf( "Sending packet: %s\n", packetBuf );
     clientSent = send( clientSock, packetBuf, strlen(packetBuf), 0 );
@@ -143,7 +143,7 @@ void main()
      *  Recv packet from server, then
      *  Response packet to client
      */
-    clientRecv = recv( clientSock, packetBuf, 100000, 0 );
+    clientRecv = recv( clientSock, packetBuf, 200, 0 );
     packetBuf[clientRecv] = '\0';
     printf( "Packet received: %s\n", packetBuf );
     serverSent = send( listenSock, packetBuf, strlen(packetBuf), 0 );
