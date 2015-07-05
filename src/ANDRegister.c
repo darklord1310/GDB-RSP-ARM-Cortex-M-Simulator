@@ -1,5 +1,6 @@
 #include "ANDRegister.h"
 #include <assert.h>
+#include <stdio.h>
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -49,12 +50,12 @@ void ANDRegisterT1(uint32_t instruction)
  if(inITBlock())
  {  
     if( checkCondition(cond) )
-      executeANDRegister(Rm, Rdn, 0);
+      executeANDRegister(Rm, Rdn, 0,0); //status flag is not affected and not shifting
 
     shiftITState();
  }
  else
-    executeANDRegister(Rm, Rdn, 1);
+    executeANDRegister(Rm, Rdn, 1,0);   //status flag is affected, no shifting
 }
 
 
@@ -62,19 +63,19 @@ void ANDRegisterT1(uint32_t instruction)
 /* This instruction performs a bitwise AND of a register value and an optionally-shifted register value, and
    writes the result to the destination register.
 
-   Input: Rm          register value which will be perform AND operation with value in Rdn
-          Rdn         destination register
-          S           if set will affect the status register
+   Input: Rm                register value which will be perform AND operation with value in Rdn
+          Rdn               destination register
+          S                 if set will affect the status register
+          shiftOrNoShift    if 1 means there is shifting, if 0 means no shifting
 */
-void executeANDRegister(uint32_t Rm, uint32_t Rdn, uint32_t S)
+void executeANDRegister(uint32_t Rm, uint32_t Rdn, uint32_t S, int shiftOrNoShift)
 {
-  Rdn = Rdn & Rm;
-  
+  coreReg[Rdn] = coreReg[Rdn] & coreReg[Rm];
     
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rdn]);
     updateNegativeFlag(coreReg[Rdn]);
-       
+    
   } 
 }
