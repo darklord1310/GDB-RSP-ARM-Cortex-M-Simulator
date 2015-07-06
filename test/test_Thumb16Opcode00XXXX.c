@@ -778,6 +778,125 @@ void test_LSRImmediateT1_given_0x0851_should_shift_right_r2_1_times_and_write_to
   TEST_ASSERT_EQUAL(1 , isCarry() );
 }
 
+
+
+// test for the conditional cases
+/* Test case 1
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff 
+ *            r3 = 0x11
+ *            r4 = 0x88 
+ *            r5 = 0x44
+ *            r6 = 0x77 
+ *            r7 = 0x22
+ *            ITETE LS
+ *            LSRlS r1,#22
+ *            LSRHI r0,#30
+ *            LSRLS r2,#18
+ *            LSRHI r5,#8
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            r1 = 0x00
+ *            r2 = 0x00
+ *            r3 = 0x11
+ *            r4 = 0x88
+ *            r5 = 0x44
+ *            r6 = 0x77
+ *            r7 = 0x22
+ *  
+ */
+void test_LSRImmediateT1_test_case_1_should_get_the_expected_result()
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  coreReg[2] = 0xff;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0x88;
+  coreReg[5] = 0x44;
+  coreReg[6] = 0x77;
+  coreReg[7] = 0x22;
+  
+  resetCarryFlag();
+  setZeroFlag();
+  ARMSimulator(0xbf950000);   //ITETE  HI
+  ARMSimulator(0x0d890000);   //LSRLS  R1,#22
+  ARMSimulator(0x0f800000);   //LSRHI  R0,#30
+  ARMSimulator(0x0c920000);   //LSRLS  R2,#18
+  ARMSimulator(0x0a2d0000);   //LSRHI  R5,#8
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x88,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x22,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+
+// test for the conditional cases
+/* Test case 2
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff 
+ *            r3 = 0x11
+ *            r4 = 0x88 
+ *            r5 = 0x44
+ *            r6 = 0x77 
+ *            r7 = 0x22
+ *            ITETE HI
+ *            LSRHI r1,#22
+ *            LSRLS r0,#30
+ *            LSRHI r2,#18
+ *            LSRLS r5,#8
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            r1 = 0x00
+ *            r2 = 0x00
+ *            r3 = 0x11
+ *            r4 = 0x88
+ *            r5 = 0x44
+ *            r6 = 0x77
+ *            r7 = 0x22
+ *  
+ */
+void test_LSRImmediateT1_test_case_2_should_get_the_expected_result()
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  coreReg[2] = 0xff;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0x88;
+  coreReg[5] = 0x44;
+  coreReg[6] = 0x77;
+  coreReg[7] = 0x22;
+  
+  setCarryFlag();
+  resetZeroFlag();
+  ARMSimulator(0xbf8b0000);   //ITETE  HI
+  ARMSimulator(0x0d890000);   //LSRHI  R1,#22
+  ARMSimulator(0x0f800000);   //LSRLS  R0,#30
+  ARMSimulator(0x0c920000);   //LSRHI  R2,#18
+  ARMSimulator(0x0a2d0000);   //LSRLS  R5,#8
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x88,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x22,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
+
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Move Immediate T1
   

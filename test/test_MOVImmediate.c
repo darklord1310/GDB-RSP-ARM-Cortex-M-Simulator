@@ -41,7 +41,7 @@ void test_MOVImmediateT2_given_instruction_0xf04f35ff_should_move_into_0xfffffff
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
-
+//test case modify control smaller than 0b00111
 // movs r5, #-1 and affect flag register
 void test_MOVImmediateT2_given_instruction_0xf05f35ff_should_move_into_0xffffffff_into_R5_and_set_negative_flag()
 {
@@ -49,7 +49,18 @@ void test_MOVImmediateT2_given_instruction_0xf05f35ff_should_move_into_0xfffffff
 
   MOVImmediateT2(instruction);
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[5]);
-  TEST_ASSERT_EQUAL(1 , isNegative() );
+  TEST_ASSERT_EQUAL(0x81000000, coreReg[xPSR]);
+}
+
+//test case modify control larger than 0b00111
+// movs r0, #80000000 and affect flag register
+void test_MOVImmediateT2_given_instruction_0xf05f4000_should_move_into_0x80000000_into_R0_and_set_negative_flag()
+{
+  uint32_t instruction = 0xf05f4000;
+
+  MOVImmediateT2(instruction);
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
 }
 
 

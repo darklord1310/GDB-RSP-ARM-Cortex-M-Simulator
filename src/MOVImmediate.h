@@ -10,6 +10,6 @@
 void MOVImmediateT1(uint32_t instruction);
 void MOVImmediateT2(uint32_t instruction);
 void MOVImmediateT3(uint32_t instruction);
-void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S);
+void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S, uint32_t affectCarry);
 
 #endif // MOVImmediate_H
