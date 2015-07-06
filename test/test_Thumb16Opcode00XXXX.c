@@ -22,6 +22,7 @@
 #include "SUBRegister.h"
 #include "ADDSPRegister.h"
 #include "ANDRegister.h"
+#include "LSLRegister.h"
 
 void setUp(void)
 {
@@ -103,6 +104,8 @@ void test_ADDImmediateT2_given_0x33ff_and_r3_is_3000_should_get_0xbc0_at_r3_xPSR
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 
 }
+
+
 
 // test for the conditional cases
 /* Test case 1
@@ -241,17 +244,18 @@ void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_3000_r4_is_2000_should_
 
 //testing flag change
 //test ADDS R2, R3, R4 given R3 = 0xffffffff and R4 = 0x80000000
-void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_0xffffffff_r4_is_0x80000000_should_get_0x7fffffff_at_r2_OV_flag_set_C_flag_set(void)
+void test_ADDRegisterToRegisterT1_given_0x191a_and_r3_is_0x80000000_r4_is_0x80000000_should_get_0x00_at_r2_OV_flag_set_C_flag_set(void)
 {
   uint32_t instruction = 0x191a0000;
   
-  coreReg[3] = 0xffffffff;
+  coreReg[3] = 0x80000000;
   coreReg[4] = 0x80000000;
   ARMSimulator(instruction);
   
-  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[2]);
   TEST_ASSERT_EQUAL(1, isOverflow() );
   TEST_ASSERT_EQUAL(1, isCarry() );
+  TEST_ASSERT_EQUAL(0x71000000, coreReg[xPSR]);
 }
 
 
@@ -612,6 +616,19 @@ void test_LSLImmediateT1_given_0x07C9_should_shift_left_r1_31_times_and_write_to
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x80000000, coreReg[1]);        //after shift 31 times, should get 0x80000000
   TEST_ASSERT_EQUAL(1, isNegative() );
+}
+
+
+//testing changing carry flag
+//test LSLS r1,#31 given r1 = 0x01
+void test_LSLImmediateT1_given_0x07C9_should_shift_left_r1_31_times_and_write_to_R1_xPSR_0xa1000000(void)
+{
+  uint32_t instruction = 0x07C90000;
+  
+  coreReg[1] = -1;                                   //set R1 to be -1
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[1]);        //after shift 31 times, should get 0x80000000
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR] );
 }
 
 
