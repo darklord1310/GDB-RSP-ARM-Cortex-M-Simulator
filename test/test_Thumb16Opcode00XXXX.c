@@ -925,6 +925,88 @@ void test_MOVImmediateT1_given_instruction_0x27130000_should_move_0x13_into_R7_a
 }
 
 
+// test for the conditional cases
+/* Test case 1
+ *            r0 = 0x00
+ *            r1 = 0x00
+ *            r2 = 0x00
+ *            r3 = 0x00
+ *            ITETE EQ
+ *            moveq r0,#0x85
+ *            movne r1,#0xff
+ *            moveq r2,#0x22
+ *            movne r3,#0x11
+ * 
+ * Expected Result:
+ *            r0 = 0x85
+ *            r1 = 0x00
+ *            r2 = 0x22
+ *            r3 = 0x00
+ *  
+ */
+void test_MOVImmediateT1_test_case_1_should_get_the_expected_result()
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0x00;
+  coreReg[2] = 0x00;
+  coreReg[3] = 0x00;
+  
+  setZeroFlag();
+  ARMSimulator(0xbf0b0000);   //ITETE  EQ
+  ARMSimulator(0x20850000);   //moveq r0,#0x85
+  ARMSimulator(0x21ff0000);   //movne r1,#0xff
+  ARMSimulator(0x22220000);   //moveq r2,#0x22
+  ARMSimulator(0x23110000);   //movne r3,#0x11
+  
+  TEST_ASSERT_EQUAL(0x85,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x22,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+
+// test for the conditional cases
+/* Test case 2 (condition not meet)
+ *            r0 = 0x00
+ *            r1 = 0x00
+ *            r2 = 0x00
+ *            r3 = 0x00
+ *            ITETE EQ
+ *            moveq r0,#0x85
+ *            movne r1,#0xff
+ *            moveq r2,#0x22
+ *            movne r3,#0x11
+ * 
+ * Expected Result:
+ *            r0 = 0x85
+ *            r1 = 0x00
+ *            r2 = 0x22
+ *            r3 = 0x00
+ *  
+ */
+void test_MOVImmediateT1_test_case_2_should_get_the_expected_result()
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0x00;
+  coreReg[2] = 0x00;
+  coreReg[3] = 0x00;
+  
+  resetZeroFlag();
+  ARMSimulator(0xbf0b0000);   //ITETE  EQ
+  ARMSimulator(0x20850000);   //moveq r0,#0x85
+  ARMSimulator(0x21ff0000);   //movne r1,#0xff
+  ARMSimulator(0x22220000);   //moveq r2,#0x22
+  ARMSimulator(0x23110000);   //movne r3,#0x11
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Subtract Immediate T1, T2
@@ -1001,6 +1083,123 @@ void test_SUBImmediateT2_given_0x3bff_and_r3_is_3000_should_get_0xab9_at_r3_C_fl
 }
 
 
+
+// test for the conditional cases
+/* Test case 1
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff 
+ *            r3 = 0x11
+ *            r4 = 0x88 
+ *            r5 = 0x44
+ *            r6 = 0x77 
+ *            r7 = 0x22
+ *            ITETE NE
+ *            SUBNE R0, R1, #0x07
+ *            SUBEQ R3, R2, #0x02
+ *            SUBNE R4, #0x22
+ *            SUBEQ R5, #0x90
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff
+ *            r3 = 0xfd
+ *            r4 = 0x88
+ *            r5 = 0xffffffb4
+ *            r6 = 0x77
+ *            r7 = 0x22
+ *  
+ */
+void test_SUBImmediateT1_and_T2_test_case_1_should_get_the_expected_result()
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  coreReg[2] = 0xff;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0x88;
+  coreReg[5] = 0x44;
+  coreReg[6] = 0x77;
+  coreReg[7] = 0x22;
+  
+  setZeroFlag();
+  ARMSimulator(0xbf150000);   //ITETE NE
+  ARMSimulator(0x1fc80000);   //SUBNE R0, R1, #0x07
+  ARMSimulator(0x1e930000);   //SUBEQ R3, R2, #0x02
+  ARMSimulator(0x3c220000);   //SUBNE R4, #0x22
+  ARMSimulator(0x3d900000);   //SUBEQ R5, #0x90
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[2]);
+  TEST_ASSERT_EQUAL(0xfd,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x88,coreReg[4]);
+  TEST_ASSERT_EQUAL(0xffffffb4,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x22,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+
+// test for the conditional cases
+/* Test case 2 (conditon not meet)
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff 
+ *            r3 = 0x11
+ *            r4 = 0x88 
+ *            r5 = 0x44
+ *            r6 = 0x77 
+ *            r7 = 0x22
+ *            ITETE NE
+ *            SUBNE R0, R1, #0x07
+ *            SUBEQ R3, R2, #0x02
+ *            SUBNE R4, #0x22
+ *            SUBEQ R5, #0x90
+ * 
+ * Expected Result:
+ *            r0 = 0xf8
+ *            r1 = 0xff
+ *            r2 = 0xff
+ *            r3 = 0x11
+ *            r4 = 0x88
+ *            r5 = 0x44
+ *            r6 = 0x77
+ *            r7 = 0x22
+ *  
+ */
+void test_SUBImmediateT1_and_T2_test_case_2_should_get_the_expected_result()
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  coreReg[2] = 0xff;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0x88;
+  coreReg[5] = 0x44;
+  coreReg[6] = 0x77;
+  coreReg[7] = 0x22;
+  
+  resetZeroFlag();
+  ARMSimulator(0xbf150000);   //ITETE NE
+  ARMSimulator(0x1fc80000);   //SUBNE R0, R1, #0x07
+  ARMSimulator(0x1e930000);   //SUBEQ R3, R2, #0x02
+  ARMSimulator(0x3c220000);   //SUBNE R4, #0x22
+  ARMSimulator(0x3d900000);   //SUBEQ R5, #0x90
+  
+  TEST_ASSERT_EQUAL(0xf8,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x66,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x22,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Subtract Register T1
 
@@ -1035,3 +1234,96 @@ void test_SUBRegisterToRegisterT1_given_0x1b1a_and_r3_is_0xffffffff_r4_is_0x8000
 
 
 
+// test for the conditional cases
+/* Test case 1
+ *            r1 = 0xff
+ *            r2 = 0x3e
+ *            r3 = 0x11
+ *            r4 = 0xfe
+ *            r6 = 0x44
+ *            r7 = 0x50
+ *            ITE NE
+ *            SUBNE R0, R1, R2
+ *            SUBEQ R5, R4, R3
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff
+ *            r3 = 0xfd
+ *            r4 = 0x88
+ *            r5 = 0xffffffb4
+ *  
+ */
+void test_SUBRegisterToRegisterT1_test_case_1_should_get_the_expected_result()
+{
+  coreReg[1] = 0xff;
+  coreReg[2] = 0x3e;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0xfe;
+  coreReg[6] = 0x44;
+  coreReg[7] = 0x50;
+  
+  resetZeroFlag();
+  ARMSimulator(0xbf140000);   //ITE NE
+  ARMSimulator(0x1a880000);   //SUBNE R0, R1, R2
+  ARMSimulator(0x1ae50000);   //SUBEQ R5, R4, R3
+  
+  TEST_ASSERT_EQUAL(0xc1,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x3e,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0xfe,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x00,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x50,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+// test for the conditional cases
+/* Test case 2 (condition not meet)
+ *            r1 = 0xff
+ *            r2 = 0x3e
+ *            r3 = 0x11
+ *            r4 = 0xfe
+ *            r6 = 0x44
+ *            r7 = 0x50
+ *            ITE NE
+ *            SUBNE R0, R1, R2
+ *            SUBEQ R5, R4, R3
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff
+ *            r3 = 0xfd
+ *            r4 = 0x88
+ *            r5 = 0xffffffb4
+ *  
+ */
+void test_SUBRegisterToRegisterT1_test_case_2_should_get_the_expected_result()
+{
+  coreReg[1] = 0xff;
+  coreReg[2] = 0x3e;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0xfe;
+  coreReg[6] = 0x44;
+  coreReg[7] = 0x50;
+  
+  setZeroFlag();
+  ARMSimulator(0xbf140000);   //ITE NE
+  ARMSimulator(0x1a880000);   //SUBNE R0, R1, R2
+  ARMSimulator(0x1ae50000);   //SUBEQ R5, R4, R3
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x3e,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0xfe,coreReg[4]);
+  TEST_ASSERT_EQUAL(0xed,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x50,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
