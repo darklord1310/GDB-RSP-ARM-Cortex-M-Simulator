@@ -1,4 +1,12 @@
 #include "LSRRegister.h"
+#include "ITandHints.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+#include "ModifiedImmediateConstant.h"
+#include "Thumb16bitsTable.h"
+#include "ConditionalExecution.h"
 
 
 /*Logical Shift Right Register To Register Encoding T1
@@ -25,8 +33,52 @@ void LSRRegisterToRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rdn = getBits(instruction, 18, 16);
 	
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    executeLSRRegister(Rm, Rdn, 0);
+    
+    shiftITState();
+  }
+  else
+  executeLSRRegister(Rm, Rdn, 1);
+  
+}
+
+
+void executeLSRRegister(uint32_t Rm, uint32_t Rdn, uint32_t S)
+{
+  int lastBitShifted;
   unsigned int timesToShift = getBits( coreReg[Rm] ,7, 0);    //get the lowest byte from the Rm register
+
+  if(timesToShift <= 32)
+  {
+    if(timesToShift != 0)
+      lastBitShifted = getBits(coreReg[Rdn], timesToShift-1, timesToShift-1);
+    
+    if( timesToShift == 32)
+      coreReg[Rdn] = 0;
+    else
+      coreReg[Rdn] =  coreReg[Rdn] >> timesToShift ;
+  }
+  else
+  {
+    lastBitShifted = 0;
+    coreReg[Rdn] = 0;
+  }
+
   
-  coreReg[Rdn] =  coreReg[Rdn] >> timesToShift;
-  
+  if( S == 1)
+  {
+    updateNegativeFlag(coreReg[Rdn]);
+    updateZeroFlag(coreReg[Rdn]);
+    if(timesToShift != 0)
+    {
+      if(lastBitShifted == 1)
+        setCarryFlag();
+      else
+        resetCarryFlag();
+    }
+  }
+
 }

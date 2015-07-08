@@ -22,6 +22,9 @@
 #include "ADDSPRegister.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+
 
 void setUp(void)
 {
@@ -343,4 +346,271 @@ void test_LSLRegisterToRegisterT1_given_test_case_2_should_get_the_expected_resu
   TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
   TEST_ASSERT_EQUAL(0x00000000,coreReg[7]);
   TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LSR Register T1
+  
+
+//test LSRS  R1, R2  given R1 = 0xffffffff and R2 = 0x00000113
+void test_LSRRegisterToRegister16bitsT1_given_0x40d1_should_shift_right_r1_19_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x40d10000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000113;                          //set R2 to be 0x00000113
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000113, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x00001fff, coreReg[1]);        //after shift right 19 times, should get 0x00001fff
+}
+
+
+//testing flag changing
+//test LSRS  R1, R2  given R1 = 0xffffffff and R2 = 0x00000120
+void test_LSRRegisterToRegister16bitsT1_given_0x40d1_should_shift_right_r1_32_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x40d10000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000120;                          //set R2 to be 0x00000120
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000120, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[1]);        //after shift right 32 times, should get 0x00
+  TEST_ASSERT_EQUAL(1,isCarry());
+}
+
+
+//testing shift zero should not update carry flag
+//boundary case, minimum shift 
+//test LSRS  R1, R2  given R1 = 0xffffffff and R2 = 0x00000100
+void test_LSRRegisterToRegister16bitsT1_given_0x40d1_should_shift_right_r1_0_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x40d10000;
+  
+  setCarryFlag();
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000100;                          //set R2 to be 0x00000100
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000100, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);        //after shift right 0 times, should get 0xffffffff
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);     //carry flag is still set, and right now N flag is set too because
+                                                    //of -1
+}
+
+
+//boundary case, maximum shift 
+//test LSRS  R1, R2  given R1 = 0xffffffff and R2 = 0x000001ff
+void test_LSRRegisterToRegister16bitsT1_given_0x40d1_should_shift_right_r1_0xff_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x40d10000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x000001ff;                          //set R2 to be 0x000001ff
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x000001ff, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);              //after shift right 0 times, should get 0xffffffff
+}
+
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x00010101
+ *            r1 = 0xffffffff
+ *            r2 = 0x10101010
+ *            r3 = 0x88888888
+ *            r4 = 0x44444444
+ *            r5 = 0x44444444
+ *            R6 = 0X00000033
+ *            r7 = 0x01010101
+ *            ITETE CC
+ *            LSRCC r1,r0
+ *            LSRCS r2,r3
+ *            LSLRC r4,r5
+ *            LSLRS r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x00010101
+ *            r1 = 0xfffffffe
+ *            r2 = 0x10101010
+ *            r3 = 0x88888888
+ *            r4 = 0x00000000
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ */
+void test_LSRRegisterToRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+
+  coreReg[0] = 0x00010101;
+  coreReg[1] = 0xffffffff;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x88888888;
+  coreReg[4] = 0x44444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0X00000033;
+  coreReg[7] = 0x01010101;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf350000);   //ITETE CC
+  ARMSimulator(0x40C10000);   //LSRCC r1,r0
+  ARMSimulator(0x40DA0000);   //LSRCS r2,r3
+  ARMSimulator(0x40EC0000);   //LSRCC r4,r5
+  ARMSimulator(0x40F70000);   //LSRCS r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00010101,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x7fffffff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x88888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x00000000,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ASR Register T1
+  
+  
+//test ASRS  R1, R2  given R2, #0xffffffff and R1 = 0x00000113
+void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_19_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x41110000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000113;                          //set R2 to be 0x00000113
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000113, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);                 //after shift right 19 times, should get 0xffffffff
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+}
+
+//corner case, carry flag change to 1
+//test ASRS  R1, R2  given R2, #0x80000000 and R1 = 0x00000120
+void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_32_times_and_write_to_R1_carry_flag_1(void)
+{
+  uint32_t instruction = 0x41110000;
+  
+  coreReg[1] = 0x80000000;                          //set R1 to be 0x80000000
+  coreReg[2] = 0x00000120;                          //set R2 to be 0x00000120
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000120, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);                 //after shift right 32 times, should get 0xffffffff
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+}
+
+
+//corner case, carry flag change to 0
+//test ASRS  R1, R2  given R2, #0x00000000 and R1 = 0x00000120
+void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_32_times_and_write_to_R1_carry_flag_0(void)
+{
+  uint32_t instruction = 0x41110000;
+  
+  setCarryFlag();
+  coreReg[1] = 0x00000000;                          //set R1 to be 0x00000000
+  coreReg[2] = 0x00000120;                          //set R2 to be 0x00000120
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000120, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);                 //after shift right 32 times, should get 0x00
+  TEST_ASSERT_EQUAL(0x41000000, coreReg[xPSR]);
+}
+
+
+//maximum shift
+//test ASRS  R1, R2  given R2, #0xffffffff and R1 = 0x000001ff
+void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_0xff_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x41110000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x000001ff;                          //set R2 to be 0x000001ff
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x000001ff, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);                 //after shift right 255 times, should get 0xffffffff
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+}
+
+
+//minimum shift
+//test ASRS  R1, R2  given R2, #0xffffffff and R1 = 0x00000100
+void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_0_times_and_write_to_R1(void)
+{
+  uint32_t instruction = 0x41110000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[2] = 0x00000100;                          //set R2 to be 0x00000100
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00000100, coreReg[2]);    
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);                 //after shift right 0 times, should get 0xffffffff
+  TEST_ASSERT_EQUAL(0x81000000, coreReg[xPSR]);
+}
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x00010101
+ *            r1 = 0x0fffffff
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            R6 = 0X00000033
+ *            r7 = 0x01010101
+ *            ITETE CC
+ *            ASRCC r1,r0
+ *            ASRCS r2,r3
+ *            ASRCC r4,r5
+ *            ASRCS r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x00010101
+ *            r1 = 0x07ffffff
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x00000000
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ */
+void test_ASRRegisterToRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+
+  coreReg[0] = 0x00010101;
+  coreReg[1] = 0x0fffffff;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0X00000033;
+  coreReg[7] = 0x01010101;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf350000);   //ITETE CC
+  ARMSimulator(0x41010000);   //ASRCC r1,r0
+  ARMSimulator(0x411a0000);   //ASRCS r2,r3
+  ARMSimulator(0x412c0000);   //ASRCC r4,r5
+  ARMSimulator(0x41370000);   //ASRCS r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00010101,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x07ffffff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x00000000,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }

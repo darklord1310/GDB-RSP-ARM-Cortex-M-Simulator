@@ -77,10 +77,13 @@ void executeLSLRegister(uint32_t Rm, uint32_t Rdn, uint32_t S)
   {
     updateNegativeFlag(coreReg[Rdn]);
     updateZeroFlag(coreReg[Rdn]);
-    if(lastBitShifted == 1)
-      setCarryFlag();
-    else
-      resetCarryFlag();
+    if(timesToShift != 0)
+    {
+      if(lastBitShifted == 1)
+        setCarryFlag();
+      else
+        resetCarryFlag();
+    }
   }
 
 }

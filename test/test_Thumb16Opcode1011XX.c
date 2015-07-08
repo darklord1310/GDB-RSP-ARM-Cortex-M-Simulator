@@ -21,6 +21,9 @@
 #include "SUBRegister.h"
 #include "ADDSPRegister.h"
 #include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
 
 void setUp(void)
 {

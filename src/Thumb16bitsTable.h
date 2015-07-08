@@ -15,6 +15,8 @@
 #include "ITandHints.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
 void (*Thumb16Opcode010000[16])(uint32_t instruction);

@@ -1,4 +1,12 @@
 #include "ASRRegister.h"
+#include "ITandHints.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+#include "ModifiedImmediateConstant.h"
+#include "Thumb16bitsTable.h"
+#include "ConditionalExecution.h"
 
 
 /*Arithmetic Shift Right Register To Register Encoding T1
@@ -20,28 +28,73 @@ where:
           
           <Rm>          Specifies the register whose bottom byte contains the amount to shift by.
 */
-void ASRRegisterToRegister16bitsT1(uint32_t instruction)
+void ASRRegisterToRegisterT1(uint32_t instruction)
 {
-  int i;
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rdn = getBits(instruction, 18, 16);
-	
-  unsigned int timesToShift = getBits( coreReg[Rm] ,7, 0);    //get the lowest byte from the Rm register
-  unsigned int mask = ( getBits( coreReg[Rm], 31,31 ) ) << 31;
-  uint32_t temp = coreReg[Rm];
   
-  for(i = 0; i < timesToShift; i++)
-  {
-    temp = ( temp >> 1 ) | mask;
+  if(inITBlock())
+  {  
+    if( checkCondition(cond) )
+      executeASRRegister(Rm, Rdn, Rdn, 0);  //status flag is not affected
+    
+    shiftITState();
   }
+  else
+    executeASRRegister(Rm, Rdn, Rdn, 1);   //status flag is affected
 
-  coreReg[Rdn] = temp;
 }
 
 
-void executeASRRegister()
+/*
+   Inputs: 
+            S              If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
+                           update the flags.
+ 
+            Rd             Specifies the destination register.
+            
+            Rn             Specifies the register that contains the first operand.
+            
+            Rm             Specifies the register whose bottom byte contains the amount to shift by
+*/
+void executeASRRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S)
 {
+  int i, lastBitShifted;
+  unsigned int timesToShift = getBits( coreReg[Rm] ,7, 0);        //get the lowest byte from the Rm register
+  unsigned int mask = ( getBits( coreReg[Rn], 31,31 ) ) << 31;    //create the mask to perform arithmetic shift
+  uint32_t temp = coreReg[Rn];
+
+  if(timesToShift <= 32)                                          
+  {
+    for(i = 0; i < timesToShift; i++)
+    {
+      if( i == timesToShift - 1)                                  //this is to get the last bit of Rm before shifted out
+        lastBitShifted = getBits(temp, 0,0);
+      temp = ( temp >> 1 ) | mask;
+    }
+  }
+  else
+  {
+    int MSB = getBits( coreReg[Rn], 31,31 );                      //if the time to shift is larger than 32 times, then is either
+    if( MSB == 1)                                                 //return 0 or 0xffffffff and the lastBitShifted must be the MSB
+      temp = 0xffffffff;
+    else
+      temp = 0;
+    lastBitShifted = MSB;             
+  }
+
+  coreReg[Rd] = temp;
   
-  
-  
+  if( S == 1)
+  {
+    updateNegativeFlag(coreReg[Rd]);
+    updateZeroFlag(coreReg[Rd]);
+    if(timesToShift != 0)
+    {
+      if(lastBitShifted == 1)
+        setCarryFlag();
+      else
+        resetCarryFlag();
+    }
+  }
 }

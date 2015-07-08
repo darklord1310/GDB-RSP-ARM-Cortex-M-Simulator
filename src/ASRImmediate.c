@@ -57,8 +57,7 @@ void ASRImmediateT1(uint32_t instruction)
 void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t StatusBit, uint32_t MSBofRm)
 {
   int i, timesToShift, lastBitShifted;
-  uint32_t mask = MSBofRm << 31;                //create mask to make change the 0 shifted in to become
-                                                //MSB of Rm to achieve arithmetic shift
+  uint32_t mask = MSBofRm << 31;                //create mask to achieve arithmetic shift
                                                 
   uint32_t temp = coreReg[Rm];                  //create a dummy to prevent changing the register value
   

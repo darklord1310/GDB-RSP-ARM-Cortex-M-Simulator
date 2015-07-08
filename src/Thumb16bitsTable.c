@@ -54,7 +54,9 @@ void initThumb16bitsOpcode00XXXX()
 void initThumb16bitsOpcode010000()
 {
   Thumb16Opcode010000[0b0000] = ANDRegisterT1;
-  Thumb16Opcode010000[0b0010] = LSLRegisterToRegisterT1; 
+  Thumb16Opcode010000[0b0010] = LSLRegisterToRegisterT1;
+  Thumb16Opcode010000[0b0011] = LSRRegisterToRegisterT1;
+  Thumb16Opcode010000[0b0100] = ASRRegisterToRegisterT1;
   
 }
 
