@@ -50,12 +50,12 @@ void ANDRegisterT1(uint32_t instruction)
  if(inITBlock())
  {  
     if( checkCondition(cond) )
-      executeANDRegister(Rm, Rdn, 0,0); //status flag is not affected and not shifting
+      executeANDRegister(Rm, Rdn, 0,-1); //status flag is not affected and not shifting
 
     shiftITState();
  }
  else
-    executeANDRegister(Rm, Rdn, 1,0);   //status flag is affected, no shifting
+    executeANDRegister(Rm, Rdn, 1,-1);   //status flag is affected, no shifting
 }
 
 
@@ -66,9 +66,9 @@ void ANDRegisterT1(uint32_t instruction)
    Input: Rm                register value which will be perform AND operation with value in Rdn
           Rdn               destination register
           S                 if set will affect the status register
-          shiftOrNoShift    if 1 means there is shifting, if 0 means no shifting
+          shiftType    determine what type of shifting is needed, -1 if no shifting
 */
-void executeANDRegister(uint32_t Rm, uint32_t Rdn, uint32_t S, int shiftOrNoShift)
+void executeANDRegister(uint32_t Rm, uint32_t Rdn, uint32_t S, uint32_t shiftType)
 {
   coreReg[Rdn] = coreReg[Rdn] & coreReg[Rm];
     
