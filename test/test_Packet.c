@@ -81,3 +81,21 @@ void test_createdHexToString_given_regVal_should_return_1_byte_of_string_of_the_
 
     destroyHexToString(packet);
 }
+
+void test_decodeTwoByte_given_byte_of_0x7856_should_return_0x5678(void)
+{
+    unsigned int byteData = 0x7856, result;
+
+    result = decodeTwoByte(byteData);
+
+    TEST_ASSERT_EQUAL(0x5678, result);
+}
+
+void test_decodeFourByte_given_byte_of_0x78563412_should_return_0x12345678(void)
+{
+    unsigned int byteData = 0x78563412, result;
+
+    result = decodeFourByte(byteData);
+
+    TEST_ASSERT_EQUAL(0x12345678, result);
+}

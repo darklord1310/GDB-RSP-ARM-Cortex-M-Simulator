@@ -48,8 +48,8 @@ void destroyPacket(char *packet)
  * This function convert HEX value to ASCII string
  *
  * Input:
- *      regVal          register value in HEX form
- *      bytes            number of bytes to convert to ASCII form
+ *      regVal      register value in HEX form
+ *      bytes       number of bytes to convert to ASCII form
  *
  * Return:
  *      asciiString     HEX value in string form
@@ -89,4 +89,24 @@ void destroyHexToString(char *asciiString)
 {
     if(asciiString != NULL)
         free(asciiString);
+}
+
+unsigned int decodeTwoByte(unsigned int byteData)
+{
+    unsigned int msb, lsb;
+    
+    msb = byteData >> 8;
+    lsb = byteData & 0xff;
+    
+    return (msb | lsb << 8);
+}
+
+unsigned int decodeFourByte(unsigned int byteData)
+{
+    unsigned int msb, lsb;
+    
+    msb = decodeTwoByte(byteData >> 16);
+    lsb = decodeTwoByte(byteData & 0xffff);
+    
+    return (msb | lsb << 16);
 }

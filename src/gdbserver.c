@@ -104,42 +104,39 @@ void main()
     char *reply = NULL;
     char recvbuf[200] = "";
 
-    // initCoreRegister();
-    // resetROM();
-
     while(recvbuf[1] != 'k')
     {
-    /*
-     *  Recv packet
-     *      ==>  + (ACK)
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
+        /*
+         *  Recv ACK
+         */
+        bytesRecv = recv( sock, recvbuf, 200, 0 );
 
-    /*
-     *  Response packet
-     *      ==>  + (ACK)
-     */
-    bytesSent = send( sock, "+", strlen("+"), 0 );
+        /*
+         *  Response ACK
+         */
+        bytesSent = send( sock, "+", strlen("+"), 0 );
 
-    /*
-     *  Recv packet
-     */
-    bytesRecv = recv( sock, recvbuf, 100, 0 );
-    printf( "\nBytes Recv: %ld\n", bytesRecv );
-    recvbuf[bytesRecv] = '\0';
-    printf( "recvbuf: %s\n", recvbuf );
+        /*
+         *  Recv packet
+         */
+        bytesRecv = recv( sock, recvbuf, 200, 0 );
+        printf( "\nBytes Recv: %ld\n", bytesRecv );
+        recvbuf[bytesRecv] = '\0';
+        printf( "recvbuf: %s\n", recvbuf );
 
-    reply = serveRSP(recvbuf);
+        reply = serveRSP(recvbuf);
 
-    /*
-     *  Response packet
-     */
-    bytesSent = send( sock, reply, strlen(reply), 0 );
-    printf( "\nBytes Sent: %ld\n", bytesSent );
-    printf( "sendbuf: %s\n", reply );
+        /*
+         *  Response packet
+         */
+        bytesSent = send( sock, reply, strlen(reply), 0 );
+        printf( "\nBytes Sent: %ld\n", bytesSent );
+        printf( "sendbuf: %s\n", reply );
 
-    free(reply);
+        free(reply);
     }
+    
+    destroyROM();
 
     /****************Close our socket entirely****************/
 	closesocket(sock);

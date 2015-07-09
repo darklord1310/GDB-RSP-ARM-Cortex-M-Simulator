@@ -145,7 +145,7 @@ void test_serveRSP_given_data_with_Hc0_should_return_empty_response(void)
 
     free(reply);
 }
-
+/*
 void test_serveRSP_given_data_with_p10_packet_should_return_appropriate_response(void)
 {
     char data[] = "$p10#d1";
@@ -171,7 +171,7 @@ void test_serveRSP_given_data_with_g_packet_should_return_appropriate_response_w
 
     free(reply);
 }
-
+ 
 void test_serveRSP_given_data_with_P_packet_should_return_appropriate_response(void)
 {
     char data[] = "$P6=1052ffff#23";
@@ -256,4 +256,4 @@ void xtest_serveRSP_given_data_with_m_packet_with_2_byte_length_should_return_ap
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$4d4a#2d", reply);
-}
+} */
