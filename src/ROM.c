@@ -29,7 +29,6 @@ void createROM()
     rom->address = calloc(TWO_HUND_FIFTY_SIX_KB * 2, sizeof(ROMData));
 }
 
-
 void resetROM()
 {
     int i;
@@ -40,7 +39,6 @@ void resetROM()
     }
 }
 
-
 void destroyROM()
 {
     if(rom != NULL)
@@ -48,4 +46,9 @@ void destroyROM()
         free(rom->address);
         free(rom);
     }
+}
+
+uint32_t virtualMemToPhysicalMem(uint32_t mem)
+{
+    return mem / 0x7f;
 }
