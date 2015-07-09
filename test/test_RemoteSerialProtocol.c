@@ -302,23 +302,23 @@ void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_
 
 void test_readMemory_given_following_data_should_return_4_byte_value_in_memory_addr_given_by_data(void)
 {
-    char data[] = "$m8000f90,4#64";
+    char data[] = "$m0,4#64";
     char *reply = NULL;
 
     createROM();
 
-    // rom->address[0x8000f90].data = 0xdff834d0;
+    rom->address[0x0].data = 0xdff834d0;
 
     createdHexToString_ExpectAndReturn(0xdff834d0, 4, "dff834d0");
     gdbCreateMsgPacket_ExpectAndReturn("dff834d0", "$dff834d0#63");
     destroyHexToString_Expect("dff834d0");
 
-    // reply = readMemory(data);
+    reply = readMemory(data);
 
     TEST_ASSERT_EQUAL_STRING("$dff834d0#63", reply);
 }
 
-void test_readMemory_given_following_data_should_return_2_byte_value_in_memory_addr_given_by_data(void)
+void xtest_readMemory_given_following_data_should_return_2_byte_value_in_memory_addr_given_by_data(void)
 {
     char data[] = "$m8000d06,2#5d";
     char *reply = NULL;

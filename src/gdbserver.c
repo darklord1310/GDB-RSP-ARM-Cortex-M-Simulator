@@ -13,6 +13,7 @@
 void main()
 {
     initCoreRegister();
+    createROM();
     resetROM();
 
     /****************Initialize Winsock.****************/

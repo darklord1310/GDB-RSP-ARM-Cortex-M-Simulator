@@ -42,3 +42,23 @@ void test_resetROM_should_reset_all_the_ROM_data_to_0(void)
 
     destroyROM();
 }
+
+void test_virtualMemToPhysicalMem_given_0x8000000_should_convert_the_mem_addr_into_virtual_mem_addr(void)
+{
+    int i;
+    uint32_t virtMemAddr, phyMemAddr = 0x8000000;
+
+    virtMemAddr = virtualMemToPhysicalMem(phyMemAddr);
+    
+    TEST_ASSERT_EQUAL(0x10204, virtMemAddr);
+}
+
+void test_virtualMemToPhysicalMem_given_0x8000001_should_convert_the_mem_addr_into_virtual_mem_addr(void)
+{
+    int i;
+    uint32_t virtMemAddr, phyMemAddr = 0x800007f;
+
+    virtMemAddr = virtualMemToPhysicalMem(phyMemAddr);
+    
+    TEST_ASSERT_EQUAL(0x102041, virtMemAddr);
+}
