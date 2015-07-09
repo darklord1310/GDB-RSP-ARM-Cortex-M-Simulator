@@ -25,6 +25,11 @@
 #include "LSLRegister.h"
 #include "LSRRegister.h"
 #include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
 
 void setUp(void)
 {

@@ -30,6 +30,7 @@ void CMPImmediateT1(uint32_t instruction)
 }
 
 
+
 /*Compare Immediate Encoding T2
 
     CMP<c>.W <Rn>,#<const>

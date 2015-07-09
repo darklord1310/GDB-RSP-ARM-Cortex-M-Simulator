@@ -24,7 +24,11 @@
 #include "LSLRegister.h"
 #include "LSRRegister.h"
 #include "ASRRegister.h"
-
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
 
 void setUp(void)
 {
@@ -543,19 +547,21 @@ void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_
 }
 
 
-//minimum shift
+//minimum shift, carry flag is not affected
 //test ASRS  R1, R2  given R2, #0xffffffff and R1 = 0x00000100
 void test_ASRRegisterToRegisterT1_given_0x4111_should_arithmetic_shift_right_r1_0_times_and_write_to_R1(void)
 {
   uint32_t instruction = 0x41110000;
   
+  setCarryFlag();
   coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
   coreReg[2] = 0x00000100;                          //set R2 to be 0x00000100
   ARMSimulator(instruction);
           
   TEST_ASSERT_EQUAL(0x00000100, coreReg[2]);    
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);                 //after shift right 0 times, should get 0xffffffff
-  TEST_ASSERT_EQUAL(0x81000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(1, isCarry());                           //after ASR instruction , the carry flag is still set
 }
 
 
@@ -614,3 +620,391 @@ void test_ASRRegisterToRegisterT1_given_test_case_1_should_get_the_expected_resu
   TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Compare Register T1
+
+  
+//test CMP  R1, R0  given R1, #0xffffffff and R0 = 0x00010100
+void test_CMPRegisterT1_given_0x4281_should_minus_r1_with_r0_and_update_N_flag_and_C_flag(void)
+{
+  uint32_t instruction = 0x42810000;
+  
+  coreReg[1] = 0xffffffff;                          //set R1 to be 0xffffffff
+  coreReg[0] = 0x00010100;                          //set R0 to be 0x00010100
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x00010100, coreReg[0]);    
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);  
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(1, isCarry());
+  TEST_ASSERT_EQUAL(1, isNegative());
+}
+
+
+//test CMP  R1, R0  given R1, #0x80000000 and R0 = 0x40000000
+void test_CMPRegisterT1_given_0x4281_should_minus_r1_with_r0_and_update_V_flag_and_C_flag(void)
+{
+  uint32_t instruction = 0x42810000;
+  
+  coreReg[1] = 0x80000000;                          //set R1 to be 0x80000000
+  coreReg[0] = 0x40000000;                          //set R0 to be 0x40000000
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x40000000, coreReg[0]);    
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[1]);  
+  TEST_ASSERT_EQUAL(0x31000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(1, isOverflow());
+  TEST_ASSERT_EQUAL(1, isCarry());
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Compare Negative Register T1
+
+  
+//test CMN  R1, R0  given R1, #0x80000000 and R0 = 0x40000000
+void test_CMPRegisterT1_given_0x42c1_should_minus_r1_with_r0_and_update_N_flag(void)
+{
+  uint32_t instruction = 0x42c10000;
+  
+  coreReg[1] = 0x80000000;                          //set R1 to be 0x80000000
+  coreReg[0] = 0x40000000;                          //set R0 to be 0x40000000
+  ARMSimulator(instruction);
+          
+  TEST_ASSERT_EQUAL(0x40000000, coreReg[0]);    
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[1]);  
+  TEST_ASSERT_EQUAL(1, isNegative());
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Exclusive OR Register T1
+
+  
+// test EORS R1, R0
+void test_EORRegisterT1_given_r0_0xf0_r1_0x0f_should_get_r0_0xff_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x40410000;
+  
+  coreReg[0] = 0xf0;
+  coreReg[1] = 0x0f;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+// test EORS R1, R0
+void test_EORRegisterT1_given_r0_0xff_r1_0xff_should_get_r0_0x00_Z_flag_set(void)
+{
+  uint32_t instruction = 0x40410000;
+  
+  coreReg[0] = 0xff;
+  coreReg[1] = 0xff;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+
+//testing zero flag changing
+// test EORS R1, R0
+void test_EORRegisterT1_given_r0_0xff_r1_0xff_should_get_r0_0x00_xPSR_0x41000000(void)
+{
+  uint32_t instruction = 0x40410000;
+  
+  coreReg[0] = 0xff;
+  coreReg[1] = 0xff;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff 
+ *            r3 = 0x11
+ *            r4 = 0x88 
+ *            r5 = 0x44
+ *            r6 = 0x77 
+ *            r7 = 0x22
+ *            ITETE CS
+ *            EORCS r1,r0
+ *            EORCC r2,r3
+ *            EORCS r4,r5
+ *            EORCC r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x00
+ *            r1 = 0x00
+ *            r2 = 0xee
+ *            r3 = 0x11
+ *            r4 = 0x88
+ *            r5 = 0x44
+ *            r6 = 0x77
+ *            r7 = 0x55
+ * 
+ */
+void test_EORRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  coreReg[2] = 0xff;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0x88;
+  coreReg[5] = 0x44;
+  coreReg[6] = 0x77;
+  coreReg[7] = 0x22;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf2b0000);   //ITETE CS
+  ARMSimulator(0x40410000);   //EORCS r1,r0
+  ARMSimulator(0x405a0000);   //EORCC r2,r3
+  ARMSimulator(0x406c0000);   //EORCS r4,r5
+  ARMSimulator(0x40770000);   //EORCC r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0xee,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x88,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x55,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  // Logical OR Register T1
+  
+// test ORRS R1, R0
+void test_ORRRegisterT1_given_r0_0xf0_r1_0xf0_should_get_r1_0xff_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x43010000;
+  
+  coreReg[0] = 0xf0;
+  coreReg[1] = 0x0f;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+// test ORRS R1, R0
+void test_ORRRegisterT1_given_r0_0xff_r1_0x00_should_get_r1_0xff_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x43010000;
+  
+  coreReg[0] = 0xff;
+  coreReg[1] = 0x00;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+// test ORRS R1, R0
+void test_ORRRegisterT1_given_r0_0x88888888_r1_0x44444444_should_get_r1_00xcccccccc_N_flag_set(void)
+{
+  uint32_t instruction = 0x43010000;
+  
+  coreReg[0] = 0x88888888;
+  coreReg[1] = 0x44444444;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xcccccccc, coreReg[1]);
+  TEST_ASSERT_EQUAL(1, isNegative());
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff 
+ *            r3 = 0x11
+ *            r4 = 0x88 
+ *            r5 = 0x44
+ *            r6 = 0x77 
+ *            r7 = 0x22
+ *            ITETE CS
+ *            ORRCS r1,r0
+ *            ORRCC r2,r3
+ *            ORRCS r4,r5
+ *            ORRCC r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x00
+ *            r1 = 0xff
+ *            r2 = 0xff
+ *            r3 = 0x11
+ *            r4 = 0x88
+ *            r5 = 0x44
+ *            r6 = 0x77
+ *            r7 = 0x77
+ * 
+ */
+void test_ORRRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  coreReg[2] = 0xff;
+  coreReg[3] = 0x11;
+  coreReg[4] = 0x88;
+  coreReg[5] = 0x44;
+  coreReg[6] = 0x77;
+  coreReg[7] = 0x22;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf2b0000);   //ITETE CS
+  ARMSimulator(0x43010000);   //ORRCS r1,r0
+  ARMSimulator(0x431a0000);   //ORRCC r2,r3
+  ARMSimulator(0x432c0000);   //ORRCS r4,r5
+  ARMSimulator(0x43370000);   //ORRCC r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0xff,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x11,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x88,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x77,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  // Rotate Right Register T1
+  
+// test RORS R1, R0
+void test_RORRegisterT1_given_r0_0x03_r1_0x07_should_get_r1_0xe0000000_xPSR_0xa1000000(void)
+{
+  uint32_t instruction = 0x41c10000;
+  
+  coreReg[0] = 0x03;
+  coreReg[1] = 0x07;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xe0000000, coreReg[1]);
+  TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
+}
+
+
+// test RORS R1, R0
+void test_RORRegisterT1_given_r0_0x04_r1_0x06_should_get_r1_0x60000000_xPSR_0x01000000(void)
+{
+  uint32_t instruction = 0x41c10000;
+  
+  coreReg[0] = 0x04;
+  coreReg[1] = 0x06;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x60000000, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+//boundary test, maximum shift , 0xff times
+// test RORS R1, R0
+void test_RORRegisterT1_given_r0_0xff_r1_0x88888888_should_get_r1_0x11111111_xPSR_0x01000000(void)
+{
+  uint32_t instruction = 0x41c10000;
+  
+  coreReg[0] = 0xff;
+  coreReg[1] = 0x88888888;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x11111111, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+//boundary test, minimum shift , 0x00 times
+// test RORS R1, R0
+void test_RORRegisterT1_given_r0_0x00_r1_0x88888888_should_get_r1_0x88888888_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x41c10000;
+  
+  coreReg[0] = 0x00;
+  coreReg[1] = 0x88888888;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x88888888, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x40000044
+ *            r1 = 0x80000000
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ *            ITETE CS
+ *            RORCS r1,r0
+ *            RORCC r2,r3
+ *            RORCS r4,r5
+ *            RORCC r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x40000044
+ *            r1 = 0x08000000
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x43444444
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ * 
+ */
+void test_RORRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x40000044;
+  coreReg[1] = 0x80000000;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0x00000033;
+  coreReg[7] = 0x01010101;
+  
+  setCarryFlag();
+  ARMSimulator(0xbf2b0000);   //ITETE CS
+  ARMSimulator(0x41C10000);   //RORCS r1,r0
+  ARMSimulator(0x41DA0000);   //RORCC r2,r3
+  ARMSimulator(0x41EC0000);   //RORCS r4,r5
+  ARMSimulator(0x41F70000);   //RORCC r7,r6
+  
+  TEST_ASSERT_EQUAL(0x40000044,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x08000000,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x43444444,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  // Move Not Register T1
