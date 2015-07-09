@@ -1,22 +1,13 @@
 #include <stdio.h>
-#include <winsock2.h>
 #include <malloc.h>
 #include "ServeRSP.h"
 #include "ARMRegisters.h"
 #include "ROM.h"
+#include "gdbserver.h"
 
-#pragma comment(lib,<ws2_32.lib>)       //Winsock Library
-
-#define LOCAL_HOST_ADD  "127.0.0.1"
-#define DEFAULT_PORT    2010
-
-void main()
+/****************Initialize Winsock.****************/
+void winsockInit()
 {
-    initCoreRegister();
-    createROM();
-    resetROM();
-
-    /****************Initialize Winsock.****************/
     printf( "\n1. Initialising Winsock..............." );
     WSADATA wsaData;
     int iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
@@ -28,12 +19,14 @@ void main()
     }
     else
         printf( "Initialised\n" );
+}
 
-    /****************Create a socket.****************/
+/****************Create a socket.****************/
+void createSocket(SOCKET *sock)
+{
     printf( "2. Creating socket...................." );
-    SOCKET sock;
-    sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-    if ( sock == INVALID_SOCKET )
+    *sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+    if ( *sock == INVALID_SOCKET )
     {
         printf( ">>>Error at socket(): %ld\n", WSAGetLastError() );
         WSACleanup();
@@ -41,45 +34,69 @@ void main()
     }
     else
         printf( "Socket created\n" );
+}
 
-    /****************Bind the socket.****************/
+/****************Bind the socket.****************/
+void bindSocket(SOCKET *sock)
+{
     printf( "3. Binding socket....................." );
     struct sockaddr_in service;
     service.sin_family = AF_INET;
     service.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
     service.sin_port = htons( DEFAULT_PORT );
-    if ( bind( sock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
+    if ( bind( *sock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
     {
         printf( ">>>Error at bind(): %ld\n", WSAGetLastError() );
-        closesocket(sock);
+        closesocket(*sock);
         return;
     }
     else
         printf( "Bind done\n" );
+}
 
-    /****************Listen on the socket.****************/
+/****************Listen on the socket.****************/
+void listenSocket(SOCKET sock)
+{
     printf( "4. Listening to socket................" );
     if ( listen( sock, 1 ) == SOCKET_ERROR )
         printf( ">>>Error listening on socket\n");
     else
         printf( "Listening...\n" );
+}
 
-    /****************Accept connections.****************/
+/****************Accept connections.****************/
+void waitingForConnection(SOCKET *sock)
+{
     printf( "5. Waiting for incoming connections..." );
     SOCKET acceptSocket;
     while (1)
     {
         acceptSocket = SOCKET_ERROR;
         while ( acceptSocket == SOCKET_ERROR )
-            acceptSocket = accept( sock, NULL, NULL );
+            acceptSocket = accept( *sock, NULL, NULL );
 
         if ( acceptSocket == INVALID_SOCKET )
             printf( ">>>Error at accept(): %ld\n" , WSAGetLastError() );
         else
             printf( "Connection accepted\n" );
-        sock = acceptSocket;
+        *sock = acceptSocket;
         break;
     }
+}
+
+void main()
+{
+    SOCKET sock;
+
+    initCoreRegister();
+    createROM();
+    resetROM();
+
+    winsockInit();
+    createSocket(&sock);
+    bindSocket(&sock);
+    listenSocket(sock);
+    waitingForConnection(&sock);
 
     /****************Send and receive data.****************/
     int bytesSent;
