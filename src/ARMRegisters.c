@@ -40,7 +40,7 @@
 void initCoreRegister()
 {
   int i;
-  for(i = 0; i < numberOfRegister; i++)
+  for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i < 16)
       coreReg[i] = 0;

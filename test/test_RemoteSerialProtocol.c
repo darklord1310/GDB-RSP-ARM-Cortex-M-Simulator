@@ -366,7 +366,7 @@ void test_readMemory_given_0x8000d06_mem_addr_should_return_2_byte_value_in_memo
 
     createROM();
 
-    rom->address[virtualMemToPhysicalMem(0x8000d06)].data = 0x4a4d;
+    rom->address[virtualMemToPhysicalMem(0x8000d06)].data = 0x4a4d0000;
 
     decodeTwoByte_ExpectAndReturn(0x4a4d, 0x4d4a);
     createdHexToString_ExpectAndReturn(0x4d4a, 2, "4d4a");
@@ -424,16 +424,53 @@ void test_readMemory_given_0x8000ab0_mem_addr_should_return_20_byte_value_in_mem
 
 void test_writeMemory_given_0x8000d06_mem_addr_should_write_2_byte_data_in_the_memory_addr(void)
 {
-    char data[] = "$m8000d00,2:4a4d#5d";
+    char data[] = "$m8000d06,2:4a4d0000#5d";
 
     createROM();
 
-    // rom->address[0x10d06].data = 0x4d4a;
     decodeTwoByte_ExpectAndReturn(0x4a4d, 0x4d4a);
 
     writeMemory(data);
 
-    // TEST_ASSERT_EQUAL_STRING("$4d4a#2d", rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x4d4a0000, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+
+    destroyROM();
+}
+
+void test_writeMemory_given_0x8000d06_mem_addr_should_write_4_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$m8000d06,4:4a4d0008#5d";
+
+    createROM();
+
+    decodeFourByte_ExpectAndReturn(0x4a4d0008, 0x08004d4a);
+
+    writeMemory(data);
+
+    TEST_ASSERT_EQUAL(0x08004d4a, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+
+    destroyROM();
+}
+
+void test_writeMemory_given_0x8000d06_mem_addr_should_write_20_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$m8000d06,14:4d4a00085d5a00086d6a00087d7a00088d8a0008#5d";
+
+    createROM();
+
+    decodeFourByte_ExpectAndReturn(0x4d4a0008, 0x08004d4a);
+    decodeFourByte_ExpectAndReturn(0x5d5a0008, 0x08005d5a);
+    decodeFourByte_ExpectAndReturn(0x6d6a0008, 0x08006d6a);
+    decodeFourByte_ExpectAndReturn(0x7d7a0008, 0x08007d7a);
+    decodeFourByte_ExpectAndReturn(0x8d8a0008, 0x08008d8a);
+
+    writeMemory(data);
+
+    TEST_ASSERT_EQUAL(0x08004d4a, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x08005d5a, rom->address[virtualMemToPhysicalMem(0x8000d07)].data);
+    TEST_ASSERT_EQUAL(0x08006d6a, rom->address[virtualMemToPhysicalMem(0x8000d08)].data);
+    TEST_ASSERT_EQUAL(0x08007d7a, rom->address[virtualMemToPhysicalMem(0x8000d09)].data);
+    TEST_ASSERT_EQUAL(0x08008d8a, rom->address[virtualMemToPhysicalMem(0x8000d0a)].data);
 
     destroyROM();
 }

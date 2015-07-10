@@ -122,10 +122,10 @@ char *readAllRegister()
 {
     char *packet = NULL, fullRegValue[140] = "";
     int i, j;
-    unsigned int regValue[numberOfRegister], decodeVal;
+    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
     char *asciiString;
 
-    for(i = 0; i < numberOfRegister; i++)
+    for(i = 0; i < NUM_OF_CORE_Register; i++)
     {
         regValue[i] = coreReg[i];
 
@@ -181,10 +181,10 @@ void writeSingleRegister(char *data)
  */
 void writeAllRegister(char *data)
 {
-    unsigned int regValue[numberOfRegister], decodeVal;
+    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
     int i, j = 2;
 
-    for(i = 0; i < numberOfRegister; i++)
+    for(i = 0; i < NUM_OF_CORE_Register; i++)
     {
         sscanf(&data[j], "%8x", &regValue[i]);
         // printf("Reg val %d: %x\n", i, regValue[i]);
@@ -210,14 +210,14 @@ char *readMemory(char *data)
     {
         memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
 
-        if(byteLength - i >= 4)
+        if(byteLength % 4 == 0)
         {
             decodeVal = decodeFourByte(memoryContent);
             asciiString = createdHexToString(decodeVal, 4);
         }
         else
         {
-            decodeVal = decodeTwoByte(memoryContent);
+            decodeVal = decodeTwoByte(memoryContent >> 16);
             asciiString = createdHexToString(decodeVal, 2);
         }
 
@@ -238,30 +238,32 @@ void writeMemory(char *data)
     int i, byteLength, j = 1;
 
     sscanf(&data[2], "%8x", &addr);
-    printf("addr: %x\n", addr);
+    // printf("addr: %x\n", addr);
     comaAddr = strstr(data, ",");
     sscanf(&comaAddr[1], "%2x", &byteLength);
-    printf("byteLength: %d\n", byteLength);
+    // printf("byteLength: %d\n", byteLength);
     semicolonAddr = strstr(data, ":");
 
     for(i = 0; i < byteLength; i += 4)
     {
-        // if(byteLength - i >= 4)
-        // {
-            // sscanf(&semicolonAddr[j], "%8x", &memoryContent);
-            // decodeVal = decodeFourByte(memoryContent);
-            // rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal;
-        // }
-        // else
-        // {
+        if(byteLength % 4 == 0)
+        {
+            sscanf(&semicolonAddr[j], "%8x", &memoryContent);
+            decodeVal = decodeFourByte(memoryContent);
+            rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal;
+        }
+        else
+        {
             sscanf(&semicolonAddr[j], "%4x", &memoryContent);
             // printf("memoryContent: %x\n", memoryContent);
             decodeVal = decodeTwoByte(memoryContent);
             // printf("decodeVal: %x\n", decodeVal);
-            // rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal;
-        // }
+            rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal << 16;
+            // printf("rom->address.data: %x\n", rom->address[virtualMemToPhysicalMem(addr)].data);
+        }
 
         addr++;
+        j += 8;
     }
 }
 

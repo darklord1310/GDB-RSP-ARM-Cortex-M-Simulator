@@ -15,7 +15,7 @@ void test_initCoreRegister_reset_the_coreReg_correctly(void)
   int i;
   initCoreRegister();
   
-  for(i = 0; i < numberOfRegister; i++)
+  for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i < 16)
       TEST_ASSERT_EQUAL(0, coreReg[i]);
