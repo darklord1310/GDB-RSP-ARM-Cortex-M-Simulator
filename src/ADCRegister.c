@@ -7,7 +7,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
-
+#include <stdio.h>
 
 /*Add with Carry Register To Register Encoding T1
   ADCS        <Rdn>,<Rm>     Outside IT block.
@@ -44,16 +44,17 @@ void ADCRegisterT1(uint32_t instruction)
   uint32_t Rm =  getBits(instruction,21,19);
   uint32_t Rdn = getBits(instruction,18,16);
   
-  /*
+
  if(inITBlock())
  {
     if( checkCondition(cond) )
-      executeADCRegister(Rn, Rd, Rm, 0);
+      executeADCRegister(Rdn, Rdn, Rm, 0);
+    
     shiftITState();
  }
  else
-    executeADCRegister(Rn, Rd, Rm, 1);
-  */
+    executeADCRegister(Rdn, Rdn, Rm, 1);
+ 
 }
 
 
@@ -69,13 +70,13 @@ void ADCRegisterT1(uint32_t instruction)
 */
 void executeADCRegister(uint32_t Rn, uint32_t Rd, uint32_t Rm, uint32_t S)
 {
-  coreReg[Rd] = coreReg[Rn] + coreReg[Rm];            //get the result of Rn + Rm
-  
+  coreReg[Rd] = coreReg[Rn] + coreReg[Rm] + getBits(coreReg[xPSR],29,29);            //get the result of Rn + Rm + Carry
+
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
-    updateOverflowFlagAddition(coreReg[Rn], coreReg[Rm], coreReg[Rd]);
-    updateCarryFlagAddition(coreReg[Rn], coreReg[Rm]);
+    updateOverflowFlagAddition(coreReg[Rn], coreReg[Rm] , coreReg[Rd]);
+    updateCarryFlagAddition(coreReg[Rn], coreReg[Rm]);    //bug here
   }
 }

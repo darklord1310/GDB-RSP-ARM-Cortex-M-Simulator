@@ -1187,3 +1187,52 @@ void test_BICRegisterT1_given_test_case_1_should_get_the_expected_result(void)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   // Add with Carry Register T1
+
+//test with carry is 0, after addition no carry
+// test ADCS R1, R0
+void test_ADCRegisterT1_given_r0_0x08_r1_0x02_and_carry_is_0_should_get_r1_0x0a_xPSR_0x01000000(void)
+{
+  uint32_t instruction = 0x41410000;
+  
+  resetCarryFlag();
+  coreReg[0] = 0x08;
+  coreReg[1] = 0x02;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xa, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+//test with carry is 1, after addition no carry
+// test ADCS R1, R0
+void test_ADCRegisterT1_given_r0_0x08_r1_0x07_and_carry_is_1_should_get_r1_0x10_xPSR_0x01000000(void)
+{
+  uint32_t instruction = 0x41410000;
+  
+  setCarryFlag();
+  coreReg[0] = 0x08;
+  coreReg[1] = 0x07;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x10, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+//test with carry is 1, after addition got carry
+// test ADCS R1, R0
+void test_ADCRegisterT1_given_r0_0x80000000_r1_0x80000000_and_carry_is_1_should_get_r1_0x10_xPSR_0x01000000(void)
+{
+  uint32_t instruction = 0x41410000;
+  
+  setCarryFlag();
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x80000000;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x01, coreReg[1]);
+  TEST_ASSERT_EQUAL(1, isCarry() );
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}

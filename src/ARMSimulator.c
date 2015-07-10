@@ -62,7 +62,7 @@ int is32or16instruction(uint32_t instruction)
  *    1101xx   --->  ConditionalBranch
  *    11100x   --->  UnconditionalBranch
  */
-void Categorize16bitsThumbInstruction(uint32_t instruction)
+void armSimulate16(uint32_t instruction)
 {
   uint32_t opcode2;
   uint32_t opcode1 = getBits(instruction, 31, 26);
@@ -109,9 +109,25 @@ void ARMSimulator(uint32_t instruction)
 
   if(check == INSTRUCTION16bits)
   {
-    Categorize16bitsThumbInstruction(instruction);
+    armSimulate16(instruction);
   }
   
+  
+}
+
+
+
+void armStep()
+{
+  uint32_t instruction;
+  instruction = coreReg[PC];
+  int check = is32or16instruction(instruction);
+  
+  
+  if(check == INSTRUCTION16bits)
+    armSimulate16(instruction);
+  //else
+    //armSimulate32(instruction);
   
 }
 
