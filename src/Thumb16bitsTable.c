@@ -62,6 +62,8 @@ void initThumb16bitsOpcode010000()
   Thumb16Opcode010000[0b1011] = CMNRegisterT1;
   Thumb16Opcode010000[0b0111] = RORRegisterT1;
   Thumb16Opcode010000[0b1100] = ORRRegisterT1;
+  Thumb16Opcode010000[0b1110] = BICRegisterT1;
+  Thumb16Opcode010000[0b1111] = MVNRegisterT1;
   
 }
 

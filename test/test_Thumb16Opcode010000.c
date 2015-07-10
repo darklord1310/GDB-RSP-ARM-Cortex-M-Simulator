@@ -29,6 +29,9 @@
 #include "EORRegister.h"
 #include "ORRRegister.h"
 #include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+
 
 void setUp(void)
 {
@@ -1008,3 +1011,175 @@ void test_RORRegisterT1_given_test_case_1_should_get_the_expected_result(void)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   // Move Not Register T1
+  
+// test MVNS R1, R0
+void test_MVNRegisterT1_given_r0_0x00_r1_should_get_0xffffffff_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x43c10000;
+  
+  coreReg[0] = 0x00;
+  coreReg[1] = 0x00;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+// test MVNS R1, R0
+void test_MVNRegisterT1_given_r0_0x88888888_r1_should_get_0x77777777_xPSR_0x31000000(void)
+{
+  uint32_t instruction = 0x43c10000;
+  
+  coreReg[0] = 0x88888888;
+  coreReg[1] = 0x00;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x77777777, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x40000044
+ *            r1 = 0x80000000
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ *            ITETE CS
+ *            MVNCS r1,r0
+ *            MVNCC r2,r3
+ *            MVNCS r4,r5
+ *            MVNCC r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x40000044
+ *            r1 = 0xBFFFFFBB
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0xBBBBBBBB
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ * 
+ */
+void test_MVNRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x40000044;
+  coreReg[1] = 0x80000000;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0x00000033;
+  coreReg[7] = 0x01010101;
+  
+  setCarryFlag();
+  ARMSimulator(0xbf2b0000);   //ITETE CS
+  ARMSimulator(0x43C10000);   //MVNCS r1,r0
+  ARMSimulator(0x43DA0000);   //MVNCC r2,r3
+  ARMSimulator(0x43EC0000);   //MVNCS r4,r5
+  ARMSimulator(0x43F70000);   //MVNCC r7,r6
+  
+  TEST_ASSERT_EQUAL(0x40000044,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xBFFFFFBB,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0xBBBBBBBB,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Bit Clear Register T1
+  
+// test BICS R1, R0
+void test_BICRegisterT1_given_r0_0xffffffff_r1_0xffffffff_should_get_r1_0x00_xPSR_0x41000000(void)
+{
+  uint32_t instruction = 0x43810000;
+  
+  coreReg[0] = 0xffffffff;
+  coreReg[1] = 0xffffffff;                    //this will change to 0 after execution because AND with invert of R0
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+// test BICS R1, R0
+void test_BICRegisterT1_given_r0_0x44444444_r1_0xeeeeeeee_should_get_r1_0xaaaaaaaa_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x43810000;
+  
+  coreReg[0] = 0x44444444;
+  coreReg[1] = 0xeeeeeeee;                
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xaaaaaaaa, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+//testing in IT block
+/* Test case 1:  
+ *            r0 = 0x40000044
+ *            r1 = 0xBFFFFFBB
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ *            ITETE CS
+ *            BICCS r1,r0
+ *            BICCC r2,r3
+ *            BICCS r4,r5
+ *            BICCC r7,r6
+ * 
+ * Expected Result:    
+ *            r0 = 0x40000044
+ *            r1 = 0xBFFFFFBB
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x30000000
+ *            r5 = 0x44444444
+ *            r6 = 0x00000033
+ *            r7 = 0x01010101
+ * 
+ */
+void test_BICRegisterT1_given_test_case_1_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x40000044;
+  coreReg[1] = 0xBFFFFFBB;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0x00000033;
+  coreReg[7] = 0x01010101;
+  
+  setCarryFlag();
+  ARMSimulator(0xbf2b0000);   //ITETE CS
+  ARMSimulator(0x43810000);   //BICCS r1,r0
+  ARMSimulator(0x439A0000);   //BICCC r2,r3
+  ARMSimulator(0x43AC0000);   //BICCS r4,r5
+  ARMSimulator(0x43BE0000);   //BICCC r7,r6
+  
+  TEST_ASSERT_EQUAL(0x40000044,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xBFFFFFBB,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x30000000,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
