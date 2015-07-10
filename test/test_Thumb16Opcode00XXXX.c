@@ -32,7 +32,7 @@
 #include "RORRegister.h"
 #include "MVNRegister.h"
 #include "BICRegister.h"
-
+#include "ADCRegister.h"
 
 void setUp(void)
 {

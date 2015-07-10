@@ -31,7 +31,7 @@
 #include "RORRegister.h"
 #include "MVNRegister.h"
 #include "BICRegister.h"
-
+#include "ADCRegister.h"
 
 void setUp(void)
 {
@@ -1183,3 +1183,7 @@ void test_BICRegisterT1_given_test_case_1_should_get_the_expected_result(void)
   TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
   TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  // Add with Carry Register T1
