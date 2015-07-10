@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <assert.h>
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
 #include "ARMRegisters.h"
@@ -30,7 +31,7 @@ char *handleQueryPacket(char *data)
     else
     {
         if(strncmp("Supported", &data[2], strlen("Supported")) == 0)
-            packet = gdbCreateMsgPacket("qRelocInsn-");
+            packet = gdbCreateMsgPacket("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+");    //;qRelocInsn-;qXfer:memory-map:read-;
         else if(strncmp("Attached", &data[2], strlen("Attached")) == 0)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("TStatus", &data[2], strlen("TStatus")) == 0)
@@ -41,6 +42,10 @@ char *handleQueryPacket(char *data)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("Symbol::", &data[2], strlen("Symbol::")) == 0)
             packet = gdbCreateMsgPacket("");
+        else if(strncmp("qXfer", &data[2], strlen("qXfer")) == 0)
+        {
+            packet = gdbCreateMsgPacket("");
+        }
         else
         {
             packet = gdbCreateMsgPacket("");
@@ -65,10 +70,11 @@ char *readSingleRegister(char *data)
 {
     char *packet = NULL;
     int regNum;//, i = 0, bits = 32, maskBits = 0xf;
-    unsigned int regValue;
+    unsigned int regValue, decodeVal;
     char *asciiString;
 
     sscanf(&data[2], "%2x", &regNum);
+    assert(regNum <= 16);
     // printf("Reg no: %d\n", regNum);
 
     /* Testing
@@ -99,7 +105,8 @@ char *readSingleRegister(char *data)
     }
     asciiString[8] = '\0'; */
 
-    asciiString = createdHexToString(regValue, 4);
+    decodeVal = decodeFourByte(regValue);
+    asciiString = createdHexToString(decodeVal, 4);
     // printf("ASCII String: %s\n", asciiString);
 
     packet = gdbCreateMsgPacket(asciiString);
@@ -119,17 +126,15 @@ char *readAllRegister()
 {
     char *packet = NULL, fullRegValue[140] = "";
     int i, j;
-    unsigned int regValue[numberOfRegister];
+    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
     char *asciiString;
 
-    for(i = 0; i < numberOfRegister; i++)
+    for(i = 0; i < NUM_OF_CORE_Register; i++)
     {
-        if(i < 16)
-            regValue[i] = coreReg[i];
-        else
-            regValue[i] = coreReg[i];
+        regValue[i] = coreReg[i];
 
-        asciiString = createdHexToString(regValue[i], 4);
+        decodeVal = decodeFourByte(regValue[i]);
+        asciiString = createdHexToString(decodeVal, 4);
 
         strcat(fullRegValue, asciiString);
         // printf("Full reg val: %s\n", fullRegValue);
@@ -151,14 +156,15 @@ void writeSingleRegister(char *data)
 {
     int regNum, i, j = 0, bits = 32;
     char *addr = NULL;
-    unsigned int regValue = 0x00000000, temp;
+    unsigned int regValue = 0x00000000, temp, decodeVal;
 
     sscanf(&data[2], "%2x", &regNum);
+    assert(regNum <= 16);
     // printf("Reg no: %d\n", regNum);
     addr = strstr(data, "=") + 1;
     // printf("addr %s\n", addr);
 
-    for(i = 0; i < 4; i++)
+    for(i = 0; i < 4 && addr[j] != '\0'; i++)
     {
         sscanf(&addr[j], "%2x", &temp);
         regValue = regValue | temp << (bits - 8);
@@ -167,8 +173,8 @@ void writeSingleRegister(char *data)
     }
 
     // printf("Reg val: %x\n", regValue);
-
-    coreReg[regNum] = regValue;
+    decodeVal = decodeFourByte(regValue);
+    coreReg[regNum] = decodeVal;
 }
 
 /*
@@ -179,47 +185,90 @@ void writeSingleRegister(char *data)
  */
 void writeAllRegister(char *data)
 {
-    unsigned int regValue[numberOfRegister];
+    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
     int i, j = 2;
 
-    for(i = 0; i < numberOfRegister; i++)
+    for(i = 0; i < NUM_OF_CORE_Register; i++)
     {
         sscanf(&data[j], "%8x", &regValue[i]);
         // printf("Reg val %d: %x\n", i, regValue[i]);
         j += 8;
-        coreReg[i] = regValue[i];
+        decodeVal = decodeFourByte(regValue[i]);
+        coreReg[i] = decodeVal;
     }
 }
 
 char *readMemory(char *data)
 {
-    char *packet = NULL, *comaAddr = NULL, *asciiString;
-    unsigned int addr, memoryContent = 0;
-    int i, byteLength, bits = 0;
+    char *packet = NULL, *comaAddr = NULL, *asciiString, fullMemContent[150] = "";
+    unsigned int addr, memoryContent = 0, decodeVal;
+    int i, byteLength;
 
     sscanf(&data[2], "%8x", &addr);
     // printf("addr: %x\n", addr);
     comaAddr = strstr(data, ",");
-    sscanf(&comaAddr[1], "%1x", &byteLength);
+    sscanf(&comaAddr[1], "%2x", &byteLength);
     // printf("byteLength: %d\n", byteLength);
 
-    for(i = 0; i < byteLength; i++)
+    for(i = 0; i < byteLength; i += 4)
     {
-        memoryContent |= (rom->address[addr].data & (0xff << bits));
-        bits += 8;
-    }
-    // printf("memoryContent: %x\n", memoryContent);
+        memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
 
-    asciiString = createdHexToString(memoryContent, byteLength);
-    packet = gdbCreateMsgPacket(asciiString);
-    destroyHexToString(asciiString);
+        if(byteLength % 4 == 0)
+        {
+            decodeVal = decodeFourByte(memoryContent);
+            asciiString = createdHexToString(decodeVal, 4);
+        }
+        else
+        {
+            decodeVal = decodeTwoByte(memoryContent >> 16);
+            asciiString = createdHexToString(decodeVal, 2);
+        }
+
+        strcat(fullMemContent, asciiString);
+        destroyHexToString(asciiString);
+        addr++;
+    }
+
+    packet = gdbCreateMsgPacket(fullMemContent);
 
     return packet;
 }
 
 void writeMemory(char *data)
 {
+    char *packet = NULL, *comaAddr = NULL, *semicolonAddr = NULL;
+    unsigned int addr, memoryContent = 0, decodeVal;
+    int i, byteLength, j = 1;
 
+    sscanf(&data[2], "%8x", &addr);
+    // printf("addr: %x\n", addr);
+    comaAddr = strstr(data, ",");
+    sscanf(&comaAddr[1], "%2x", &byteLength);
+    // printf("byteLength: %d\n", byteLength);
+    semicolonAddr = strstr(data, ":");
+
+    for(i = 0; i < byteLength; i += 4)
+    {
+        if(byteLength % 4 == 0)
+        {
+            sscanf(&semicolonAddr[j], "%8x", &memoryContent);
+            decodeVal = decodeFourByte(memoryContent);
+            rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal;
+        }
+        else
+        {
+            sscanf(&semicolonAddr[j], "%4x", &memoryContent);
+            // printf("memoryContent: %x\n", memoryContent);
+            decodeVal = decodeTwoByte(memoryContent);
+            // printf("decodeVal: %x\n", decodeVal);
+            rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal << 16;
+            // printf("rom->address.data: %x\n", rom->address[virtualMemToPhysicalMem(addr)].data);
+        }
+
+        addr++;
+        j += 8;
+    }
 }
 
 char *step(char *data)
@@ -228,9 +277,15 @@ char *step(char *data)
     char *trapSignal = "T05";
     char *pcReg = "0f";
     char *reg7 = "07";
-    char *pcValue = createdHexToString(coreReg[PC], 4);
-    char *r7Value = createdHexToString(coreReg[7], 4);
+    char *pcValue;
+    char *r7Value;
     char msg[50] = "";
+    unsigned int decodeVal;
+
+    decodeVal = decodeFourByte(coreReg[PC]);
+    pcValue = createdHexToString(decodeVal, 4);
+    decodeVal = decodeFourByte(coreReg[7]);
+    r7Value = createdHexToString(decodeVal, 4);
 
     strcat(msg, trapSignal);
     strcat(msg, pcReg);

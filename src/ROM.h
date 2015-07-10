@@ -8,8 +8,8 @@ typedef struct ROMData ROMData;
 
 #define KILO_BYTE               1024
 #define TWO_HUND_FIFTY_SIX_KB   256 * KILO_BYTE
-#define ROM_BASE_ADDR           0x000000    //256kb of virtual memory
-#define RAM_BASE_ADDR           0x400001    //256kb of virtual memory
+#define ROM_BASE_ADDR           0x00000    //256kb of virtual memory
+#define RAM_BASE_ADDR           0x40000    //256kb of virtual memory
 // #define sizeOfROM               0xFFFFFFFF
 
 struct ROMData

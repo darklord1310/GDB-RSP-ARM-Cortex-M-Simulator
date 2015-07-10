@@ -42,7 +42,13 @@ char *serveRSP(char *data)
             packet = readMemory(data);
             break;
         case 'M':   /* Write memory */
+            writeMemory(data);
+            packet = gdbCreateMsgPacket("OK");
             break;
+        // case 'X':   /* Write data to memory */
+            // writeMemory(data);
+            // packet = gdbCreateMsgPacket("OK");
+            // break;
         case 'z':   /* Remove breakpoint or watchpoint */
             break;
         case 'Z':   /* Insert breakpoint or watchpoint */
