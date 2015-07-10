@@ -33,6 +33,9 @@
 #include "MVNRegister.h"
 #include "BICRegister.h"
 #include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+
 
 void setUp(void)
 {

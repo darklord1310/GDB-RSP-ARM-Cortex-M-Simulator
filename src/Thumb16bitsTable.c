@@ -1,16 +1,27 @@
 #include "Thumb16bitsTable.h"
 
+
 /*
 000xx     Logical Shift Left LSL (immediate) on page A6-134
+
 001xx     Logical Shift Right LSR (immediate) on page A6-138
+
 010xx     Arithmetic Shift Right ASR (immediate) on page A6-36
+
 01100     Add register ADD (register) on page A6-24
+
 01101     Subtract register SUB (register) on page A6-246
+
 01110     Add 3-bit immediate ADD (immediate) on page A6-22
+
 01111     Subtract 3-bit immediate SUB (immediate) on page A6-244
+
 100xx     Move MOV (immediate) on page A6-148
+
 101xx     Compare CMP (immediate) on page A6-62
+
 110xx     Add 8-bit immediate ADD (immediate) on page A6-22
+
 111xx     Subtract 8-bit immediate SUB (immediate) on page A6-244
 */
 void initThumb16bitsOpcode00XXXX()
@@ -51,6 +62,40 @@ void initThumb16bitsOpcode00XXXX()
 
 
 
+
+/*
+0000          Bitwise AND AND (register) on page A6-34
+
+0001          Exclusive OR EOR (register) on page A6-74
+
+0010          Logical Shift Left LSL (register) on page A6-136
+
+0011          Logical Shift Right LSR (register) on page A6-140
+
+0100          Arithmetic Shift Right ASR (register) on page A6-38
+
+0101          Add with Carry ADC (register) on page A6-20
+
+0110          Subtract with Carry SBC (register) on page A6-206
+
+0111          Rotate Right ROR (register) on page A6-196
+
+1000          Set flags on bitwise AND TST (register) on page A6-264
+
+1001          Reverse Subtract from 0 RSB (immediate) on page A6-200
+
+1010          Compare Registers CMP (register) on page A6-64
+
+1011          Compare Negative CMN (register) on page A6-60
+
+1100          Logical OR ORR (register) on page A6-174
+
+1101          Multiply Two Registers MUL on page A6-160
+
+1110          Bit Clear BIC (register) on page A6-46
+
+1111          Bitwise NOT MVN (register) on page A6-164
+*/
 void initThumb16bitsOpcode010000()
 {
   Thumb16Opcode010000[0b0000] = ANDRegisterT1;
@@ -68,6 +113,32 @@ void initThumb16bitsOpcode010000()
   
 }
 
+
+
+
+/*
+00xx      Add Registers ADD (register) on page A6-24
+
+0100      UNPREDICTABLE
+
+0101      Compare Registers CMP (register) on page A6-64
+011x
+
+10xx      Move Registers MOV (register) on page A6-150
+
+110x      Branch and Exchange BX on page A6-51
+
+111x      Branch with Link and Exchange BLX (register) on page A6-50
+*/
+void initThumb16bitsOpcode010001()
+{
+  Thumb16Opcode010001[0b1100] = BX;
+  Thumb16Opcode010001[0b1101] = BX;
+  Thumb16Opcode010001[0b1110] = BLXRegister;
+  Thumb16Opcode010001[0b1111] = BLXRegister;
+
+  
+}
 
 
 void initThumb16bitsOpcode1011XX()

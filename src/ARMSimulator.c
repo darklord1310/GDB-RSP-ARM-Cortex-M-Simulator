@@ -10,6 +10,22 @@
 #include "ConditionalExecution.h"
 
 
+void initializeSimulator()
+{
+  initCoreRegister();
+  initializeAllTable();
+  
+}
+
+void initializeAllTable()
+{
+  initThumb16bitsOpcode00XXXX();
+  initThumb16bitsOpcode010000();
+  initThumb16bitsOpcode010001();
+  initThumb16bitsOpcode1011XX();
+  
+}
+
 
 /*  This function is to check the instruction is 32 bits or 16 bits
  *
@@ -38,7 +54,7 @@ int is32or16instruction(uint32_t instruction)
 
 
 
-/*  This function will categorize all the 16bits instructions and differentiate them into the groups shown below
+/*  This function will categorize all the 16bits instructions and execute them based on their groups shown below
  *  There are total 77 16bits instructions 
  *  15  14  13  12  11  10  9   8   7   6   5   4   3   2   1   0
  *  |                   |   
@@ -63,11 +79,20 @@ int is32or16instruction(uint32_t instruction)
  *    11100x   --->  UnconditionalBranch
  */
 void armSimulate16(uint32_t instruction)
-{
-  uint32_t opcode2;
+{  
   uint32_t opcode1 = getBits(instruction, 31, 26);
   
 	assert(opcode1 < 58);         // because maximum opcode is 111001 which is 57, so cannot exceed 57
+  
+  executeInstructionFrom16bitsTable(opcode1,instruction);
+
+}
+
+
+
+void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
+{
+  uint32_t opcode2;
   
   if( opcode1 < 16)
   {
@@ -79,28 +104,19 @@ void armSimulate16(uint32_t instruction)
     opcode2 = getBits(instruction,25,22);
     (*Thumb16Opcode010000[opcode2])(instruction);
   }
+  else if(opcode1 == 0b010001)
+  {
+    opcode2 = getBits(instruction,25,22);
+    (*Thumb16Opcode010001[opcode2])(instruction);
+  }
   else if(opcode1 < 48)
   {
     opcode2 = getBits(instruction,27,21);
     (*Thumb16Opcode1011XX[opcode2])(instruction);
   }
-
-
 }
 
-void initializeSimulator()
-{
-  initCoreRegister();
-  initializeAllTable();
-  
-}
 
-void initializeAllTable()
-{
-  initThumb16bitsOpcode00XXXX();
-  initThumb16bitsOpcode010000();
-  initThumb16bitsOpcode1011XX();
-}
 
 
 void ARMSimulator(uint32_t instruction)

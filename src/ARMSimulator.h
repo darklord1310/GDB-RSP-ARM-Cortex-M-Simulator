@@ -6,6 +6,7 @@
 typedef enum { INSTRUCTION32bits, INSTRUCTION16bits} instructionType;
 
 int is32or16instruction(uint32_t instruction);
+void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction);
 void armSimulate16(uint32_t instruction);
 void armSimulate32(uint32_t instruction);
 void initializeAllTable();
