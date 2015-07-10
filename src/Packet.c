@@ -74,7 +74,7 @@ char *createdHexToString(unsigned int regVal, int bytes)
         default:
             break;
     }
-    
+
     for(i = 0; i < bytes * 2; i++)
     {
         asciiString[i] = hex[regVal >> (bits - 4) & maskBits];
@@ -94,19 +94,19 @@ void destroyHexToString(char *asciiString)
 unsigned int decodeTwoByte(unsigned int byteData)
 {
     unsigned int msb, lsb;
-    
+
     msb = byteData >> 8;
     lsb = byteData & 0xff;
-    
+
     return (msb | lsb << 8);
 }
 
 unsigned int decodeFourByte(unsigned int byteData)
 {
     unsigned int msb, lsb;
-    
+
     msb = decodeTwoByte(byteData >> 16);
     lsb = decodeTwoByte(byteData & 0xffff);
-    
+
     return (msb | lsb << 16);
 }

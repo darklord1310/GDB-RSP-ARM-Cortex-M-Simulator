@@ -31,7 +31,7 @@ char *handleQueryPacket(char *data)
     else
     {
         if(strncmp("Supported", &data[2], strlen("Supported")) == 0)
-            packet = gdbCreateMsgPacket("qRelocInsn-");
+            packet = gdbCreateMsgPacket("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+");    //;qRelocInsn-;qXfer:memory-map:read-;
         else if(strncmp("Attached", &data[2], strlen("Attached")) == 0)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("TStatus", &data[2], strlen("TStatus")) == 0)
@@ -42,6 +42,10 @@ char *handleQueryPacket(char *data)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("Symbol::", &data[2], strlen("Symbol::")) == 0)
             packet = gdbCreateMsgPacket("");
+        else if(strncmp("qXfer", &data[2], strlen("qXfer")) == 0)
+        {
+            packet = gdbCreateMsgPacket("");
+        }
         else
         {
             packet = gdbCreateMsgPacket("");

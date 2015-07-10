@@ -14,7 +14,7 @@ void tearDown(void)
 {
 }
 
-void test_serveRSP_given_qSupported_query_packet_should_return_appropriate_response(void)
+void xtest_serveRSP_given_qSupported_query_packet_should_return_appropriate_response(void)
 {
 	char data[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
     char *reply = NULL;
