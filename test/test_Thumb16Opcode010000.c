@@ -36,6 +36,8 @@
 #include "BLXRegister.h"
 #include "MOVRegister.h"
 #include "CMPRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
 
 
 void setUp(void)
@@ -1281,3 +1283,47 @@ void test_ADCRegisterT1_given_r0_0x40000000_r1_0x40000000_should_get_r1_0x800000
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   // Multiply Register T1
+  
+// test MULS R0, R1, R0
+void test_MULRegisterT1_given_r0_0x44444444_r1_0x88888888_should_get_r0_0xeca86420_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x43480000;
+  
+  coreReg[0] = 0x44444444;
+  coreReg[1] = 0x88888888;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0xeca86420, coreReg[0]); 
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+// test MULS R1, R0, R1
+void test_MULRegisterT1_given_r0_0x44444444_r1_0x88888888_should_get_r1_0xeca86420_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x43410000;
+
+  coreReg[0] = 0x44444444;
+  coreReg[1] = 0x88888888;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0xeca86420, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+// test MULS R1, R1, R1
+void test_MULRegisterT1_given_r1_0x88888888_should_get_r1_0xd950c840_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x43490000;
+
+  coreReg[1] = 0x88888888;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0xd950c840, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Test Register T1

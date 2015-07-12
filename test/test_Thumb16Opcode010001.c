@@ -34,6 +34,9 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+
 
 void setUp(void)
 {
