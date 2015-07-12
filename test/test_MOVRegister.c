@@ -18,31 +18,6 @@ void tearDown(void)
 {
 }
 
-//test MOV R8, R3, case D is 1
-void test_MOVRegisterToRegisterT1_given_instruction_0x46980000_should_move_R3_to_R8(void)
-{
-  uint32_t instruction = 0x46980000;
-  
-  coreReg[3] = 0xff101c00;                        //set R3 to be 0xff101c00
-  MOVRegisterToRegisterT1(instruction);           //move r3 to r8
-  
-  TEST_ASSERT_EQUAL(0xff101c00, coreReg[8]);
-  TEST_ASSERT_EQUAL(0xff101c00, coreReg[3]);
-}
-
-
-//test MOV R4, R3, case D is 0
-void test_MOVRegisterToRegisterT1_given_instruction_0x461c0000_should_move_R3_to_R4(void)
-{
-  uint32_t instruction = 0x461c0000;
-    
-  coreReg[3] = 0xff101c00;                        //set R3 to be 0xff101c00
-  MOVRegisterToRegisterT1(instruction);           //move r3 to r4
-  
-  TEST_ASSERT_EQUAL(0xff101c00, coreReg[4]);
-  TEST_ASSERT_EQUAL(0xff101c00, coreReg[3]);
-}
-
 //test MOVS R7, R3 and status flags are affected
 void test_MOVRegisterToRegisterT2_given_instruction_0x001f0000_should_move_R3_value_0xff101c00_to_R7_and_set_negative_flag(void)
 {

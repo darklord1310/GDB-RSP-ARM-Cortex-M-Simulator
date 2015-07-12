@@ -114,6 +114,7 @@ void ADDImmediateT2(uint32_t instruction)
 */
 void executeADDImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t S)
 {
+  uint32_t backupRn = coreReg[Rn];
   uint32_t temp = coreReg[Rn] + immediate;            //get the result of Rn + immediate
   coreReg[Rd] = temp;
   
@@ -121,7 +122,7 @@ void executeADDImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
-    updateOverflowFlagAddition(coreReg[Rn], immediate, temp);
-    updateCarryFlagAddition(coreReg[Rn], immediate);
+    updateOverflowFlagAddition(backupRn, immediate, temp);
+    updateCarryFlagAddition(backupRn, immediate);
   }
 }

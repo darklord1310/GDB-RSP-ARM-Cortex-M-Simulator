@@ -64,13 +64,14 @@ void SUBRegisterToRegisterT1(uint32_t instruction)
 */
 void executeSUBRegister(uint32_t Rn, uint32_t Rd, uint32_t Rm, uint32_t S)
 {
+  uint32_t backupRn = coreReg[Rn];
   coreReg[Rd] = coreReg[Rn] - coreReg[Rm];            //get the result of Rn - Rm
   
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
-    updateOverflowFlagSubtraction(coreReg[Rn], coreReg[Rm], coreReg[Rd]);
+    updateOverflowFlagSubtraction(backupRn, coreReg[Rm], coreReg[Rd]);
     updateCarryFlagSubtraction(coreReg[Rn], coreReg[Rm]);
   }
 }

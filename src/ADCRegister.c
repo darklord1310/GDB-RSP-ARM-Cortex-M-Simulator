@@ -9,6 +9,7 @@
 #include "ConditionalExecution.h"
 #include <stdio.h>
 
+
 /*Add with Carry Register To Register Encoding T1
   ADCS        <Rdn>,<Rm>     Outside IT block.
   ADC<c>      <Rdn>,<Rm>     Inside IT block.
@@ -43,13 +44,12 @@ void ADCRegisterT1(uint32_t instruction)
 {
   uint32_t Rm =  getBits(instruction,21,19);
   uint32_t Rdn = getBits(instruction,18,16);
-  
 
  if(inITBlock())
  {
     if( checkCondition(cond) )
       executeADCRegister(Rdn, Rdn, Rm, 0);
-    
+
     shiftITState();
  }
  else
@@ -70,13 +70,22 @@ void ADCRegisterT1(uint32_t instruction)
 */
 void executeADCRegister(uint32_t Rn, uint32_t Rd, uint32_t Rm, uint32_t S)
 {
-  coreReg[Rd] = coreReg[Rn] + coreReg[Rm] + getBits(coreReg[xPSR],29,29);            //get the result of Rn + Rm + Carry
+  uint32_t backupRn = coreReg[Rn];                                      //this is to avoid the value of Rn being overwritten in case of Rn and Rd is pointing to the same register
+  uint32_t sumOfRnAndRd = coreReg[Rn] + coreReg[Rm];
+  uint32_t carryFlag = getBits(coreReg[xPSR],29,29);                    //store the current carry flag
+  coreReg[Rd] = sumOfRnAndRd + carryFlag;                               //get the result of Rn + Rm + Carry
 
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
-    updateOverflowFlagAddition(coreReg[Rn], coreReg[Rm] , coreReg[Rd]);
-    updateCarryFlagAddition(coreReg[Rn], coreReg[Rm]);    //bug here
+    
+    updateOverflowFlagAddition(backupRn, coreReg[Rm] , sumOfRnAndRd);
+    if(isOverflow() == 0)
+      updateOverflowFlagAddition(sumOfRnAndRd, carryFlag , coreReg[Rd]);
+    
+    updateCarryFlagAddition(backupRn, coreReg[Rm]);                          
+    if(isCarry() == 0)
+      updateCarryFlagAddition(sumOfRnAndRd, carryFlag);
   }
 }

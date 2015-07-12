@@ -132,10 +132,21 @@ void initThumb16bitsOpcode010000()
 */
 void initThumb16bitsOpcode010001()
 {
+  Thumb16Opcode010001[0b0000] = ADDRegisterToRegisterT2;
+  Thumb16Opcode010001[0b0001] = ADDRegisterToRegisterT2;
+  Thumb16Opcode010001[0b0010] = ADDRegisterToRegisterT2;
+  Thumb16Opcode010001[0b0011] = ADDRegisterToRegisterT2;
+  Thumb16Opcode010001[0b0101] = CMPRegisterT2;
+  Thumb16Opcode010001[0b0110] = CMPRegisterT2;
+  Thumb16Opcode010001[0b0111] = CMPRegisterT2;
   Thumb16Opcode010001[0b1100] = BX;
   Thumb16Opcode010001[0b1101] = BX;
   Thumb16Opcode010001[0b1110] = BLXRegister;
   Thumb16Opcode010001[0b1111] = BLXRegister;
+  Thumb16Opcode010001[0b1000] = MOVRegisterToRegisterT1;
+  Thumb16Opcode010001[0b1001] = MOVRegisterToRegisterT1;
+  Thumb16Opcode010001[0b1010] = MOVRegisterToRegisterT1;
+  Thumb16Opcode010001[0b1011] = MOVRegisterToRegisterT1;
 
   
 }

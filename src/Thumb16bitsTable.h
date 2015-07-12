@@ -27,6 +27,8 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
+#include "MOVRegister.h"
+#include "CMPRegister.h"
 
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);

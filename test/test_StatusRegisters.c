@@ -110,6 +110,15 @@ void test_updateNegativeFlag_given_value_negative_18000_should_set_negative_flag
   TEST_ASSERT_EQUAL( 1 , isNegative() );
 }
 
+void test_updateCarryFlagAddition_given_value1_0x80000000_and_value2_0x80000000_should_set_carry_flag()
+{
+  uint32_t value1 = 0x80000000;
+  uint32_t value2 = 0x80000000;
+  updateCarryFlagAddition(value1,value2);
+  
+  TEST_ASSERT_EQUAL( 1 , isCarry() );
+}
+
 
 void test_updateCarryFlagAddition_given_value1_0xffffffff_and_value2_0x01_should_set_carry_flag()
 {

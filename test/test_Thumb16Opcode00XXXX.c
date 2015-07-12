@@ -35,6 +35,8 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
+#include "MOVRegister.h"
+#include "CMPRegister.h"
 
 
 void setUp(void)

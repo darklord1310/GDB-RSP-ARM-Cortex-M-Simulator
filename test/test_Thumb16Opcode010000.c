@@ -34,6 +34,8 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
+#include "MOVRegister.h"
+#include "CMPRegister.h"
 
 
 void setUp(void)
@@ -1191,7 +1193,7 @@ void test_BICRegisterT1_given_test_case_1_should_get_the_expected_result(void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   // Add with Carry Register T1
 
-//test with carry is 0, after addition no carry
+//test with carry is 0, after addition of r1 and r0  no carry
 // test ADCS R1, R0
 void test_ADCRegisterT1_given_r0_0x08_r1_0x02_and_carry_is_0_should_get_r1_0x0a_xPSR_0x01000000(void)
 {
@@ -1208,25 +1210,25 @@ void test_ADCRegisterT1_given_r0_0x08_r1_0x02_and_carry_is_0_should_get_r1_0x0a_
 
 
 
-//test with carry is 1, after addition no carry
+//test with carry is 1, after addition of r1 and r0 no carry
 // test ADCS R1, R0
-void test_ADCRegisterT1_given_r0_0x08_r1_0x07_and_carry_is_1_should_get_r1_0x10_xPSR_0x01000000(void)
+void test_ADCRegisterT1_given_r0_0x80000000_r1_0x7fffffff_and_carry_is_1_should_get_r1_0x00_xPSR_0x61000000(void)
 {
   uint32_t instruction = 0x41410000;
   
   setCarryFlag();
-  coreReg[0] = 0x08;
-  coreReg[1] = 0x07;                    
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x7fffffff;                    
   ARMSimulator(instruction);
   
-  TEST_ASSERT_EQUAL(0x10, coreReg[1]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
 }
 
 
-//test with carry is 1, after addition got carry
+//test with carry is 1, after addition of r1 and r0 got carry
 // test ADCS R1, R0
-void test_ADCRegisterT1_given_r0_0x80000000_r1_0x80000000_and_carry_is_1_should_get_r1_0x10_xPSR_0x01000000(void)
+void test_ADCRegisterT1_given_r0_0x80000000_r1_0x80000000_and_carry_is_1_should_get_r1_0x10_xPSR_0x31000000(void)
 {
   uint32_t instruction = 0x41410000;
   
@@ -1237,5 +1239,45 @@ void test_ADCRegisterT1_given_r0_0x80000000_r1_0x80000000_and_carry_is_1_should_
   
   TEST_ASSERT_EQUAL(0x01, coreReg[1]);
   TEST_ASSERT_EQUAL(1, isCarry() );
-  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x31000000,coreReg[xPSR]);
+  
 }
+
+
+
+//test overflow flag behavior, after r1 + r0 + c(1) got overflow
+// test ADCS R1, R0
+void test_ADCRegisterT1_given_r0_0x40000000_r1_0x3fffffff_should_get_r1_0x80000000_xPSR_0x11000000(void)
+{
+  uint32_t instruction = 0x41410000;
+  
+  setCarryFlag();
+  resetOverflowFlag();
+  coreReg[0] = 0x40000000;
+  coreReg[1] = 0x3fffffff;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+}
+
+
+//test overflow flag behavior, after r1 + r0 before adding with c(1) got overflow
+// test ADCS R1, R0
+void test_ADCRegisterT1_given_r0_0x40000000_r1_0x40000000_should_get_r1_0x80000001_xPSR_0x11000000(void)
+{
+  uint32_t instruction = 0x41410000;
+  
+  setCarryFlag();
+  resetOverflowFlag();
+  coreReg[0] = 0x40000000;
+  coreReg[1] = 0x40000000;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x80000001, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  // Multiply Register T1
