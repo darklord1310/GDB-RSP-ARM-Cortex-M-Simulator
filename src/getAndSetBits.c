@@ -47,7 +47,7 @@ uint32_t getBits(uint32_t instruction, int higherRange, int lowerRange)
  */
 uint32_t setBits(uint32_t setTarget, uint32_t input_value, int higherRange, int lowerRange)
 {
-  int i,bitValue, max = 31;
+  int i,bitValue;
   int count = 0;                                  //start from 0
   uint32_t mask;
   assert(higherRange >= lowerRange);

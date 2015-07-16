@@ -1,4 +1,8 @@
 #include "ARMRegisters.h"
+#include "getAndSetBits.h"
+#include "assert.h"
+#include "getMask.h"
+
 
 /*
   This function will initialize all the R0 to R15 to zero
@@ -42,12 +46,68 @@ void initCoreRegister()
   int i;
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
-    if(i < 16)
+    if(i != 16)
       coreReg[i] = 0;
     else
       coreReg[i] = 0x01000000;
   }
+  
+  for(i = 0; i < NUM_OF_FPUD_Register; i++)
+  {
+    fpuDoublePrecision[i] = 0;
+  }
+  
+  for(i = 0; i < NUM_OF_FPUS_Register; i++)
+  {
+    fpuSinglePrecision[i] = 0;
+  }
+  
 }
 
 
+
+void writeSinglePrecision(int regNum, uint32_t valueToWrite)
+{
+  assert(regNum >= 0 );
+  assert(regNum < 32);
+  int DRegNumber;
+  
+  fpuSinglePrecision[regNum] = valueToWrite;            // update single precision register
+  
+  if(regNum == 0)                                       // update double precision register, get the equivalent reg number for double precision reg
+    DRegNumber = 0;
+  else
+    DRegNumber = regNum / 2;
+
+  if( (regNum+1) % 2 == 0)                              
+  {
+    uint64_t dummy = fpuSinglePrecision[regNum];
+    uint64_t temp =  (dummy << 32) | (uint64_t)fpuSinglePrecision[regNum-1];
+    fpuDoublePrecision[DRegNumber] = temp;
+  }
+  else
+  {
+    uint64_t dummy = fpuSinglePrecision[regNum+1];
+    uint64_t temp =  (dummy << 32) | fpuSinglePrecision[regNum];
+    fpuDoublePrecision[DRegNumber] = temp;
+  }
+  
+}
+
+void writeDoublePrecision(int regNum, uint64_t valueToWrite)
+{
+  assert(regNum >= 0 );
+  assert(regNum < 16 );
+  int SRegNumber;
+  
+  fpuDoublePrecision[regNum] = valueToWrite;      //update double precision register
+  
+  if(regNum == 0)                                 //update single precision register
+    SRegNumber = 0;
+  else
+    SRegNumber = regNum * 2;
+  fpuSinglePrecision[SRegNumber] = getBits(fpuDoublePrecision[regNum], 31, 0);
+  fpuSinglePrecision[SRegNumber+1] = fpuDoublePrecision[regNum] >> 32;
+  
+}
 
