@@ -2,10 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 #include "unity.h"
+#include <string.h>
 #include "ARMRegisters.h"
 #include "ROM.h"
 #include "RemoteSerialProtocol.h"
 #include "mock_Packet.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+
+extern char *targetCortexM4_XML;
+extern char *arm_m_profile;
+extern char *arm_vfpv2;
 
 void setUp(void)
 {
@@ -72,23 +79,82 @@ void test_handleQueryPacket_given_data_with_qCRC_should_return_E01_response(void
     char data[] = "$qCRC#49";
     char *reply = NULL;
 
-    gdbCreateMsgPacket_ExpectAndReturn("E01", "$E01#a6");
+    // gdbCreateMsgPacket_ExpectAndReturn("E01", "$E01#a6");
+    gdbCreateMsgPacket_ExpectAndReturn("", "$#00");
 
     reply = handleQueryPacket(data);
 
-    TEST_ASSERT_EQUAL_STRING("$E01#a6", reply);
+    TEST_ASSERT_EQUAL_STRING("$#00", reply);
 }
 
-void xtest_handleQueryPacket_given_qSupported_should_return_appropriate_response(void)
+void test_handleQueryPacket_given_qSupported_should_return_appropriate_response(void)
 {
     char data[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
     char *reply = NULL;
 
-    gdbCreateMsgPacket_ExpectAndReturn("qRelocInsn-", "$qRelocInsn-#2b");
+    gdbCreateMsgPacket_ExpectAndReturn("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-",
+                                       "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#7c");
 
     reply = handleQueryPacket(data);
 
-    TEST_ASSERT_EQUAL_STRING("$qRelocInsn-#2b", reply);
+    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#7c", reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_target_should_return_appropriate_response(void)
+{
+    char data[] = "$qXfer:features:read:target.xml:0,fff#7d";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#dd", packet[1024] = "";
+
+    strcat(packet, dollarSign);
+    strcat(packet, targetCortexM4_XML);
+    strcat(packet, hashSign);
+    gdbCreateMsgPacket_ExpectAndReturn(targetCortexM4_XML, packet);
+
+    reply = handleQueryPacket(data);
+
+    TEST_ASSERT_EQUAL_STRING(packet, reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_arm_m_profile_should_return_appropriate_response(void)
+{
+    char data[] = "$qXfer:features:read:arm-m-profile.xml:0,fff#ee";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#27", packet[1024] = "";
+
+    strcat(packet, dollarSign);
+    strcat(packet, arm_m_profile);
+    strcat(packet, hashSign);
+    gdbCreateMsgPacket_ExpectAndReturn(arm_m_profile, packet);
+
+    reply = handleQueryPacket(data);
+
+    TEST_ASSERT_EQUAL_STRING(packet, reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_arm_vfpv2_should_return_appropriate_response(void)
+{
+    char data[] = "$qXfer:features:read:arm-vfpv2.xml:0,fff#57";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#89", packet[1024] = "";
+
+    strcat(packet, dollarSign);
+    strcat(packet, arm_vfpv2);
+    strcat(packet, hashSign);
+    gdbCreateMsgPacket_ExpectAndReturn(arm_vfpv2, packet);
+
+    reply = handleQueryPacket(data);
+
+    TEST_ASSERT_EQUAL_STRING(packet, reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_arm_fpa_should_return_appropriate_response(void)
+{
+    char data[] = "$qXfer:features:read:arm-fpa.xml:0,fff#9a";
+    char *reply = NULL;
+
+    gdbCreateMsgPacket_ExpectAndReturn("", "$#00");
+
+    reply = handleQueryPacket(data);
+
+    TEST_ASSERT_EQUAL_STRING("$#00", reply);
 }
 
 /*
@@ -201,23 +267,42 @@ void test_handleQueryPacket_given_data_with_unrecognized_RSP_query_should_return
     TEST_ASSERT_EQUAL_STRING("$#00", reply);
 }
 
-void test_readSingleRegister_given_data_with_p10_packet_should_return_appropriate_response(void)
+void test_readSingleRegister_given_data_with_p1a_packet_should_return_first_fpuDoublePrecision_value(void)
 {
-    char data[] = "$p10#d1";
+    char data[] = "$p1a#d1";
     char *reply = NULL;
 
     initCoreRegister();
+    fpuDoublePrecision[0] = 0x2143658778563412;
 
-    decodeFourByte_ExpectAndReturn(0x01000000, 0x00000001);
-    createdHexToString_ExpectAndReturn(0x00000001, 4, "00000001");
-    gdbCreateMsgPacket_ExpectAndReturn("00000001", "$00000001#81");
-    destroyHexToString_Expect("00000001");
+    decodeEightByte_ExpectAndReturn(0x2143658778563412, 0x1234567887654321);
+    createdHexToString_ExpectAndReturn(0x1234567887654321, 8, "1234567887654321");
+    gdbCreateMsgPacket_ExpectAndReturn("1234567887654321", "$1234567887654321#48");
+    destroyHexToString_Expect("1234567887654321");
 
     reply = readSingleRegister(data);
 
-    TEST_ASSERT_EQUAL_STRING("$00000001#81", reply);
+    TEST_ASSERT_EQUAL_STRING("$1234567887654321#48", reply);
 }
 
+void test_readSingleRegister_given_data_with_p2_packet_should_return_second_coreReg_value(void)
+{
+    char data[] = "$p2#a2";
+    char *reply = NULL;
+
+    initCoreRegister();
+    coreReg[2] = 0x21436587;
+
+    decodeFourByte_ExpectAndReturn(0x21436587, 0x12345678);
+    createdHexToString_ExpectAndReturn(0x12345678, 4, "12345678");
+    gdbCreateMsgPacket_ExpectAndReturn("12345678", "$12345678#a4");
+    destroyHexToString_Expect("12345678");
+
+    reply = readSingleRegister(data);
+
+    TEST_ASSERT_EQUAL_STRING("$12345678#a4", reply);
+}
+/*
 void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(void)
 {
     char *reply = NULL;
@@ -473,4 +558,4 @@ void test_writeMemory_given_0x8000d06_mem_addr_should_write_20_byte_data_in_the_
     TEST_ASSERT_EQUAL(0x08008d8a, rom->address[virtualMemToPhysicalMem(0x8000d0a)].data);
 
     destroyROM();
-}
+} */

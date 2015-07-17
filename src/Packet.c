@@ -1,6 +1,8 @@
 #include <malloc.h>
+#include <stdio.h>
 #include <string.h>
-#include <stdint.h>
+#include <stdio.h>
+#include <assert.h>
 #include "Packet.h"
 
 const char hex[] = "0123456789abcdef";
@@ -22,6 +24,7 @@ char *gdbCreateMsgPacket(char *msg)
     char *packet = malloc(length);
     uint8_t chksum = 0;
 
+    assert(msg[0] != '$');
     packet[0] = '$';
 
     for(i = 0; i < strlen(msg); i++)
@@ -54,22 +57,34 @@ void destroyPacket(char *packet)
  * Return:
  *      asciiString     HEX value in string form
  */
-char *createdHexToString(unsigned int regVal, int bytes)
+char *createdHexToString(unsigned long long int regVal, int bytes)
 {
-    // char asciiString[9] = "";
-    char *asciiString = malloc(9);
-    int i, bits = 32, maskBits = 0xf;
+    assert(bytes > 0);
+    char *asciiString = malloc(bytes * 2 + 1);
+    int i, bits = 64, maskBits = 0xf;
 
     switch(bytes)
     {
-        case 3:
+        case 7:
             regVal = regVal << 8;
             break;
-        case 2:
+        case 6:
             regVal = regVal << 16;
             break;
-        case 1:
+        case 5:
             regVal = regVal << 24;
+            break;
+        case 4:
+            regVal = regVal << 32;
+            break;
+        case 3:
+            regVal = regVal << 40;
+            break;
+        case 2:
+            regVal = regVal << 48;
+            break;
+        case 1:
+            regVal = regVal << 56;
             break;
         default:
             break;
@@ -91,9 +106,9 @@ void destroyHexToString(char *asciiString)
         free(asciiString);
 }
 
-unsigned int decodeTwoByte(unsigned int byteData)
+uint32_t decodeTwoByte(uint32_t byteData)
 {
-    unsigned int msb, lsb;
+    uint32_t msb, lsb;
 
     msb = byteData >> 8;
     lsb = byteData & 0xff;
@@ -101,12 +116,41 @@ unsigned int decodeTwoByte(unsigned int byteData)
     return (msb | lsb << 8);
 }
 
-unsigned int decodeFourByte(unsigned int byteData)
+uint32_t decodeFourByte(uint32_t byteData)
 {
-    unsigned int msb, lsb;
+    uint32_t msb, lsb;
 
     msb = decodeTwoByte(byteData >> 16);
     lsb = decodeTwoByte(byteData & 0xffff);
 
     return (msb | lsb << 16);
+}
+
+uint64_t decodeEightByte(uint64_t byteData)
+{
+    uint64_t msb, lsb;
+
+    msb = decodeFourByte(byteData >> 32);
+    lsb = decodeFourByte(*(uint32_t *)&byteData & 0xffffffff);
+
+    return (msb | lsb << 32);
+}
+
+int verifyChecksum(char *data)
+{
+    uint8_t chksum = 0, dataChksum = 0;
+    int i, j;
+
+    for(i = 1; data[i] != '#'; i++)
+        chksum += data[i];
+
+    sscanf(&data[i+1], "%x", &dataChksum);
+
+    if(chksum != dataChksum)
+    {
+        printf("checksum: %x\n", chksum);
+        return 0;
+    }
+
+    return 1;
 }

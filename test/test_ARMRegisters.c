@@ -16,7 +16,7 @@ void test_initCoreRegister_reset_the_coreReg_correctly(void)
 {
   int i;
   initCoreRegister();
-  
+
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i != 16)
@@ -24,12 +24,12 @@ void test_initCoreRegister_reset_the_coreReg_correctly(void)
     else
       TEST_ASSERT_EQUAL(0x01000000, coreReg[i]);
   }
-  
+
   for(i = 0; i < NUM_OF_FPUD_Register; i++)
   {
     TEST_ASSERT_EQUAL(0, fpuDoublePrecision[i]);
   }
-  
+
   for(i = 0; i < NUM_OF_FPUS_Register; i++)
   {
     TEST_ASSERT_EQUAL(0, fpuSinglePrecision[i]);
@@ -42,14 +42,14 @@ void test_writeSinglePrecision_should_write_value_into_fpuSinglePrecsion_correct
   int i;
   uint32_t valueToWrite = 0x00;
   initCoreRegister();
-  
+
   for(i=0; i < NUM_OF_FPUS_Register; i++)
   {
     writeSinglePrecision(i, valueToWrite++);
   }
-  
+
   valueToWrite = 0x00;
-  
+
   for(i=0; i < NUM_OF_FPUS_Register; i++)
   {
     TEST_ASSERT_EQUAL(valueToWrite++, fpuSinglePrecision[i]);
@@ -63,14 +63,14 @@ void test_writeSinglePrecision_should_write_value_into_fpuDoublePrecision_correc
   int i;
   uint32_t valueToWrite = 0x00;
   initCoreRegister();
-  
+
 
   for(i=0; i < NUM_OF_FPUS_Register; i++)
   {
     writeSinglePrecision(i, valueToWrite++);
   }
-  
-  
+
+
   TEST_ASSERT_EQUAL( 0x0000000100000000, fpuDoublePrecision[0]);
   TEST_ASSERT_EQUAL( 0x0000000300000002, fpuDoublePrecision[1]);
   TEST_ASSERT_EQUAL( 0x0000000500000004, fpuDoublePrecision[2]);
@@ -96,14 +96,14 @@ void test_writeDoublePrecision_should_write_value_into_fpuDoublePrecsion_correct
   int i;
   uint32_t valueToWrite = 0x00;
   initCoreRegister();
-  
+
   for(i=0; i < NUM_OF_FPUD_Register; i++)
   {
     writeDoublePrecision(i, valueToWrite++);
   }
-  
+
   valueToWrite = 0x00;
-  
+
   for(i=0; i < NUM_OF_FPUD_Register; i++)
   {
     TEST_ASSERT_EQUAL(valueToWrite++, fpuDoublePrecision[i]);
@@ -115,7 +115,7 @@ void test_writeDoublePrecision_should_write_value_into_fpuSinglePrecision_correc
 {
   int i;
   initCoreRegister();
-  
+
   writeDoublePrecision(0,0x0000000100000000);
   writeDoublePrecision(1,0x0000000300000002);
   writeDoublePrecision(2,0x0000000500000004);
@@ -132,10 +132,10 @@ void test_writeDoublePrecision_should_write_value_into_fpuSinglePrecision_correc
   writeDoublePrecision(13,0x0000001b0000001a);
   writeDoublePrecision(14,0x0000001d0000001c);
   writeDoublePrecision(15,0x0000001f0000001e);
-  
+
   uint32_t valueToWrite = 0x00;
   for(i=0; i < NUM_OF_FPUS_Register; i++)
-  { 
+  {
     TEST_ASSERT_EQUAL(valueToWrite++, fpuSinglePrecision[i]);
   }
 
