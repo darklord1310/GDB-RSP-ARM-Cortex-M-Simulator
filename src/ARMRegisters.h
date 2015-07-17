@@ -15,7 +15,7 @@
 
 
 uint32_t coreReg[NUM_OF_CORE_Register];
-uint32_t fpuSinglePrecision[NUM_OF_FPUS_Register]; 
+uint32_t fpuSinglePrecision[NUM_OF_FPUS_Register];
 uint64_t fpuDoublePrecision[NUM_OF_FPUD_Register];
 
 

@@ -14,7 +14,7 @@ typedef struct ROMData ROMData;
 
 struct ROMData
 {
-  uint32_t data;
+  uint8_t data;
 };
 
 struct ROM
@@ -23,10 +23,6 @@ struct ROM
 };
 
 ROM *rom;
-// ROMData address[0xFFFFFFF];
-// ROMData rom[TWO_HUND_FIFTY_SIX_KB];
-// ROMData ram[TWO_HUND_FIFTY_SIX_KB];
-
 
 void createROM();
 void resetROM();

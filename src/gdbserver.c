@@ -4,6 +4,8 @@
 #include "ARMRegisters.h"
 #include "ROM.h"
 #include "gdbserver.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
 
 /****************Initialize Winsock.****************/
 void winsockInit()
