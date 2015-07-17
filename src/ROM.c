@@ -51,7 +51,7 @@ void destroyROM()
 
 uint32_t virtualMemToPhysicalMem(uint32_t mem)
 {
-    uint32_t virtualAddr;
+    uint32_t virtualAddr = 0xffffffff;
 
     // if(mem < 0x20000000)
     // {
@@ -75,19 +75,16 @@ uint32_t virtualMemToPhysicalMem(uint32_t mem)
     if(mem < 0x20000000)
     {
         if(mem >= 0x8000000)
-            virtualAddr = ((0x20000000 - 0x8000000) & 0x000fffff) + ROM_BASE_ADDR + + 0x10000;
-        else
+            virtualAddr = ((mem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR + 0x10000;
+        else if(mem <= 0xffff)
             virtualAddr = mem;
-
-        if(virtualAddr > RAM_BASE_ADDR - 1)
+        else
             printf("Code space not enough\n");
-        // printf("virtualAddr: %x\n", virtualAddr);
     }
     else if(mem < 0x40000000)
-        virtualAddr = ((0x20000000 - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;
+        virtualAddr = ((mem - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;
     else
         printf("Memmory exceeded\n");
-
 
     return virtualAddr;
 }

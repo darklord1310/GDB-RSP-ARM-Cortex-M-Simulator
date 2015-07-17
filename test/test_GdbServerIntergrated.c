@@ -5,6 +5,8 @@
 #include "RemoteSerialProtocol.h"
 #include "ARMRegisters.h"
 #include "ROM.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
 
 void setUp(void)
 {
@@ -13,7 +15,7 @@ void setUp(void)
 void tearDown(void)
 {
 }
-
+/*
 void xtest_serveRSP_given_qSupported_query_packet_should_return_appropriate_response(void)
 {
 	char data[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
@@ -145,7 +147,7 @@ void test_serveRSP_given_data_with_Hc0_should_return_empty_response(void)
 
     free(reply);
 }
-/*
+
 void test_serveRSP_given_data_with_p10_packet_should_return_appropriate_response(void)
 {
     char data[] = "$p10#d1";
