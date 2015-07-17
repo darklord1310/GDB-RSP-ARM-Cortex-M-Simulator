@@ -136,7 +136,7 @@ char *handleQueryPacket(char *data)
  */
 char *readSingleRegister(char *data)
 {
-    char *packet = NULL, *dummy;
+    char *packet = NULL, *dummy;    //dummy ==> sscanf the "$p" from data
     int regNum, byteToSent;
     unsigned long long int decodeVal;    //64-bits value
     char *asciiString;
@@ -211,34 +211,45 @@ char *readAllRegister()
  */
 char *writeSingleRegister(char *data)
 {
-    int regNum, i, j = 0, bits = 32;
-    char *addr = NULL;
-    unsigned int regValue = 0x00000000, temp, decodeVal;
+    int regNum;
+    char *equal, *dummy;      //dummy ==> sscanf the "$P" from data
+                              //equal ==> sscanf the '=' from data
+    unsigned long long int regValue, decodeVal;
 
-    sscanf(&data[2], "%2x", &regNum);
-    assert(regNum <= 16);
+    sscanf(data, "%2c%x%c%llx", &dummy, &regNum, &equal, &regValue);
     // printf("Reg no: %d\n", regNum);
-    addr = strstr(data, "=") + 1;
-    // printf("addr %s\n", addr);
+    // printf("Reg Value: %llx\n", regValue);
 
-    for(i = 0; i < 4 && addr[j] != '\0'; i++)
+    if(regNum <= 16)
     {
-        sscanf(&addr[j], "%2x", &temp);
-        regValue = regValue | temp << (bits - 8);
-        bits -= 8;
-        j += 2;
+        decodeVal = decodeFourByte(regValue);
+        coreReg[regNum] = decodeVal;
     }
+    else if(regNum == 0x2a)
+    {
+        decodeVal = decodeFourByte(regValue);
+        coreReg[fPSCR] = decodeVal;
+    }
+    else if(regNum >= 0x1a && regNum <= 0x29)
+    {
+        decodeVal = decodeEightByte(regValue);
+        writeDoublePrecision(regNum - 0x1a, decodeVal);
+        writeSinglePrecision((regNum - 0x1a) * 2, decodeVal & 0xffffffff);      //lower 32-bits
+        writeSinglePrecision((regNum - 0x1a) * 2 + 1, decodeVal >> 32);         //upper 32-bits
+    }
+    else
+        Throw(GDB_SIGNAL_0);
 
-    // printf("Reg val: %x\n", regValue);
-    decodeVal = decodeFourByte(regValue);
-    coreReg[regNum] = decodeVal;
+    return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
 /*
- * This function write all of the 17 ARM registers
+ * ‘G XX...’ ==> Write general registers.
  *
- * Input:
- *      data    packet receive from gdb client
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘E NN’      For an error
  */
 void writeAllRegister(char *data)
 {

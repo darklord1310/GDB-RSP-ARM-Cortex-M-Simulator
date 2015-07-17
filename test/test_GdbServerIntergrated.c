@@ -264,21 +264,54 @@ void test_serveRSP_given_data_with_g_packet_should_return_all_reg_val(void)
 
     free(reply);
 }
-/*
-void test_serveRSP_given_data_with_P_packet_should_return_appropriate_response(void)
+
+void test_serveRSP_given_data_with_P6_packet_should_write_value_to_sixth_coreReg(void)
 {
-    char data[] = "$P6=1052ffff#23";
+    char data[] = "$P6=fe090008#23";
     char *reply = NULL;
+
     initCoreRegister();
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL(0x1052ffff, coreReg[6]);
+    TEST_ASSERT_EQUAL(0x080009fe, coreReg[6]);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
     free(reply);
 }
 
+void test_serveRSP_given_P1b_packet_should_write_value_to_second_fpuDoublePrecision_and_update_the_fpuSinglePrecision(void)
+{
+    char data[] = "$P1b=1234567887654321#68";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x2143658778563412, fpuDoublePrecision[1]);
+    TEST_ASSERT_EQUAL(0x78563412, fpuSinglePrecision[2]);
+    TEST_ASSERT_EQUAL(0x21436587, fpuSinglePrecision[3]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_P30_packet_should_throw_GDB_SIGNAL_0(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$P30=1234567887654321#38";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
+
+    free(reply);
+}
+/*
 void test_serveRSP_given_data_with_G_packet_should_return_appropriate_response(void)
 {
     char data[] = "$G00000000111111112222222233333333444444445555555566666666777777778888888899999999aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff01000000#c8";

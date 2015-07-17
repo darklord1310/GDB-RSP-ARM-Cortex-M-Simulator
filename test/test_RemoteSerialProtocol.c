@@ -366,20 +366,62 @@ void test_readAllRegister_should_return_all_reg_val(void)
 
     TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5", reply);
 }
-/*
-void test_writeSingleRegister_given_following_data_should_write_value_to_a_register(void)
+
+void test_writeSingleRegister_given_data_with_P6_should_write_value_sixth_coreReg(void)
 {
     char data[] = "$P6=fe090008#23";
+    char *reply = NULL;
 
     initCoreRegister();
 
-    decodeFourByte_ExpectAndReturn(0xfe090008, 0x080009ef);
+    decodeFourByte_ExpectAndReturn(0xfe090008, 0x080009fe);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
 
-    writeSingleRegister(data);
+    reply = writeSingleRegister(data);
 
-    TEST_ASSERT_EQUAL(0x080009ef, coreReg[6]);
+    TEST_ASSERT_EQUAL(0x080009fe, coreReg[6]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 }
 
+void test_writeSingleRegister_given_P1b_should_write_value_second_fpuDoublePrecision_and_update_the_fpuSinglePrecision(void)
+{
+    char data[] = "$P1b=1234567887654321#68";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    decodeEightByte_ExpectAndReturn(0x1234567887654321, 0x2143658778563412);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = writeSingleRegister(data);
+
+    TEST_ASSERT_EQUAL(0x2143658778563412, fpuDoublePrecision[1]);
+    TEST_ASSERT_EQUAL(0x78563412, fpuSinglePrecision[2]);
+    TEST_ASSERT_EQUAL(0x21436587, fpuSinglePrecision[3]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+}
+
+void test_writeSingleRegister_given_data_with_P30_should_throw_GDB_SIGNAL_0(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$P30=1234567887654321#38";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    Try
+	{
+        reply = writeSingleRegister(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+		printf("Error signal: %2x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+/*
 void test_writeAllRegister_given_following_data_should_write_value_to_all_register(void)
 {
     char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff00000001#c8";
