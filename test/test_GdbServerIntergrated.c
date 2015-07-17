@@ -311,25 +311,26 @@ void test_serveRSP_given_data_with_P30_packet_should_throw_GDB_SIGNAL_0(void)
 
     free(reply);
 }
-/*
-void test_serveRSP_given_data_with_G_packet_should_return_appropriate_response(void)
+
+void test_serveRSP_given_data_with_G_packet_should_should_write_value_to_all_registers(void)
 {
-    char data[] = "$G00000000111111112222222233333333444444445555555566666666777777778888888899999999aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff01000000#c8";
+    char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff00000001#69";
     char *reply = NULL;
+
     initCoreRegister();
 
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL(0x00000000, coreReg[0]);
     TEST_ASSERT_EQUAL(0x11111111, coreReg[1]);
-    TEST_ASSERT_EQUAL(0x22222222, coreReg[2]);
+    TEST_ASSERT_EQUAL(0x2001ff8c, coreReg[2]);
     TEST_ASSERT_EQUAL(0x33333333, coreReg[3]);
     TEST_ASSERT_EQUAL(0x44444444, coreReg[4]);
     TEST_ASSERT_EQUAL(0x55555555, coreReg[5]);
     TEST_ASSERT_EQUAL(0x66666666, coreReg[6]);
     TEST_ASSERT_EQUAL(0x77777777, coreReg[7]);
     TEST_ASSERT_EQUAL(0x88888888, coreReg[8]);
-    TEST_ASSERT_EQUAL(0x99999999, coreReg[9]);
+    TEST_ASSERT_EQUAL(0x08000b50, coreReg[9]);
     TEST_ASSERT_EQUAL(0xaaaaaaaa, coreReg[10]);
     TEST_ASSERT_EQUAL(0xbbbbbbbb, coreReg[11]);
     TEST_ASSERT_EQUAL(0xcccccccc, coreReg[12]);
@@ -341,7 +342,7 @@ void test_serveRSP_given_data_with_G_packet_should_return_appropriate_response(v
 
     free(reply);
 }
-
+/*
 void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
 {
     char data[] = "$s#73";

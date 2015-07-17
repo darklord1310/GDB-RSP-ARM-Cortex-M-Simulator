@@ -421,10 +421,12 @@ void test_writeSingleRegister_given_data_with_P30_should_throw_GDB_SIGNAL_0(void
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
-/*
-void test_writeAllRegister_given_following_data_should_write_value_to_all_register(void)
+
+void test_writeAllRegister_given_following_data_should_write_value_to_all_registers(void)
 {
-    char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff00000001#c8";
+    char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff00000001#69";
+    char *reply = NULL;
+
     initCoreRegister();
 
     decodeFourByte_ExpectAndReturn(0x00000000, 0x00000000);
@@ -444,8 +446,9 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     decodeFourByte_ExpectAndReturn(0xeeeeeeee, 0xeeeeeeee);
     decodeFourByte_ExpectAndReturn(0xffffffff, 0xffffffff);
     decodeFourByte_ExpectAndReturn(0x00000001, 0x01000000);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
 
-    writeAllRegister(data);
+    reply = writeAllRegister(data);
 
     TEST_ASSERT_EQUAL(0x00000000, coreReg[0]);
     TEST_ASSERT_EQUAL(0x11111111, coreReg[1]);
@@ -464,8 +467,9 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     TEST_ASSERT_EQUAL(0xeeeeeeee, coreReg[LR]);
     TEST_ASSERT_EQUAL(0xffffffff, coreReg[PC]);
     TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 }
-
+/*
 void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_r7_value(void)
 {
     char data[] = "$s#73";

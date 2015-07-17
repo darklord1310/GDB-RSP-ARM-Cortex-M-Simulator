@@ -251,19 +251,21 @@ char *writeSingleRegister(char *data)
  *
  *      ‘E NN’      For an error
  */
-void writeAllRegister(char *data)
+char *writeAllRegister(char *data)
 {
-    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
+    unsigned int regValue, decodeVal;
     int i, j = 2;
 
-    for(i = 0; i < NUM_OF_CORE_Register; i++)
+    for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
-        sscanf(&data[j], "%8x", &regValue[i]);
+        sscanf(&data[j], "%8x", &regValue);
         // printf("Reg val %d: %x\n", i, regValue[i]);
         j += 8;
-        decodeVal = decodeFourByte(regValue[i]);
+        decodeVal = decodeFourByte(regValue);
         coreReg[i] = decodeVal;
     }
+
+    return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
 char *readMemory(char *data)
