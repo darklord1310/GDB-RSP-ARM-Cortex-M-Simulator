@@ -72,12 +72,12 @@ void test_createdHexToString_given_regVal_should_return_2_byte_of_string_of_the_
 
 void test_createdHexToString_given_regVal_should_return_1_byte_of_string_of_the_regVal(void)
 {
-    unsigned int regVal = 0x000000ad;
+    unsigned int regVal = 0x00000001;
     char *packet;
 
     packet = createdHexToString(regVal, 1);
 
-    TEST_ASSERT_EQUAL_STRING("ad", packet);
+    TEST_ASSERT_EQUAL_STRING("01", packet);
 
     destroyHexToString(packet);
 }
@@ -124,6 +124,7 @@ void test_decodeEightByte_given_0x2143658778563412_should_return_0x1234567887654
 void test_verifyChecksum_given_data_packet_should_return_0_if_checksum_incorect(void)
 {
     char data[] = "$qL116000000000000000#55";
+    // char data[] = "$E00#01";
 
     TEST_ASSERT_EQUAL(0, verifyChecksum(data));
 }

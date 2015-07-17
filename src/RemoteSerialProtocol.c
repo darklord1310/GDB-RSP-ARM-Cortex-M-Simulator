@@ -138,8 +138,7 @@ char *readSingleRegister(char *data)
 {
     char *packet = NULL, *dummy;
     int regNum, byteToSent;
-    unsigned int regValue;                          //32-bits value
-    unsigned long long int fpuRegVal, decodeVal;    //64-bits value
+    unsigned long long int decodeVal;    //64-bits value
     char *asciiString;
     // float f = 123.56789;
     // double d = 123.567890123456789;
@@ -149,26 +148,21 @@ char *readSingleRegister(char *data)
 
     if(regNum <= 16)
     {
-        regValue = coreReg[regNum];
         byteToSent = 4;
-        decodeVal = decodeFourByte(regValue);
+        decodeVal = decodeFourByte(coreReg[regNum]);
     }
     else if(regNum == 0x2a)
     {
-        regValue = coreReg[fPSCR];
         byteToSent = 4;
-        decodeVal = decodeFourByte(regValue);
+        decodeVal = decodeFourByte(coreReg[fPSCR]);
     }
     else if(regNum >= 0x1a && regNum <= 0x29)
     {
-        fpuRegVal = fpuDoublePrecision[regNum - 0x1a];
         byteToSent = 8;
-        decodeVal = decodeEightByte(fpuRegVal);
+        decodeVal = decodeEightByte(fpuDoublePrecision[regNum - 0x1a]);
     }
-    // else
-    // {
-        // packet = gdbCreateMsgPacket("E06");
-    // }
+    else
+        Throw(GDB_SIGNAL_0);
 
     asciiString = createdHexToString(decodeVal, byteToSent);
     packet = gdbCreateMsgPacket(asciiString);
@@ -190,18 +184,14 @@ char *readAllRegister()
 {
     char *packet = NULL, fullRegValue[140] = "";
     int i, j;
-    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
+    unsigned long long int decodeVal;
     char *asciiString;
 
     for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
-        regValue[i] = coreReg[i];
-
-        decodeVal = decodeFourByte(regValue[i]);
+        decodeVal = decodeFourByte(coreReg[i]);
         asciiString = createdHexToString(decodeVal, 4);
-
         strcat(fullRegValue, asciiString);
-        // printf("Full reg val: %s\n", fullRegValue);
         destroyHexToString(asciiString);
     }
 
@@ -211,12 +201,15 @@ char *readAllRegister()
 }
 
 /*
- * This function write one of the 17 ARM registers
+ * ‘P n…=r…’ ==> Write register n… with value r…. The register number n is in hexadecimal,
+ *               and r… contains two hex digits for each byte in the register (target byte order).
  *
- * Input:
- *      data    packet receive from gdb client
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘E NN’      For an error
  */
-void writeSingleRegister(char *data)
+char *writeSingleRegister(char *data)
 {
     int regNum, i, j = 0, bits = 32;
     char *addr = NULL;

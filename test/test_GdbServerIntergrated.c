@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <string.h>
 #include "unity.h"
 #include "ServeRSP.h"
 #include "Packet.h"
@@ -7,6 +8,12 @@
 #include "ROM.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "CException.h"
+#include "ErrorSignal.h"
+
+extern char *targetCortexM4_XML;
+extern char *arm_m_profile;
+extern char *arm_vfpv2;
 
 void setUp(void)
 {
@@ -15,15 +22,75 @@ void setUp(void)
 void tearDown(void)
 {
 }
-/*
-void xtest_serveRSP_given_qSupported_query_packet_should_return_appropriate_response(void)
+
+void test_serveRSP_given_qSupported_query_packet_should_return_appropriate_response(void)
 {
 	char data[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
     char *reply = NULL;
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$qRelocInsn-#2b", reply);
+    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_qXfer_read_target_should_return_target_xml_description(void)
+{
+    char data[] = "$qXfer:features:read:target.xml:0,fff#7d";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#dd", packet[1024] = "";
+
+    strcat(packet, dollarSign);
+    strcat(packet, targetCortexM4_XML);
+    strcat(packet, hashSign);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING(packet, reply);
+
+    free(reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_arm_m_profile_should_return_arm_m_profile_xml_description(void)
+{
+    char data[] = "$qXfer:features:read:arm-m-profile.xml:0,fff#ee";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#27", packet[1024] = "";
+
+    strcat(packet, dollarSign);
+    strcat(packet, arm_m_profile);
+    strcat(packet, hashSign);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING(packet, reply);
+
+    free(reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_arm_vfpv2_should_arm_vfpv2_xml_description(void)
+{
+    char data[] = "$qXfer:features:read:arm-vfpv2.xml:0,fff#57";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#89", packet[1024] = "";
+
+    strcat(packet, dollarSign);
+    strcat(packet, arm_vfpv2);
+    strcat(packet, hashSign);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING(packet, reply);
+
+    free(reply);
+}
+
+void test_handleQueryPacket_given_qXfer_read_arm_fpa_should_return_empty_response(void)
+{
+    char data[] = "$qXfer:features:read:arm-fpa.xml:0,fff#9a";
+    char *reply = NULL;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$#00", reply);
 
     free(reply);
 }
@@ -59,7 +126,7 @@ void test_serveRSP_given_data_with_qCRC_should_return_E01_response(void)
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$E01#a6", reply);
+    TEST_ASSERT_EQUAL_STRING("$#00", reply);
 
     free(reply);
 }
@@ -136,44 +203,68 @@ void test_serveRSP_given_data_with_unrecognized_RSP_query_should_return_empty_re
     free(reply);
 }
 
-void test_serveRSP_given_data_with_Hc0_should_return_empty_response(void)
+void test_serveRSP_given_data_with_p1a_packet_should_return_first_fpuDoublePrecision_value(void)
 {
-    char data[] = "$Hc0#db";
+    char data[] = "$p1a#d1";
     char *reply = NULL;
+
+    initCoreRegister();
+    fpuDoublePrecision[0] = 0x2143658778563412;
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$#00", reply);
+    TEST_ASSERT_EQUAL_STRING("$1234567887654321#48", reply);
 
     free(reply);
 }
 
-void test_serveRSP_given_data_with_p10_packet_should_return_appropriate_response(void)
+void test_serveRSP_given_data_with_p2_packet_should_return_second_coreReg_value(void)
 {
-    char data[] = "$p10#d1";
+    char data[] = "$p2#a2";
     char *reply = NULL;
+
+    initCoreRegister();
+    coreReg[2] = 0x21436587;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$87654321#a4", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_data_with_p12_packet_should_return_GDB_SIGNAL_0(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$p12#d3";
+    char *reply = NULL;
+
     initCoreRegister();
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$01000000#81", reply);
+    TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
 
     free(reply);
 }
 
-void test_serveRSP_given_data_with_g_packet_should_return_appropriate_response_with_all_reg_val(void)
+void test_serveRSP_given_data_with_g_packet_should_return_all_reg_val(void)
 {
     char data[] = "$g#67";
     char *reply = NULL;
     initCoreRegister();
 
+    coreReg[2] = 0x12345678;
+    coreReg[fPSCR] = 0xaddeadde;
+    fpuDoublePrecision[0] = 0x2143658778563412;
+
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000#81", reply);
+    TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5", reply);
 
     free(reply);
 }
- 
+/*
 void test_serveRSP_given_data_with_P_packet_should_return_appropriate_response(void)
 {
     char data[] = "$P6=1052ffff#23";

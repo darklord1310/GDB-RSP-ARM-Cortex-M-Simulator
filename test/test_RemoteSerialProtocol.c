@@ -9,6 +9,8 @@
 #include "mock_Packet.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "CException.h"
+#include "ErrorSignal.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -93,14 +95,14 @@ void test_handleQueryPacket_given_qSupported_should_return_appropriate_response(
     char *reply = NULL;
 
     gdbCreateMsgPacket_ExpectAndReturn("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-",
-                                       "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#7c");
+                                       "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58");
 
     reply = handleQueryPacket(data);
 
-    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#7c", reply);
+    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
 }
 
-void test_handleQueryPacket_given_qXfer_read_target_should_return_appropriate_response(void)
+void test_handleQueryPacket_given_qXfer_read_target_should_return_target_xml_description(void)
 {
     char data[] = "$qXfer:features:read:target.xml:0,fff#7d";
     char *reply = NULL, dollarSign[] = "$", hashSign[] = "#dd", packet[1024] = "";
@@ -115,7 +117,7 @@ void test_handleQueryPacket_given_qXfer_read_target_should_return_appropriate_re
     TEST_ASSERT_EQUAL_STRING(packet, reply);
 }
 
-void test_handleQueryPacket_given_qXfer_read_arm_m_profile_should_return_appropriate_response(void)
+void test_handleQueryPacket_given_qXfer_read_arm_m_profile_should_arm_m_profile_xml_description(void)
 {
     char data[] = "$qXfer:features:read:arm-m-profile.xml:0,fff#ee";
     char *reply = NULL, dollarSign[] = "$", hashSign[] = "#27", packet[1024] = "";
@@ -130,7 +132,7 @@ void test_handleQueryPacket_given_qXfer_read_arm_m_profile_should_return_appropr
     TEST_ASSERT_EQUAL_STRING(packet, reply);
 }
 
-void test_handleQueryPacket_given_qXfer_read_arm_vfpv2_should_return_appropriate_response(void)
+void test_handleQueryPacket_given_qXfer_read_arm_vfpv2_should_return_arm_vfpv2_xml_description(void)
 {
     char data[] = "$qXfer:features:read:arm-vfpv2.xml:0,fff#57";
     char *reply = NULL, dollarSign[] = "$", hashSign[] = "#89", packet[1024] = "";
@@ -293,17 +295,38 @@ void test_readSingleRegister_given_data_with_p2_packet_should_return_second_core
     initCoreRegister();
     coreReg[2] = 0x21436587;
 
-    decodeFourByte_ExpectAndReturn(0x21436587, 0x12345678);
-    createdHexToString_ExpectAndReturn(0x12345678, 4, "12345678");
-    gdbCreateMsgPacket_ExpectAndReturn("12345678", "$12345678#a4");
-    destroyHexToString_Expect("12345678");
+    decodeFourByte_ExpectAndReturn(0x21436587, 0x87654321);
+    createdHexToString_ExpectAndReturn(0x87654321, 4, "87654321");
+    gdbCreateMsgPacket_ExpectAndReturn("87654321", "$87654321#a4");
+    destroyHexToString_Expect("87654321");
 
     reply = readSingleRegister(data);
 
-    TEST_ASSERT_EQUAL_STRING("$12345678#a4", reply);
+    TEST_ASSERT_EQUAL_STRING("$87654321#a4", reply);
 }
-/*
-void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(void)
+
+void test_readSingleRegister_given_data_with_p12_packet_should_throw_GDB_SIGNAL_0(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$p12#d3";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    Try
+	{
+        reply = readSingleRegister(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+		printf("Error signal: %2x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
+void test_readAllRegister_should_return_all_reg_val(void)
 {
     char *reply = NULL;
     int i;
@@ -336,14 +359,14 @@ void test_readAllRegister_should_return_appropriate_response_with_all_reg_val(vo
         }
     }
 
-    gdbCreateMsgPacket_ExpectAndReturn("0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",  \
-                                       "$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#81");
+    gdbCreateMsgPacket_ExpectAndReturn("0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+                                       "$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5");
 
     reply = readAllRegister();
 
-    TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#81", reply);
+    TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5", reply);
 }
-
+/*
 void test_writeSingleRegister_given_following_data_should_write_value_to_a_register(void)
 {
     char data[] = "$P6=fe090008#23";
