@@ -1,25 +1,25 @@
 #include "unity.h"
-#include "ARMSimulator.h"
-#include "ARMRegisters.h"
+#include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
+#include "Thumb16bitsTable.h"
 #include "StatusRegisters.h"
+#include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-#include <stdint.h>
-#include "Thumb16bitsTable.h"
+#include "ARMSimulator.h"
+#include "ITandHints.h"
+#include "ADDImmediate.h"
 #include "LSLImmediate.h"
 #include "LSRImmediate.h"
 #include "MOVRegister.h"
 #include "ASRImmediate.h"
 #include "MOVImmediate.h"
-#include "ModifiedImmediateConstant.h"
 #include "CMPImmediate.h"
 #include "ADDImmediate.h"
 #include "SUBImmediate.h"
 #include "ADDRegister.h"
 #include "SUBRegister.h"
 #include "ADDSPRegister.h"
-#include "ITandHints.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
 #include "LSRRegister.h"
@@ -34,8 +34,6 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
-#include "MOVRegister.h"
-#include "CMPRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
 #include "RSBImmediate.h"
@@ -47,33 +45,27 @@ void setUp(void)
   initializeSimulator();
 }
 
+
 void tearDown(void)
 {
 }
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Branch Exchange
 
-void test_is32or16instruction_given_32bits_instruction_should_return_bit32(void)
+// test B label
+void test_unconditionalBranch_given_label_0x0800001a_should_get_PC_is_0x0800000c_xPSR_unchanged(void)
 {
-  uint32_t value = 0xF05F0B0F;      // an example of instruction taken from KEIL assembler
-                                    // which is MOVS R11, #0xF
-  uint32_t result;
-
-  result = is32or16instruction(value);
-
-  TEST_ASSERT_EQUAL( INSTRUCTION32bits, result);
+  uint32_t instruction = 0xE7F80000;
+  
+  coreReg[PC] = 0x08000018;
+  ARMSimulator(instruction);
+  printf("%x\n", coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0800000c, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
 
-void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
-{
-  uint32_t value = 0x46E80000;      // an example of instruction taken from KEIL assembler
-                                    // which is  MOV R8, SP
-
-  value = is32or16instruction(value);
-
-  TEST_ASSERT_EQUAL( INSTRUCTION16bits, value);
-
-}
 
 

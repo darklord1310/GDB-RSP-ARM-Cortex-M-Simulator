@@ -23,7 +23,6 @@ void initializeAllTable()
   initThumb16bitsOpcode010000();
   initThumb16bitsOpcode010001();
   initThumb16bitsOpcode1011XX();
-  
 }
 
 
@@ -113,6 +112,10 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
   {
     opcode2 = getBits(instruction,27,21);
     (*Thumb16Opcode1011XX[opcode2])(instruction);
+  }
+  else if(opcode1 == 0b111000 || opcode1 == 0b111001)
+  {
+    UnconditionalBranchT1(instruction);
   }
 }
 

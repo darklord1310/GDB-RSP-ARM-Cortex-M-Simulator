@@ -33,6 +33,7 @@
 #include "TSTRegister.h"
 #include "RSBImmediate.h"
 #include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
 
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
