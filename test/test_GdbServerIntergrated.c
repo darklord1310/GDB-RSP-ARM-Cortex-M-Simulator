@@ -342,6 +342,71 @@ void test_serveRSP_given_data_with_G_packet_should_should_write_value_to_all_reg
 
     free(reply);
 }
+
+void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
+{
+    char data[] = "$m0,2#fb";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[0x0].data = 0xf0;
+    rom->address[0x1].data = 0x4f;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$4ff0#30", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
+{
+    char data[] = "$m80009d6,4#68";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$4ff00002#f2", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_m80009d6_and_10_should_retrieve_memory_content_start_from_0x080009d6(void)
+{
+    char data[] = "$m80009d6,a#95";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 4)].data = 0x08;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 5)].data = 0x00;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 6)].data = 0x10;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 7)].data = 0x24;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 8)].data = 0xad;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 9)].data = 0xde;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$4ff0000224100008dead#0f", reply);
+
+    destroyROM();
+    free(reply);
+}
+
 /*
 void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
 {

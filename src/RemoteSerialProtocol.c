@@ -268,43 +268,77 @@ char *writeAllRegister(char *data)
     return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
+/*
+ * ‘m addr,length’ ==> Read length bytes of memory starting at address addr.
+ *                     Note that addr may not be aligned to any particular boundary.
+ *                     The stub need not use any particular size or alignment when
+ *                     gathering data from memory for the response; even if addr is
+ *                     word-aligned and length is a multiple of the word size,
+ *                     the stub is free to use byte accesses, or not. For this reason,
+ *                     this packet may not be suitable for accessing memory-mapped I/O devices.
+ *
+ * Reply:
+ *      ‘XX…’       Memory contents; each byte is transmitted as a two-digit hexadecimal number.
+ *                  The reply may contain fewer bytes than requested if the server was able to
+ *                  read only part of the region of memory.
+ *
+ *      ‘E NN’      NN is errno
+ */
 char *readMemory(char *data)
 {
-    char *packet = NULL, *comaAddr = NULL, *asciiString, fullMemContent[150] = "";
-    unsigned int addr, memoryContent = 0, decodeVal;
-    int i, byteLength;
+    char *packet = NULL, fullMemContent[1024] = "", temp[1024] = "", temp2[1024] = "", *asciiString;
+    char *comma, *dummy;      //dummy ==> sscanf the "$m" from data
+                              //comma ==> sscanf the ',' from data
+    unsigned int addr, length, decodeVal;
+    uint32_t memoryContent = 0;
+    int i;
 
-    sscanf(&data[2], "%8x", &addr);
+    sscanf(data, "%2c%x%c%x", &dummy, &addr, &comma, &length);
     // printf("addr: %x\n", addr);
-    comaAddr = strstr(data, ",");
-    sscanf(&comaAddr[1], "%2x", &byteLength);
-    // printf("byteLength: %d\n", byteLength);
+    // printf("length: %x\n", length);
 
-    for(i = 0; i < byteLength; i += 4)
+    for(i = 1; i < length + 1; i++)
     {
         memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
-
-        if(byteLength % 4 == 0)
-        {
-            decodeVal = decodeFourByte(memoryContent);
-            asciiString = createdHexToString(decodeVal, 4);
-        }
-        else
-        {
-            decodeVal = decodeTwoByte(memoryContent >> 16);
-            asciiString = createdHexToString(decodeVal, 2);
-        }
-
-        strcat(fullMemContent, asciiString);
+        // printf("PhysicalMem: %x\n", virtualMemToPhysicalMem(addr));
+        // printf("memoryContent: %x\n", memoryContent);
+        asciiString = createdHexToString(memoryContent, 1);
+        strcpy(temp, asciiString);
+        strcat(temp, temp2);
+        strcpy(temp2, temp);
         destroyHexToString(asciiString);
+
+        if(i < 5)
+            strcpy(fullMemContent, temp2);
+
+        if(i % 4 == 0)
+        {
+            if(i % 8 == 0)
+                strcat(fullMemContent, temp2);
+
+            strcpy(temp2, "");
+        }
+
         addr++;
     }
+
+    if(length > 5 && length % 4 != 0)
+        strcat(fullMemContent, temp2);
 
     packet = gdbCreateMsgPacket(fullMemContent);
 
     return packet;
 }
 
+/*
+ * ‘M addr,length:XX…’ ==> Write length bytes of memory starting at address addr.
+ *                         XX… is the data; each byte is transmitted as a two-digit hexadecimal number.
+ *
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘E NN’      For an error (this includes the case where only part of the data was written).
+ */
 void writeMemory(char *data)
 {
     char *packet = NULL, *comaAddr = NULL, *semicolonAddr = NULL;
