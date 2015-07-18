@@ -10,11 +10,10 @@ typedef struct ROMData ROMData;
 #define TWO_HUND_FIFTY_SIX_KB   256 * KILO_BYTE
 #define ROM_BASE_ADDR           0x00000    //256kb of virtual memory
 #define RAM_BASE_ADDR           0x40000    //256kb of virtual memory
-// #define sizeOfROM               0xFFFFFFFF
 
 struct ROMData
 {
-  uint32_t data;
+  uint8_t data;
 };
 
 struct ROM
@@ -23,10 +22,6 @@ struct ROM
 };
 
 ROM *rom;
-// ROMData address[0xFFFFFFF];
-// ROMData rom[TWO_HUND_FIFTY_SIX_KB];
-// ROMData ram[TWO_HUND_FIFTY_SIX_KB];
-
 
 void createROM();
 void resetROM();

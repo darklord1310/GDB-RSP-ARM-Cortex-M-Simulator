@@ -82,7 +82,19 @@ void test_createdHexToString_given_regVal_should_return_1_byte_of_string_of_the_
     destroyHexToString(packet);
 }
 
-void test_decodeTwoByte_given_byte_of_0x7856_should_return_0x5678(void)
+void test_createdHexToString_given_regVal_should_return_8_byte_of_string_of_the_regVal(void)
+{
+    unsigned long long int regVal = 0x2143658778563412;
+    char *packet;
+
+    packet = createdHexToString(regVal, 8);
+
+    TEST_ASSERT_EQUAL_STRING("2143658778563412", packet);
+
+    destroyHexToString(packet);
+}
+
+void test_decodeTwoByte_given_0x7856_should_return_0x5678(void)
 {
     unsigned int byteData = 0x7856, result;
 
@@ -91,11 +103,34 @@ void test_decodeTwoByte_given_byte_of_0x7856_should_return_0x5678(void)
     TEST_ASSERT_EQUAL(0x5678, result);
 }
 
-void test_decodeFourByte_given_byte_of_0x78563412_should_return_0x12345678(void)
+void test_decodeFourByte_given_0x78563412_should_return_0x12345678(void)
 {
     unsigned int byteData = 0x78563412, result;
 
     result = decodeFourByte(byteData);
 
     TEST_ASSERT_EQUAL(0x12345678, result);
+}
+
+void test_decodeEightByte_given_0x2143658778563412_should_return_0x1234567887654321(void)
+{
+    unsigned long long int byteData = 0x2143658778563412, result;
+
+    result = decodeEightByte(byteData);
+
+    TEST_ASSERT_EQUAL(0x1234567887654321, result);
+}
+
+void test_verifyChecksum_given_data_packet_should_return_0_if_checksum_incorect(void)
+{
+    char data[] = "$qL116000000000000000#55";
+
+    TEST_ASSERT_EQUAL(0, verifyChecksum(data));
+}
+
+void test_verifyChecksum_given_data_packet_should_return_1_if_checksum_corect(void)
+{
+    char data[] = "$qL1160000000000000000#55";
+
+    TEST_ASSERT_EQUAL(1, verifyChecksum(data));
 }

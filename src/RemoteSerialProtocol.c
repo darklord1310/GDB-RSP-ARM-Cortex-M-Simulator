@@ -6,6 +6,61 @@
 #include "Packet.h"
 #include "ARMRegisters.h"
 #include "ROM.h"
+#include "ErrorSignal.h"
+
+char *targetCortexM4_XML =
+"l<?xml version=\"1.0\"?>"
+"<!DOCTYPE target SYSTEM \"gdb-target.dtd\">"
+"<target>"
+"  <xi:include href=\"arm-m-profile.xml\"/>"
+"  <xi:include href=\"arm-vfpv2.xml\"/>"
+"</target>";
+
+char *arm_m_profile =
+"l<?xml version=\"1.0\"?>"
+"<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">"
+"<feature name=\"org.gnu.gdb.arm.m-profile\">"
+"  <reg name=\"r0\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r1\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r2\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r3\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r4\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r5\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r6\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r7\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r8\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r9\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r10\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r11\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"r12\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"sp\" bitsize=\"32\" type=\"data_ptr\"/>"
+"  <reg name=\"lr\" bitsize=\"32\" type=\"uint32\"/>"
+"  <reg name=\"pc\" bitsize=\"32\" type=\"code_ptr\"/>"
+"  <reg name=\"xpsr\" bitsize=\"32\" type=\"uint32\" regnum=\"25\"/>"
+"</feature>";
+
+char *arm_vfpv2 =
+"l<?xml version=\"1.0\"?>"
+"<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">"
+"<feature name=\"org.gnu.gdb.arm.vfp\">"
+"  <reg name=\"d0\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d1\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d2\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d3\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d4\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d5\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d6\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d7\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d8\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d9\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d10\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d11\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d12\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d13\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d14\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"d15\" bitsize=\"64\" type=\"ieee_double\"/>"
+"  <reg name=\"fpscr\" bitsize=\"32\" type=\"int\" group=\"float\"/>"
+"</feature>";
 
 /*
  * This function handle all the query packet receive from
@@ -21,7 +76,7 @@ char *handleQueryPacket(char *data)
 {
     char *packet = NULL;
 
-    if(data[2] == 'P' || data[2] == 'C' || data[2] == 'L')
+    /* if(data[2] == 'P' || data[2] == 'C' || data[2] == 'L')
     {
         if(strncmp("CRC", &data[2], strlen("CRC")) == 0)
             packet = gdbCreateMsgPacket("E01");     // error "E01" => CRC query not supported
@@ -29,10 +84,10 @@ char *handleQueryPacket(char *data)
             packet = gdbCreateMsgPacket("");
     }
     else
-    {
+    { */
         if(strncmp("Supported", &data[2], strlen("Supported")) == 0)
-            packet = gdbCreateMsgPacket("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+");    //;qRelocInsn-;qXfer:memory-map:read-;
-        else if(strncmp("Attached", &data[2], strlen("Attached")) == 0)
+            packet = gdbCreateMsgPacket("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-");    //;qRelocInsn-;qXfer:memory-map:read-;PacketSize=3fff;
+        /* else if(strncmp("Attached", &data[2], strlen("Attached")) == 0)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("TStatus", &data[2], strlen("TStatus")) == 0)
             packet = gdbCreateMsgPacket("");
@@ -41,74 +96,81 @@ char *handleQueryPacket(char *data)
         else if(strncmp("Offsets", &data[2], strlen("Offsets")) == 0)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("Symbol::", &data[2], strlen("Symbol::")) == 0)
-            packet = gdbCreateMsgPacket("");
-        else if(strncmp("qXfer", &data[2], strlen("qXfer")) == 0)
+            packet = gdbCreateMsgPacket(""); */
+        else if(strncmp("Xfer", &data[2], strlen("Xfer")) == 0)
         {
-            packet = gdbCreateMsgPacket("");
+            if(strncmp("features", &data[7], strlen("features")) == 0 && strncmp("read", &data[16], strlen("read")) == 0)
+            {
+                if(strncmp("arm-m-profile.xml", &data[21], strlen("arm-m-profile.xml")) == 0)
+                    packet = gdbCreateMsgPacket(arm_m_profile);
+                else if(strncmp("arm-vfpv2.xml", &data[21], strlen("arm-vfpv2.xml")) == 0)
+                    packet = gdbCreateMsgPacket(arm_vfpv2);
+                else if(strncmp("target.xml", &data[21], strlen("target.xml")) == 0)
+                    packet = gdbCreateMsgPacket(targetCortexM4_XML);
+                else
+                {
+                    packet = gdbCreateMsgPacket("");
+                    printf("Unsupported target XML\n");
+                }
+            }
         }
         else
         {
             packet = gdbCreateMsgPacket("");
-            printf("Unrecognized RSP query");
+            printf("Unsupported RSP query\n");
         }
-    }
+    // }
 
     return packet;
 }
 
 /*
- * This function read one of the 17 ARM registers and response
- * back the values of the request register
+ * ‘p n’ ==> Read the value of register n; n is in hex.
  *
- * Input:
- *      data    packet receive from gdb client
+ * Reply:
+ *      XX…     The register's value for n
  *
- * Return:
- *      packet  complete packet with register values to reply to gdb client
+ *      E NN    For an error
+ *
+ *      ‘’      Indicating an unrecognized query.
  */
 char *readSingleRegister(char *data)
 {
-    char *packet = NULL;
-    int regNum;//, i = 0, bits = 32, maskBits = 0xf;
-    unsigned int regValue, decodeVal;
+    char *packet = NULL, *dummy;
+    int regNum, byteToSent;
+    unsigned int regValue;                          //32-bits value
+    unsigned long long int fpuRegVal, decodeVal;    //64-bits value
     char *asciiString;
+    // float f = 123.56789;
+    // double d = 123.567890123456789;
 
-    sscanf(&data[2], "%2x", &regNum);
-    assert(regNum <= 16);
-    // printf("Reg no: %d\n", regNum);
+    sscanf(data, "%2c%x", &dummy, &regNum);
+    // printf("Reg no: %x\n", regNum);
 
-    /* Testing
-    if(regNum <= 12)        //R0 - R12 is GPR
-        // regValue = 0x00000000;
-        // regValue = coreReg->reg[regNum - 1].data;
-    else if(regNum == 13)   //R13 is Stack Pointer
-        regValue = 0x11111111;
-    else if(regNum == 14)   //R14 is Link Register
-        regValue = 0x22222222;
-    else if(regNum == 15)   //R15 is Program Counter
-        regValue = 0x33333333;
-    else if(regNum == 16)   //R16 is Special-purpose Program Status Registers
-        regValue = 0x44444444; */
-
-    if(regNum <= 15)
-        regValue = coreReg[regNum - 1];
-    else
-        regValue = coreReg[xPSR];
-
-    // printf("Reg val: %x\n", regValue);
-
-    /* Testing
-    for(i = 0; i < 8; i++)
+    if(regNum <= 16)
     {
-        asciiString[i] = hex[regValue >> (bits - 4) & maskBits];
-        bits -= 4;
+        regValue = coreReg[regNum];
+        byteToSent = 4;
+        decodeVal = decodeFourByte(regValue);
     }
-    asciiString[8] = '\0'; */
+    else if(regNum == 0x2a)
+    {
+        regValue = coreReg[fPSCR];
+        byteToSent = 4;
+        decodeVal = decodeFourByte(regValue);
+    }
+    else if(regNum >= 0x1a && regNum <= 0x29)
+    {
+        fpuRegVal = fpuDoublePrecision[regNum - 0x1a];
+        byteToSent = 8;
+        decodeVal = decodeEightByte(fpuRegVal);
+    }
+    // else
+    // {
+        // packet = gdbCreateMsgPacket("E06");
+    // }
 
-    decodeVal = decodeFourByte(regValue);
-    asciiString = createdHexToString(decodeVal, 4);
-    // printf("ASCII String: %s\n", asciiString);
-
+    asciiString = createdHexToString(decodeVal, byteToSent);
     packet = gdbCreateMsgPacket(asciiString);
     destroyHexToString(asciiString);
 
@@ -116,11 +178,13 @@ char *readSingleRegister(char *data)
 }
 
 /*
- * This function read all of the 17 ARM registers and response
- * back the value of all register
+ * ‘g’ ==> Read general registers.
  *
- * Return:
- *      packet  complete packet with all registers values to reply to gdb client
+ * Reply:
+ *      XX…     Each byte of register data is described by two hex digits.
+ *              The bytes with the register are transmitted in target byte order.
+ *
+ *      E NN    For an error.
  */
 char *readAllRegister()
 {
@@ -129,7 +193,7 @@ char *readAllRegister()
     unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
     char *asciiString;
 
-    for(i = 0; i < NUM_OF_CORE_Register; i++)
+    for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
         regValue[i] = coreReg[i];
 
