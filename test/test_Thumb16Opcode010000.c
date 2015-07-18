@@ -38,6 +38,8 @@
 #include "CMPRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
 
 
 void setUp(void)
@@ -1327,3 +1329,145 @@ void test_MULRegisterT1_given_r1_0x88888888_should_get_r1_0xd950c840_xPSR_0x8100
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Test Register T1
+  
+// test TST  r0,r1 , update zero flag
+void test_TSTRegisterT1_given_r0_0x44444444_r1_0x88888888_should_get_xPSR_0x41000000(void)
+{
+  uint32_t instruction = 0x42080000;
+  
+  coreReg[0] = 0x44444444;
+  coreReg[1] = 0x88888888;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x44444444, coreReg[0]); 
+  TEST_ASSERT_EQUAL(0x88888888, coreReg[1]); 
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+// test TST  r0,r1 , update negative flag
+void test_TSTRegisterT1_given_r0_0x84444444_r1_0x88888888_should_get_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x42080000;
+  
+  coreReg[0] = 0x84444444;
+  coreReg[1] = 0x88888888;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x84444444, coreReg[0]); 
+  TEST_ASSERT_EQUAL(0x88888888, coreReg[1]); 
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Reverse Subtract from Zero Immediate T1
+  
+// test RSBS  r0,r0 , update negative flag
+void test_RSBImmediateT1_given_r0_0x44444444_should_get_r0_0xbbbbbbbc_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x42400000;
+  
+  coreReg[0] = 0x44444444;                 
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0xbbbbbbbc, coreReg[0]); 
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+// test RSBS  r0,r0 , update carry and zero flag
+void test_RSBImmediateT1_given_r0_0x00_should_get_r0_0x00_xPSR_0x61000000(void)
+{
+  uint32_t instruction = 0x42400000;
+  
+  coreReg[0] = 0x00;                 
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x00, coreReg[0]); 
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Subtract with Carry Register T1
+
+  
+//test with carry is 0, after subtraction of r1 and r0 no carry
+// test SBCS R1, R0
+void test_SBCRegisterT1_given_r0_0x08_r1_0x02_and_carry_is_0_should_get_r1_0xfffffff9_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x41810000;
+  
+  resetCarryFlag();
+  coreReg[0] = 0x08;
+  coreReg[1] = 0x02;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0xfffffff9, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+//test with carry is 0, after subtraction of r1 and r0 got carry
+// test SBCS R1, R0
+void test_SBCRegisterT1_given_r0_0x02_r1_0x08_and_carry_is_0_should_get_r1_0x05_xPSR_0x21000000(void)
+{
+  uint32_t instruction = 0x41810000;
+  
+  resetCarryFlag();
+  coreReg[0] = 0x02;
+  coreReg[1] = 0x08;                    
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x05, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
+
+//test with carry is 1, after subtraction of r1 and r0 no carry
+// test SBCS R1, R0
+void test_SBCRegisterT1_given_r0_0x08_r1_0x02_and_carry_is_1_should_get_r1_0x00_xPSR_0x81000000(void)
+{
+  uint32_t instruction = 0x41810000;
+  
+  setCarryFlag();
+  coreReg[0] = 0x08;
+  coreReg[1] = 0x02;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xfffffffa, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+//test with carry is 1, after subtraction of r1 and r0 got carry
+// test SBCS R1, R0
+void test_SBCRegisterT1_given_r1_0x08_r0_0x02_and_carry_is_1_should_get_r1_0x10_xPSR_0x21000000(void)
+{
+  uint32_t instruction = 0x41810000;
+  
+  setCarryFlag();
+  coreReg[0] = 0x02;
+  coreReg[1] = 0x08;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x06, coreReg[1]);
+  TEST_ASSERT_EQUAL(1, isCarry() );
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  
+}
+
+
+//test overflow flag behavior, after r1 - r0 before subtract with c(0) got overflow
+// test SBCS R1, R0
+void test_SBCRegisterT1_given_r0_0x40000000_r1_0x80000000_should_get_r1_0x3fffffff_xPSR_0x31000000(void)
+{
+  uint32_t instruction = 0x41810000;
+  
+  resetCarryFlag();
+  resetOverflowFlag();
+  coreReg[0] = 0x40000000;
+  coreReg[1] = 0x80000000;                    
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x3fffffff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x31000000,coreReg[xPSR]);
+}

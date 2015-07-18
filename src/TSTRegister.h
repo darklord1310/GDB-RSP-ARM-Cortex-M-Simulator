@@ -6,6 +6,6 @@
 
 
 void TSTRegisterT1(uint32_t instruction);
-void executeTSTRegister(uint32_t Rn, uint32_t Rd, uint32_t Rm, uint32_t S);
+void executeTSTRegister(uint32_t Rn, uint32_t Rm);
 
 #endif // TSTRegister_H

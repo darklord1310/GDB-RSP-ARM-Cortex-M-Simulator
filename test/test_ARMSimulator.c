@@ -38,6 +38,8 @@
 #include "CMPRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
 
 
 void setUp(void)
