@@ -36,7 +36,9 @@
 #include "BLXRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
-
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
 
 void setUp(void)
 {
