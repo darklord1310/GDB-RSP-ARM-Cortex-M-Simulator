@@ -7,7 +7,7 @@ char *readAllRegister();
 char *writeSingleRegister(char *data);
 char *writeAllRegister(char *data);
 char *readMemory(char *data);
-void writeMemory(char *data);
+char *writeMemory(char *data);
 char *step(char *data);
 
 #endif // RemoteSerialProtocol_H

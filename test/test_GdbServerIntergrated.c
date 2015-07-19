@@ -30,7 +30,8 @@ void test_serveRSP_given_qSupported_query_packet_should_return_appropriate_respo
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
+    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
+    TEST_ASSERT_EQUAL_STRING("$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", reply);
 
     free(reply);
 }
@@ -248,6 +249,27 @@ void test_serveRSP_given_data_with_p12_packet_should_return_GDB_SIGNAL_0(void)
     free(reply);
 }
 
+void test_serveRSP_given_data_with_p_neg_1_packet_should_throw_GDB_SIGNAL_0(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$p-1#ce";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
+}
+
 void test_serveRSP_given_data_with_g_packet_should_return_all_reg_val(void)
 {
     char data[] = "$g#67";
@@ -310,6 +332,27 @@ void test_serveRSP_given_data_with_P30_packet_should_throw_GDB_SIGNAL_0(void)
     TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
 
     free(reply);
+}
+
+void test_serveRSP_given_data_with_P_neg_5_should_throw_GDB_SIGNAL_0(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$P-5=12345678#93";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
 }
 
 void test_serveRSP_given_data_with_G_packet_should_should_write_value_to_all_registers(void)
@@ -405,6 +448,112 @@ void test_serveRSP_given_m80009d6_and_10_should_retrieve_memory_content_start_fr
 
     destroyROM();
     free(reply);
+}
+
+void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$m0,-2#28";
+    char *reply = NULL;
+
+    createROM();
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+
+    destroyROM();
+}
+
+void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,2:4a4d#a4";
+    char *reply = NULL;
+
+    createROM();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x4d, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x4a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+}
+
+void test_serveRSP_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,4:4ff00008#71";
+    char *reply = NULL;
+
+    createROM();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x08, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0xf0, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
+    TEST_ASSERT_EQUAL(0x4f, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+}
+
+void test_serveRSP_given_M8000d06_and_10_should_write_10_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,a:4ff00008094b9a424a4d#ca";
+    char *reply = NULL;
+
+    createROM();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x08, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0xf0, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
+    TEST_ASSERT_EQUAL(0x4f, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+
+    TEST_ASSERT_EQUAL(0x42, rom->address[virtualMemToPhysicalMem(0x8000d06 + 4)].data);
+    TEST_ASSERT_EQUAL(0x9a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 5)].data);
+    TEST_ASSERT_EQUAL(0x4b, rom->address[virtualMemToPhysicalMem(0x8000d06 + 6)].data);
+    TEST_ASSERT_EQUAL(0x09, rom->address[virtualMemToPhysicalMem(0x8000d06 + 7)].data);
+
+    TEST_ASSERT_EQUAL(0x4d, rom->address[virtualMemToPhysicalMem(0x8000d06 + 8)].data);
+    TEST_ASSERT_EQUAL(0x4a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 9)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+}
+
+void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,-2:4ff0#d4";
+    char *reply = NULL;
+
+    createROM();
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+
+    destroyROM();
 }
 
 /*

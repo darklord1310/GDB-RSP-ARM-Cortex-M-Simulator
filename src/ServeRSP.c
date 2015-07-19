@@ -45,8 +45,7 @@ char *serveRSP(char *data)
                 packet = readMemory(data);
                 break;
             case 'M':   /* Write memory */
-                writeMemory(data);
-                packet = gdbCreateMsgPacket("OK");
+                packet = writeMemory(data);
                 break;
             // case 'X':   /* Write data to memory */
                 // writeMemory(data);
