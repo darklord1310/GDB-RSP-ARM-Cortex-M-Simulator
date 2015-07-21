@@ -104,14 +104,14 @@ void main()
     int bytesSent;
     int bytesRecv = SOCKET_ERROR;
     char *reply = NULL;
-    char recvbuf[200] = "";
+    char recvbuf[0x3fff] = "";
 
     while(recvbuf[1] != 'k')
     {
         /*
          *  Recv ACK
          */
-        bytesRecv = recv( sock, recvbuf, 200, 0 );
+        bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
 
         /*
          *  Response ACK
@@ -121,7 +121,7 @@ void main()
         /*
          *  Recv packet
          */
-        bytesRecv = recv( sock, recvbuf, 200, 0 );
+        bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
         printf( "\nBytes Recv: %ld\n", bytesRecv );
         recvbuf[bytesRecv] = '\0';
         printf( "recvbuf: %s\n", recvbuf );
