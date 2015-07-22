@@ -121,7 +121,7 @@ void test_decodeEightByte_given_0x2143658778563412_should_return_0x1234567887654
     TEST_ASSERT_EQUAL(0x1234567887654321, result);
 }
 
-void xtest_verifyChecksum_given_data_packet_should_return_0_if_checksum_incorect(void)
+void test_verifyChecksum_given_data_packet_should_return_0_if_checksum_incorect(void)
 {
     char data[] = "$qL116000000000000000#55";
 
