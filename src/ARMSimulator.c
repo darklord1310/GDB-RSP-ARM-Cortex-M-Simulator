@@ -8,7 +8,7 @@
 #include "ARMRegisters.h"
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
-
+#include "ROM.h"
 
 void initializeSimulator()
 {
@@ -23,6 +23,7 @@ void initializeAllTable()
   initThumb16bitsOpcode010000();
   initThumb16bitsOpcode010001();
   initThumb16bitsOpcode1011XX();
+  initThumb16LoadStoreSingleData();
 }
 
 
@@ -44,7 +45,7 @@ int is32or16instruction(uint32_t instruction)
     if( getBits(instruction, 28, 27) == 0b00)                                       
       return INSTRUCTION16bits;
     else
-      return INSTRUCTION32bits;  
+      return INSTRUCTION32bits;
 	}
   else
       return INSTRUCTION16bits;
@@ -135,19 +136,41 @@ void ARMSimulator(uint32_t instruction)
 }
 
 
+uint32_t retrieveInstructionFromROM()
+{
+  uint32_t instructionRetrieved = ( ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+1) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data ) << 16; 
+
+  int check = is32or16instruction(instructionRetrieved);
+
+  if(check == INSTRUCTION16bits)
+    return instructionRetrieved;
+  else
+  { 
+    uint32_t lower16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+3) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+2) ].data  ;
+    uint32_t upper16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+1) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data  ;
+    instructionRetrieved = (upper16bits << 16) | lower16bits;
+    return instructionRetrieved;
+  }
+}
+
+
 
 void armStep()
 {
   uint32_t instruction;
-  instruction = coreReg[PC];
-  int check = is32or16instruction(instruction);
   
+  instruction = retrieveInstructionFromROM();                     //read the instruction from ROM
+  int check = is32or16instruction(instruction);                   //check the instruction is 16 or 32 bits
   
-  if(check == INSTRUCTION16bits)
+  if(check == INSTRUCTION16bits)                                  //execute 16 or 32 bits instruction
     armSimulate16(instruction);
   //else
     //armSimulate32(instruction);
   
+  if(check == INSTRUCTION16bits)                                  //move the pc to the next instruction
+    coreReg[PC]+=2;
+  else
+    coreReg[PC]+=4;
 }
 
 
