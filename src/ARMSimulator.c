@@ -138,7 +138,7 @@ void ARMSimulator(uint32_t instruction)
 
 uint32_t retrieveInstructionFromROM()
 {
-  uint32_t instructionRetrieved = ( ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+1) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data ) << 16; 
+  uint32_t instructionRetrieved = ( ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC] + 1) ].data ) << 16; 
 
   int check = is32or16instruction(instructionRetrieved);
 
@@ -160,6 +160,7 @@ void armStep()
   uint32_t instruction;
   
   instruction = retrieveInstructionFromROM();                     //read the instruction from ROM
+  printf("instruction: %x\n", instruction);
   int check = is32or16instruction(instruction);                   //check the instruction is 16 or 32 bits
   
   if(check == INSTRUCTION16bits)                                  //execute 16 or 32 bits instruction

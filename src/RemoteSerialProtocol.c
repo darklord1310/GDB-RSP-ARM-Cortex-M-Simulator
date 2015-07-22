@@ -7,6 +7,43 @@
 #include "ARMRegisters.h"
 #include "ROM.h"
 #include "ErrorSignal.h"
+#include "ARMSimulator.h"
+#include "ConditionalExecution.h"
+#include "StatusRegisters.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ITandHints.h"
+#include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+#include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
 
 char *targetCortexM4_XML =
 "l<?xml version=\"1.0\"?>"
@@ -161,11 +198,6 @@ char *readSingleRegister(char *data)
         byteToSent = 8;
         decodeVal = decodeEightByte(fpuDoublePrecision[regNum - 0x1a]);
     }
-    else if(regNum == 0x19)
-    {
-        byteToSent = 4;
-        decodeVal = decodeFourByte(coreReg[xPSR]);
-    }
     else
         Throw(GDB_SIGNAL_0);
 
@@ -187,11 +219,12 @@ char *readSingleRegister(char *data)
  */
 char *readAllRegister()
 {
-    char *packet = NULL, fullRegValue[140] = "";
+    char *packet = NULL, fullRegValue[405] = "";
     int i, j;
     unsigned long long int decodeVal;
     char *asciiString;
 
+    //core register r0 - r12, SP, LR, PC, xPSR
     for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
         decodeVal = decodeFourByte(coreReg[i]);
@@ -199,6 +232,21 @@ char *readAllRegister()
         strcat(fullRegValue, asciiString);
         destroyHexToString(asciiString);
     }
+
+    //fpu register
+    /* for(i = 0; i < NUM_OF_FPUD_Register; i++)
+    {
+        decodeVal = decodeEightByte(fpuDoublePrecision[i]);
+        asciiString = createdHexToString(decodeVal, 8);
+        strcat(fullRegValue, asciiString);
+        destroyHexToString(asciiString);
+    } */
+
+    //fpu status register
+    // decodeVal = decodeFourByte(coreReg[fPSCR]);
+    // asciiString = createdHexToString(decodeVal, 4);
+    // strcat(fullRegValue, asciiString);
+    // destroyHexToString(asciiString);
 
     packet = gdbCreateMsgPacket(fullRegValue);
 
@@ -258,17 +306,43 @@ char *writeSingleRegister(char *data)
  */
 char *writeAllRegister(char *data)
 {
-    unsigned int regValue, decodeVal;
-    int i, j = 2;
+    char *regHex = data + 2, *fpuRegHex = regHex + 8 * (NUM_OF_CORE_Register - 1), *fpuStatusHex = fpuRegHex + 16 * NUM_OF_FPUD_Register;
+    unsigned long long int regValue, decodeVal, temp;
+    int i;
 
+    //core register r0 - r12, SP, LR, PC, xPSR
     for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
-        sscanf(&data[j], "%8x", &regValue);
-        // printf("Reg val %d: %x\n", i, regValue[i]);
-        j += 8;
+        sscanf(regHex, "%8x", &regValue);
+        // printf("Reg val %d: %x\n", i, regValue);
+        regHex += 8;
         decodeVal = decodeFourByte(regValue);
         coreReg[i] = decodeVal;
     }
+
+    // printf("j: %d\n", j);
+    printf("fpuRegHex: %s\n", fpuRegHex);
+
+    //fpu register
+    /* for(i = 0; i < NUM_OF_FPUD_Register; i++)
+    {
+        sscanf(fpuRegHex, "%8x", &temp);
+        printf("fpu val %d: %x\n", i, temp);
+        fpuRegHex += 8;
+        sscanf(fpuRegHex, "%8x", &regValue);
+        printf("fpu val %d: %x\n", i, regValue);
+        fpuRegHex += 8;
+        regValue |= (temp << 32);
+        printf("fpu val %d: %llx\n", i, regValue);
+        decodeVal = decodeEightByte(regValue);
+        fpuDoublePrecision[i] = decodeVal;
+    } */
+
+    //fpu status register
+    /* sscanf(fpuStatusHex, "%8x", &regValue);
+    printf("fpu val 16: %x\n", regValue);
+    decodeVal = decodeFourByte(regValue);
+    coreReg[fPSCR] = decodeVal; */
 
     return gdbCreateMsgPacket("OK");        //Write successfully
 }
@@ -307,6 +381,26 @@ char *readMemory(char *data)
     for(i = 1; i < length + 1; i++)
     {
         memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
+        asciiString = createdHexToString(memoryContent, 1);
+        // printf("memoryContent: %x\n", memoryContent);
+        strcpy(temp, asciiString);
+        strcat(temp, temp2);
+        strcpy(temp2, temp);
+        // printf("temp2: %s\n", temp2);
+        destroyHexToString(asciiString);
+
+        if(i % 2 == 0)
+        {
+            strcat(fullMemContent, temp2);
+            strcpy(temp2, "");
+        }
+
+        addr++;
+    }
+
+    /* for(i = 1; i < length + 1; i++)
+    {
+        memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
         // printf("PhysicalMem: %x\n", virtualMemToPhysicalMem(addr));
         // printf("memoryContent: %x\n", memoryContent);
         asciiString = createdHexToString(memoryContent, 1);
@@ -330,7 +424,7 @@ char *readMemory(char *data)
     }
 
     if(length > 5 && length % 4 != 0)
-        strcat(fullMemContent, temp2);
+        strcat(fullMemContent, temp2); */
 
     packet = gdbCreateMsgPacket(fullMemContent);
 
@@ -359,11 +453,32 @@ char *writeMemory(char *data)
     // printf("addr: %x\n", addr);
     // printf("length: %d\n", length);
     semicolonAddr = strstr(data, ":") + 1;
-    
+
     if(length <= 0)
         Throw(GDB_SIGNAL_ABRT);
 
     for(i = 1; i < length + 1; i++)
+    {
+        sscanf(semicolonAddr, "%2x", &memoryContent);
+        // printf("memoryContent: %x\n", memoryContent);
+
+         if(i % 2 != 0)
+        {
+            temp = memoryContent;
+            // rom->address[virtualMemToPhysicalMem(addr)].data = temp;
+        }
+        else
+        {
+            temp = temp | (memoryContent << 8);
+            rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 8;
+            rom->address[virtualMemToPhysicalMem(addr + 1)].data = temp & 0xff;
+            addr += 2;
+        }
+
+        semicolonAddr += 2;
+    }
+
+    /* for(i = 1; i < length + 1; i++)
     {
         sscanf(semicolonAddr, "%2x", &memoryContent);
         // printf("memoryContent: %x\n", memoryContent);
@@ -401,7 +516,7 @@ char *writeMemory(char *data)
         }
 
         semicolonAddr += 2;
-    }
+    } */
 
     return gdbCreateMsgPacket("OK");
 }
@@ -409,7 +524,7 @@ char *writeMemory(char *data)
 char *step(char *data)
 {
     char *packet = NULL;
-    char *trapSignal = "T05";
+    /* char *trapSignal = "T05";
     char *pcReg = "0f";
     char *reg7 = "07";
     char *pcValue;
@@ -434,9 +549,11 @@ char *step(char *data)
     // printf("msg: %s\n", msg);
 
     destroyHexToString(pcValue);
-    destroyHexToString(r7Value);
+    destroyHexToString(r7Value); */
+    armStep();
 
-    packet = gdbCreateMsgPacket(msg);
+    packet = gdbCreateMsgPacket("S05");
+    // packet = gdbCreateMsgPacket(msg);
 
     return packet;
 }
