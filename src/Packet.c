@@ -146,7 +146,7 @@ int verifyChecksum(char *data)
         chksum += data[i];
 
     hashAddr = strstr(data, "#") + 1;
-    sscanf(hashAddr, "%x", &dataChksum);
+    sscanf(hashAddr, "%2x", &dataChksum);
 
     if(chksum != dataChksum)
     {
