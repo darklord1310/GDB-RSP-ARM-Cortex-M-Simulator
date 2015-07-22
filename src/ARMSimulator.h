@@ -14,6 +14,6 @@ void initializeSimulator();
 void ARMSimulator(uint32_t instruction);
 void armStep();
 uint32_t retrieveInstructionFromROM();
-
+void main();
 
 #endif // ARMSimulator_H

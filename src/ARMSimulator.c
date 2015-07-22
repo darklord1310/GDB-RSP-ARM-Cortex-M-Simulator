@@ -174,6 +174,15 @@ void armStep()
 }
 
 
+void main()
+{
+  for(i = 0; i < 3; i++)
+  {
+    armStep();  
+  }
+  
+  printRegister();
+}
 
 void printRegister()
 {
