@@ -169,3 +169,11 @@ void initThumb16bitsOpcode1011XX()
   
 }
 
+
+
+void initThumb16LoadStoreSingleData()
+{
+  Thumb16LoadStoreSingleData[0b0101000] = STRRegisterT1;
+    
+  
+}

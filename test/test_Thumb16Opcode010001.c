@@ -39,6 +39,10 @@
 #include "RSBImmediate.h"
 #include "SBCRegister.h"
 #include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
+#include "LDRImmediate.h"
+#include "ROM.h"
+
 
 void setUp(void)
 {

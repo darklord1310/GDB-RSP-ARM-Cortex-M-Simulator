@@ -1,11 +1,19 @@
-#ifndef Thumb16bitsTable_H
-#define Thumb16bitsTable_H
-
+#include "unity.h"
+#include "LDRImmediate.h"
+#include "ARMSimulator.h"
+#include "ARMRegisters.h"
+#include "ConditionalExecution.h"
+#include "StatusRegisters.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
 #include <stdint.h>
+#include "Thumb16bitsTable.h"
 #include "LSLImmediate.h"
 #include "LSRImmediate.h"
+#include "MOVRegister.h"
 #include "ASRImmediate.h"
 #include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
 #include "CMPImmediate.h"
 #include "ADDImmediate.h"
 #include "SUBImmediate.h"
@@ -35,18 +43,18 @@
 #include "SBCRegister.h"
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
-#include "LDRImmediate.h"
+#include "ROM.h"
 
-void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
-void (*Thumb16Opcode010000[16])(uint32_t instruction);
-void (*Thumb16Opcode1011XX[128])(uint32_t instruction);
-void (*Thumb16Opcode010001[16])(uint32_t instruction);
-void (*Thumb16LoadStoreSingleData[64])(uint32_t instruction);
 
-void initThumb16bitsOpcode00XXXX();
-void initThumb16bitsOpcode010000();
-void initThumb16bitsOpcode010001();
-void initThumb16bitsOpcode1011XX();
-void initThumb16LoadStoreSingleData();
+void setUp(void)
+{
+}
 
-#endif // Thumb16bitsTable_H
+void tearDown(void)
+{
+}
+
+void test_module_generator_needs_to_be_implemented(void)
+{
+
+}
