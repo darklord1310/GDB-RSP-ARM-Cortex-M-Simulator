@@ -34,9 +34,7 @@ void test_resetROM_should_reset_all_the_ROM_data_to_0(void)
     resetROM();
 
     for(i = 0 ; i < TWO_HUND_FIFTY_SIX_KB * 2 ; i ++ )
-    {
         TEST_ASSERT_EQUAL(0, rom->address[i].data);
-    }
 
     destroyROM();
 }

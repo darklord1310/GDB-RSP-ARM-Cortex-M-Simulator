@@ -72,12 +72,12 @@ void test_createdHexToString_given_regVal_should_return_2_byte_of_string_of_the_
 
 void test_createdHexToString_given_regVal_should_return_1_byte_of_string_of_the_regVal(void)
 {
-    unsigned int regVal = 0x000000ad;
+    unsigned int regVal = 0x00000001;
     char *packet;
 
     packet = createdHexToString(regVal, 1);
 
-    TEST_ASSERT_EQUAL_STRING("ad", packet);
+    TEST_ASSERT_EQUAL_STRING("01", packet);
 
     destroyHexToString(packet);
 }

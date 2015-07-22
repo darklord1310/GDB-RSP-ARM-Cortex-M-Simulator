@@ -86,7 +86,7 @@ char *handleQueryPacket(char *data)
     else
     { */
         if(strncmp("Supported", &data[2], strlen("Supported")) == 0)
-            packet = gdbCreateMsgPacket("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-");    //;qRelocInsn-;qXfer:memory-map:read-;PacketSize=3fff;
+            packet = gdbCreateMsgPacket("qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-");    //PacketSize=3fff;qRelocInsn-;qXfer:memory-map:read-;PacketSize=3fff;
         /* else if(strncmp("Attached", &data[2], strlen("Attached")) == 0)
             packet = gdbCreateMsgPacket("");
         else if(strncmp("TStatus", &data[2], strlen("TStatus")) == 0)
@@ -136,39 +136,33 @@ char *handleQueryPacket(char *data)
  */
 char *readSingleRegister(char *data)
 {
-    char *packet = NULL, *dummy;
+    char *packet = NULL, *dummy;    //dummy ==> sscanf the "$p" from data
     int regNum, byteToSent;
-    unsigned int regValue;                          //32-bits value
-    unsigned long long int fpuRegVal, decodeVal;    //64-bits value
+    unsigned long long int decodeVal;    //64-bits value
     char *asciiString;
     // float f = 123.56789;
     // double d = 123.567890123456789;
 
     sscanf(data, "%2c%x", &dummy, &regNum);
-    // printf("Reg no: %x\n", regNum);
+    // printf("Reg no: %d\n", regNum);
 
-    if(regNum <= 16)
+    if(regNum <= 16 && regNum >= 0)
     {
-        regValue = coreReg[regNum];
         byteToSent = 4;
-        decodeVal = decodeFourByte(regValue);
+        decodeVal = decodeFourByte(coreReg[regNum]);
     }
     else if(regNum == 0x2a)
     {
-        regValue = coreReg[fPSCR];
         byteToSent = 4;
-        decodeVal = decodeFourByte(regValue);
+        decodeVal = decodeFourByte(coreReg[fPSCR]);
     }
     else if(regNum >= 0x1a && regNum <= 0x29)
     {
-        fpuRegVal = fpuDoublePrecision[regNum - 0x1a];
         byteToSent = 8;
-        decodeVal = decodeEightByte(fpuRegVal);
+        decodeVal = decodeEightByte(fpuDoublePrecision[regNum - 0x1a]);
     }
-    // else
-    // {
-        // packet = gdbCreateMsgPacket("E06");
-    // }
+    else
+        Throw(GDB_SIGNAL_0);
 
     asciiString = createdHexToString(decodeVal, byteToSent);
     packet = gdbCreateMsgPacket(asciiString);
@@ -190,18 +184,14 @@ char *readAllRegister()
 {
     char *packet = NULL, fullRegValue[140] = "";
     int i, j;
-    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
+    unsigned long long int decodeVal;
     char *asciiString;
 
     for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
-        regValue[i] = coreReg[i];
-
-        decodeVal = decodeFourByte(regValue[i]);
+        decodeVal = decodeFourByte(coreReg[i]);
         asciiString = createdHexToString(decodeVal, 4);
-
         strcat(fullRegValue, asciiString);
-        // printf("Full reg val: %s\n", fullRegValue);
         destroyHexToString(asciiString);
     }
 
@@ -211,128 +201,204 @@ char *readAllRegister()
 }
 
 /*
- * This function write one of the 17 ARM registers
+ * ‘P n…=r…’ ==> Write register n… with value r…. The register number n is in hexadecimal,
+ *               and r… contains two hex digits for each byte in the register (target byte order).
  *
- * Input:
- *      data    packet receive from gdb client
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘E NN’      For an error
  */
-void writeSingleRegister(char *data)
+char *writeSingleRegister(char *data)
 {
-    int regNum, i, j = 0, bits = 32;
-    char *addr = NULL;
-    unsigned int regValue = 0x00000000, temp, decodeVal;
+    int regNum;
+    char *equal, *dummy;      //dummy ==> sscanf the "$P" from data
+                              //equal ==> sscanf the '=' from data
+    unsigned long long int regValue, decodeVal;
 
-    sscanf(&data[2], "%2x", &regNum);
-    assert(regNum <= 16);
+    sscanf(data, "%2c%x%c%llx", &dummy, &regNum, &equal, &regValue);
     // printf("Reg no: %d\n", regNum);
-    addr = strstr(data, "=") + 1;
-    // printf("addr %s\n", addr);
+    // printf("Reg Value: %llx\n", regValue);
 
-    for(i = 0; i < 4 && addr[j] != '\0'; i++)
+    if(regNum <= 16 && regNum >= 0)
     {
-        sscanf(&addr[j], "%2x", &temp);
-        regValue = regValue | temp << (bits - 8);
-        bits -= 8;
-        j += 2;
+        decodeVal = decodeFourByte(regValue);
+        coreReg[regNum] = decodeVal;
     }
+    else if(regNum == 0x2a)
+    {
+        decodeVal = decodeFourByte(regValue);
+        coreReg[fPSCR] = decodeVal;
+    }
+    else if(regNum >= 0x1a && regNum <= 0x29)
+    {
+        decodeVal = decodeEightByte(regValue);
+        writeDoublePrecision(regNum - 0x1a, decodeVal);
+        writeSinglePrecision((regNum - 0x1a) * 2, decodeVal & 0xffffffff);      //lower 32-bits
+        writeSinglePrecision((regNum - 0x1a) * 2 + 1, decodeVal >> 32);         //upper 32-bits
+    }
+    else
+        Throw(GDB_SIGNAL_0);
 
-    // printf("Reg val: %x\n", regValue);
-    decodeVal = decodeFourByte(regValue);
-    coreReg[regNum] = decodeVal;
+    return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
 /*
- * This function write all of the 17 ARM registers
+ * ‘G XX...’ ==> Write general registers.
  *
- * Input:
- *      data    packet receive from gdb client
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘E NN’      For an error
  */
-void writeAllRegister(char *data)
+char *writeAllRegister(char *data)
 {
-    unsigned int regValue[NUM_OF_CORE_Register], decodeVal;
+    unsigned int regValue, decodeVal;
     int i, j = 2;
 
-    for(i = 0; i < NUM_OF_CORE_Register; i++)
+    for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
-        sscanf(&data[j], "%8x", &regValue[i]);
+        sscanf(&data[j], "%8x", &regValue);
         // printf("Reg val %d: %x\n", i, regValue[i]);
         j += 8;
-        decodeVal = decodeFourByte(regValue[i]);
+        decodeVal = decodeFourByte(regValue);
         coreReg[i] = decodeVal;
     }
+
+    return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
+/*
+ * ‘m addr,length’ ==> Read length bytes of memory starting at address addr.
+ *                     Note that addr may not be aligned to any particular boundary.
+ *                     The stub need not use any particular size or alignment when
+ *                     gathering data from memory for the response; even if addr is
+ *                     word-aligned and length is a multiple of the word size,
+ *                     the stub is free to use byte accesses, or not. For this reason,
+ *                     this packet may not be suitable for accessing memory-mapped I/O devices.
+ *
+ * Reply:
+ *      ‘XX…’       Memory contents; each byte is transmitted as a two-digit hexadecimal number.
+ *                  The reply may contain fewer bytes than requested if the server was able to
+ *                  read only part of the region of memory.
+ *
+ *      ‘E NN’      NN is errno
+ */
 char *readMemory(char *data)
 {
-    char *packet = NULL, *comaAddr = NULL, *asciiString, fullMemContent[150] = "";
-    unsigned int addr, memoryContent = 0, decodeVal;
-    int i, byteLength;
+    char *packet = NULL, fullMemContent[1024] = "", temp[1024] = "", temp2[1024] = "", *asciiString;
+    char *comma, *dummy;      //dummy ==> sscanf the "$m" from data
+                              //comma ==> sscanf the ',' from data
+    unsigned int addr, memoryContent = 0;
+    int i, length;
 
-    sscanf(&data[2], "%8x", &addr);
+    sscanf(data, "%2c%x%c%x", &dummy, &addr, &comma, &length);
     // printf("addr: %x\n", addr);
-    comaAddr = strstr(data, ",");
-    sscanf(&comaAddr[1], "%2x", &byteLength);
-    // printf("byteLength: %d\n", byteLength);
+    // printf("length: %d\n", length);
 
-    for(i = 0; i < byteLength; i += 4)
+    if(length <= 0)
+        Throw(GDB_SIGNAL_ABRT);
+
+    for(i = 1; i < length + 1; i++)
     {
         memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
-
-        if(byteLength % 4 == 0)
-        {
-            decodeVal = decodeFourByte(memoryContent);
-            asciiString = createdHexToString(decodeVal, 4);
-        }
-        else
-        {
-            decodeVal = decodeTwoByte(memoryContent >> 16);
-            asciiString = createdHexToString(decodeVal, 2);
-        }
-
-        strcat(fullMemContent, asciiString);
+        // printf("PhysicalMem: %x\n", virtualMemToPhysicalMem(addr));
+        // printf("memoryContent: %x\n", memoryContent);
+        asciiString = createdHexToString(memoryContent, 1);
+        strcpy(temp, asciiString);
+        strcat(temp, temp2);
+        strcpy(temp2, temp);
         destroyHexToString(asciiString);
+
+        if(i < 5)
+            strcpy(fullMemContent, temp2);
+
+        if(i % 4 == 0)
+        {
+            if(i % 8 == 0)
+                strcat(fullMemContent, temp2);
+
+            strcpy(temp2, "");
+        }
+
         addr++;
     }
+
+    if(length > 5 && length % 4 != 0)
+        strcat(fullMemContent, temp2);
 
     packet = gdbCreateMsgPacket(fullMemContent);
 
     return packet;
 }
 
-void writeMemory(char *data)
+/*
+ * ‘M addr,length:XX…’ ==> Write length bytes of memory starting at address addr.
+ *                         XX… is the data; each byte is transmitted as a two-digit hexadecimal number.
+ *
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘E NN’      For an error (this includes the case where only part of the data was written).
+ */
+char *writeMemory(char *data)
 {
-    char *packet = NULL, *comaAddr = NULL, *semicolonAddr = NULL;
-    unsigned int addr, memoryContent = 0, decodeVal;
-    int i, byteLength, j = 1;
+    char *packet = NULL;
+    char *comma, *semicolonAddr, *dummy;    //dummy ==> sscanf the "$M" from data
+                                            //comma ==> sscanf the ',' from data
+                                            //semicolonAddr ==> addr starting from the semicolon in the data
+    unsigned int addr, memoryContent = 0, temp = 0, temp2 = 0;
+    int i, length;
 
-    sscanf(&data[2], "%8x", &addr);
+    sscanf(data, "%2c%x%c%x", &dummy, &addr, &comma, &length);
     // printf("addr: %x\n", addr);
-    comaAddr = strstr(data, ",");
-    sscanf(&comaAddr[1], "%2x", &byteLength);
-    // printf("byteLength: %d\n", byteLength);
-    semicolonAddr = strstr(data, ":");
+    // printf("length: %d\n", length);
+    semicolonAddr = strstr(data, ":") + 1;
+    
+    if(length <= 0)
+        Throw(GDB_SIGNAL_ABRT);
 
-    for(i = 0; i < byteLength; i += 4)
+    for(i = 1; i < length + 1; i++)
     {
-        if(byteLength % 4 == 0)
+        sscanf(semicolonAddr, "%2x", &memoryContent);
+        // printf("memoryContent: %x\n", memoryContent);
+
+        if(i % 4 == 0)
         {
-            sscanf(&semicolonAddr[j], "%8x", &memoryContent);
-            decodeVal = decodeFourByte(memoryContent);
-            rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal;
+            temp = temp | (memoryContent << 24);
+            rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 24;
+            rom->address[virtualMemToPhysicalMem(addr + 1)].data = (temp >> 16) & 0xff;
+            rom->address[virtualMemToPhysicalMem(addr + 2)].data = (temp >> 8) & 0xff;
+            rom->address[virtualMemToPhysicalMem(addr + 3)].data = temp & 0xff;
+            addr += 4;
+            temp = 0;
         }
         else
         {
-            sscanf(&semicolonAddr[j], "%4x", &memoryContent);
-            // printf("memoryContent: %x\n", memoryContent);
-            decodeVal = decodeTwoByte(memoryContent);
-            // printf("decodeVal: %x\n", decodeVal);
-            rom->address[virtualMemToPhysicalMem(addr)].data = decodeVal << 16;
-            // printf("rom->address.data: %x\n", rom->address[virtualMemToPhysicalMem(addr)].data);
+            if(i % 4 == 1)
+            {
+                temp = memoryContent;
+                rom->address[virtualMemToPhysicalMem(addr)].data = temp;
+            }
+            else if(i % 4 == 2)
+            {
+                temp = temp | (memoryContent << 8);
+                rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 8;
+                rom->address[virtualMemToPhysicalMem(addr + 1)].data = temp & 0xff;
+            }
+            else
+            {
+                temp = temp | (memoryContent << 16);
+                rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 16;
+                rom->address[virtualMemToPhysicalMem(addr + 1)].data = (temp >> 8) & 0xff;
+                rom->address[virtualMemToPhysicalMem(addr + 2)].data = temp & 0xff;
+            }
         }
 
-        addr++;
-        j += 8;
+        semicolonAddr += 2;
     }
+
+    return gdbCreateMsgPacket("OK");
 }
 
 char *step(char *data)
