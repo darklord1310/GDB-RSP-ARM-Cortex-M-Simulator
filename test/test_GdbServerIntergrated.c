@@ -10,6 +10,43 @@
 #include "getMask.h"
 #include "CException.h"
 #include "ErrorSignal.h"
+#include "ARMSimulator.h"
+#include "ConditionalExecution.h"
+#include "StatusRegisters.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ITandHints.h"
+#include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+#include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -385,7 +422,7 @@ void test_serveRSP_given_data_with_G_packet_should_should_write_value_to_all_reg
 
     free(reply);
 }
-
+/*
 void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
 {
     char data[] = "$m0,2#fb";
@@ -554,7 +591,7 @@ void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 
     destroyROM();
-}
+} */
 
 /*
 void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
@@ -569,32 +606,4 @@ void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(v
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
-}
-
-void test_serveRSP_given_data_with_m_packet_with_4_byte_length_should_return_appropriate_response(void)
-{
-    char data[] = "$m0,4#64";
-    char *reply = NULL;
-
-    createROM();
-
-    rom->address[0x0].data = 0xdff834d0;
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL_STRING("$dff834d0#63", reply);
-}
-
-void xtest_serveRSP_given_data_with_m_packet_with_2_byte_length_should_return_appropriate_response(void)
-{
-    char data[] = "$m8000d06,2#5d";
-    char *reply = NULL;
-
-    createROM();
-
-    // address[0x8000d06].data = 0xdff84d4a;
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4d4a#2d", reply);
 } */

@@ -11,6 +11,43 @@
 #include "getMask.h"
 #include "CException.h"
 #include "ErrorSignal.h"
+#include "ARMSimulator.h"
+#include "ConditionalExecution.h"
+#include "StatusRegisters.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ITandHints.h"
+#include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+#include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -350,7 +387,7 @@ void test_readSingleRegister_given_data_with_p_neg_1_packet_should_throw_GDB_SIG
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
-void test_readAllRegister_should_return_all_reg_val(void)
+void xtest_readAllRegister_should_return_all_reg_val(void)
 {
     char *reply = NULL;
     int i;
@@ -383,12 +420,23 @@ void test_readAllRegister_should_return_all_reg_val(void)
         }
     }
 
-    gdbCreateMsgPacket_ExpectAndReturn("0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
-                                       "$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5");
+    for(i = 0; i < 16; i++)
+    {
+        decodeEightByte_ExpectAndReturn(0x0000000000000000, 0x0000000000000000);
+        createdHexToString_ExpectAndReturn(0x0000000000000000, 8, "0000000000000000");
+        destroyHexToString_Expect("0000000000000000");
+    }
+
+    decodeFourByte_ExpectAndReturn(0x00000000, 0x00000000);
+    createdHexToString_ExpectAndReturn(0x00000000, 4, "00000000");
+    destroyHexToString_Expect("00000000");
+
+    gdbCreateMsgPacket_ExpectAndReturn("0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                                       "$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000#25");
 
     reply = readAllRegister();
 
-    TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5", reply);
+    TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000#25", reply);
 }
 
 void test_writeSingleRegister_given_data_with_P6_should_write_value_sixth_coreReg(void)
@@ -467,9 +515,9 @@ void test_writeSingleRegister_given_data_with_P_neg_5_should_throw_GDB_SIGNAL_0(
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
-void test_writeAllRegister_given_following_data_should_write_value_to_all_registers(void)
+void xtest_writeAllRegister_given_following_data_should_write_value_to_all_registers(void)
 {
-    char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff00000001#69";
+    char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff0000000100000000000000000101010101010101020202020202020203030303030303030404040404040404050505050505050506060606060606060707070707070707080808080808080809090909090909090a0a0a0a0a0a0a0a0b0b0b0b0b0b0b0b0c0c0c0c0c0c0c0c0d0d0d0d0d0d0d0d0e0e0e0e0e0e0e0e0f0f0f0f0f0f0f0fabababab#85";
     char *reply = NULL;
 
     initCoreRegister();
@@ -491,6 +539,23 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     decodeFourByte_ExpectAndReturn(0xeeeeeeee, 0xeeeeeeee);
     decodeFourByte_ExpectAndReturn(0xffffffff, 0xffffffff);
     decodeFourByte_ExpectAndReturn(0x00000001, 0x01000000);
+    decodeEightByte_ExpectAndReturn(0x0478000000000000, 0x0000000000007804);
+    decodeEightByte_ExpectAndReturn(0x0101010101010101, 0x0101010101010101);
+    decodeEightByte_ExpectAndReturn(0x0202020202020202, 0x0202020202020202);
+    decodeEightByte_ExpectAndReturn(0x0303030303030303, 0x0303030303030303);
+    decodeEightByte_ExpectAndReturn(0x0404040404040404, 0x0404040404040404);
+    decodeEightByte_ExpectAndReturn(0x0505050505050505, 0x0505050505050505);
+    decodeEightByte_ExpectAndReturn(0x0606060606060606, 0x0606060606060606);
+    decodeEightByte_ExpectAndReturn(0x0707070707070707, 0x0707070707070707);
+    decodeEightByte_ExpectAndReturn(0x0808080808080808, 0x0808080808080808);
+    decodeEightByte_ExpectAndReturn(0x0909090909090909, 0x0909090909090909);
+    decodeEightByte_ExpectAndReturn(0x0a0a0a0a0a0a0a0a, 0x0a0a0a0a0a0a0a0a);
+    decodeEightByte_ExpectAndReturn(0x0b0b0b0b0b0b0b0b, 0x0b0b0b0b0b0b0b0b);
+    decodeEightByte_ExpectAndReturn(0x0c0c0c0c0c0c0c0c, 0x0c0c0c0c0c0c0c0c);
+    decodeEightByte_ExpectAndReturn(0x0d0d0d0d0d0d0d0d, 0x0d0d0d0d0d0d0d0d);
+    decodeEightByte_ExpectAndReturn(0x0e0e0e0e0e0e0e0e, 0x0e0e0e0e0e0e0e0e);
+    decodeEightByte_ExpectAndReturn(0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f);
+    decodeFourByte_ExpectAndReturn(0xabababab, 0xabababab);
     gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
 
     reply = writeAllRegister(data);
@@ -512,9 +577,116 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     TEST_ASSERT_EQUAL(0xeeeeeeee, coreReg[LR]);
     TEST_ASSERT_EQUAL(0xffffffff, coreReg[PC]);
     TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+    TEST_ASSERT_EQUAL(0xabababab, coreReg[fPSCR]);
+    TEST_ASSERT_EQUAL(0x0000000000000000, fpuDoublePrecision[0]);
+    TEST_ASSERT_EQUAL(0x0101010101010101, fpuDoublePrecision[1]);
+    TEST_ASSERT_EQUAL(0x0202020202020202, fpuDoublePrecision[2]);
+    TEST_ASSERT_EQUAL(0x0303030303030303, fpuDoublePrecision[3]);
+    TEST_ASSERT_EQUAL(0x0404040404040404, fpuDoublePrecision[4]);
+    TEST_ASSERT_EQUAL(0x0505050505050505, fpuDoublePrecision[5]);
+    TEST_ASSERT_EQUAL(0x0606060606060606, fpuDoublePrecision[6]);
+    TEST_ASSERT_EQUAL(0x0707070707070707, fpuDoublePrecision[7]);
+    TEST_ASSERT_EQUAL(0x0808080808080808, fpuDoublePrecision[8]);
+    TEST_ASSERT_EQUAL(0x0909090909090909, fpuDoublePrecision[9]);
+    TEST_ASSERT_EQUAL(0x0a0a0a0a0a0a0a0a, fpuDoublePrecision[10]);
+    TEST_ASSERT_EQUAL(0x0b0b0b0b0b0b0b0b, fpuDoublePrecision[11]);
+    TEST_ASSERT_EQUAL(0x0c0c0c0c0c0c0c0c, fpuDoublePrecision[12]);
+    TEST_ASSERT_EQUAL(0x0d0d0d0d0d0d0d0d, fpuDoublePrecision[13]);
+    TEST_ASSERT_EQUAL(0x0e0e0e0e0e0e0e0e, fpuDoublePrecision[14]);
+    TEST_ASSERT_EQUAL(0x0f0f0f0f0f0f0f0f, fpuDoublePrecision[15]);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 }
 
+void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
+{
+    char data[] = "$m0,2#fb";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[0x0].data = 0x20;
+    rom->address[0x1].data = 0x3f;
+
+    createdHexToString_ExpectAndReturn(0x20, 1, "20");
+    destroyHexToString_Expect("20");
+    createdHexToString_ExpectAndReturn(0x3f, 1, "3f");
+    destroyHexToString_Expect("3f");
+    gdbCreateMsgPacket_ExpectAndReturn("3f20", "$3f20#fb");
+
+    reply = readMemory(data);
+
+    TEST_ASSERT_EQUAL_STRING("$3f20#fb", reply);
+
+    destroyROM();
+}
+
+void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
+{
+    char data[] = "$m80009d6,4#68";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0xf6;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x43;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0x70;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0xff;
+
+    createdHexToString_ExpectAndReturn(0xf6, 1, "f6");
+    destroyHexToString_Expect("f6");
+    createdHexToString_ExpectAndReturn(0x43, 1, "43");
+    destroyHexToString_Expect("43");
+    createdHexToString_ExpectAndReturn(0x70, 1, "70");
+    destroyHexToString_Expect("70");
+    createdHexToString_ExpectAndReturn(0xff, 1, "ff");
+    destroyHexToString_Expect("ff");
+    gdbCreateMsgPacket_ExpectAndReturn("43f6ff70", "$43f6ff70#36");
+
+    reply = readMemory(data);
+
+    TEST_ASSERT_EQUAL_STRING("$43f6ff70#36", reply);
+
+    destroyROM();
+}
+
+void test_writeMemory_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,2:0010#38";
+    char *reply = NULL;
+
+    createROM();
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = writeMemory(data);
+
+    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+}
+
+void test_writeMemory_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,4:00100020#fc";
+    char *reply = NULL;
+
+    createROM();
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = writeMemory(data);
+
+    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0x20, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+}
+/*
 void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
 {
     char data[] = "$m0,2#fb";
@@ -724,48 +896,8 @@ void test_writeMemory_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 
     destroyROM();
-}
-
+} */
 /*
-void test_writeMemory_given_0x8000d06_mem_addr_should_write_4_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$m8000d06,4:4a4d0008#5d";
-
-    createROM();
-
-    decodeFourByte_ExpectAndReturn(0x4a4d0008, 0x08004d4a);
-
-    writeMemory(data);
-
-    TEST_ASSERT_EQUAL(0x08004d4a, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-
-    destroyROM();
-}
-
-void test_writeMemory_given_0x8000d06_mem_addr_should_write_20_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$m8000d06,14:4d4a00085d5a00086d6a00087d7a00088d8a0008#5d";
-
-    createROM();
-
-    decodeFourByte_ExpectAndReturn(0x4d4a0008, 0x08004d4a);
-    decodeFourByte_ExpectAndReturn(0x5d5a0008, 0x08005d5a);
-    decodeFourByte_ExpectAndReturn(0x6d6a0008, 0x08006d6a);
-    decodeFourByte_ExpectAndReturn(0x7d7a0008, 0x08007d7a);
-    decodeFourByte_ExpectAndReturn(0x8d8a0008, 0x08008d8a);
-
-    writeMemory(data);
-
-    TEST_ASSERT_EQUAL(0x08004d4a, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x08005d5a, rom->address[virtualMemToPhysicalMem(0x8000d07)].data);
-    TEST_ASSERT_EQUAL(0x08006d6a, rom->address[virtualMemToPhysicalMem(0x8000d08)].data);
-    TEST_ASSERT_EQUAL(0x08007d7a, rom->address[virtualMemToPhysicalMem(0x8000d09)].data);
-    TEST_ASSERT_EQUAL(0x08008d8a, rom->address[virtualMemToPhysicalMem(0x8000d0a)].data);
-
-    destroyROM();
-}
-
-
 void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_r7_value(void)
 {
     char data[] = "$s#73";

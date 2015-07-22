@@ -1,11 +1,48 @@
 #include <stdio.h>
 #include <malloc.h>
+#include <stdint.h>
 #include "ServeRSP.h"
 #include "ARMRegisters.h"
 #include "ROM.h"
 #include "gdbserver.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "ConditionalExecution.h"
+#include "StatusRegisters.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ITandHints.h"
+#include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+#include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
 
 /****************Initialize Winsock.****************/
 void winsockInit()
@@ -90,7 +127,8 @@ void main()
 {
     SOCKET sock;
 
-    initCoreRegister();
+    // initCoreRegister();
+    initializeSimulator();
     createROM();
     resetROM();
 
