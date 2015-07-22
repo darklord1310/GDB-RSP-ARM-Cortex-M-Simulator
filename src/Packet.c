@@ -138,13 +138,15 @@ uint64_t decodeEightByte(uint64_t byteData)
 
 int verifyChecksum(char *data)
 {
+    char *hashAddr;
     uint8_t chksum = 0, dataChksum = 0;
     int i, j;
 
     for(i = 1; data[i] != '#'; i++)
         chksum += data[i];
 
-    sscanf(&data[i+1], "%x", &dataChksum);
+    hashAddr = strstr(data, "#") + 1;
+    sscanf(hashAddr, "%x", &dataChksum);
 
     if(chksum != dataChksum)
     {
