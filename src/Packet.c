@@ -145,7 +145,7 @@ int verifyChecksum(char *data)
     for(i = 1; data[i] != '#'; i++)
         chksum += data[i];
 
-    chksum |= chksum & 0xff;
+    chksum = chksum & 0xff;
     hashAddr = strstr(data, "#") + 1;
     sscanf(hashAddr, "%2x", &dataChksum);
 
