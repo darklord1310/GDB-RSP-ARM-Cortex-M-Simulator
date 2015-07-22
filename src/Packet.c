@@ -140,7 +140,7 @@ int verifyChecksum(char *data)
 {
     char *hashAddr;
     uint8_t chksum = 0, dataChksum = 0;
-    int i, j;
+    int i;
 
     for(i = 1; data[i] != '#'; i++)
         chksum += data[i];
