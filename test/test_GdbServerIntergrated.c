@@ -30,8 +30,8 @@ void test_serveRSP_given_qSupported_query_packet_should_return_appropriate_respo
 
     reply = serveRSP(data);
 
-    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
-    TEST_ASSERT_EQUAL_STRING("$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", reply);
+    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
+    // TEST_ASSERT_EQUAL_STRING("$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", reply);
 
     free(reply);
 }
@@ -55,7 +55,7 @@ void test_serveRSP_given_qXfer_read_target_should_return_target_xml_description(
 void test_handleQueryPacket_given_qXfer_read_arm_m_profile_should_return_arm_m_profile_xml_description(void)
 {
     char data[] = "$qXfer:features:read:arm-m-profile.xml:0,fff#ee";
-    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#27", packet[1024] = "";
+    char *reply = NULL, dollarSign[] = "$", hashSign[] = "#47", packet[1024] = "";
 
     strcat(packet, dollarSign);
     strcat(packet, arm_m_profile);

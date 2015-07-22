@@ -94,15 +94,15 @@ void test_handleQueryPacket_given_qSupported_should_return_appropriate_response(
     char data[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
     char *reply = NULL;
 
-    // gdbCreateMsgPacket_ExpectAndReturn("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-",
-                                       // "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58");
-    gdbCreateMsgPacket_ExpectAndReturn("qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-",
-                                       "$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88");
+    gdbCreateMsgPacket_ExpectAndReturn("PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-",
+                                       "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58");
+    // gdbCreateMsgPacket_ExpectAndReturn("qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-",
+                                       // "$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88");
 
     reply = handleQueryPacket(data);
 
-    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", reply);
-    TEST_ASSERT_EQUAL_STRING("$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", reply);
+    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", reply);
+    // TEST_ASSERT_EQUAL_STRING("$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", reply);
 }
 
 void test_handleQueryPacket_given_qXfer_read_target_should_return_target_xml_description(void)
