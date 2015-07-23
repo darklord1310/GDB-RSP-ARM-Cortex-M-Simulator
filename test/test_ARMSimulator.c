@@ -79,10 +79,10 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
 
 /*
  * coreReg[PC]       = 0x08000000
- * ROM[0x10000]      = 0x43
- * ROM[0x10001]      = 0xf6
- * ROM[0x10002]      = 0xff
- * ROM[0x10003]      = 0x70
+ * ROM[0x10000]      = 0xf6
+ * ROM[0x10001]      = 0x43
+ * ROM[0x10002]      = 0x70
+ * ROM[0x10003]      = 0xff
  * 
  * Expect: retrievedValue = 0xf64370ff
  * 
@@ -91,10 +91,10 @@ void test_retrieveInstructionFromROM_given_32bits_instruction_and_ROM_value_as_a
 {
   createROM();
   coreReg[PC] = 0x08000000;
-  rom->address[0x10000].data = 0x43;
-  rom->address[0x10001].data = 0xf6;
-  rom->address[0x10002].data = 0xff;
-  rom->address[0x10003].data = 0x70;
+  rom->address[0x10000].data = 0xf6;
+  rom->address[0x10001].data = 0x43;
+  rom->address[0x10002].data = 0x70;
+  rom->address[0x10003].data = 0xff;
     
   uint32_t retrievedValue = retrieveInstructionFromROM();
   TEST_ASSERT_EQUAL(0xf64370ff, retrievedValue);
@@ -104,22 +104,22 @@ void test_retrieveInstructionFromROM_given_32bits_instruction_and_ROM_value_as_a
 
 /*
  * coreReg[PC]       = 0x08000000
- * ROM[0x10000]      = 0x14
- * ROM[0x10001]      = 0x44
- * ROM[0x10002]      = 0xc9
- * ROM[0x10003]      = 0x07
+ * ROM[0x10000]      = 0x44
+ * ROM[0x10001]      = 0x14
+ * ROM[0x10002]      = 0x07
+ * ROM[0x10003]      = 0xc9
  * 
- * Expect: retrievedValue = 0xf64370ff
- * 
+ * Expect: retrievedValue1 = 0x07c90000 
+ *         retrievedValue2 = 0x44140000
  */
 void test_retrieveInstructionFromROM_given_16bits_instruction_and_ROM_value_as_above_should_retrieve_correctly()
 {
   createROM();
   coreReg[PC] = 0x08000000;
-  rom->address[0x10000].data = 0x14;
-  rom->address[0x10001].data = 0x44;
-  rom->address[0x10002].data = 0xc9;
-  rom->address[0x10003].data = 0x07;
+  rom->address[0x10000].data = 0x44;
+  rom->address[0x10001].data = 0x14;
+  rom->address[0x10002].data = 0x07;
+  rom->address[0x10003].data = 0xc9;
   
   uint32_t retrievedValue = retrieveInstructionFromROM();
   TEST_ASSERT_EQUAL(0x44140000, retrievedValue);                  //read instruction 0x4414

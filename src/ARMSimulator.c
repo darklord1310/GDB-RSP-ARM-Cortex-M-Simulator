@@ -146,8 +146,8 @@ uint32_t retrieveInstructionFromROM()
     return instructionRetrieved;
   else
   { 
-    uint32_t lower16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+3) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+2) ].data  ;
-    uint32_t upper16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+1) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data  ;
+    uint32_t lower16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+2) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+3) ].data  ;
+    uint32_t upper16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+1) ].data  ;
     instructionRetrieved = (upper16bits << 16) | lower16bits;
     return instructionRetrieved;
   }
@@ -160,7 +160,6 @@ void armStep()
   uint32_t instruction;
   
   instruction = retrieveInstructionFromROM();                     //read the instruction from ROM
-  printf("instruction: %x\n", instruction);
   int check = is32or16instruction(instruction);                   //check the instruction is 16 or 32 bits
   
   if(check == INSTRUCTION16bits)                                  //execute 16 or 32 bits instruction
@@ -175,15 +174,6 @@ void armStep()
 }
 
 
-void main()
-{
-  for(i = 0; i < 3; i++)
-  {
-    armStep();  
-  }
-  
-  printRegister();
-}
 
 void printRegister()
 {
