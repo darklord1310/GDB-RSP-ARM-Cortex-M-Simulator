@@ -50,6 +50,7 @@
 void setUp(void)
 {
   initializeSimulator();
+  createROM();
 }
 
 void tearDown(void)
@@ -59,7 +60,7 @@ void tearDown(void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Literal
   
-//test ldr r0, [pc,#20]
+//test ldr r3, [pc,#32]
 /*
  * 
  * 
@@ -67,23 +68,20 @@ void tearDown(void)
  */
 void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r0_wth_0xdeadbeef(void)
 {
-  rom->address[ virtualMemToPhysicalMem(0x08000018) ].data = 0xbe;
-  rom->address[ virtualMemToPhysicalMem(0x08000019) ].data = 0xbe;
-  rom->address[ virtualMemToPhysicalMem(0x08000020) ].data = 0xad;
-  rom->address[ virtualMemToPhysicalMem(0x08000021) ].data = 0xde;
+  rom->address[ virtualMemToPhysicalMem(0x08000340) ].data = 0xbe;
+  rom->address[ virtualMemToPhysicalMem(0x08000341) ].data = 0xef;
+  rom->address[ virtualMemToPhysicalMem(0x08000342) ].data = 0xad;
+  rom->address[ virtualMemToPhysicalMem(0x08000343) ].data = 0xde;
   
-  coreReg[PC] = 0x08000016;
-  uint32_t instruction = 0x4a000000;
-  ARMSimulator(instruction);                  //ldr r0, [pc,#20]
+  coreReg[PC] = 0x0800031e;
+  uint32_t instruction = 0x4b080000;
+  ARMSimulator(instruction);                  //ldr r3, [pc,#32]
   
   TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[0]);
 }
   
 
-  
-  
-  
-  
+
   
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Immediate
