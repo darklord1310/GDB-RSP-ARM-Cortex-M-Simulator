@@ -1,4 +1,4 @@
-#include "LDRImmediate.h"
+#include "LDRLiteral.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -8,14 +8,16 @@
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
 #include "ROM.h"
+#include <stdio.h>
+#include "LDRImmediate.h"
 
 
-/*Load Register(Immediate) Encoding T1 
+/*Load Register(literal) Encoding T1 
  * 
-    LDR<c> <Rt>, [<Rn>{,#<imm5>}]
+    LDR<c> <Rt>,<label>
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |0  1  1   0  1|      imm5    |    Rn  |   Rt   |                unused               |
+  |0  1   0  0  1|   Rt   |          imm8         |               unused               |
 
   where:
               <c><q>            See Standard assembler syntax fields on page A6-7.
@@ -38,26 +40,16 @@
                                 omitted, meaning an offset of 0.
           
 */
-void LDRImmediateT1(uint32_t instruction)
+void LDRLiteralT1(uint32_t instruction)
 {
-  uint32_t imm5 = getBits(instruction,26,22);  
-  uint32_t Rn   = getBits(instruction,21,19);  
-  uint32_t Rt   = getBits(instruction,18,16);  
-  printf("Rn: %x\n", Rn);
+  uint32_t imm8 = getBits(instruction,23,16);  
+  uint32_t Rt   = getBits(instruction,26,24);  
   printf("Rt: %x\n", Rt);
-  printf("imm5: %x\n", imm5);
-  //uint32_t address = coreReg[Rn] + imm5;
-  //uint32_t wordLoaded = loadWordFromMemory(address);
-  //coreReg[Rt] = wordLoaded;
+  printf("imm8: %x\n", imm8);
   
-}
-
-
-uint32_t loadWordFromMemory(uint32_t address)
-{
-  uint32_t upper16bits = ( rom->address[ virtualMemToPhysicalMem(address+3) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(address+2) ].data;
-  uint32_t lower16bits = ( rom->address[ virtualMemToPhysicalMem(address+1) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(address) ].data;
-  
-  return (  (upper16bits << 16) | lower16bits );
+  uint32_t address = coreReg[PC] + imm8;
+  printf("address: %x\n", address);
+  uint32_t wordLoaded = loadWordFromMemory(address);
+  coreReg[Rt] = wordLoaded;
   
 }

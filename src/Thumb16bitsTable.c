@@ -174,6 +174,9 @@ void initThumb16bitsOpcode1011XX()
 void initThumb16LoadStoreSingleData()
 {
   Thumb16LoadStoreSingleData[0b0101000] = STRRegisterT1;
-    
-  
+  Thumb16LoadStoreSingleData[0b0110100] = LDRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110101] = LDRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110110] = LDRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110111] = LDRImmediateT1;
+
 }

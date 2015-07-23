@@ -14,7 +14,7 @@ void initializeSimulator()
 {
   initCoreRegister();
   initializeAllTable();
-  
+  createROM();
 }
 
 void initializeAllTable()
@@ -109,6 +109,16 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
     opcode2 = getBits(instruction,25,22);
     (*Thumb16Opcode010001[opcode2])(instruction);
   }
+  else if(opcode1 == 0b010010 || opcode1 == 0b010011)
+  {
+    LDRLiteralT1(instruction);
+  }
+  else if(opcode1 < 0b101000)
+  {
+    printf("here");
+    opcode2 = getBits(instruction,31,25);
+    (*Thumb16LoadStoreSingleData[opcode2])(instruction); 
+  }
   else if(opcode1 < 48)
   {
     opcode2 = getBits(instruction,27,21);
@@ -146,7 +156,7 @@ uint32_t retrieveInstructionFromROM()
     return instructionRetrieved;
   else
   { 
-    uint32_t lower16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+2) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+3) ].data  ;
+    uint32_t lower16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]+3) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+2) ].data  ;
     uint32_t upper16bits =  ( rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(coreReg[PC]+1) ].data  ;
     instructionRetrieved = (upper16bits << 16) | lower16bits;
     return instructionRetrieved;
