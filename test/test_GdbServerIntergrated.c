@@ -10,7 +10,7 @@
 #include "getMask.h"
 #include "CException.h"
 #include "ErrorSignal.h"
-#include "ARMSimulator.h"
+#include "mock_ARMSimulator.h"
 #include "ConditionalExecution.h"
 #include "StatusRegisters.h"
 #include "Thumb16bitsTable.h"
@@ -642,6 +642,28 @@ void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
 
     destroyROM();
     free(reply);
+}
+
+void test_serveRSP_given_following_data_should_step_through_the_instruction(void)
+{
+    char data[] = "$s#73";
+    char *reply = NULL;
+
+    armStep_Expect();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+}
+
+void test_serveRSP_given_following_data_should_response_S05(void)
+{
+    char data[] = "$?#3f";
+    char *reply = NULL;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
 }
 /*
 void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
