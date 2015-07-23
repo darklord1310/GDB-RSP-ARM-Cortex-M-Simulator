@@ -47,6 +47,8 @@
 #include "SBCRegister.h"
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
+#include "LDRImmediate.h"
+#include "LDRLiteral.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -307,7 +309,7 @@ void test_serveRSP_given_data_with_p_neg_1_packet_should_throw_GDB_SIGNAL_0(void
     TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
 }
 
-void test_serveRSP_given_data_with_g_packet_should_return_all_reg_val(void)
+void xtest_serveRSP_given_data_with_g_packet_should_return_all_reg_val(void)
 {
     char data[] = "$g#67";
     char *reply = NULL;
@@ -320,6 +322,23 @@ void test_serveRSP_given_data_with_g_packet_should_return_all_reg_val(void)
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001#a5", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_should_return_all_reg_val_including_fpu_reg(void)
+{
+    char data[] = "$g#67";
+    char *reply = NULL;
+    int i;
+
+    initCoreRegister();
+    coreReg[2] = 0x12345678;
+    fpuDoublePrecision[1] = 0x1234567887654321;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000021436587785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000#6d", reply);
 
     free(reply);
 }
@@ -422,6 +441,208 @@ void test_serveRSP_given_data_with_G_packet_should_should_write_value_to_all_reg
 
     free(reply);
 }
+
+void test_serveRSPr_given_following_data_should_write_value_to_all_registers_including_fpu_reg(void)
+{
+    char data[] = "$G00000000111111118cff0120333333334444444455555555666666667777777788888888500b0008aaaaaaaabbbbbbbbccccccccddddddddeeeeeeeeffffffff0000000100000000000000000101010101010101020202020202020203030303030303030404040404040404050505050505050506060606060606060707070707070707080808080808080809090909090909090a0a0a0a0a0a0a0a0b0b0b0b0b0b0b0b0c0c0c0c0c0c0c0c0d0d0d0d0d0d0d0d0e0e0e0e0e0e0e0e0f0f0f0f0f0f0f0fabababab#85";
+    char *reply = NULL;
+
+    initCoreRegister();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x00000000, coreReg[0]);
+    TEST_ASSERT_EQUAL(0x11111111, coreReg[1]);
+    TEST_ASSERT_EQUAL(0x2001ff8c, coreReg[2]);
+    TEST_ASSERT_EQUAL(0x33333333, coreReg[3]);
+    TEST_ASSERT_EQUAL(0x44444444, coreReg[4]);
+    TEST_ASSERT_EQUAL(0x55555555, coreReg[5]);
+    TEST_ASSERT_EQUAL(0x66666666, coreReg[6]);
+    TEST_ASSERT_EQUAL(0x77777777, coreReg[7]);
+    TEST_ASSERT_EQUAL(0x88888888, coreReg[8]);
+    TEST_ASSERT_EQUAL(0x08000b50, coreReg[9]);
+    TEST_ASSERT_EQUAL(0xaaaaaaaa, coreReg[10]);
+    TEST_ASSERT_EQUAL(0xbbbbbbbb, coreReg[11]);
+    TEST_ASSERT_EQUAL(0xcccccccc, coreReg[12]);
+    TEST_ASSERT_EQUAL(0xdddddddd, coreReg[SP]);
+    TEST_ASSERT_EQUAL(0xeeeeeeee, coreReg[LR]);
+    TEST_ASSERT_EQUAL(0xffffffff, coreReg[PC]);
+    TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+    TEST_ASSERT_EQUAL(0xabababab, coreReg[fPSCR]);
+    TEST_ASSERT_EQUAL(0x0000000000000000, fpuDoublePrecision[0]);
+    TEST_ASSERT_EQUAL(0x0101010101010101, fpuDoublePrecision[1]);
+    TEST_ASSERT_EQUAL(0x0202020202020202, fpuDoublePrecision[2]);
+    TEST_ASSERT_EQUAL(0x0303030303030303, fpuDoublePrecision[3]);
+    TEST_ASSERT_EQUAL(0x0404040404040404, fpuDoublePrecision[4]);
+    TEST_ASSERT_EQUAL(0x0505050505050505, fpuDoublePrecision[5]);
+    TEST_ASSERT_EQUAL(0x0606060606060606, fpuDoublePrecision[6]);
+    TEST_ASSERT_EQUAL(0x0707070707070707, fpuDoublePrecision[7]);
+    TEST_ASSERT_EQUAL(0x0808080808080808, fpuDoublePrecision[8]);
+    TEST_ASSERT_EQUAL(0x0909090909090909, fpuDoublePrecision[9]);
+    TEST_ASSERT_EQUAL(0x0a0a0a0a0a0a0a0a, fpuDoublePrecision[10]);
+    TEST_ASSERT_EQUAL(0x0b0b0b0b0b0b0b0b, fpuDoublePrecision[11]);
+    TEST_ASSERT_EQUAL(0x0c0c0c0c0c0c0c0c, fpuDoublePrecision[12]);
+    TEST_ASSERT_EQUAL(0x0d0d0d0d0d0d0d0d, fpuDoublePrecision[13]);
+    TEST_ASSERT_EQUAL(0x0e0e0e0e0e0e0e0e, fpuDoublePrecision[14]);
+    TEST_ASSERT_EQUAL(0x0f0f0f0f0f0f0f0f, fpuDoublePrecision[15]);
+    TEST_ASSERT_EQUAL(0, fpuSinglePrecision[0]);
+    TEST_ASSERT_EQUAL(0, fpuSinglePrecision[1]);
+    TEST_ASSERT_EQUAL(0x01010101, fpuSinglePrecision[2]);
+    TEST_ASSERT_EQUAL(0x01010101, fpuSinglePrecision[3]);
+    TEST_ASSERT_EQUAL(0x02020202, fpuSinglePrecision[4]);
+    TEST_ASSERT_EQUAL(0x02020202, fpuSinglePrecision[5]);
+    TEST_ASSERT_EQUAL(0x03030303, fpuSinglePrecision[6]);
+    TEST_ASSERT_EQUAL(0x03030303, fpuSinglePrecision[7]);
+    TEST_ASSERT_EQUAL(0x04040404, fpuSinglePrecision[8]);
+    TEST_ASSERT_EQUAL(0x04040404, fpuSinglePrecision[9]);
+    TEST_ASSERT_EQUAL(0x05050505, fpuSinglePrecision[10]);
+    TEST_ASSERT_EQUAL(0x05050505, fpuSinglePrecision[11]);
+    TEST_ASSERT_EQUAL(0x06060606, fpuSinglePrecision[12]);
+    TEST_ASSERT_EQUAL(0x06060606, fpuSinglePrecision[13]);
+    TEST_ASSERT_EQUAL(0x07070707, fpuSinglePrecision[14]);
+    TEST_ASSERT_EQUAL(0x07070707, fpuSinglePrecision[15]);
+    TEST_ASSERT_EQUAL(0x08080808, fpuSinglePrecision[16]);
+    TEST_ASSERT_EQUAL(0x08080808, fpuSinglePrecision[17]);
+    TEST_ASSERT_EQUAL(0x09090909, fpuSinglePrecision[18]);
+    TEST_ASSERT_EQUAL(0x09090909, fpuSinglePrecision[19]);
+    TEST_ASSERT_EQUAL(0x0a0a0a0a, fpuSinglePrecision[20]);
+    TEST_ASSERT_EQUAL(0x0a0a0a0a, fpuSinglePrecision[21]);
+    TEST_ASSERT_EQUAL(0x0b0b0b0b, fpuSinglePrecision[22]);
+    TEST_ASSERT_EQUAL(0x0b0b0b0b, fpuSinglePrecision[23]);
+    TEST_ASSERT_EQUAL(0x0c0c0c0c, fpuSinglePrecision[24]);
+    TEST_ASSERT_EQUAL(0x0c0c0c0c, fpuSinglePrecision[25]);
+    TEST_ASSERT_EQUAL(0x0d0d0d0d, fpuSinglePrecision[26]);
+    TEST_ASSERT_EQUAL(0x0d0d0d0d, fpuSinglePrecision[27]);
+    TEST_ASSERT_EQUAL(0x0e0e0e0e, fpuSinglePrecision[28]);
+    TEST_ASSERT_EQUAL(0x0e0e0e0e, fpuSinglePrecision[29]);
+    TEST_ASSERT_EQUAL(0x0f0f0f0f, fpuSinglePrecision[30]);
+    TEST_ASSERT_EQUAL(0x0f0f0f0f, fpuSinglePrecision[31]);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    free(reply);
+}
+
+void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
+{
+    char data[] = "$m0,2#fb";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[0x0].data = 0x20;
+    rom->address[0x1].data = 0x3f;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$3f20#fb", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
+{
+    char data[] = "$m80009d6,4#68";
+    char *reply = NULL;
+
+    createROM();
+
+    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0xf6;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x43;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0x70;
+    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0xff;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$43f6ff70#36", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$m0,-2#28";
+    char *reply = NULL;
+
+    createROM();
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,2:0010#38";
+    char *reply = NULL;
+
+    createROM();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_addr(void)
+{
+    char data[] = "$M8000d06,4:00100020#fc";
+    char *reply = NULL;
+
+    createROM();
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0x20, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
+    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    destroyROM();
+    free(reply);
+}
+
+void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,-2:4ff0#d4";
+    char *reply = NULL;
+
+    createROM();
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+
+    destroyROM();
+    free(reply);
+}
 /*
 void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
 {
@@ -487,29 +708,6 @@ void test_serveRSP_given_m80009d6_and_10_should_retrieve_memory_content_start_fr
     free(reply);
 }
 
-void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
-{
-    CEXCEPTION_T errorSignal;
-    char data[] = "$m0,-2#28";
-    char *reply = NULL;
-
-    createROM();
-
-    Try
-	{
-        reply = serveRSP(data);
-    }
-    Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
-
-    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
-
-    destroyROM();
-}
-
 void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
 {
     char data[] = "$M8000d06,2:4a4d#a4";
@@ -570,30 +768,6 @@ void test_serveRSP_given_M8000d06_and_10_should_write_10_byte_data_in_the_memory
     destroyROM();
 }
 
-void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
-{
-    CEXCEPTION_T errorSignal;
-    char data[] = "$M8000d06,-2:4ff0#d4";
-    char *reply = NULL;
-
-    createROM();
-
-    Try
-	{
-        reply = serveRSP(data);
-    }
-    Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
-
-    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
-
-    destroyROM();
-} */
-
-/*
 void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
 {
     char data[] = "$s#73";

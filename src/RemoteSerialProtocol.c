@@ -234,19 +234,19 @@ char *readAllRegister()
     }
 
     //fpu register
-    /* for(i = 0; i < NUM_OF_FPUD_Register; i++)
+    for(i = 0; i < NUM_OF_FPUD_Register; i++)
     {
         decodeVal = decodeEightByte(fpuDoublePrecision[i]);
         asciiString = createdHexToString(decodeVal, 8);
         strcat(fullRegValue, asciiString);
         destroyHexToString(asciiString);
-    } */
+    }
 
     //fpu status register
-    // decodeVal = decodeFourByte(coreReg[fPSCR]);
-    // asciiString = createdHexToString(decodeVal, 4);
-    // strcat(fullRegValue, asciiString);
-    // destroyHexToString(asciiString);
+    decodeVal = decodeFourByte(coreReg[fPSCR]);
+    asciiString = createdHexToString(decodeVal, 4);
+    strcat(fullRegValue, asciiString);
+    destroyHexToString(asciiString);
 
     packet = gdbCreateMsgPacket(fullRegValue);
 
@@ -321,28 +321,35 @@ char *writeAllRegister(char *data)
     }
 
     // printf("j: %d\n", j);
-    printf("fpuRegHex: %s\n", fpuRegHex);
+    // printf("fpuRegHex: %s\n", fpuRegHex);
 
     //fpu register
-    /* for(i = 0; i < NUM_OF_FPUD_Register; i++)
+    if(fpuRegHex[0] != '#')
     {
-        sscanf(fpuRegHex, "%8x", &temp);
-        printf("fpu val %d: %x\n", i, temp);
-        fpuRegHex += 8;
-        sscanf(fpuRegHex, "%8x", &regValue);
-        printf("fpu val %d: %x\n", i, regValue);
-        fpuRegHex += 8;
-        regValue |= (temp << 32);
-        printf("fpu val %d: %llx\n", i, regValue);
-        decodeVal = decodeEightByte(regValue);
-        fpuDoublePrecision[i] = decodeVal;
-    } */
+        for(i = 0; i < NUM_OF_FPUD_Register; i++)
+        {
+            regValue = 0;
+            temp = 0;
+            sscanf(fpuRegHex, "%8x", &temp);
+            // printf("fpu val %d: %x\n", i, temp);
+            fpuRegHex += 8;
+            sscanf(fpuRegHex, "%8x", &regValue);
+            // printf("fpu val %d: %x\n", i, regValue);
+            fpuRegHex += 8;
+            regValue |= (temp << 32);
+            // printf("fpu val %d: %llx\n", i, regValue);
+            decodeVal = decodeEightByte(regValue);
+            writeDoublePrecision(i, decodeVal);
+            writeSinglePrecision(i * 2, decodeVal & 0xffffffff);      //lower 32-bits
+            writeSinglePrecision(i * 2 + 1, decodeVal >> 32);         //upper 32-bits
+        }
 
-    //fpu status register
-    /* sscanf(fpuStatusHex, "%8x", &regValue);
-    printf("fpu val 16: %x\n", regValue);
-    decodeVal = decodeFourByte(regValue);
-    coreReg[fPSCR] = decodeVal; */
+        //fpu status register
+        sscanf(fpuStatusHex, "%8x", &regValue);
+        // printf("fpu val 16: %x\n", regValue);
+        decodeVal = decodeFourByte(regValue);
+        coreReg[fPSCR] = decodeVal;
+    }
 
     return gdbCreateMsgPacket("OK");        //Write successfully
 }
