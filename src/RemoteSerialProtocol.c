@@ -372,7 +372,7 @@ char *writeAllRegister(char *data)
  */
 char *readMemory(char *data)
 {
-    char *packet = NULL, fullMemContent[1024] = "", temp[1024] = "", temp2[1024] = "", *asciiString;
+    char *packet = NULL, fullMemContent[1024] = "", *asciiString = NULL;
     char *comma, *dummy;      //dummy ==> sscanf the "$m" from data
                               //comma ==> sscanf the ',' from data
     unsigned int addr, memoryContent = 0;
@@ -389,20 +389,21 @@ char *readMemory(char *data)
     {
         memoryContent = memoryBlock[virtualMemToPhysicalMem(addr)];
         asciiString = createdHexToString(memoryContent, 1);
-        // printf("memoryContent: %x\n", memoryContent);
-        // printf("addr: %x\n", addr);
+        /* printf("memoryContent: %x\n", memoryContent);
+        printf("addr: %x\n", addr);
         strcpy(temp, asciiString);
-        // printf("temp: %s\n", temp);
+        printf("temp: %s\n", temp);
         strcat(temp, temp2);
         strcpy(temp2, temp);
-        // printf("temp2: %s\n", temp2);
+        printf("temp2: %s\n", temp2); */
+        strcat(fullMemContent, asciiString);
         destroyHexToString(asciiString);
 
-        if(i % 2 == 0)
+        /* if(i % 2 == 0)
         {
             strcat(fullMemContent, temp2);
             strcpy(temp2, "");
-        }
+        } */
 
         addr++;
     }

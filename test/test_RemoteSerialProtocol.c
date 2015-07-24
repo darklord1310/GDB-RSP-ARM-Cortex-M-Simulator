@@ -744,11 +744,11 @@ void xtest_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0
     destroyHexToString_Expect("20");
     createdHexToString_ExpectAndReturn(0x3f, 1, "3f");
     destroyHexToString_Expect("3f");
-    gdbCreateMsgPacket_ExpectAndReturn("3f20", "$3f20#fb");
+    gdbCreateMsgPacket_ExpectAndReturn("203f", "$203f#fb");
 
     reply = readMemory(data);
 
-    TEST_ASSERT_EQUAL_STRING("$3f20#fb", reply);
+    TEST_ASSERT_EQUAL_STRING("$203f#fb", reply);
 }
 
 void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
@@ -769,11 +769,11 @@ void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_f
     destroyHexToString_Expect("70");
     createdHexToString_ExpectAndReturn(0xff, 1, "ff");
     destroyHexToString_Expect("ff");
-    gdbCreateMsgPacket_ExpectAndReturn("43f6ff70", "$43f6ff70#36");
+    gdbCreateMsgPacket_ExpectAndReturn("f64370ff", "$f64370ff#36");
 
     reply = readMemory(data);
 
-    TEST_ASSERT_EQUAL_STRING("$43f6ff70#36", reply);
+    TEST_ASSERT_EQUAL_STRING("$f64370ff#36", reply);
 }
 
 void test_readMemory_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)

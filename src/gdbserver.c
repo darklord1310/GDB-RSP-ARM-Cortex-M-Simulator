@@ -130,10 +130,7 @@ void main()
 {
     SOCKET sock;
 
-    // initCoreRegister();
     initializeSimulator();
-    // createROM();
-    // resetROM();
 
     winsockInit();
     createSocket(&sock);
@@ -203,8 +200,6 @@ void main()
 
         free(reply);
     }
-
-    destroyROM();
 
     /****************Close our socket entirely****************/
 	closesocket(sock);

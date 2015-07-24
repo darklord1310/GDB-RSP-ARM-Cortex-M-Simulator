@@ -494,7 +494,7 @@ void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$3f20#fb", reply);
+    TEST_ASSERT_EQUAL_STRING("$203f#fb", reply);
 
     free(reply);
 }
@@ -511,7 +511,7 @@ void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_fro
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$43f6ff70#36", reply);
+    TEST_ASSERT_EQUAL_STRING("$f64370ff#36", reply);
     
     free(reply);
 }
