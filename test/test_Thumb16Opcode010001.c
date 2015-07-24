@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"
@@ -42,7 +43,8 @@
 #include "STRRegister.h"
 #include "LDRImmediate.h"
 #include "MemoryBlock.h"
-
+#include "LDRLiteral.h"
+#include "ErrorSignal.h"
 
 void setUp(void)
 {
@@ -58,14 +60,116 @@ void tearDown(void)
   //Branch Exchange
 
 // test BX r0
-void test_BX_given_r0_0x80000000_should_get_PC_is_0x80000000_xPSR_unchanged(void)
+void test_BX_given_r0_0x80000001_should_get_PC_is_0x80000001_xPSR_unchanged(void)
 {
+  CEXCEPTION_T err;
+  uint32_t instruction = 0x47000000;
+  
+  coreReg[0] = 0x80000001;
+  
+  Try
+  {
+    ARMSimulator(instruction);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
+  
+  
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+// test BX r0
+void test_BX_given_r0_0x0800013_should_get_PC_is_0x08000012_xPSR_unchanged(void)
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0x47000000;
+  
+  coreReg[0] = 0x08000013;
+  
+  Try
+  {
+    ARMSimulator(instruction);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
+
+  TEST_ASSERT_EQUAL(0x08000012, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+//test if inside IT block
+void test_BX_if_inside_IT_block_should_throw_err(void)
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0x47000000;
+  
+  coreReg[0] = 0x80000003;
+  
+  Try
+  {
+    ARMSimulator(0xbf010000);      //ITTTT EQ 
+    ARMSimulator(instruction);
+    TEST_FAIL_MESSAGE("Not expect to be pass\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(UsageFault, err);
+  }
+  
+  TEST_ASSERT_EQUAL(0x00, coreReg[PC]);                       //PC should not change
+}
+
+
+
+//test if bit 0 is not 1
+void test_BX_if_the_branch_register_bit_0_is_not_1_should_throw_err(void)
+{
+  CEXCEPTION_T err;
   uint32_t instruction = 0x47000000;
   
   coreReg[0] = 0x80000000;
-  ARMSimulator(instruction);
   
-  TEST_ASSERT_EQUAL(0x80000000, coreReg[PC]);
+  Try
+  {
+    ARMSimulator(instruction);
+    TEST_FAIL_MESSAGE("Not expect to be pass\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(UsageFault, err);
+  }
+  
+  TEST_ASSERT_EQUAL(0x00, coreReg[PC]);                       //PC should not change
+}
+
+
+// test last instruction in IT block
+void test_BX_when_it_is_last_in_IT_block_given_r0_0x0800013_should_get_PC_is_0x08000012_xPSR_unchanged(void)
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0x47000000;
+  
+  coreReg[0] = 0x08000013;
+  
+  Try
+  {
+    ARMSimulator(0xbfe40000);                   //ITT AL
+    ARMSimulator(0x07c90000);                   //LSLAL r1,#31
+    ARMSimulator(instruction);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
+
+  TEST_ASSERT_EQUAL(0x08000012, coreReg[PC]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
@@ -75,17 +179,16 @@ void test_BX_given_r0_0x80000000_should_get_PC_is_0x80000000_xPSR_unchanged(void
   //Branch with Link and Exchange
 
 // test BLX r0
-void test_BLXRegister_given_r0_0x80000000_should_get_PC_is_0x80000000_LR_is_0x80000013_xPSR_unchanged(void)
+void test_BLXRegister_given_r0_0x080004a5_should_get_PC_is_0x080004a4_LR_is_0x08000331_xPSR_unchanged(void)
 {
   uint32_t instruction = 0x47800000;
   
-  coreReg[0] = 0x80000000;
-  coreReg[PC] = 0x08000010;
+  coreReg[0] = 0x080004a5;
+  coreReg[PC] = 0x0800032e;
   ARMSimulator(instruction);
   
-  TEST_ASSERT_EQUAL(0x80000000, coreReg[PC]);
-  printf("LR: %x\n", coreReg[LR]);
-  TEST_ASSERT_EQUAL(0x80000013, coreReg[LR]);  
+  TEST_ASSERT_EQUAL(0x080004a4, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x08000331, coreReg[LR]);  
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 

@@ -14,7 +14,6 @@ void initializeSimulator()
 {
   initCoreRegister();
   initializeAllTable();
-  // createROM();
   resetMemoryBlock();
 }
 

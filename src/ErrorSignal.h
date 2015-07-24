@@ -14,4 +14,17 @@ typedef enum {
     GDB_SIGNAL_KILL     //Killed
 } ErrorSignal;
 
+typedef enum {
+  Reset,      
+  NMI,     
+  HardFault,    
+  MemManage,    
+  BusFault,     
+  UsageFault,    
+  DebugMonitor,    
+  SVCall,    
+  Interrupt,  
+} armException;
+
+
 #endif // ErrorSignal_H

@@ -28,8 +28,11 @@ where:
 void BLXRegister(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction,22,19);
-  uint32_t next_instr_addr = coreReg[PC] - 2;
-  coreReg[LR] = ( getBits(next_instr_addr, 31,1) << 1) | 1;
+  
+  coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
+  uint32_t next_instr_addr = coreReg[PC] + 2;
+  coreReg[LR] = ( getBits(next_instr_addr, 31,1) << 1) | 1;     //change the bit 0 to be 1 because when return to function call by calling bx lr
+                                                                //the bx instruction must get the value which the bit 0 is 1
   coreReg[PC] = coreReg[Rm];
 }
 

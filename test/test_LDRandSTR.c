@@ -50,6 +50,7 @@
 void setUp(void)
 {
   initializeSimulator();
+  resetMemoryBlock();
 }
 
 void tearDown(void)
@@ -59,7 +60,7 @@ void tearDown(void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Literal
   
-//test ldr r0, [pc,#20]
+//test ldr r3, [pc,#32]
 /*
  * 
  * 
@@ -72,18 +73,15 @@ void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r0_wth_0xdeadbeef(vo
   memoryBlock[ virtualMemToPhysicalMem(0x08000020) ] = 0xad;
   memoryBlock[ virtualMemToPhysicalMem(0x08000021) ] = 0xde;
   
-  coreReg[PC] = 0x08000016;
-  uint32_t instruction = 0x4a000000;
-  ARMSimulator(instruction);                  //ldr r0, [pc,#20]
+  coreReg[PC] = 0x0800031e;
+  uint32_t instruction = 0x4b080000;
+  ARMSimulator(instruction);                  //ldr r3, [pc,#32]
   
   TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[0]);
 }
   
 
-  
-  
-  
-  
+
   
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Immediate
