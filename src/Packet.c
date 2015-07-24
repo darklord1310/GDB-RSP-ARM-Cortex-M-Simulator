@@ -142,6 +142,9 @@ int verifyChecksum(char *data)
     uint32_t chksum = 0, dataChksum = 0;
     int i;
 
+    if(data[0] != '$')
+        return 0;
+
     for(i = 1; data[i] != '#'; i++)
         chksum += data[i];
 

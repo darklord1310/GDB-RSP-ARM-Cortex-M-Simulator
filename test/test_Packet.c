@@ -128,6 +128,13 @@ void test_verifyChecksum_given_data_packet_should_return_0_if_checksum_incorect(
     TEST_ASSERT_EQUAL(0, verifyChecksum(data));
 }
 
+void test_verifyChecksum_given_data_packet_should_return_0_if_packet_is_incorect(void)
+{
+    char data[] = "qL1160000000000000000#55";
+
+    TEST_ASSERT_EQUAL(0, verifyChecksum(data));
+}
+
 void test_verifyChecksum_given_data_packet_should_return_1_if_checksum_corect(void)
 {
     char data[] = "$qL1160000000000000000#55";

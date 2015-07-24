@@ -6,11 +6,6 @@
 #include "RemoteSerialProtocol.h"
 #include "CException.h"
 #include "ErrorSignal.h"
-// #include "ARMSimulator.h"
-// #include "StatusRegisters.h"
-// #include "ARMRegisters.h"
-// #include "Thumb16bitsTable.h"
-// #include "ConditionalExecution.h"
 
 char *serveRSP(char *data)
 {
@@ -34,8 +29,6 @@ char *serveRSP(char *data)
                 break;
             case 's':   /* Step */
                 packet = step(data);
-                // packet = gdbCreateMsgPacket("S05");
-                // armStep();
                 break;
             case 'g':   /* Read all register */
                 packet = readAllRegister(data);

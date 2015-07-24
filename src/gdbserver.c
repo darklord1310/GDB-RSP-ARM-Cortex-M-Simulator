@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdint.h>
+#include <string.h>
 #include "ServeRSP.h"
 #include "ARMRegisters.h"
 #include "ROM.h"
@@ -43,6 +44,8 @@
 #include "SBCRegister.h"
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
+#include "State.h"
+#include "stateRSP.h"
 
 /****************Initialize Winsock.****************/
 void winsockInit()
@@ -143,50 +146,63 @@ void main()
     int bytesRecv = SOCKET_ERROR;
     char *reply = NULL;
     char recvbuf[0x3fff] = "";
+    State state = INITIAL;
 
-    while(recvbuf[1] != 'k')
-    {
+    // while(recvbuf[1] != 'k')
+    // {
         /*
          *  Recv ACK
          */
-        bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
+        // bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
 
         /*
          *  Response ACK
          */
-        bytesSent = send( sock, "+", strlen("+"), 0 );
+        // bytesSent = send( sock, "+", strlen("+"), 0 );
 
         /*
          *  Recv packet
          */
+        /* bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
+        printf( "\nBytes Recv: %ld\n", bytesRecv );
+        recvbuf[bytesRecv] = '\0';
+        printf( "recvbuf: %s\n", recvbuf );
+
+        reply = serveRSP(recvbuf); */
+
+        /*
+         *  Response packet
+         */
+        /* bytesSent = send( sock, reply, strlen(reply), 0 );
+        printf( "\nBytes Sent: %ld\n", bytesSent );
+        printf( "sendbuf: %s\n", reply );
+
+        free(reply);
+    } */
+
+    while(1)
+    {
         bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
         printf( "\nBytes Recv: %ld\n", bytesRecv );
         recvbuf[bytesRecv] = '\0';
         printf( "recvbuf: %s\n", recvbuf );
 
-        reply = serveRSP(recvbuf);
+        // while(state == ACK || state == NACK)
+        do {
+            reply = rsp_state(&state, recvbuf);
+        }while(state == ACK || state == NACK || state == KILL);
 
-        /*
-         *  Response packet
-         */
+        printf("reply: %s\n", reply);
         bytesSent = send( sock, reply, strlen(reply), 0 );
-        printf( "\nBytes Sent: %ld\n", bytesSent );
-        printf( "sendbuf: %s\n", reply );
+
+        if(!strcmp("k", reply))
+        {
+            free(reply);
+            break;
+        }
 
         free(reply);
     }
-
-    // int i;
-    // uint32_t addr = 0x08000480, content = 0;
-    // for(i = 0; i < 128; i++)
-    // {
-        // content = rom->address[virtualMemToPhysicalMem(addr)].data << 24;
-        // content |= rom->address[virtualMemToPhysicalMem(addr + 1)].data << 16;
-        // content |= rom->address[virtualMemToPhysicalMem(addr + 2)].data << 8;
-        // content |= rom->address[virtualMemToPhysicalMem(addr + 3)].data;
-        // printf("content: %x\n", content);
-        // addr += 4;
-    // }
 
     destroyROM();
 

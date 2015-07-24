@@ -1,8 +1,8 @@
 #!/bin/bash
 
-gcc gdbserver.c ServeRSP.c RemoteSerialProtocol.c Packet.c ARMRegisters.c ROM.c getAndSetBits.c getMask.c CException.c ARMSimulator.c \
+gcc gdbserver.c stateRSP.c ServeRSP.c RemoteSerialProtocol.c Packet.c ARMRegisters.c ROM.c getAndSetBits.c getMask.c CException.c ARMSimulator.c \
     ConditionalExecution.c StatusRegisters.c Thumb16bitsTable.c LSLImmediate.c LSRImmediate.c MOVRegister.c ASRImmediate.c \
     MOVImmediate.c ModifiedImmediateConstant.c CMPImmediate.c ADDImmediate.c SUBImmediate.c ADDRegister.c SUBRegister.c \
     ADDSPRegister.c ITandHints.c ANDRegister.c LSLRegister.c LSRRegister.c ASRRegister.c CMPRegister.c CMNRegister.c EORRegister.c \
     ORRRegister.c RORRegister.c MVNRegister.c BICRegister.c ADCRegister.c BX.c BLXRegister.c MULRegister.c TSTRegister.c \
-    RSBImmediate.c SBCRegister.c UnconditionalAndConditionalBranch.c STRRegister.c -o Winsocks.exe -lws2_32
+    RSBImmediate.c SBCRegister.c UnconditionalAndConditionalBranch.c STRRegister.c LDRImmediate.c LDRLiteral.c -o Winsocks.exe -lws2_32
