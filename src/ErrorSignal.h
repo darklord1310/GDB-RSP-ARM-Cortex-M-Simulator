@@ -14,8 +14,6 @@ typedef enum {
     GDB_SIGNAL_KILL     //Killed
 } ErrorSignal;
 
-
-
 typedef enum {
   Reset,      
   NMI,     

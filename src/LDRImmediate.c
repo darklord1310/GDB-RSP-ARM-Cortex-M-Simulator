@@ -7,7 +7,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 
 
 /*Load Register(Immediate) Encoding T1 
@@ -55,8 +55,8 @@ void LDRImmediateT1(uint32_t instruction)
 
 uint32_t loadWordFromMemory(uint32_t address)
 {
-  uint32_t upper16bits = ( rom->address[ virtualMemToPhysicalMem(address+3) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(address+2) ].data;
-  uint32_t lower16bits = ( rom->address[ virtualMemToPhysicalMem(address+1) ].data << 8 ) | rom->address[ virtualMemToPhysicalMem(address) ].data;
+  uint32_t upper16bits = ( memoryBlock[ virtualMemToPhysicalMem(address+3) ] << 8 ) | memoryBlock[ virtualMemToPhysicalMem(address+2) ];
+  uint32_t lower16bits = ( memoryBlock[ virtualMemToPhysicalMem(address+1) ] << 8 ) | memoryBlock[ virtualMemToPhysicalMem(address) ];
   
   return (  (upper16bits << 16) | lower16bits );
   

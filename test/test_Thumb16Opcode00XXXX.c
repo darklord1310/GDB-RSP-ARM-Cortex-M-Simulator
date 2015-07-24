@@ -44,7 +44,7 @@
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
 #include "LDRImmediate.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 
 void setUp(void)
 {

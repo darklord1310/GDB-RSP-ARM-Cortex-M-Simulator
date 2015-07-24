@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 
 void setUp(void)
 {
@@ -8,8 +8,7 @@ void setUp(void)
 void tearDown(void)
 {
 }
-
-
+/*
 void test_initROM_should_initialize_the_ROM_properly()
 {
     createROM();
@@ -37,18 +36,31 @@ void test_resetROM_should_reset_all_the_ROM_data_to_0(void)
         TEST_ASSERT_EQUAL(0, rom->address[i].data);
 
     destroyROM();
+} */
+
+void test_resetMemoryBlock_should_reset_all_the_memory_data_to_0(void)
+{
+    int i;
+
+    //write some value into the memory block
+    memoryBlock[10000] = 0x57;
+
+    resetMemoryBlock();
+
+    for(i = 0; i < sizeof(memoryBlock); i++)
+        TEST_ASSERT_EQUAL(0, memoryBlock[i]);
 }
 
 void test_virtualMemToPhysicalMem_given_0x8000000_should_convert_the_mem_addr_into_physical_mem_addr(void)
 {
     int i;
-    uint32_t phyMemAddr, virtMemAddr = 0x8001000;
+    uint32_t phyMemAddr, virtMemAddr = 0x80009d7;
 
     phyMemAddr = virtualMemToPhysicalMem(virtMemAddr);
 
-    TEST_ASSERT_EQUAL(0x11000, phyMemAddr);
+    TEST_ASSERT_EQUAL(0x9d7, phyMemAddr);
 }
- 
+
 void test_virtualMemToPhysicalMem_given_0x0_should_convert_the_mem_addr_into_physical_mem_addr(void)
 {
     int i;
@@ -57,16 +69,6 @@ void test_virtualMemToPhysicalMem_given_0x0_should_convert_the_mem_addr_into_phy
     phyMemAddr = virtualMemToPhysicalMem(virtMemAddr);
 
     TEST_ASSERT_EQUAL(0x0, phyMemAddr);
-}
-
-void test_virtualMemToPhysicalMem_given_0x80009d6_should_convert_the_mem_addr_into_physical_mem_addr(void)
-{
-    int i;
-    uint32_t phyMemAddr, virtMemAddr = 0x10000;
-
-    phyMemAddr = virtualMemToPhysicalMem(virtMemAddr);
-
-    TEST_ASSERT_EQUAL(0xffffffff, phyMemAddr);
 }
 
 void test_virtualMemToPhysicalMem_given_0x20001020_should_convert_the_mem_addr_into_physical_mem_addr(void)
@@ -79,7 +81,7 @@ void test_virtualMemToPhysicalMem_given_0x20001020_should_convert_the_mem_addr_i
     TEST_ASSERT_EQUAL(0x1020 + RAM_BASE_ADDR, phyMemAddr);
 }
 
-void test_virtualMemToPhysicalMem_given_0x40001020_should_convert_the_mem_addr_into_physical_mem_addr(void)
+void xtest_virtualMemToPhysicalMem_given_0x40001020_should_convert_the_mem_addr_into_physical_mem_addr(void)
 {
     int i;
     uint32_t virtMemAddr, phyMemAddr = 0x40001020;

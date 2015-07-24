@@ -5,45 +5,45 @@
 #include "RemoteSerialProtocol.h"
 #include "Packet.h"
 #include "ARMRegisters.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include "ErrorSignal.h"
 #include "ARMSimulator.h"
-#include "ConditionalExecution.h"
-#include "StatusRegisters.h"
-#include "Thumb16bitsTable.h"
-#include "LSLImmediate.h"
-#include "LSRImmediate.h"
-#include "MOVRegister.h"
-#include "ASRImmediate.h"
-#include "MOVImmediate.h"
-#include "ModifiedImmediateConstant.h"
-#include "CMPImmediate.h"
-#include "ADDImmediate.h"
-#include "SUBImmediate.h"
-#include "ADDRegister.h"
-#include "SUBRegister.h"
-#include "ADDSPRegister.h"
-#include "ITandHints.h"
-#include "ANDRegister.h"
-#include "LSLRegister.h"
-#include "LSRRegister.h"
-#include "ASRRegister.h"
-#include "CMPRegister.h"
-#include "CMNRegister.h"
-#include "EORRegister.h"
-#include "ORRRegister.h"
-#include "RORRegister.h"
-#include "MVNRegister.h"
-#include "BICRegister.h"
-#include "ADCRegister.h"
-#include "BX.h"
-#include "BLXRegister.h"
-#include "MULRegister.h"
-#include "TSTRegister.h"
-#include "RSBImmediate.h"
-#include "SBCRegister.h"
-#include "UnconditionalAndConditionalBranch.h"
-#include "STRRegister.h"
+// #include "ConditionalExecution.h"
+// #include "StatusRegisters.h"
+// #include "Thumb16bitsTable.h"
+// #include "LSLImmediate.h"
+// #include "LSRImmediate.h"
+// #include "MOVRegister.h"
+// #include "ASRImmediate.h"
+// #include "MOVImmediate.h"
+// #include "ModifiedImmediateConstant.h"
+// #include "CMPImmediate.h"
+// #include "ADDImmediate.h"
+// #include "SUBImmediate.h"
+// #include "ADDRegister.h"
+// #include "SUBRegister.h"
+// #include "ADDSPRegister.h"
+// #include "ITandHints.h"
+// #include "ANDRegister.h"
+// #include "LSLRegister.h"
+// #include "LSRRegister.h"
+// #include "ASRRegister.h"
+// #include "CMPRegister.h"
+// #include "CMNRegister.h"
+// #include "EORRegister.h"
+// #include "ORRRegister.h"
+// #include "RORRegister.h"
+// #include "MVNRegister.h"
+// #include "BICRegister.h"
+// #include "ADCRegister.h"
+// #include "BX.h"
+// #include "BLXRegister.h"
+// #include "MULRegister.h"
+// #include "TSTRegister.h"
+// #include "RSBImmediate.h"
+// #include "SBCRegister.h"
+// #include "UnconditionalAndConditionalBranch.h"
+// #include "STRRegister.h"
 
 char *targetCortexM4_XML =
 "l<?xml version=\"1.0\"?>"
@@ -372,7 +372,7 @@ char *writeAllRegister(char *data)
  */
 char *readMemory(char *data)
 {
-    char *packet = NULL, fullMemContent[1024] = "", temp[1024] = "", temp2[1024] = "", *asciiString;
+    char *packet = NULL, fullMemContent[1024] = "", *asciiString = NULL;
     char *comma, *dummy;      //dummy ==> sscanf the "$m" from data
                               //comma ==> sscanf the ',' from data
     unsigned int addr, memoryContent = 0;
@@ -387,20 +387,23 @@ char *readMemory(char *data)
 
     for(i = 1; i < length + 1; i++)
     {
-        memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
+        memoryContent = memoryBlock[virtualMemToPhysicalMem(addr)];
         asciiString = createdHexToString(memoryContent, 1);
-        // printf("memoryContent: %x\n", memoryContent);
+        /* printf("memoryContent: %x\n", memoryContent);
+        printf("addr: %x\n", addr);
         strcpy(temp, asciiString);
+        printf("temp: %s\n", temp);
         strcat(temp, temp2);
         strcpy(temp2, temp);
-        // printf("temp2: %s\n", temp2);
+        printf("temp2: %s\n", temp2); */
+        strcat(fullMemContent, asciiString);
         destroyHexToString(asciiString);
 
-        if(i % 2 == 0)
+        /* if(i % 2 == 0)
         {
             strcat(fullMemContent, temp2);
             strcpy(temp2, "");
-        }
+        } */
 
         addr++;
     }
@@ -469,7 +472,7 @@ char *writeMemory(char *data)
         sscanf(semicolonAddr, "%2x", &memoryContent);
         // printf("memoryContent: %x\n", memoryContent);
 
-         if(i % 2 != 0)
+        /* if(i % 2 != 0)
         {
             temp = memoryContent;
             // rom->address[virtualMemToPhysicalMem(addr)].data = temp;
@@ -480,8 +483,10 @@ char *writeMemory(char *data)
             rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 8;
             rom->address[virtualMemToPhysicalMem(addr + 1)].data = temp & 0xff;
             addr += 2;
-        }
+        } */
 
+        memoryBlock[virtualMemToPhysicalMem(addr)] = memoryContent;
+        addr++;
         semicolonAddr += 2;
     }
 

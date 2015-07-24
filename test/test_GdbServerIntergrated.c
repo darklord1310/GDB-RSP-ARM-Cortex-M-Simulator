@@ -5,50 +5,12 @@
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMRegisters.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include "CException.h"
 #include "ErrorSignal.h"
 #include "mock_ARMSimulator.h"
-#include "ConditionalExecution.h"
-#include "StatusRegisters.h"
-#include "Thumb16bitsTable.h"
-#include "LSLImmediate.h"
-#include "LSRImmediate.h"
-#include "MOVRegister.h"
-#include "ASRImmediate.h"
-#include "MOVImmediate.h"
-#include "ModifiedImmediateConstant.h"
-#include "CMPImmediate.h"
-#include "ADDImmediate.h"
-#include "SUBImmediate.h"
-#include "ADDRegister.h"
-#include "SUBRegister.h"
-#include "ADDSPRegister.h"
-#include "ITandHints.h"
-#include "ANDRegister.h"
-#include "LSLRegister.h"
-#include "LSRRegister.h"
-#include "ASRRegister.h"
-#include "CMPRegister.h"
-#include "CMNRegister.h"
-#include "EORRegister.h"
-#include "ORRRegister.h"
-#include "RORRegister.h"
-#include "MVNRegister.h"
-#include "BICRegister.h"
-#include "ADCRegister.h"
-#include "BX.h"
-#include "BLXRegister.h"
-#include "MULRegister.h"
-#include "TSTRegister.h"
-#include "RSBImmediate.h"
-#include "SBCRegister.h"
-#include "UnconditionalAndConditionalBranch.h"
-#include "STRRegister.h"
-#include "LDRImmediate.h"
-#include "LDRLiteral.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -527,16 +489,13 @@ void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(
     char data[] = "$m0,2#fb";
     char *reply = NULL;
 
-    createROM();
-
-    rom->address[0x0].data = 0x20;
-    rom->address[0x1].data = 0x3f;
+    memoryBlock[0x0] = 0x20;
+    memoryBlock[0x1] = 0x3f;
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$3f20#fb", reply);
+    TEST_ASSERT_EQUAL_STRING("$203f#fb", reply);
 
-    destroyROM();
     free(reply);
 }
 
@@ -545,18 +504,15 @@ void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_fro
     char data[] = "$m80009d6,4#68";
     char *reply = NULL;
 
-    createROM();
-
-    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0xf6;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x43;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0x70;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0xff;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6)] = 0xf6;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)] = 0x43;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)] = 0x70;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)] = 0xff;
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$43f6ff70#36", reply);
-
-    destroyROM();
+    TEST_ASSERT_EQUAL_STRING("$f64370ff#36", reply);
+    
     free(reply);
 }
 
@@ -566,8 +522,6 @@ void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     char data[] = "$m0,-2#28";
     char *reply = NULL;
 
-    createROM();
-
     Try
 	{
         reply = serveRSP(data);
@@ -580,7 +534,6 @@ void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 
-    destroyROM();
     free(reply);
 }
 
@@ -589,15 +542,12 @@ void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_a
     char data[] = "$M8000d06,2:0010#38";
     char *reply = NULL;
 
-    createROM();
-
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06)]);
+    TEST_ASSERT_EQUAL(0x10, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)]);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
-    destroyROM();
     free(reply);
 }
 
@@ -606,17 +556,14 @@ void test_serveRSP_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_a
     char data[] = "$M8000d06,4:00100020#fc";
     char *reply = NULL;
 
-    createROM();
-
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0x20, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06)]);
+    TEST_ASSERT_EQUAL(0x10, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)]);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 2)]);
+    TEST_ASSERT_EQUAL(0x20, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 3)]);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
-    destroyROM();
     free(reply);
 }
 
@@ -626,8 +573,6 @@ void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     char data[] = "$M8000d06,-2:4ff0#d4";
     char *reply = NULL;
 
-    createROM();
-
     Try
 	{
         reply = serveRSP(data);
@@ -640,7 +585,6 @@ void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 
-    destroyROM();
     free(reply);
 }
 
@@ -673,8 +617,8 @@ void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(
 
     createROM();
 
-    rom->address[0x0].data = 0xf0;
-    rom->address[0x1].data = 0x4f;
+    memoryBlock[0x0].data = 0xf0;
+    memoryBlock[0x1].data = 0x4f;
 
     reply = serveRSP(data);
 
@@ -691,10 +635,10 @@ void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_fro
 
     createROM();
 
-    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
 
     reply = serveRSP(data);
 
@@ -711,16 +655,16 @@ void test_serveRSP_given_m80009d6_and_10_should_retrieve_memory_content_start_fr
 
     createROM();
 
-    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 4)].data = 0x08;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 5)].data = 0x00;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 6)].data = 0x10;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 7)].data = 0x24;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 8)].data = 0xad;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 9)].data = 0xde;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 4)].data = 0x08;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 5)].data = 0x00;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 6)].data = 0x10;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 7)].data = 0x24;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 8)].data = 0xad;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 9)].data = 0xde;
 
     reply = serveRSP(data);
 
@@ -739,8 +683,8 @@ void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_a
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL(0x4d, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x4a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0x4d, memoryBlock[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x4a, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
     destroyROM();
@@ -755,10 +699,10 @@ void test_serveRSP_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_a
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL(0x08, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0xf0, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x4f, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL(0x08, memoryBlock[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0xf0, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
+    TEST_ASSERT_EQUAL(0x4f, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
     destroyROM();
@@ -773,18 +717,18 @@ void test_serveRSP_given_M8000d06_and_10_should_write_10_byte_data_in_the_memory
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL(0x08, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0xf0, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x4f, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL(0x08, memoryBlock[virtualMemToPhysicalMem(0x8000d06)].data);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0xf0, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
+    TEST_ASSERT_EQUAL(0x4f, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
 
-    TEST_ASSERT_EQUAL(0x42, rom->address[virtualMemToPhysicalMem(0x8000d06 + 4)].data);
-    TEST_ASSERT_EQUAL(0x9a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 5)].data);
-    TEST_ASSERT_EQUAL(0x4b, rom->address[virtualMemToPhysicalMem(0x8000d06 + 6)].data);
-    TEST_ASSERT_EQUAL(0x09, rom->address[virtualMemToPhysicalMem(0x8000d06 + 7)].data);
+    TEST_ASSERT_EQUAL(0x42, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 4)].data);
+    TEST_ASSERT_EQUAL(0x9a, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 5)].data);
+    TEST_ASSERT_EQUAL(0x4b, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 6)].data);
+    TEST_ASSERT_EQUAL(0x09, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 7)].data);
 
-    TEST_ASSERT_EQUAL(0x4d, rom->address[virtualMemToPhysicalMem(0x8000d06 + 8)].data);
-    TEST_ASSERT_EQUAL(0x4a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 9)].data);
+    TEST_ASSERT_EQUAL(0x4d, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 8)].data);
+    TEST_ASSERT_EQUAL(0x4a, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 9)].data);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 
     destroyROM();

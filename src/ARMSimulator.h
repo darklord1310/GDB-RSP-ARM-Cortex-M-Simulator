@@ -13,6 +13,6 @@ void initializeAllTable();
 void initializeSimulator();
 void ARMSimulator(uint32_t instruction);
 void armStep();
-uint32_t retrieveInstructionFromROM();
+uint32_t retrieveInstructionFromMemory();
 
 #endif // ARMSimulator_H

@@ -7,7 +7,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include <stdio.h>
 #include "LDRImmediate.h"
 

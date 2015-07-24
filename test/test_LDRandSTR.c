@@ -43,14 +43,14 @@
 #include "SBCRegister.h"
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include "LDRImmediate.h"
 #include "LDRLiteral.h"
 
 void setUp(void)
 {
   initializeSimulator();
-  createROM();
+  resetMemoryBlock();
 }
 
 void tearDown(void)
@@ -68,10 +68,10 @@ void tearDown(void)
  */
 void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r0_wth_0xdeadbeef(void)
 {
-  rom->address[ virtualMemToPhysicalMem(0x08000340) ].data = 0xbe;
-  rom->address[ virtualMemToPhysicalMem(0x08000341) ].data = 0xef;
-  rom->address[ virtualMemToPhysicalMem(0x08000342) ].data = 0xad;
-  rom->address[ virtualMemToPhysicalMem(0x08000343) ].data = 0xde;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000018) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000019) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000020) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000021) ] = 0xde;
   
   coreReg[PC] = 0x0800031e;
   uint32_t instruction = 0x4b080000;
@@ -94,10 +94,10 @@ void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r0_wth_0xdeadbeef(vo
  */
 void xtest_LDRImmediateT1_given_ROM_value_as_above_should_load_r0_wth_0xdeadbeef(void)
 {
-  rom->address[ virtualMemToPhysicalMem(0x08000534) ].data = 0xbe;
-  rom->address[ virtualMemToPhysicalMem(0x08000535) ].data = 0xbe;
-  rom->address[ virtualMemToPhysicalMem(0x08000536) ].data = 0xad;
-  rom->address[ virtualMemToPhysicalMem(0x08000537) ].data = 0xde;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000534) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000535) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000536) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000537) ] = 0xde;
   
   coreReg[PC] = 0x0800051e;
   uint32_t instruction = 0x48050000;
