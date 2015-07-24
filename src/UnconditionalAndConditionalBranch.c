@@ -37,13 +37,12 @@ where:
 void UnconditionalBranchT1(uint32_t instruction)
 {
   uint32_t imm11 = getBits(instruction,26,16);
-  uint32_t signExtend = imm11 << 22;
-  
-  //if( getBits(imm11, 10,10) == 1)
-    //signExtend = setBits(signExtend,0b111111111111111111111,31,11);
-  
-  printf("signExtend: %x\n", signExtend);
-  coreReg[PC] = coreReg[PC] + signExtend;
+  uint32_t signExtend = imm11 << 1;
+
+  if( getBits(signExtend, 11,11) == 1)
+    signExtend = setBits(signExtend,0b11111111111111111111,31,12);
+
+  coreReg[PC] = coreReg[PC] + signExtend + 4;
 }
 
 

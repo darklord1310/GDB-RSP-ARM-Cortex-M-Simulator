@@ -41,6 +41,7 @@
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
 #include "LDRImmediate.h"
+#include "LDRLiteral.h"
 #include "ROM.h"
 
 
@@ -57,15 +58,32 @@ void tearDown(void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Branch Exchange
 
+  
+//branch backward
 // test B label
-void test_unconditionalBranch_given_label_0x0800001a_should_get_PC_is_0x0800000c_xPSR_unchanged(void)
+void test_unconditionalBranch_given_PC_0x0800001a_should_get_PC_is_0x0800000e_xPSR_unchanged(void)
 {
   uint32_t instruction = 0xE7F80000;
   
-  coreReg[PC] = 0x08000018;
+  coreReg[PC] = 0x0800001a;
   ARMSimulator(instruction);
-  printf("%x\n", coreReg[PC]);
-  TEST_ASSERT_EQUAL(0x0800000c, coreReg[PC]);
+
+  TEST_ASSERT_EQUAL(0x0800000e, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+//branch forward
+// test B label
+void test_unconditionalBranch_given_PC_0x0800000e_should_get_PC_is_0x0800001c_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0xE0050000;
+  
+  coreReg[PC] = 0x0800000e;
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x0800001c, coreReg[PC]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
