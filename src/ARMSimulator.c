@@ -8,13 +8,14 @@
 #include "ARMRegisters.h"
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 
 void initializeSimulator()
 {
   initCoreRegister();
   initializeAllTable();
-  createROM();
+  // createROM();
+  resetMemoryBlock();
 }
 
 void initializeAllTable()
@@ -146,21 +147,22 @@ void ARMSimulator(uint32_t instruction)
 }
 
 
-uint32_t retrieveInstructionFromROM()
+uint32_t retrieveInstructionFromMemory()
 {
-  uint32_t instructionRetrieved = rom->address[ virtualMemToPhysicalMem(coreReg[PC]) ].data, temp = rom->address[ virtualMemToPhysicalMem(coreReg[PC] + 1) ].data;
-  instructionRetrieved = instructionRetrieved << 24 | temp << 16;
-  
+  uint32_t instructionRetrieved = ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC])]) << 16 |
+                                  ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC] + 1)]) << 24;
+  // printf("instructionRetrieved: %x\n", instructionRetrieved);
+
   int check = is32or16instruction(instructionRetrieved);
 
   if(check == INSTRUCTION16bits)
     return instructionRetrieved;
   else
   {
-    uint32_t lower16bits =  rom->address[ virtualMemToPhysicalMem(coreReg[PC]+2) ].data;
-    temp = rom->address[ virtualMemToPhysicalMem(coreReg[PC]+3) ].data;
-    lower16bits = lower16bits << 8 | temp;
+    uint32_t lower16bits = ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC] + 2)]) |
+                           ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC] + 3)]) << 8;
     instructionRetrieved = instructionRetrieved | lower16bits;
+    // printf("instructionRetrieved: %x\n", instructionRetrieved);
     return instructionRetrieved;
   }
 }
@@ -171,20 +173,19 @@ void armStep()
 {
   uint32_t instruction;
 
-  instruction = retrieveInstructionFromROM();                     //read the instruction from ROM
-  int check = is32or16instruction(instruction);                   //check the instruction is 16 or 32 bits
+  instruction = retrieveInstructionFromMemory();                    //read the instruction from ROM
+  int check = is32or16instruction(instruction);                     //check the instruction is 16 or 32 bits
 
-  if(check == INSTRUCTION16bits)                                  //execute 16 or 32 bits instruction
+  if(check == INSTRUCTION16bits)                                    //execute 16 or 32 bits instruction
     armSimulate16(instruction);
   //else
     //armSimulate32(instruction);
 
-  if(check == INSTRUCTION16bits)                                  //move the pc to the next instruction
+  if(check == INSTRUCTION16bits)                                    //move the pc to the next instruction
     coreReg[PC]+=2;
   else
     coreReg[PC]+=4;
 }
-
 
 
 void printRegister()

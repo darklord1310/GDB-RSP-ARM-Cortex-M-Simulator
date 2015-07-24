@@ -1,4 +1,4 @@
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -24,7 +24,7 @@ Address range               Memory region       Memory type[a]      Execute Neve
 0xE0100000- 0xFFFFFFFF      Device              Device              XN                      Implementation-specific.
 
 */
-void createROM()
+/* void createROM()
 {
     rom = malloc(sizeof(ROM));
     rom->address = calloc(TWO_HUND_FIFTY_SIX_KB * 2, sizeof(ROMData));
@@ -47,39 +47,28 @@ void destroyROM()
         free(rom->address);
         free(rom);
     }
+} */
+
+void resetMemoryBlock()
+{
+    int i;
+
+    for(i = 0; i < sizeof(memoryBlock); i++)
+        memoryBlock[i] = 0;
 }
 
 uint32_t virtualMemToPhysicalMem(uint32_t mem)
 {
     uint32_t virtualAddr = 0xffffffff;
 
-    // if(mem < 0x20000000)
-    // {
-        // if(mem >= 0x8000000)
-            // virtualAddr = mem - 0x8000000 + 0x10000;
-        // else if(mem < 0x10000)
-            // virtualAddr = mem;
-
-        // if(virtualAddr > RAM_BASE_ADDR)
-            // printf("Code space not enough\n");
-    // }
-    // else if(mem < 0x40000000)
-    // {
-        // virtualAddr = mem - 0x20000000 + RAM_BASE_ADDR;
-    // }
-    // else
-    // {
-        // printf("Memmory exceeded\n");
-    // }
-
     if(mem < 0x20000000)
     {
         if(mem >= 0x8000000)
-            virtualAddr = ((mem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR + 0x10000;
-        else if(mem <= 0xffff)
-            virtualAddr = mem;
+            virtualAddr = ((mem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR;
         else
-            printf("Code space not enough\n");
+            virtualAddr = mem;
+        // else
+            // printf("Code space not enough\n");
     }
     else if(mem < 0x40000000)
         virtualAddr = ((mem - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;

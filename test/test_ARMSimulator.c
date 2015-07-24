@@ -40,7 +40,7 @@
 #include "SBCRegister.h"
 #include "UnconditionalAndConditionalBranch.h"
 #include "STRRegister.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include "LDRImmediate.h"
 #include "LDRLiteral.h"
 
@@ -91,16 +91,14 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
  */
 void test_retrieveInstructionFromROM_given_32bits_instruction_and_ROM_value_as_above_should_retrieve_correctly()
 {
-  createROM();
   coreReg[PC] = 0x08000000;
-  rom->address[0x10000].data = 0xf3;
-  rom->address[0x10001].data = 0xf6;
-  rom->address[0x10002].data = 0xff;
-  rom->address[0x10003].data = 0x70;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000)] = 0xf3;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000 + 1)] = 0xf6;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000 + 2)] = 0xff;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000 + 3)] = 0x70;
 
-  uint32_t retrievedValue = retrieveInstructionFromROM();
-  TEST_ASSERT_EQUAL(0xf3f6ff70, retrievedValue);
-  destroyROM();
+  uint32_t retrievedValue = retrieveInstructionFromMemory();
+  TEST_ASSERT_EQUAL(0xf6f370ff, retrievedValue);
 }
 
 
@@ -116,19 +114,16 @@ void test_retrieveInstructionFromROM_given_32bits_instruction_and_ROM_value_as_a
  */
 void test_retrieveInstructionFromROM_given_16bits_instruction_and_ROM_value_as_above_should_retrieve_correctly()
 {
-  createROM();
   coreReg[PC] = 0x08000000;
-  rom->address[0x10000].data = 0x14;
-  rom->address[0x10001].data = 0x44;
-  rom->address[0x10002].data = 0xc9;
-  rom->address[0x10003].data = 0x07;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000)] = 0x14;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000 + 1)] = 0x44;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000 + 2)] = 0xc9;
+  memoryBlock[virtualMemToPhysicalMem(0x08000000 + 3)] = 0x07;
 
-  uint32_t retrievedValue = retrieveInstructionFromROM();
-  TEST_ASSERT_EQUAL(0x14440000, retrievedValue);                  //read instruction 0x4414
+  uint32_t retrievedValue = retrieveInstructionFromMemory();
+  TEST_ASSERT_EQUAL(0x44140000, retrievedValue);                  //read instruction 0x4414
 
-  coreReg[PC]+=2;
-  retrievedValue = retrieveInstructionFromROM();
-  TEST_ASSERT_EQUAL(0xc9070000, retrievedValue);                  //read instruction 0x07c9
-
-  destroyROM();
+  coreReg[PC] += 2;
+  retrievedValue = retrieveInstructionFromMemory();
+  TEST_ASSERT_EQUAL(0x07c90000, retrievedValue);                  //read instruction 0x07c9
 }

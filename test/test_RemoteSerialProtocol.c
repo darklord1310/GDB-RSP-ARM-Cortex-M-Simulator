@@ -4,7 +4,7 @@
 #include "unity.h"
 #include <string.h>
 #include "ARMRegisters.h"
-#include "ROM.h"
+#include "MemoryBlock.h"
 #include "RemoteSerialProtocol.h"
 #include "mock_Packet.h"
 #include "getAndSetBits.h"
@@ -12,44 +12,44 @@
 #include "CException.h"
 #include "ErrorSignal.h"
 #include "mock_ARMSimulator.h"
-#include "ConditionalExecution.h"
-#include "StatusRegisters.h"
-#include "Thumb16bitsTable.h"
-#include "LSLImmediate.h"
-#include "LSRImmediate.h"
-#include "MOVRegister.h"
-#include "ASRImmediate.h"
-#include "MOVImmediate.h"
-#include "ModifiedImmediateConstant.h"
-#include "CMPImmediate.h"
-#include "ADDImmediate.h"
-#include "SUBImmediate.h"
-#include "ADDRegister.h"
-#include "SUBRegister.h"
-#include "ADDSPRegister.h"
-#include "ITandHints.h"
-#include "ANDRegister.h"
-#include "LSLRegister.h"
-#include "LSRRegister.h"
-#include "ASRRegister.h"
-#include "CMPRegister.h"
-#include "CMNRegister.h"
-#include "EORRegister.h"
-#include "ORRRegister.h"
-#include "RORRegister.h"
-#include "MVNRegister.h"
-#include "BICRegister.h"
-#include "ADCRegister.h"
-#include "BX.h"
-#include "BLXRegister.h"
-#include "MULRegister.h"
-#include "TSTRegister.h"
-#include "RSBImmediate.h"
-#include "SBCRegister.h"
-#include "UnconditionalAndConditionalBranch.h"
-#include "STRRegister.h"
-#include "LDRImmediate.h"
-#include "LDRLiteral.h"
+// #include "ConditionalExecution.h"
+// #include "StatusRegisters.h"
+// #include "Thumb16bitsTable.h"
+// #include "LSLImmediate.h"
+// #include "LSRImmediate.h"
+// #include "MOVRegister.h"
+// #include "ASRImmediate.h"
+// #include "MOVImmediate.h"
+// #include "ModifiedImmediateConstant.h"
+// #include "CMPImmediate.h"
+// #include "ADDImmediate.h"
+// #include "SUBImmediate.h"
+// #include "ADDRegister.h"
+// #include "SUBRegister.h"
+// #include "ADDSPRegister.h"
+// #include "ITandHints.h"
+// #include "ANDRegister.h"
+// #include "LSLRegister.h"
+// #include "LSRRegister.h"
+// #include "ASRRegister.h"
+// #include "CMPRegister.h"
+// #include "CMNRegister.h"
+// #include "EORRegister.h"
+// #include "ORRRegister.h"
+// #include "RORRegister.h"
+// #include "MVNRegister.h"
+// #include "BICRegister.h"
+// #include "ADCRegister.h"
+// #include "BX.h"
+// #include "BLXRegister.h"
+// #include "MULRegister.h"
+// #include "TSTRegister.h"
+// #include "RSBImmediate.h"
+// #include "SBCRegister.h"
+// #include "UnconditionalAndConditionalBranch.h"
+// #include "STRRegister.h"
+// #include "LDRImmediate.h"
+// #include "LDRLiteral.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -732,15 +732,13 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 }
 
-void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
+void xtest_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
 {
     char data[] = "$m0,2#fb";
     char *reply = NULL;
-
-    createROM();
-
-    rom->address[0x0].data = 0x20;
-    rom->address[0x1].data = 0x3f;
+    
+    memoryBlock[0] = 0x20;
+    memoryBlock[1] = 0x3f;
 
     createdHexToString_ExpectAndReturn(0x20, 1, "20");
     destroyHexToString_Expect("20");
@@ -751,21 +749,17 @@ void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x
     reply = readMemory(data);
 
     TEST_ASSERT_EQUAL_STRING("$3f20#fb", reply);
-
-    destroyROM();
 }
 
 void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
 {
     char data[] = "$m80009d6,4#68";
     char *reply = NULL;
-
-    createROM();
-
-    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0xf6;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x43;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0x70;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0xff;
+    
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6)] = 0xf6;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)] = 0x43;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)] = 0x70;
+    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)] = 0xff;
 
     createdHexToString_ExpectAndReturn(0xf6, 1, "f6");
     destroyHexToString_Expect("f6");
@@ -780,8 +774,6 @@ void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_f
     reply = readMemory(data);
 
     TEST_ASSERT_EQUAL_STRING("$43f6ff70#36", reply);
-
-    destroyROM();
 }
 
 void test_readMemory_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
@@ -789,8 +781,6 @@ void test_readMemory_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     CEXCEPTION_T errorSignal;
     char data[] = "$m0,-2#28";
     char *reply = NULL;
-
-    createROM();
 
     Try
 	{
@@ -803,8 +793,6 @@ void test_readMemory_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
-
-    destroyROM();
 }
 
 void test_writeMemory_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
@@ -812,17 +800,13 @@ void test_writeMemory_given_M8000d06_and_2_should_write_2_byte_data_in_the_memor
     char data[] = "$M8000d06,2:0010#38";
     char *reply = NULL;
 
-    createROM();
-
     gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
 
     reply = writeMemory(data);
 
-    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06)]);
+    TEST_ASSERT_EQUAL(0x10, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)]);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
 }
 
 void test_writeMemory_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_addr(void)
@@ -830,19 +814,15 @@ void test_writeMemory_given_M8000d06_and_4_should_write_4_byte_data_in_the_memor
     char data[] = "$M8000d06,4:00100020#fc";
     char *reply = NULL;
 
-    createROM();
-
     gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
 
     reply = writeMemory(data);
 
-    TEST_ASSERT_EQUAL(0x10, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0x20, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06)]);
+    TEST_ASSERT_EQUAL(0x10, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)]);
+    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 2)]);
+    TEST_ASSERT_EQUAL(0x20, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 3)]);
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
 }
 
 void test_writeMemory_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
@@ -850,8 +830,6 @@ void test_writeMemory_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void
     CEXCEPTION_T errorSignal;
     char data[] = "$M8000d06,-2:4ff0#d4";
     char *reply = NULL;
-
-    createROM();
 
     Try
 	{
@@ -864,8 +842,6 @@ void test_writeMemory_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void
 	}
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
-
-    destroyROM();
 }
 
 void test_step_given_following_data_should_step_through_the_instruction(void)
