@@ -35,8 +35,15 @@ void CMPRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rn = getBits(instruction, 18, 16);
 
-
-  executeCMPRegister(Rm, Rn, -1);  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeCMPRegister(Rm, Rn, -1);
+    
+    shiftITState();
+  }
+  else
+    executeCMPRegister(Rm, Rn, -1);
 }
 
 
@@ -69,8 +76,16 @@ void CMPRegisterT2(uint32_t instruction)
   uint32_t N = getBits(instruction, 23, 23);
   
   Rn = (N << 3) | Rn;
-
-  executeCMPRegister(Rm, Rn, -1);  
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeCMPRegister(Rm, Rn, -1);
+    
+    shiftITState();
+  }
+  else
+    executeCMPRegister(Rm, Rn, -1); 
 }
 
 
@@ -92,5 +107,4 @@ void executeCMPRegister(uint32_t Rm, uint32_t Rn, uint32_t shiftType)
   updateCarryFlagSubtraction(coreReg[Rn] , coreReg[Rm]);
   updateNegativeFlag(temp);
   updateOverflowFlagSubtraction(coreReg[Rn], coreReg[Rm], temp);
-     
 }

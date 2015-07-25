@@ -21,7 +21,7 @@ void test_checkCondition_given_0000_and_Z_flag_set_should_return_1(void)
   cond = 0b0000;
   setZeroFlag();
   
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -33,7 +33,7 @@ void test_checkCondition_given_0000_and_Z_flag_not_set_should_return_0(void)
   cond = 0b0000;
   resetZeroFlag();
   
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -45,7 +45,7 @@ void test_checkCondition_given_0001_and_Z_flag_not_set_should_return_1(void)
   cond = 0b0001;
   resetZeroFlag();
   
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -57,7 +57,7 @@ void test_checkCondition_given_0001_and_Z_flag_set_should_return_0(void)
   cond = 0b0001;
   setZeroFlag();
   
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -69,7 +69,7 @@ void test_checkCondition_given_0010_and_C_flag_set_should_return_1(void)
   cond = 0b0010;
   setCarryFlag();
   
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -81,7 +81,7 @@ void test_checkCondition_given_0010_and_C_flag_not_set_should_return_0(void)
   cond = 0b0010;
   resetCarryFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -93,7 +93,7 @@ void test_checkCondition_given_0011_and_C_flag_not_set_should_return_1(void)
   cond = 0b0011;
   resetCarryFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -105,7 +105,7 @@ void test_checkCondition_given_0011_and_C_flag_set_should_return_0(void)
   cond = 0b0011;
   setCarryFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -117,7 +117,7 @@ void test_checkCondition_given_0100_and_N_flag_set_should_return_1(void)
   cond = 0b0100;
   setNegativeFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -129,7 +129,7 @@ void test_checkCondition_given_0100_and_N_flag_not_set_should_return_0(void)
   cond = 0b0100;
   resetNegativeFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -140,7 +140,7 @@ void test_checkCondition_given_0101_and_N_flag_not_set_should_return_1(void)
   cond = 0b0101;
   resetNegativeFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -151,7 +151,7 @@ void test_checkCondition_given_0101_and_N_flag_set_should_return_0(void)
   cond = 0b0101;
   setNegativeFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -163,7 +163,7 @@ void test_checkCondition_given_0110_and_OV_flag_set_should_return_1(void)
   cond = 0b0110;
   setOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -174,7 +174,7 @@ void test_checkCondition_given_0110_and_OV_flag_reset_should_return_0(void)
   cond = 0b0110;
   resetOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -185,7 +185,7 @@ void test_checkCondition_given_0111_and_OV_flag_reset_should_return_1(void)
   cond = 0b0111;
   resetOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -197,7 +197,7 @@ void test_checkCondition_given_0111_and_OV_flag_set_should_return_0(void)
   cond = 0b0111;
   setOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -210,7 +210,7 @@ void test_checkCondition_given_1000_and_C_flag_set_and_Z_flag_reset_should_retur
   setCarryFlag();
   resetZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -223,7 +223,7 @@ void test_checkCondition_given_1001_and_C_flag_reset_and_Z_flag_set_should_retur
   resetCarryFlag();
   setZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -236,7 +236,7 @@ void test_checkCondition_given_1010_if_N_flag_and_OV_flag_set_should_return_1(vo
   resetNegativeFlag();
   resetOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -249,7 +249,7 @@ void test_checkCondition_given_1010_if_N_flag_and_OV_flag_reset_should_return_1(
   setNegativeFlag();
   setOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -262,7 +262,7 @@ void test_checkCondition_given_1010_if_N_flag_and_OV_flag_different_should_retur
   resetNegativeFlag();
   setOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -275,7 +275,7 @@ void test_checkCondition_given_1011_if_N_flag_reset_and_OV_flag_set_should_retur
   resetNegativeFlag();
   setOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -287,7 +287,7 @@ void test_checkCondition_given_1011_if_N_flag_set_and_OV_flag_reset_should_retur
   setNegativeFlag();
   resetOverflowFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -302,7 +302,7 @@ void test_checkCondition_given_1100_and_possiblilty1_should_return_1(void)
   resetOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -317,7 +317,7 @@ void test_checkCondition_given_1100_and_possiblilty2_should_return_1(void)
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -331,7 +331,7 @@ void test_checkCondition_given_1100_and_possiblilty3_should_return_0(void)
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -346,7 +346,7 @@ void test_checkCondition_given_1100_and_possiblilty4_should_return_0(void)
   setOverflowFlag();
   setZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -361,7 +361,7 @@ void test_checkCondition_given_1101_and_possiblilty1_should_return_1(void)
   setOverflowFlag();
   setZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -376,7 +376,7 @@ void test_checkCondition_given_1101_and_possiblilty2_should_return_1(void)
   resetOverflowFlag();
   setZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(1,result);
 }
 
@@ -390,7 +390,7 @@ void test_checkCondition_given_1101_and_possiblilty3_should_return_0(void)
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 
@@ -405,7 +405,7 @@ void test_checkCondition_given_1101_and_possiblilty4_should_return_0(void)
   setOverflowFlag();
   resetZeroFlag();
  
-	int result = checkCondition();
+	int result = checkCondition(cond);
   TEST_ASSERT_EQUAL(0,result);
 }
 

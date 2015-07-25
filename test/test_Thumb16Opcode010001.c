@@ -45,6 +45,8 @@
 #include "MemoryBlock.h"
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
+#include "SVC.h"
+
 
 void setUp(void)
 {
@@ -121,9 +123,8 @@ void test_BX_if_inside_IT_block_should_throw_err(void)
   Catch(err)
   {
     TEST_ASSERT_EQUAL(UsageFault, err);
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT, coreReg[PC]);
   }
-  
-  TEST_ASSERT_EQUAL(0x00, coreReg[PC]);                       //PC should not change
 }
 
 
@@ -144,9 +145,9 @@ void test_BX_if_the_branch_register_bit_0_is_not_1_should_throw_err(void)
   Catch(err)
   {
     TEST_ASSERT_EQUAL(UsageFault, err);
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT, coreReg[PC]);
   }
   
-  TEST_ASSERT_EQUAL(0x00, coreReg[PC]);                       //PC should not change
 }
 
 
@@ -193,7 +194,24 @@ void test_BLXRegister_given_r0_0x080004a5_should_get_PC_is_0x080004a4_LR_is_0x08
 }
 
 
-
+//test if Rm is PC
+void test_BLXRegister_if_the_Rm_is_PC_should_throw_err(void)
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0x47f80000;
+  
+  Try
+  {
+    ARMSimulator(instruction);
+    TEST_FAIL_MESSAGE("Not expect to be pass\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(UsageFault, err);
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT, coreReg[PC]);
+  }
+  
+}
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -300,4 +318,58 @@ void test_CMPRegisterT2_given_0x4557_and_r7_is_0xffffffff_r10_is_0x80000000_shou
   TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
 }
 
+
+//testing in IT block
+/* 
+ *            r8 = 0x00010101
+ *            r1 = 0x0fffffff
+ *            r9 = 0x10101010
+ *            r3 = 0x18888888
+ *            r10 = 0x34444444
+ *            r5 = 0x44444444
+ *            R6 = 0X00000033
+ *            r11 = 0x01010101
+ *            ITETE EQ
+ *            CMPEQ r8,r1
+ *            CMPNE r9,r3
+ *            CMPEQ r10,r5
+ *            CMPNE r11,r6
+ * 
+ * Expected Result:    
+ *                  coreReg[xPSR] = 0x05001400
+ *                  coreReg[xPSR] = 0x81000C00
+ *                  coreReg[xPSR] = 0x81001800
+ *                  coreReg[xPSR] = 0x21000000
+ *
+ */
+void test_CMPRegisterT2_given_test_case_above_should_get_the_expected_result(void)
+{
+  coreReg[8] = 0x00010101;
+  coreReg[1] = 0x0fffffff;
+  coreReg[9] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[10] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0X00000033;
+  coreReg[11] = 0x01010101;
+  
+  ARMSimulator(0xbf0B0000);   //ITETE EQ
+  ARMSimulator(0x45880000);   //CMPEQ r8,r1
+  TEST_ASSERT_EQUAL(0x05001400,coreReg[xPSR]);
+  ARMSimulator(0x45990000);   //CMPNE r9,r3
+  TEST_ASSERT_EQUAL(0x81000C00,coreReg[xPSR]);
+  ARMSimulator(0x45AA0000);   //CMPEQ r10,r5
+  TEST_ASSERT_EQUAL(0x81001800,coreReg[xPSR]);
+  ARMSimulator(0x45B30000);   //CMPNE r11,r6
+  
+  TEST_ASSERT_EQUAL(0x00010101,coreReg[8]);
+  TEST_ASSERT_EQUAL(0x0fffffff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[9]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x34444444,coreReg[10]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[11]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
 

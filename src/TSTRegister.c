@@ -33,7 +33,14 @@ void TSTRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction,21,19);
   uint32_t Rn = getBits(instruction,18,16);
 
-  executeTSTRegister(Rn, Rm);
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeTSTRegister(Rn, Rm);
+    shiftITState();
+  }
+  else
+    executeTSTRegister(Rn, Rm);
 }
 
 

@@ -44,6 +44,9 @@
 #include "STRRegister.h"
 #include "LDRImmediate.h"
 #include "MemoryBlock.h"
+#include "LDRLiteral.h"
+#include "ErrorSignal.h"
+#include "SVC.h"
 
 
 void setUp(void)
@@ -675,12 +678,66 @@ void test_CMPRegisterT1_given_0x4281_should_minus_r1_with_r0_and_update_V_flag_a
 }
 
 
+//testing in IT block
+/* 
+ *            r0 = 0x00010101
+ *            r1 = 0x0fffffff
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            R6 = 0X00000033
+ *            r7 = 0x01010101
+ *            ITETE CC
+ *            CMPCC r0,r1
+ *            CMPCS r2,r3
+ *            CMPCC r4,r5
+ *            CMPCS r7,r6
+ * 
+ * Expected Result:    
+ *                  coreReg[xPSR] = 0x85002800
+ *                  coreReg[xPSR] = 0x81003400
+ *                  coreReg[xPSR] = 0x81002800
+ *                  coreReg[xPSR] = 0x81000000
+ *
+ */
+void test_CMPRegisterT1_given_test_case_above_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x00010101;
+  coreReg[1] = 0x0fffffff;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0X00000033;
+  coreReg[7] = 0x01010101;
+  
+  ARMSimulator(0xbf350000);   //ITETE CC
+  ARMSimulator(0x42880000);   //CMPCC r0,r1
+  TEST_ASSERT_EQUAL(0x85002800,coreReg[xPSR]);
+  ARMSimulator(0x429A0000);   //CMPCS r2,r3
+  TEST_ASSERT_EQUAL(0x81003400,coreReg[xPSR]);
+  ARMSimulator(0x42AC0000);   //CMPCC r4,r5
+  TEST_ASSERT_EQUAL(0x81002800,coreReg[xPSR]);
+  ARMSimulator(0x42B70000);   //CMPCS r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00010101,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x0fffffff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x34444444,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Compare Negative Register T1
 
   
 //test CMN  R1, R0  given R1, #0x80000000 and R0 = 0x40000000
-void test_CMPRegisterT1_given_0x42c1_should_minus_r1_with_r0_and_update_N_flag(void)
+void test_CMNRegisterT1_given_0x42c1_should_minus_r1_with_r0_and_update_N_flag(void)
 {
   uint32_t instruction = 0x42c10000;
   
@@ -694,6 +751,58 @@ void test_CMPRegisterT1_given_0x42c1_should_minus_r1_with_r0_and_update_N_flag(v
 }
 
 
+//testing in IT block
+/* 
+ *            r0 = 0x00010101
+ *            r1 = 0x0fffffff
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            R6 = 0X00000033
+ *            r7 = 0x01010101
+ *            ITETE EQ
+ *            CMNEQ r0,r1
+ *            CMNNE r2,r3
+ *            CMNEQ r4,r5
+ *            CMNNE r7,r6
+ * 
+ * Expected Result:    
+ *                  coreReg[xPSR] = 0x05001400
+ *                  coreReg[xPSR] = 0x01000c00
+ *                  coreReg[xPSR] = 0x01001800
+ *                  coreReg[xPSR] = 0x01000000
+ */
+void test_CMNRegisterT1_given_test_case_above_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x00010101;
+  coreReg[1] = 0x0fffffff;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0X00000033;
+  coreReg[7] = 0x01010101;
+  
+  ARMSimulator(0xbf0b0000);   //ITETE EQ
+  ARMSimulator(0x42c80000);   //CMNEQ r0,r1
+  TEST_ASSERT_EQUAL(0x05001400,coreReg[xPSR]);
+  ARMSimulator(0x42da0000);   //CMNNE r2,r3
+  TEST_ASSERT_EQUAL(0x01000c00,coreReg[xPSR]);
+  ARMSimulator(0x42ec0000);   //CMNEQ r4,r5
+  TEST_ASSERT_EQUAL(0x01001800,coreReg[xPSR]);
+  ARMSimulator(0x42f70000);   //CMNNE r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00010101,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x0fffffff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x34444444,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Exclusive OR Register T1
@@ -1362,6 +1471,62 @@ void test_TSTRegisterT1_given_r0_0x84444444_r1_0x88888888_should_get_xPSR_0x8100
   TEST_ASSERT_EQUAL(0x88888888, coreReg[1]); 
   TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
 }
+
+
+
+//testing in IT block
+/* 
+ *            r0 = 0x00010101
+ *            r1 = 0x0fffffff
+ *            r2 = 0x10101010
+ *            r3 = 0x18888888
+ *            r4 = 0x34444444
+ *            r5 = 0x44444444
+ *            R6 = 0X00000033
+ *            r7 = 0x01010101
+ *            ITETE EQ
+ *            TSTEQ r0,r1
+ *            TSTNE r2,r3
+ *            TSTEQ r4,r5
+ *            TSTNE r7,r6
+ * 
+ * Expected Result:    
+ *                  coreReg[xPSR] = 0x05001400
+ *                  coreReg[xPSR] = 0x01000C00
+ *                  coreReg[xPSR] = 0x01001800
+ *                  coreReg[xPSR] = 0x01000000
+ */
+void test_TSTRegisterT1_given_test_case_above_should_get_the_expected_result(void)
+{
+  coreReg[0] = 0x00010101;
+  coreReg[1] = 0x0fffffff;
+  coreReg[2] = 0x10101010;
+  coreReg[3] = 0x18888888;
+  coreReg[4] = 0x34444444;
+  coreReg[5] = 0x44444444;
+  coreReg[6] = 0X00000033;
+  coreReg[7] = 0x01010101;
+  
+  ARMSimulator(0xbf0b0000);   //ITETE EQ
+  ARMSimulator(0x42080000);   //TSTEQ r0,r1
+  TEST_ASSERT_EQUAL(0x05001400,coreReg[xPSR]);
+  ARMSimulator(0x421A0000);   //TSTNE r2,r3
+  TEST_ASSERT_EQUAL(0x01000C00,coreReg[xPSR]);
+  ARMSimulator(0x422C0000);   //TSTEQ r4,r5
+  TEST_ASSERT_EQUAL(0x01001800,coreReg[xPSR]);
+  ARMSimulator(0x42370000);   //TSTNE r7,r6
+  
+  TEST_ASSERT_EQUAL(0x00010101,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x0fffffff,coreReg[1]);
+  TEST_ASSERT_EQUAL(0x10101010,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x18888888,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x34444444,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x44444444,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00000033,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x01010101,coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Reverse Subtract from Zero Immediate T1

@@ -43,6 +43,9 @@ void MOVRegisterToRegisterT1(uint32_t instruction)
                             // Eg. new Rd = D Rd2 Rd1 Rd0
 
   executeMOVRegister(Rm, Rd, 0);
+  
+  if( inITBlock() )
+    shiftITState();
 }
 
 

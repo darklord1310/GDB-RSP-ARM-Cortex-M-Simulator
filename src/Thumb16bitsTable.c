@@ -180,3 +180,27 @@ void initThumb16LoadStoreSingleData()
   Thumb16LoadStoreSingleData[0b0110111] = LDRImmediateT1;
 
 }
+
+/*
+    not 111x        Conditional branch B on page A6-40
+    1110            Permanently UNDEFINED
+    1111            Supervisor call SVC (formerly SWI) on page A6-252
+*/
+void initThumb16bitsOpcode1101XX()
+{
+  Thumb16Opcode1101XX[0b0000] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0001] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0010] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0011] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0100] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0101] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0110] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b0111] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b1000] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b1001] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b1010] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b1011] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b1100] = ConditionalBranchT1;
+  Thumb16Opcode1101XX[0b1101] = ConditionalBranchT1;
+  
+}

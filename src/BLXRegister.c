@@ -7,7 +7,7 @@
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include <stdio.h>
-
+#include "ErrorSignal.h"
 
 /*Branch with Link and Exchange
  
@@ -28,12 +28,43 @@ where:
 void BLXRegister(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction,22,19);
-  
-  coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
-  uint32_t next_instr_addr = coreReg[PC] + 2;
-  coreReg[LR] = ( getBits(next_instr_addr, 31,1) << 1) | 1;     //change the bit 0 to be 1 because when return to function call by calling bx lr
-                                                                //the bx instruction must get the value which the bit 0 is 1
-  coreReg[PC] = coreReg[Rm];
+
+  if( !inITBlock() || isLastInITBlock() || Rm != 15)   // if not inside IT block, or last instruction inside IT block or Rm is PC
+  {
+    if( getBits(coreReg[Rm],0,0) == 1)
+    {
+      if(inITBlock())
+      {
+        if( checkCondition(cond) )
+        {
+          coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
+          uint32_t next_instr_addr = coreReg[PC] + 2;
+          coreReg[LR] = ( getBits(next_instr_addr, 31,1) << 1) | 1;     //change the bit 0 to be 1 because when return to function call by calling bx lr
+                                                                        //the bx instruction must get the value which the bit 0 is 1
+          coreReg[PC] = coreReg[Rm];
+        }
+        shiftITState();
+      }
+      else
+      {
+        coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
+        uint32_t next_instr_addr = coreReg[PC] + 2;
+        coreReg[LR] = ( getBits(next_instr_addr, 31,1) << 1) | 1;     //change the bit 0 to be 1 because when return to function call by calling bx lr
+                                                                      //the bx instruction must get the value which the bit 0 is 1
+        coreReg[PC] = coreReg[Rm];
+      }
+    }
+    else
+    {
+      placePCtoVectorTable(UsageFault);
+      Throw(UsageFault);
+    }
+  }
+  else
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
 }
 
 

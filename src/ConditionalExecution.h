@@ -7,6 +7,6 @@ typedef enum {EQ,NE,CS,CC,MI,PL,VS,VC,HI,LS,GE,LT,GT,LE,AL} conditionCases;
 
 uint32_t cond;               //global variable 
 
-int checkCondition();
+int checkCondition(uint32_t condition);
 
 #endif // ConditionalExecution_H

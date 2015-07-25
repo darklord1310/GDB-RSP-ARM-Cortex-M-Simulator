@@ -3,6 +3,8 @@
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include "ModifiedImmediateConstant.h"
+#include "ITandHints.h"
+#include "ConditionalExecution.h"
 #include <stdio.h>
 
 /*Compare Immediate Encoding T1
@@ -26,7 +28,15 @@ void CMPImmediateT1(uint32_t instruction)
   uint32_t imm8 = getBits(instruction, 23 , 16);
   uint32_t Rn = getBits(instruction, 26, 24);
 
-  executeCMP(imm8, Rn );
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeCMP(imm8, Rn );
+    
+    shiftITState();
+  }
+  else
+    executeCMP(imm8, Rn );
 }
 
 

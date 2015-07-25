@@ -42,11 +42,14 @@ void (*Thumb16Opcode010000[16])(uint32_t instruction);
 void (*Thumb16Opcode1011XX[128])(uint32_t instruction);
 void (*Thumb16Opcode010001[16])(uint32_t instruction);
 void (*Thumb16LoadStoreSingleData[128])(uint32_t instruction);
+void (*Thumb16Opcode1101XX[16])(uint32_t instruction);
+
 
 void initThumb16bitsOpcode00XXXX();
 void initThumb16bitsOpcode010000();
 void initThumb16bitsOpcode010001();
 void initThumb16bitsOpcode1011XX();
 void initThumb16LoadStoreSingleData();
+void initThumb16bitsOpcode1101XX();
 
 #endif // Thumb16bitsTable_H

@@ -9,12 +9,13 @@
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
+#include "ErrorSignal.h"
 
 void initializeSimulator()
 {
   initCoreRegister();
   initializeAllTable();
-  resetMemoryBlock();
+  resetVectorTableAddress();
 }
 
 void initializeAllTable()
@@ -24,6 +25,7 @@ void initializeAllTable()
   initThumb16bitsOpcode010001();
   initThumb16bitsOpcode1011XX();
   initThumb16LoadStoreSingleData();
+  initThumb16bitsOpcode1101XX();
 }
 
 
@@ -82,7 +84,7 @@ void armSimulate16(uint32_t instruction)
 {
   uint32_t opcode1 = getBits(instruction, 31, 26);
 
-	assert(opcode1 < 58);         // because maximum opcode is 111001 which is 57, so cannot exceed 57
+  assert(opcode1 < 58);         // because maximum opcode is 111001 which is 57, so cannot exceed 57
 
   executeInstructionFrom16bitsTable(opcode1,instruction);
 
@@ -115,7 +117,6 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
   }
   else if(opcode1 < 0b101000)
   {
-    printf("here");
     opcode2 = getBits(instruction,31,25);
     (*Thumb16LoadStoreSingleData[opcode2])(instruction);
   }
@@ -123,6 +124,11 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
   {
     opcode2 = getBits(instruction,27,21);
     (*Thumb16Opcode1011XX[opcode2])(instruction);
+  }
+  else if(opcode1 < 0b111000)
+  {
+    opcode2 = getBits(instruction,27,24);
+    (*Thumb16Opcode1101XX[opcode2])(instruction);
   }
   else if(opcode1 == 0b111000 || opcode1 == 0b111001)
   {
@@ -172,19 +178,20 @@ void armStep()
 {
   uint32_t instruction;
 
-  instruction = retrieveInstructionFromMemory();                    //read the instruction from ROM
-  int check = is32or16instruction(instruction);                     //check the instruction is 16 or 32 bits
+  instruction = retrieveInstructionFromMemory();                  //read the instruction from ROM
+  int check = is32or16instruction(instruction);                   //check the instruction is 16 or 32 bits
 
-  if(check == INSTRUCTION16bits)                                    //execute 16 or 32 bits instruction
+  if(check == INSTRUCTION16bits)                                  //execute 16 or 32 bits instruction
     armSimulate16(instruction);
   //else
     //armSimulate32(instruction);
 
-  if(check == INSTRUCTION16bits)                                    //move the pc to the next instruction
+  if(check == INSTRUCTION16bits)                                  //move the pc to the next instruction
     coreReg[PC]+=2;
   else
     coreReg[PC]+=4;
 }
+
 
 
 void printRegister()

@@ -32,24 +32,38 @@ where:
 */
 void BX(uint32_t instruction)
 {
-  uint32_t Rm = getBits(instruction,22,19);
-  uint32_t IT1to0 = getBits(coreReg[xPSR], 26,25);        //get the IT[1:0] from coreReg[xPSR]
-  uint32_t IT7to2 = getBits(coreReg[xPSR], 15,10);        //get the IT[7:2] from coreReg[xPSR]
-  uint32_t IT = (IT7to2 << 2) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
+  uint32_t Rm = getBits(instruction,22,19);            
   
-  if( !inITBlock() | getBits(IT, 3,0) == 0b1000 )
-  {
-    if( getBits(coreReg[Rm],0,0) == 1)
+  if( !inITBlock() || isLastInITBlock() )                  //if not inside IT block or last instruction inside IT  
+  {                                                       //block only execute
+    if( getBits(coreReg[Rm],0,0) == 1)                    //if the bit 0 is 1 only execute
     {
-      coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
-      coreReg[PC] = coreReg[Rm];
-      shiftITState();
+      if(inITBlock())
+      {
+        if( checkCondition(cond) )
+        {
+          coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                //change the bit 0 to be 0
+          coreReg[PC] = coreReg[Rm];
+        }
+        shiftITState();
+      }
+      else
+      {
+        coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
+        coreReg[PC] = coreReg[Rm];
+      }
     }
     else
+    {
+      placePCtoVectorTable(UsageFault);
       Throw(UsageFault);
+    }
   }
   else
+  {
+    placePCtoVectorTable(UsageFault);
     Throw(UsageFault);
+  }
 }
 
 
