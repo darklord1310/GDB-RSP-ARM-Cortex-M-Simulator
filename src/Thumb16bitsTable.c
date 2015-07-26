@@ -202,5 +202,5 @@ void initThumb16bitsOpcode1101XX()
   Thumb16Opcode1101XX[0b1011] = ConditionalBranchT1;
   Thumb16Opcode1101XX[0b1100] = ConditionalBranchT1;
   Thumb16Opcode1101XX[0b1101] = ConditionalBranchT1;
-  
+  Thumb16Opcode1101XX[0b1111] = SVC;
 }
