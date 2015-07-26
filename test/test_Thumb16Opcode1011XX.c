@@ -44,6 +44,9 @@
 #include "STRRegister.h"
 #include "LDRImmediate.h"
 #include "MemoryBlock.h"
+#include "LDRLiteral.h"
+#include "ErrorSignal.h"
+#include "SVC.h"
 
 
 void setUp(void)

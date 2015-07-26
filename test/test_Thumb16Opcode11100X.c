@@ -43,7 +43,9 @@
 #include "LDRImmediate.h"
 #include "MemoryBlock.h"
 #include "LDRLiteral.h"
-
+#include "ErrorSignal.h"
+#include "CException.h"
+#include "SVC.h"
 
 void setUp(void)
 {
@@ -55,8 +57,9 @@ void tearDown(void)
 {
 }
 
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //Branch Exchange
+  //Unconditional branch
 
   
 //branch backward
@@ -88,6 +91,108 @@ void test_unconditionalBranch_given_PC_0x0800000e_should_get_PC_is_0x0800001c_xP
 }
 
 
+//test last in IT block
+void test_unconditionalBranch_given_last_in_IT_block_should_not_throw_error()
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0xe0010000;
+  
+  coreReg[PC] = 0x0800000c;
 
+  Try
+  {
+    ARMSimulator(0xbf340000);       // ITE CC
+    ARMSimulator(0x45880000);       // CMPCC r8,r1
+    ARMSimulator(instruction);
+    TEST_ASSERT_EQUAL(0x08000012, coreReg[PC]);
+    TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
+}
+
+
+
+//test if not last instruction in IT block
+void test_unconditionalBranch_given_not_last_in_IT_block_should_not_throw_error()
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0xe0010000;
+  
+  coreReg[PC] = 0x0800000c;
+
+  Try
+  {
+    ARMSimulator(0xbf340000);       // ITE CC
+    ARMSimulator(instruction);
+    ARMSimulator(0x45880000);       // CMPCS r8,r1
+    TEST_FAIL_MESSAGE("Expect error to be throw\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT,coreReg[PC]);
+    TEST_ASSERT_EQUAL(UsageFault,err);
+  }
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Conditional branch
+
+  
+//branch forward
+// test BCC label
+void test_ConditionalBranch_given_PC_0x0800000c_should_get_PC_is_0x08000012_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0xd3010000;
+  
+  resetCarryFlag();
+  coreReg[PC] = 0x0800000c;
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x08000012, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+//branch backward
+// test BCS label
+void test_ConditionalBranch_given_PC_0x0800001e_should_get_PC_is_0x08000008_xPSR_0x21000000(void)
+{
+  uint32_t instruction = 0xd2f30000;
+  
+  setCarryFlag();
+  coreReg[PC] = 0x0800001e;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x08000008, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
+
+
+// test if inside IT block
+void test_ConditionalBranch_given_inside_IT_block_should_throw_error(void)
+{
+  uint32_t instruction = 0xd2f30000;
+  CEXCEPTION_T err;
+  setCarryFlag();
+  coreReg[PC] = 0x0800001e;
+
+  Try
+  {
+    ARMSimulator(0xbf340000);       // ITE CC
+    ARMSimulator(0x45880000);       // CMPCC r8,r1
+    ARMSimulator(instruction);      // BCS label
+    TEST_FAIL_MESSAGE("Expect error to be throw\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT,coreReg[PC]);
+    TEST_ASSERT_EQUAL(UsageFault,err);
+  }
+}
 
 

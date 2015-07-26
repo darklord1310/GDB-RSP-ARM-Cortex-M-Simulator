@@ -14,16 +14,16 @@
 15 14 13 12 11 10 9 8 7  6  5  4  3 2 1 0
  1  0  1  1  1  1 1 1| firstcond|  mask  |
  
- Input  : cond    is the 4bits of firstcond 
+ Input  : cond    is the 4bits of firstcond and it is a global variable
 
  Return : 1    if condition is met
           0    if condition is not met
 */
-int checkCondition()
+int checkCondition(uint32_t condition)
 {
-  assert(cond<15);
+  assert(condition<15);
   
-  switch(cond)
+  switch(condition)
   {
     case EQ : if( isZero() )
                 return 1;

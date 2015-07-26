@@ -45,6 +45,9 @@
 #include "STRRegister.h"
 #include "LDRImmediate.h"
 #include "MemoryBlock.h"
+#include "LDRLiteral.h"
+#include "ErrorSignal.h"
+#include "SVC.h"
 
 void setUp(void)
 {
@@ -597,6 +600,46 @@ void test_CMPImmediateT1_given_0x2fc8_should_compare_immediate_20_with_R7_and_se
 }
 
 
+// test for the conditional cases
+/*            r0 = 240
+ *            r2 = 20
+ *            r3 = 40 
+ *            r4 = 100
+ *            ITTTT  AL
+ *            CMPAL r0,#20
+ *            CMPAL r2,#20
+ *            CMPAL r3,#20
+ *            CMPAL r4,#20
+ * 
+ * Expected Result:
+ *            r0 = 0xf0
+ *            r2 = 0x14
+ *            r3 = 0x28
+ *            r4 = 0x64
+ *  
+ */
+void test_CMPImmediateT1_conditional_cases_should_get_the_expected_result()
+{
+  coreReg[0] = 240;
+  coreReg[2] = 20;
+  coreReg[3] = 40;
+  coreReg[4] = 100;
+  
+  ARMSimulator(0xbfe10000);   //ITTTT AL
+  ARMSimulator(0x28140000);   //CMPAL r0,#20
+  TEST_ASSERT_EQUAL(0x2500e000,coreReg[xPSR]);
+  ARMSimulator(0x2a140000);   //CMPAL r2,#20
+  TEST_ASSERT_EQUAL(0x6100e400,coreReg[xPSR]);
+  ARMSimulator(0x2b140000);   //CMPAL r3,#20
+  TEST_ASSERT_EQUAL(0x2100e800,coreReg[xPSR]);
+  ARMSimulator(0x2c140000);   //CMPAL r4,#20
+  
+  TEST_ASSERT_EQUAL(0xf0,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x14,coreReg[2]);
+  TEST_ASSERT_EQUAL(0x28,coreReg[3]);
+  TEST_ASSERT_EQUAL(0x64,coreReg[4]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+}
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Logical Shift Left T1

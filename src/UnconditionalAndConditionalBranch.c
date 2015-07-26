@@ -5,7 +5,10 @@
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include "ErrorSignal.h"
 #include <stdio.h>
+#include "CException.h"
+#include "SVC.h"
 
 
 /*Branch causes a branch to a target address.
@@ -39,10 +42,32 @@ void UnconditionalBranchT1(uint32_t instruction)
   uint32_t imm11 = getBits(instruction,26,16);
   uint32_t signExtend = imm11 << 1;
 
-  if( getBits(signExtend, 11,11) == 1)
-    signExtend = setBits(signExtend,0b11111111111111111111,31,12);
-
-  coreReg[PC] = coreReg[PC] + signExtend + 4;
+  if( !( inITBlock() ) || isLastInITBlock())
+  { 
+    if( inITBlock() )
+    { 
+      if( checkCondition(cond) )
+      {
+        if( getBits(signExtend, 11,11) == 1)
+          signExtend = setBits(signExtend,0b11111111111111111111,31,12);
+      
+        coreReg[PC] = coreReg[PC] + signExtend + 4;
+      }
+      shiftITState();
+    }
+    else
+    {
+      if( getBits(signExtend, 11,11) == 1)
+        signExtend = setBits(signExtend,0b11111111111111111111,31,12);
+      
+      coreReg[PC] = coreReg[PC] + signExtend + 4;
+    }
+  }
+  else
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
 }
 
 
@@ -76,13 +101,29 @@ where:
 void ConditionalBranchT1(uint32_t instruction)
 {
   uint32_t imm8 = getBits(instruction,23,16);
-  uint32_t signExtend = imm8;
-  
-  if( getBits(imm8, 7,7) == 1)
-    signExtend = setBits(signExtend,0b11111111111111111111111,31,8);
-  
-  printf("signExtend: %x\n", signExtend);
-  coreReg[PC] = coreReg[PC] + signExtend;
+  uint32_t signExtend = imm8 << 1;
+  uint32_t condition = getBits(instruction,27,24);
+
+  if( !( inITBlock() ) && condition != 0b1110 )
+  { 
+    if(condition != 0b1111 )
+    {
+      if( checkCondition(condition) )
+      { 
+        if( getBits(signExtend, 8,8) == 1)
+          signExtend = setBits(signExtend,0b11111111111111111111111,31,9);
+        
+        coreReg[PC] = coreReg[PC] + signExtend + 4;
+      }
+    }
+    else
+      SVC(instruction);
+  }
+  else
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
 }
 
 

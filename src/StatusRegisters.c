@@ -26,6 +26,20 @@ int inITBlock()
 
 
 
+int isLastInITBlock()
+{
+  uint32_t IT1to0 = getBits(coreReg[xPSR], 26,25);        //get the IT[1:0] from coreReg[xPSR]
+  uint32_t IT7to2 = getBits(coreReg[xPSR], 15,10);        //get the IT[7:2] from coreReg[xPSR]
+  uint32_t IT = (IT7to2 << 2) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
+  
+  if( getBits(IT, 3,0) == 0b1000 )
+    return 1;
+  else 
+    return 0;
+  
+}
+
+
 void shiftITState()
 {
   uint32_t IT1to0 = getBits(coreReg[xPSR], 26,25);        //get the IT[1:0] from coreReg[xPSR]

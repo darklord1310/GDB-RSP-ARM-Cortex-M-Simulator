@@ -35,8 +35,15 @@ void CMNRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rn = getBits(instruction, 18, 16);
 
-
-  executeCMNRegister(Rm, Rn, -1);  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeCMNRegister(Rm, Rn, -1);
+    
+    shiftITState();
+  }
+  else
+    executeCMNRegister(Rm, Rn, -1);
 }
 
 

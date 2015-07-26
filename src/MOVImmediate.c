@@ -80,6 +80,9 @@ void MOVImmediateT2(uint32_t instruction)
     executeMOVImmediate(ModifiedConstant, Rd, statusFlag, 0);
   else
     executeMOVImmediate(ModifiedConstant, Rd, statusFlag, 1);
+  
+  if( inITBlock() )
+    shiftITState();
 }
 
 
@@ -126,6 +129,9 @@ void MOVImmediateT3(uint32_t instruction)
   constant = ( imm4 << 12) | constant;
  
   executeMOVImmediate(constant, Rd, 0,0);
+  
+  if( inITBlock() )
+    shiftITState();
 }
 
 

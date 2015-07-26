@@ -46,6 +46,8 @@
 #include "MemoryBlock.h"
 #include "LDRImmediate.h"
 #include "LDRLiteral.h"
+#include "ErrorSignal.h"
+#include "SVC.h"
 
 void setUp(void)
 {
