@@ -45,6 +45,9 @@
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
 #include "SVC.h"
+#include "ADR.h"
+#include "ADDSPRegister.h"
+#include "ADDSPImmediate.h"
 
 
 void setUp(void)

@@ -34,8 +34,6 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
-#include "MOVRegister.h"
-#include "CMPRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
 #include "RSBImmediate.h"
@@ -46,73 +44,49 @@
 #include "MemoryBlock.h"
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
+#include "CException.h"
 #include "SVC.h"
-#include "ADR.h"
 #include "ADDSPRegister.h"
 #include "ADDSPImmediate.h"
+#include "ADR.h"
 
 void setUp(void)
 {
   initializeSimulator();
 }
 
+
 void tearDown(void)
 {
 }
 
 
-// test ITTTT EQ 
-void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf010000_should_change_coreReg_to_0x03000000(void)
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ADD (SP plus immediate)
+  
+// test ADD r0,SP,#0xff
+void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r0_is_0x200010ff_xPSR_unchanged(void)
 {
-  uint32_t instruction = 0xbf010000;
+  uint32_t instruction = 0xa8ff0000;
   
+  coreReg[SP] = 0x20001000;
   ARMSimulator(instruction);
-  
-  TEST_ASSERT_EQUAL(0x03000000, coreReg[xPSR]);
-  TEST_ASSERT_EQUAL( EQ ,cond);
+
+  TEST_ASSERT_EQUAL(0x200010ff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
-// test ITTT EQ 
-void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf020000_should_change_coreReg_to_0x05000000(void)
+// test ADD r7,SP,#0xff
+void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r7_is_0x200010ff_xPSR_unchanged(void)
 {
-  uint32_t instruction = 0xbf020000;
+  uint32_t instruction = 0xafff0000;
   
+  coreReg[SP] = 0x20001000;
   ARMSimulator(instruction);
-  
-  TEST_ASSERT_EQUAL(0x05000000, coreReg[xPSR]);
-  TEST_ASSERT_EQUAL( EQ ,cond);
+
+  TEST_ASSERT_EQUAL(0x200010ff, coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
-// test ITT EQ 
-void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf040000_should_change_coreReg_to_0x01000400(void)
-{
-  uint32_t instruction = 0xbf040000;
-  
-  ARMSimulator(instruction);
-  TEST_ASSERT_EQUAL(0x01000400, coreReg[xPSR]);
-  TEST_ASSERT_EQUAL( EQ ,cond);
-}
-
-
-// test IT EQ 
-void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf080000_should_change_coreReg_to_0x01000800(void)
-{
-  uint32_t instruction = 0xbf080000;
-  
-  ARMSimulator(instruction);
-  TEST_ASSERT_EQUAL(0x01000800, coreReg[xPSR]);
-  TEST_ASSERT_EQUAL( EQ ,cond);
-}
-
-
-// test IT MI 
-void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf480000_should_change_coreReg_to_0x01004800(void)
-{
-  uint32_t instruction = 0xbf480000;
-  
-  ARMSimulator(instruction);
-  TEST_ASSERT_EQUAL(0x01004800, coreReg[xPSR]);
-  TEST_ASSERT_EQUAL( MI ,cond);
-}

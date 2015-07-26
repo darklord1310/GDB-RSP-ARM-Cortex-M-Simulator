@@ -46,6 +46,9 @@
 #include "ErrorSignal.h"
 #include "CException.h"
 #include "SVC.h"
+#include "ADR.h"
+#include "ADDSPRegister.h"
+#include "ADDSPImmediate.h"
 
 void setUp(void)
 {

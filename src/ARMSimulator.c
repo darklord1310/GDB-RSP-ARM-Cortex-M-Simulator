@@ -10,11 +10,15 @@
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
+#include "ADDSPImmediate.h"
+#include "ADR.h"
+
 
 void initializeSimulator()
 {
   initCoreRegister();
   initializeAllTable();
+  resetMemoryBlock();
   resetVectorTableAddress();
 }
 
@@ -96,41 +100,47 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {
   uint32_t opcode2;
 
-  if( opcode1 < 16)
+  if( opcode1 <= 0b001111)                              //Shift (immediate), add, subtract, move, and compare 
   {
     opcode2 = getBits(instruction,29,25);
     (*Thumb16Opcode00XXXX[opcode2])(instruction);
   }
-  else if(opcode1 == 0b010000)
+  else if(opcode1 == 0b010000)                          //Data processing 
   {
     opcode2 = getBits(instruction,25,22);
     (*Thumb16Opcode010000[opcode2])(instruction);
   }
-  else if(opcode1 == 0b010001)
+  else if(opcode1 == 0b010001)                          //Special data instructions and branch and exchange 
   {
     opcode2 = getBits(instruction,25,22);
     (*Thumb16Opcode010001[opcode2])(instruction);
   }
-  else if(opcode1 == 0b010010 || opcode1 == 0b010011)
+  else if(opcode1 == 0b010010 || opcode1 == 0b010011)   //Load from Literal Pool
   {
     LDRLiteralT1(instruction);
   }
-  else if(opcode1 < 0b101000)
+  else if(opcode1 <= 0b100111)                          //Load/store single data item 
   {
     opcode2 = getBits(instruction,31,25);
     (*Thumb16LoadStoreSingleData[opcode2])(instruction);
   }
-  else if(opcode1 < 48)
+  else if(opcode1 == 0b101000 || opcode1 == 0b101001)   //Generate PC-relative address
+  {
+    ADRT1(instruction);
+  }
+  else if(opcode1 == 0b101010 || opcode1 == 0b101011)   //Generate SP-relative address
+    ADDSPImmediateT1(instruction);
+  else if(opcode1 <= 0b101111)                          //Miscellaneous 16-bit instructions
   {
     opcode2 = getBits(instruction,27,21);
     (*Thumb16Opcode1011XX[opcode2])(instruction);
   }
-  else if(opcode1 < 0b111000)
+  else if(opcode1 <= 0b110111)                          //Conditional branch, and supervisor call
   {
     opcode2 = getBits(instruction,27,24);
     (*Thumb16Opcode1101XX[opcode2])(instruction);
   }
-  else if(opcode1 == 0b111000 || opcode1 == 0b111001)
+  else if(opcode1 == 0b111000 || opcode1 == 0b111001)   //Unconditional branch 
   {
     UnconditionalBranchT1(instruction);
   }

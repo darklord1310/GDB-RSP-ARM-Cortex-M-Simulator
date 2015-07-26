@@ -48,6 +48,10 @@
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
 #include "SVC.h"
+#include "ADDSPRegister.h"
+#include "ADDSPImmediate.h"
+#include "ADR.h"
+
 
 void setUp(void)
 {

@@ -39,8 +39,18 @@ where:
 */
 void ADDSPImmediateT1(uint32_t instruction)
 {
+  uint32_t Rd = getBits(instruction,26,24);
+  uint32_t imm8 = getBits(instruction,23,16);
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[Rd] = coreReg[SP] + imm8;
     
-    
+    shiftITState();
+  }
+  else
+    coreReg[Rd] = coreReg[SP] + imm8;
   
 }
 
@@ -77,7 +87,7 @@ where:
 */
 void ADDSPImmediateT2(uint32_t instruction)
 {
+  uint32_t imm7 = getBits(instruction,22,16);  
     
-    
-  
+  coreReg[SP] = coreReg[SP] + imm7;
 }
