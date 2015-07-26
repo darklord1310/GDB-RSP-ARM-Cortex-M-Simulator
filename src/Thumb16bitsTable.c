@@ -1,6 +1,18 @@
 #include "Thumb16bitsTable.h"
 
 
+
+
+void initThumb16Table()
+{
+    
+    
+    
+  
+}
+
+
+
 /*
 000xx     Logical Shift Left LSL (immediate) on page A6-134
 
