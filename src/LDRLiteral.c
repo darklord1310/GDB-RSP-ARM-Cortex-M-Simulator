@@ -10,6 +10,8 @@
 #include "MemoryBlock.h"
 #include <stdio.h>
 #include "LDRImmediate.h"
+#include "ErrorSignal.h"
+#include "ADR.h"
 
 
 /*Load Register(literal) Encoding T1 
@@ -44,12 +46,51 @@ void LDRLiteralT1(uint32_t instruction)
 {
   uint32_t imm8 = getBits(instruction,23,16);  
   uint32_t Rt   = getBits(instruction,26,24);  
-  printf("Rt: %x\n", Rt);
-  printf("imm8: %x\n", imm8);
   
-  uint32_t address = coreReg[PC] + imm8;
-  printf("address: %x\n", address);
-  uint32_t wordLoaded = loadWordFromMemory(address);
-  coreReg[Rt] = wordLoaded;
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      uint32_t temp = allignPC(coreReg[PC] + 4, 4);             // the PC need to add with 4 and allign it
+                                                                // and the value is written into temp
+      
+      uint32_t imm10 = imm8 << 2;                               // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
+      
+      uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
+                                                                // a word from the memory
+      
+      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register
+      
+    }
+
+    shiftITState();
+  }
+  else
+  {
+    uint32_t temp = allignPC(coreReg[PC] + 4, 4);             // the PC need to add with 4 and allign it
+                                                              // and the value is written into temp
+    
+    uint32_t imm10 = imm8 << 2;                               // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
+    
+    uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
+                                                              // a word from the memory
+    
+    coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register
+    
+  }
+}
+
+
+/*  This function will load a word from the memory based on the address given
+ * 
+ *  Input :   address     is the start address where it will load a word from it
+ * 
+ *  Return:   the wordLoaded
+ * 
+ */
+uint32_t executeLDR(uint32_t address)
+{
+  uint32_t wordLoaded = loadWordFromMemory(address);        // load the word from the memory
   
+  return wordLoaded;
 }

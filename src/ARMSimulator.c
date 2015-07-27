@@ -166,7 +166,6 @@ uint32_t retrieveInstructionFromMemory()
 {
   uint32_t instructionRetrieved = ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC])]) << 16 |
                                   ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC] + 1)]) << 24;
-  // printf("instructionRetrieved: %x\n", instructionRetrieved);
 
   int check = is32or16instruction(instructionRetrieved);
 
@@ -177,7 +176,7 @@ uint32_t retrieveInstructionFromMemory()
     uint32_t lower16bits = ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC] + 2)]) |
                            ((short int)memoryBlock[virtualMemToPhysicalMem(coreReg[PC] + 3)]) << 8;
     instructionRetrieved = instructionRetrieved | lower16bits;
-    // printf("instructionRetrieved: %x\n", instructionRetrieved);
+
     return instructionRetrieved;
   }
 }

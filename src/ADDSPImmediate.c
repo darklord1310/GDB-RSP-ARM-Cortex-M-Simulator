@@ -89,5 +89,13 @@ void ADDSPImmediateT2(uint32_t instruction)
 {
   uint32_t imm7 = getBits(instruction,22,16);  
     
-  coreReg[SP] = coreReg[SP] + imm7;
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[SP] = coreReg[SP] + imm7;
+    
+    shiftITState();
+  }
+  else
+    coreReg[SP] = coreReg[SP] + imm7;
 }

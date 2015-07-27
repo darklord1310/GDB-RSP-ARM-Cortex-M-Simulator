@@ -92,7 +92,7 @@ void test_is32or16instruction_given_16bits_instruction_should_return_bit16()
  * ROM[0x10002]      = 0xff
  * ROM[0x10003]      = 0x70
  *
- * Expect: retrievedValue = 0xf64370ff
+ * Expect: retrievedValue = 0xf6f370ff
  *
  */
 void test_retrieveInstructionFromROM_given_32bits_instruction_and_ROM_value_as_above_should_retrieve_correctly()

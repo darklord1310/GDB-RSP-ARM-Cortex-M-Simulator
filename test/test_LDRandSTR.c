@@ -65,29 +65,88 @@ void tearDown(void)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Literal
-  
-//test ldr r3, [pc,#32]
-/*
- * 
- * 
- * 
+
+//test bit 1 is 0 after PC add with 4
+//test ldr r0, [pc,#36]
+/*  PC = 0x08000008
+ *  Memory address 0x08000030 = 0x44
+ *  Memory address 0x08000031 = 0x44
+ *  Memory address 0x08000032 = 0x44
+ *  Memory address 0x08000033 = 0x84
  */
-void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r0_wth_0xdeadbeef(void)
+void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r0_wth_0x84444444(void)
 {
-  memoryBlock[ virtualMemToPhysicalMem(0x08000018) ] = 0xbe;
-  memoryBlock[ virtualMemToPhysicalMem(0x08000019) ] = 0xbe;
-  memoryBlock[ virtualMemToPhysicalMem(0x08000020) ] = 0xad;
-  memoryBlock[ virtualMemToPhysicalMem(0x08000021) ] = 0xde;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000030) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000031) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000032) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000033) ] = 0x84;
   
-  coreReg[PC] = 0x0800031e;
-  uint32_t instruction = 0x4b080000;
-  ARMSimulator(instruction);                  //ldr r3, [pc,#32]
-  
-  TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[0]);
+  coreReg[PC] = 0x08000008;
+  uint32_t instruction = 0x48090000;
+  ARMSimulator(instruction);                  //ldr r0, [pc,#36]
+ 
+  TEST_ASSERT_EQUAL( 0x84444444, coreReg[0]);
 }
   
 
+  
+//test bit 1 is 1 after PC add with 4
+//test ldr r3, [pc,#844]
+/*  PC = 0x08000016
+ *  Memory address 0x08000364 = 0xef
+ *  Memory address 0x08000365 = 0xbe
+ *  Memory address 0x08000366 = 0xad
+ *  Memory address 0x08000367 = 0xde
+ */
+void test_LDRLiteralT1_given_ROM_value_as_above_should_load_r3_wth_0xdeadbeef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x08000364) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000365) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000366) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000367) ] = 0xde;
+  
+  coreReg[PC] = 0x08000016;
+  uint32_t instruction = 0x4bd30000;
+  ARMSimulator(instruction);                  //ldr r3, [pc,#844]
+  
+  TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[3]);
+}
 
+
+
+//test inside IT block
+//test ldr r0, [pc,#36]
+/*     ldr r1, [pc,#36]
+ *  PC = 0x0800000a
+ *  Memory address 0x08000030 = 0x44
+ *  Memory address 0x08000031 = 0x44
+ *  Memory address 0x08000032 = 0x44
+ *  Memory address 0x08000033 = 0x08
+ *  Memory address 0x08000034 = 0x01
+ *  Memory address 0x08000035 = 0x01
+ *  Memory address 0x08000036 = 0x01
+ *  Memory address 0x08000037 = 0x00
+ */
+void test_LDRLiteralT1_given_inside_IT_block_should_load_r0_0x08444444_xPSR_0x01000000(void)
+{
+
+  memoryBlock[ virtualMemToPhysicalMem(0x08000030) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000031) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000032) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000033) ] = 0x08;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000034) ] = 0x01;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000035) ] = 0x01;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000036) ] = 0x01;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000037) ] = 0x00;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf340000);                   //ITE CC
+  coreReg[PC] = 0x0800000a;
+  ARMSimulator(0x48090000);                   //ldr r0, [pc,#36]
+  TEST_ASSERT_EQUAL( 0x08444444, coreReg[0]);
+  ARMSimulator(0x49090000);                   //ldr r1, [pc,#36]
+  TEST_ASSERT_EQUAL( 0x01000000, coreReg[xPSR]);
+}
   
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Immediate
