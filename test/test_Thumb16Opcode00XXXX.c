@@ -51,7 +51,7 @@
 #include "ADR.h"
 #include "ADDSPRegister.h"
 #include "ADDSPImmediate.h"
-
+#include "STRImmediate.h"
 
 
 void setUp(void)

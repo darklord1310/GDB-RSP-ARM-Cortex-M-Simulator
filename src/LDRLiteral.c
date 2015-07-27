@@ -59,8 +59,7 @@ void LDRLiteralT1(uint32_t instruction)
       uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
                                                                 // a word from the memory
       
-      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register
-      
+      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
     }
 
     shiftITState();
@@ -76,7 +75,6 @@ void LDRLiteralT1(uint32_t instruction)
                                                               // a word from the memory
     
     coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register
-    
   }
 }
 
