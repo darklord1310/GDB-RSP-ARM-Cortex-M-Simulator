@@ -198,7 +198,11 @@ void initThumb16LoadStoreSingleData()
   Thumb16LoadStoreSingleData[0b1000001] = STRHImmediateT1;
   Thumb16LoadStoreSingleData[0b1000010] = STRHImmediateT1;
   Thumb16LoadStoreSingleData[0b1000011] = STRHImmediateT1;
-
+  Thumb16LoadStoreSingleData[0b1001100] = LDRImmediateT2;
+  Thumb16LoadStoreSingleData[0b1001101] = LDRImmediateT2;
+  Thumb16LoadStoreSingleData[0b1001110] = LDRImmediateT2;
+  Thumb16LoadStoreSingleData[0b1001111] = LDRImmediateT2;
+      
   
 
 }

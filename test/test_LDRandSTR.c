@@ -408,3 +408,60 @@ void test_LDRHImmediateT1_given_ROM_value_as_above_should_load_r4_wth_0x0f02(voi
   TEST_ASSERT_EQUAL( 0x0f02, coreReg[4]);
   TEST_ASSERT_EQUAL( 0x2000001c, coreReg[3]);
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDR Immediate T2
+
+//test ldr r4, [SP,#0x00]
+/*  SP = 0x20000688
+ *  Memory address 0x20000688 = 0xef
+ *  Memory address 0x20000689 = 0xbe
+ *  Memory address 0x2000068a = 0xad
+ *  Memory address 0x2000068b = 0xde
+ */
+void test_LDRImmediateT2_given_ROM_value_as_above_should_load_r4_wth_0xdeadbeef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x20000688) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000689) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068a) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068b) ] = 0xde;
+  
+  coreReg[SP] = 0x20000688;
+  uint32_t instruction = 0x9c000000;
+  ARMSimulator(instruction);                  //ldr r4, [SP,#0x00]
+  
+  TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[4]);
+}
+
+
+
+//test ldr r4, [SP,#0x04]
+/*  SP = 0x20000688
+ *  Memory address 0x20000688 = 0xef
+ *  Memory address 0x20000689 = 0xbe
+ *  Memory address 0x2000068a = 0xad
+ *  Memory address 0x2000068b = 0xde
+ *  Memory address 0x2000068c = 0x02
+ *  Memory address 0x2000068d = 0x0f
+ *  Memory address 0x2000068e = 0x0f
+ *  Memory address 0x2000068f = 0x12
+ */
+void test_LDRImmediateT2_given_ROM_value_as_above_should_load_r4_wth_0x120f0f02(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x20000688) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000689) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068a) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068b) ] = 0xde;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068c) ] = 0x02;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068d) ] = 0x0f;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068e) ] = 0x0f;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000068f) ] = 0x12;
+  
+  coreReg[SP] = 0x20000688;
+  uint32_t instruction = 0x9c010000;
+  ARMSimulator(instruction);                  //ldr r4, [SP,#0x04]
+
+  TEST_ASSERT_EQUAL( 0x120f0f02, coreReg[4]);
+}
+
