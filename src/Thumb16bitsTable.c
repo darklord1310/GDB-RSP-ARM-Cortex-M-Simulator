@@ -178,6 +178,32 @@ void initThumb16LoadStoreSingleData()
   Thumb16LoadStoreSingleData[0b0110101] = LDRImmediateT1;
   Thumb16LoadStoreSingleData[0b0110110] = LDRImmediateT1;
   Thumb16LoadStoreSingleData[0b0110111] = LDRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111100] = LDRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111101] = LDRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111110] = LDRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111111] = LDRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000100] = LDRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000101] = LDRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000110] = LDRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000111] = LDRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110000] = STRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110001] = STRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110010] = STRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0110011] = STRImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111000] = STRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111001] = STRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111010] = STRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b0111011] = STRBImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000000] = STRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000001] = STRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000010] = STRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1000011] = STRHImmediateT1;
+  Thumb16LoadStoreSingleData[0b1001100] = LDRImmediateT2;
+  Thumb16LoadStoreSingleData[0b1001101] = LDRImmediateT2;
+  Thumb16LoadStoreSingleData[0b1001110] = LDRImmediateT2;
+  Thumb16LoadStoreSingleData[0b1001111] = LDRImmediateT2;
+      
+  
 
 }
 
@@ -202,5 +228,5 @@ void initThumb16bitsOpcode1101XX()
   Thumb16Opcode1101XX[0b1011] = ConditionalBranchT1;
   Thumb16Opcode1101XX[0b1100] = ConditionalBranchT1;
   Thumb16Opcode1101XX[0b1101] = ConditionalBranchT1;
-  
+  Thumb16Opcode1101XX[0b1111] = SVC;
 }

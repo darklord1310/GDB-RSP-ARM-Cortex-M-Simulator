@@ -48,6 +48,11 @@
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
 #include "SVC.h"
+#include "ADR.h"
+#include "ADDSPRegister.h"
+#include "ADDSPImmediate.h"
+#include "STRImmediate.h"
+
 
 void setUp(void)
 {
@@ -1293,7 +1298,7 @@ void test_SUBRegisterToRegisterT1_given_0x1b1a_and_r3_is_3000_r4_is_2000_should_
   
   coreReg[3] = 3000;
   coreReg[4] = 2000;
-  SUBRegisterToRegisterT1(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x3e8, coreReg[2]);
   TEST_ASSERT_EQUAL(1,isCarry());
@@ -1308,7 +1313,7 @@ void test_SUBRegisterToRegisterT1_given_0x1b1a_and_r3_is_0xffffffff_r4_is_0x8000
   
   coreReg[3] = 0xffffffff;
   coreReg[4] = 0x80000000;
-  SUBRegisterToRegisterT1(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x7fffffff, coreReg[2]);
   TEST_ASSERT_EQUAL(1, isCarry() );
@@ -1408,4 +1413,129 @@ void test_SUBRegisterToRegisterT1_test_case_2_should_get_the_expected_result()
   TEST_ASSERT_EQUAL(0x44,coreReg[6]);
   TEST_ASSERT_EQUAL(0x50,coreReg[7]);
   TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ADD SP Register T1
+
+//test add R3,SP,R3 given R3 = 0x18888888, SP = 0x20010000
+void test_ADDSPRegisterT1_given_r3_is_0x18888888_SP_is_0x20010000_should_get_0x38889888_at_r3_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x446b0000;
+  
+  coreReg[SP] = 0x20001000;
+  coreReg[3]  = 0x18888888;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x38889888, coreReg[3]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+//test add R15,SP,R15 given R15 = 0x08000028, SP = 0x20010000
+void test_ADDSPRegisterT1_given_r15_is_0x08000028_SP_is_0x20010000_should_get_0x2800102c_at_r15_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x44ef0000;
+  
+  coreReg[SP] = 0x20001000;
+  coreReg[15]  = 0x08000028;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x2800102c, coreReg[15]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+// test for the conditional cases
+/* 
+ *            r0 = 0x84444444
+ *            r1 = 0x0fffffff
+ *            IT CC
+ *            addcc   PC,SP,PC
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            SP = 0x28001028
+ *  
+ */
+void test_ADDSPRegisterT1_conditonal_cases_should_get_the_expected_result()
+{
+  coreReg[0] = 0x84444444;
+  coreReg[1] = 0x0fffffff;
+  coreReg[SP] = 0x20001000;
+  coreReg[PC] = 0x08000026;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf380000);   //IT CC
+  ARMSimulator(0x44ef0000);   //addcc   PC,SP,PC
+
+  TEST_ASSERT_EQUAL(0x2800102a,coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ADD SP Register T2
+
+//test add SP,R0 given R0 = 0x84444444, SP = 0x20010000
+void test_ADDSPRegisterT2_given_r0_is_0x84444444_SP_is_0x20010000_should_get_0xa4445444_at_SP_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x44850000;
+  
+  coreReg[SP] = 0x20001000;
+  coreReg[0]  = 0x84444444;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0xa4445444, coreReg[SP]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+
+//test add SP,R15 given R15 = 0x08000028, SP = 0x20010000
+void test_ADDSPRegisterT2_given_r15_is_0x08000028_SP_is_0x20010000_should_get_0x2800102c_at_SP_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x44fd0000;
+  
+  coreReg[SP] = 0x20001000;
+  coreReg[PC]  = 0x08000028;
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x2800102c, coreReg[SP]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+// test for the conditional cases
+/* 
+ *            r0 = 0x84444444
+ *            r1 = 0x0fffffff
+ *            ITT CC
+ *            addcc   SP,PC
+ *            LSLCC   r0,r1
+ * 
+ * Expected Result:
+ *            r0 = 0x00
+ *            SP = 0x28001028
+ *  
+ */
+void test_ADDSPRegisterT2_conditonal_cases_should_get_the_expected_result()
+{
+  coreReg[0] = 0x84444444;
+  coreReg[1] = 0x0fffffff;
+  coreReg[SP] = 0x20001000;
+  coreReg[PC] = 0x08000024;
+  
+  resetCarryFlag();
+  ARMSimulator(0xbf3c0000);   //ITT CC
+  ARMSimulator(0x44fd0000);   //addcc   SP,PC
+  TEST_ASSERT_EQUAL(0x01003800,coreReg[xPSR]);
+  ARMSimulator(0x40880000);   //LSLCC   r0,r1
+
+  TEST_ASSERT_EQUAL(0x00,coreReg[0]);
+  TEST_ASSERT_EQUAL(0x28001028,coreReg[SP]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }

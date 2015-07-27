@@ -7,6 +7,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include <stdio.h>
 
 
 /*Add Register To Register Encoding T1
@@ -62,7 +63,9 @@ void ADDRegisterToRegisterT1(uint32_t instruction)
 
 /*Add Register To Register Encoding T2
     ADD<c> <Rdn>,<Rm>
-      
+    
+    setflags = FALSE
+    
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
   |0   1  0  0  0  1| 0  0|DN|     Rm    |   Rdn  |                unused               |
 
@@ -96,15 +99,32 @@ void ADDRegisterToRegisterT2(uint32_t instruction)
   uint32_t DN = getBits(instruction,23,23);
   
   Rdn = (DN << 3) | Rdn;
-  
   assert(Rm <= 0x0f);
   assert(Rdn <= 0x0f);
   assert(DN <= 1);
   
-  if(Rdn == 0b1101 || Rm == 0b1101)
-    ADDSPRegisterT1(instruction);
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(Rm == 0b1101)
+        ADDSPRegisterT1(instruction);
+      else if(Rdn == 0b1101)
+        ADDSPRegisterT2(instruction);
+      else
+        executeADDRegister(Rdn, Rdn, Rm, 0);
+    }
+    shiftITState();
+  }
   else
-    executeADDRegister(Rdn, Rdn, Rm, 0);
+  {
+    if(Rm == 0b1101)
+      ADDSPRegisterT1(instruction);
+    else if(Rdn == 0b1101)
+      ADDSPRegisterT2(instruction);
+    else
+      executeADDRegister(Rdn, Rdn, Rm, 0);
+  }
   
 }
 
