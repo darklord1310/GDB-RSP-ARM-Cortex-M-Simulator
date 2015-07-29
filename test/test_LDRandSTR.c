@@ -465,3 +465,162 @@ void test_LDRImmediateT2_given_ROM_value_as_above_should_load_r4_wth_0x120f0f02(
   TEST_ASSERT_EQUAL( 0x120f0f02, coreReg[4]);
 }
 
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STR Immediate T1
+
+  
+//test str r3, [r4,#8]
+/*  r3 = 0x0b19face
+ *  r4 = 0x20000000
+ *  Expected:
+ *              Memory address 0x20000008 = 0xce
+ *              Memory address 0x20000009 = 0xfa
+ *              Memory address 0x2000000a = 0x19
+ *              Memory address 0x2000000b = 0x0b
+ */
+void test_STRImmediateT1_given_offset_8_r3_0x0b19face_and_r4_0x20000000_should_get_expected_result(void)
+{
+ 
+  coreReg[3] = 0x0b19face;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x60a30000;
+  ARMSimulator(instruction);                  //str r3, [r4,#8]
+ 
+  TEST_ASSERT_EQUAL( 0xce, memoryBlock[ virtualMemToPhysicalMem(0x20000008) ]);
+  TEST_ASSERT_EQUAL( 0xfa, memoryBlock[ virtualMemToPhysicalMem(0x20000009) ]);
+  TEST_ASSERT_EQUAL( 0x19, memoryBlock[ virtualMemToPhysicalMem(0x2000000a) ]);
+  TEST_ASSERT_EQUAL( 0x0b, memoryBlock[ virtualMemToPhysicalMem(0x2000000b) ]);
+}
+
+
+
+
+//test str r3, [r4,#0]
+/*  r3 = 0x0b19face
+ *  r4 = 0x20000000
+ *  Expected:
+ *              Memory address 0x20000000 = 0xce
+ *              Memory address 0x20000001 = 0xfa
+ *              Memory address 0x20000002 = 0x19
+ *              Memory address 0x20000003 = 0x0b
+ */
+void test_STRImmediateT1_given_offset_0_r3_0x0b19face_and_r4_0x20000000_should_get_expected_result(void)
+{
+ 
+  coreReg[3] = 0x0b19face;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x60230000;
+  ARMSimulator(instruction);                  //str r3, [r4,#0]
+ 
+  TEST_ASSERT_EQUAL( 0xce, memoryBlock[ virtualMemToPhysicalMem(0x20000000) ]);
+  TEST_ASSERT_EQUAL( 0xfa, memoryBlock[ virtualMemToPhysicalMem(0x20000001) ]);
+  TEST_ASSERT_EQUAL( 0x19, memoryBlock[ virtualMemToPhysicalMem(0x20000002) ]);
+  TEST_ASSERT_EQUAL( 0x0b, memoryBlock[ virtualMemToPhysicalMem(0x20000003) ]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STRB Immediate T1
+
+  
+//test strb r3, [r4,#8]
+/*  r3 = 0x0b19face
+ *  r4 = 0x20000000
+ *  Expected:
+ *              Memory address 0x20000008 = 0xce
+ *              Memory address 0x20000009 = 0xfa
+ *              Memory address 0x2000000a = 0x19
+ *              Memory address 0x2000000b = 0x0b
+ */
+void test_STRBImmediateT1_given_offset_8_r3_0x0b19face_and_r4_0x20000000_should_get_expected_result(void)
+{
+  coreReg[3] = 0x0b19face;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x72230000;
+  ARMSimulator(instruction);                  //strb r3, [r4,#8]
+ 
+  TEST_ASSERT_EQUAL( 0xce, memoryBlock[ virtualMemToPhysicalMem(0x20000008) ]);
+  TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x20000009) ]);
+  TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x2000000a) ]);
+  TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x2000000b) ]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STRH Immediate T1
+  
+//test strh r3, [r4,#8]
+/*  r3 = 0x0b19face
+ *  r4 = 0x20000000
+ *  Expected:
+ *              Memory address 0x20000008 = 0xce
+ *              Memory address 0x20000009 = 0xfa
+ *              Memory address 0x2000000a = 0x19
+ *              Memory address 0x2000000b = 0x0b
+ */
+void test_STRHImmediateT1_given_offset_8_r3_0x0b19face_and_r4_0x20000000_should_get_expected_result(void)
+{
+  coreReg[3] = 0x0b19face;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x81230000;
+  ARMSimulator(instruction);                  //strh r3, [r4,#8]
+ 
+  TEST_ASSERT_EQUAL( 0xce, memoryBlock[ virtualMemToPhysicalMem(0x20000008) ]);
+  TEST_ASSERT_EQUAL( 0xfa, memoryBlock[ virtualMemToPhysicalMem(0x20000009) ]);
+  TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x2000000a) ]);
+  TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x2000000b) ]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STR Immediate T2
+  
+//test str r3, [SP,#8]
+/*  r3 = 0x0b19face
+ *  SP = 0x20000688
+ *  Expected:
+ *              Memory address 0x20000008 = 0xce
+ *              Memory address 0x20000009 = 0xfa
+ *              Memory address 0x2000000a = 0x19
+ *              Memory address 0x2000000b = 0x0b
+ */
+void test_STRImmediateT2_given_offset_8_r3_0x0b19face_and_SP_0x20000688_should_get_expected_result(void)
+{
+ 
+  coreReg[3] = 0x0b19face;
+  coreReg[SP] = 0x20000688;
+  uint32_t instruction = 0x93020000;
+  ARMSimulator(instruction);                  //str r3, [SP,#8]
+ 
+  TEST_ASSERT_EQUAL( 0xce, memoryBlock[ virtualMemToPhysicalMem(0x20000690) ]);
+  TEST_ASSERT_EQUAL( 0xfa, memoryBlock[ virtualMemToPhysicalMem(0x20000691) ]);
+  TEST_ASSERT_EQUAL( 0x19, memoryBlock[ virtualMemToPhysicalMem(0x20000692) ]);
+  TEST_ASSERT_EQUAL( 0x0b, memoryBlock[ virtualMemToPhysicalMem(0x20000693) ]);
+}
+
+
+
+
+//test str r3, [SP,#0]
+/*  r3 = 0x0b19face
+ *  SP = 0x20000688
+ *  Expected:
+ *              Memory address 0x20000688 = 0xce
+ *              Memory address 0x20000689 = 0xfa
+ *              Memory address 0x2000068a = 0x19
+ *              Memory address 0x2000068b = 0x0b
+ */
+void test_STRImmediateT2_given_offset_0_r3_0x0b19face_and_SP_0x20000688_should_get_expected_result(void)
+{
+ 
+  coreReg[3] = 0x0b19face;
+  coreReg[SP] = 0x20000688;
+  uint32_t instruction = 0x93000000;
+  ARMSimulator(instruction);                  //str r3, [SP,#0]
+ 
+  TEST_ASSERT_EQUAL( 0xce, memoryBlock[ virtualMemToPhysicalMem(0x20000688) ]);
+  TEST_ASSERT_EQUAL( 0xfa, memoryBlock[ virtualMemToPhysicalMem(0x20000689) ]);
+  TEST_ASSERT_EQUAL( 0x19, memoryBlock[ virtualMemToPhysicalMem(0x2000068a) ]);
+  TEST_ASSERT_EQUAL( 0x0b, memoryBlock[ virtualMemToPhysicalMem(0x2000068b) ]);
+}
