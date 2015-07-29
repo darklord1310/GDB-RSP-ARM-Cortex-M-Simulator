@@ -50,7 +50,7 @@
 #include "ADDSPImmediate.h"
 #include "ADR.h"
 #include "STRImmediate.h"
-
+#include "LDRRegister.h"
 
 
 void setUp(void)

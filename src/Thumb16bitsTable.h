@@ -38,6 +38,8 @@
 #include "LDRImmediate.h"
 #include "SVC.h"
 #include "STRImmediate.h"
+#include "LDRRegister.h"
+
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);
 void (*Thumb16Opcode010000[16])(uint32_t instruction);

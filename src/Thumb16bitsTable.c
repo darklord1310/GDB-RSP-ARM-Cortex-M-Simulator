@@ -206,7 +206,13 @@ void initThumb16LoadStoreSingleData()
   Thumb16LoadStoreSingleData[0b1001001] = STRImmediateT2; 
   Thumb16LoadStoreSingleData[0b1001010] = STRImmediateT2; 
   Thumb16LoadStoreSingleData[0b1001011] = STRImmediateT2; 
-
+  Thumb16LoadStoreSingleData[0b0101001] = STRHRegisterT1;
+  Thumb16LoadStoreSingleData[0b0101010] = STRBRegisterT1; 
+  Thumb16LoadStoreSingleData[0b0101100] = LDRRegisterT1; 
+  Thumb16LoadStoreSingleData[0b0101011] = LDRSBRegisterT1;
+  Thumb16LoadStoreSingleData[0b0101101] = LDRHRegisterT1;
+  Thumb16LoadStoreSingleData[0b0101110] = LDRBRegisterT1;
+  Thumb16LoadStoreSingleData[0b0101111] = LDRSHRegisterT1;
 }
 
 /*

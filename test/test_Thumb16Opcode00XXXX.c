@@ -52,6 +52,7 @@
 #include "ADDSPRegister.h"
 #include "ADDSPImmediate.h"
 #include "STRImmediate.h"
+#include "LDRRegister.h"
 
 
 void setUp(void)
