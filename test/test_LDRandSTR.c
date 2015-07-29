@@ -713,3 +713,194 @@ void test_STRBRegisterT1_given_r3_0x0b19face_r4_0x20000000_r1_0x000000ce_should_
   TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ]);
   TEST_ASSERT_EQUAL( 0x00, memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ]);
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Load Register T1
+  
+  
+//test ldr r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0xef
+ *  Memory address 0x200000cf = 0xbe
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0xdeadbeef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x58630000;
+  ARMSimulator(instruction);                  //ldr r3, [r4,r1]
+  
+  TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[3]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDRH Register T1
+  
+//test ldrh r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0xef
+ *  Memory address 0x200000cf = 0xbe
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRHRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0xbeef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x5a630000;
+  ARMSimulator(instruction);                  //ldrh r3, [r4,r1]
+  
+  TEST_ASSERT_EQUAL( 0xbeef, coreReg[3]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDRB Register T1
+  
+//test ldrb r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0xef
+ *  Memory address 0x200000cf = 0xbe
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRBRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0xef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x5c630000;
+  ARMSimulator(instruction);                  //ldrb r3, [r4,r1]
+  
+  TEST_ASSERT_EQUAL( 0xef, coreReg[3]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDRSB Register T1
+
+//case : the signed bit is 1
+//test ldrsb r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0xef
+ *  Memory address 0x200000cf = 0xbe
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRSBRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0xffffffef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x56630000;
+  ARMSimulator(instruction);                  //ldrsb r3, [r4,r1]
+
+  TEST_ASSERT_EQUAL( 0xffffffef, coreReg[3]);
+}
+
+
+
+//case : the signed bit is 0
+//test ldrsb r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0x01
+ *  Memory address 0x200000cf = 0xbe
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRSBRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0x01(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0x01;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x56630000;
+  ARMSimulator(instruction);                  //ldrsb r3, [r4,r1]
+
+  TEST_ASSERT_EQUAL( 0x01, coreReg[3]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDRSH Register T1
+
+  
+//case : the signed bit is 1
+//test ldrsb r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0xef
+ *  Memory address 0x200000cf = 0xbe
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRSHRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0xffffbeef(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x5e630000;
+  ARMSimulator(instruction);                  //ldrsb r3, [r4,r1]
+
+  TEST_ASSERT_EQUAL( 0xffffbeef, coreReg[3]);
+}
+
+
+
+//case : the signed bit is 0
+//test ldrsb r3, [r4,r1]
+/*  r3 = 0x2000001c
+ *  r4 = 0x20000000
+ *  Memory address 0x200000ce = 0x0c
+ *  Memory address 0x200000cf = 0x0d
+ *  Memory address 0x200000d0 = 0xad
+ *  Memory address 0x200000d1 = 0xde
+ */
+void test_LDRSHRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0x0000000d0c(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x200000ce) ] = 0x0c;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000cf) ] = 0x0d;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d0) ] = 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x200000d1) ] = 0xde;
+  
+  coreReg[1] = 0x000000ce;
+  coreReg[4] = 0x20000000;
+  uint32_t instruction = 0x5e630000;
+  ARMSimulator(instruction);                  //ldrsb r3, [r4,r1]
+
+  TEST_ASSERT_EQUAL( 0x0000000d0c, coreReg[3]);
+}
