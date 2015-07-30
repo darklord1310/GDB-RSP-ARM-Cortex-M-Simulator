@@ -135,6 +135,14 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
     opcode2 = getBits(instruction,27,21);
     (*Thumb16Opcode1011XX[opcode2])(instruction);
   }
+  else if(opcode1 == 0b110001 || opcode1 == 0b110000)   //Store Multiple Registers
+  {
+    STMRegisterT1(instruction);
+  }
+  else if(opcode1 == 0b110010 || opcode1 == 0b110011)   //Load Multiple Registers
+  {
+    LDMRegisterT1(instruction);
+  }
   else if(opcode1 <= 0b110111)                          //Conditional branch, and supervisor call
   {
     opcode2 = getBits(instruction,27,24);
