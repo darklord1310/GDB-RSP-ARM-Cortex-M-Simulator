@@ -941,7 +941,7 @@ void test_LDRSHRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0x0000000d
  *  Memory address 0x20000012 = 0xcd
  *  Memory address 0x20000013 = 0xab
  */
-void test_STMRegisterT1_given_tesand_the_writeback_register_is_not_in_the_register_list_should_get_the_expected_result(void)
+void test_STMRegisterT1_given_test_case_1_and_the_writeback_register_is_not_in_the_register_list_should_get_the_expected_result(void)
 {
   CEXCEPTION_T err;
   coreReg[2] = 0x20000000;
@@ -982,7 +982,6 @@ void test_STMRegisterT1_given_tesand_the_writeback_register_is_not_in_the_regist
   {
     TEST_FAIL_MESSAGE("Not expect error to be throw\n");
   }
- 
 }
 
 
@@ -1043,3 +1042,147 @@ void test_STMRegisterT1_given_test_case_2_and_the_writeback_register_is_not_in_t
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Load Multiple Register T1
+  
+//test case 1
+//test ldm r2!, {r3,r7}
+/*  r2 = 0x20000000
+ * 
+ *  Memory address 0x20000000 = 0xef
+ *  Memory address 0x20000001 = 0xfa
+ *  Memory address 0x20000002 = 0x19
+ *  Memory address 0x20000003 = 0x0b
+ *  Memory address 0x20000004 = 0x78
+ *  Memory address 0x20000005 = 0x56
+ *  Memory address 0x20000006 = 0x34
+ *  Memory address 0x20000007 = 0x12
+ *  Memory address 0x20000008 = 0xef
+ *  Memory address 0x20000009 = 0xbe
+ *  Memory address 0x2000000a = 0xad
+ *  Memory address 0x2000000b = 0xde
+ *  Memory address 0x2000000c = 0x00
+ *  Memory address 0x2000000d = 0x00
+ *  Memory address 0x2000000e = 0x00
+ *  Memory address 0x2000000f = 0x20
+ *  Memory address 0x20000010 = 0x00
+ *  Memory address 0x20000011 = 0xef
+ *  Memory address 0x20000012 = 0xcd
+ *  Memory address 0x20000013 = 0xab
+ * 
+ */
+void test_LDMRegisterT1_given_test_case_1_and_the_writeback_register_is_not_in_the_register_list_should_get_the_expected_result(void)
+{
+  CEXCEPTION_T err;
+  coreReg[2] = 0x20000000;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000000) ]= 0xce;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000001) ]= 0xfa;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000002) ]= 0x19;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000003) ]= 0x0b;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000004) ]= 0x78;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000005) ]= 0x56;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000006) ]= 0x34;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000007) ]= 0x12;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000008) ]= 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000009) ]= 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000a) ]= 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000b) ]= 0xde;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000c) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000d) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000e) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000f) ]= 0x20;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000010) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000011) ]= 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000012) ]= 0xcd;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000013) ]= 0xab;
+  
+  uint32_t instruction = 0xcaf80000;
+  
+  Try
+  {
+    ARMSimulator(instruction);                  //ldm r2!, {r3,r7}
+    TEST_ASSERT_EQUAL( 0x20000014, coreReg[2]);
+    TEST_ASSERT_EQUAL( 0x0b19face, coreReg[3] );
+    TEST_ASSERT_EQUAL( 0x12345678, coreReg[4] );
+    TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[5]);
+    TEST_ASSERT_EQUAL( 0x20000000, coreReg[6]);
+    TEST_ASSERT_EQUAL( 0xabcdef00,coreReg[7] );
+
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
+}
+
+
+
+
+//test case 2
+//test ldm r3, {r3,r7}
+/*  r3 = 0x20000000
+ * 
+ *  Memory address 0x20000000 = 0xef
+ *  Memory address 0x20000001 = 0xfa
+ *  Memory address 0x20000002 = 0x19
+ *  Memory address 0x20000003 = 0x0b
+ *  Memory address 0x20000004 = 0x78
+ *  Memory address 0x20000005 = 0x56
+ *  Memory address 0x20000006 = 0x34
+ *  Memory address 0x20000007 = 0x12
+ *  Memory address 0x20000008 = 0xef
+ *  Memory address 0x20000009 = 0xbe
+ *  Memory address 0x2000000a = 0xad
+ *  Memory address 0x2000000b = 0xde
+ *  Memory address 0x2000000c = 0x00
+ *  Memory address 0x2000000d = 0x00
+ *  Memory address 0x2000000e = 0x00
+ *  Memory address 0x2000000f = 0x20
+ *  Memory address 0x20000010 = 0x00
+ *  Memory address 0x20000011 = 0xef
+ *  Memory address 0x20000012 = 0xcd
+ *  Memory address 0x20000013 = 0xab
+ * 
+ */
+void test_LDMRegisterT1_given_test_case_2_and_the_writeback_register_is_in_the_register_list_should_get_the_expected_result(void)
+{
+  CEXCEPTION_T err;
+  coreReg[3] = 0x20000000;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000000) ]= 0xce;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000001) ]= 0xfa;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000002) ]= 0x19;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000003) ]= 0x0b;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000004) ]= 0x78;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000005) ]= 0x56;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000006) ]= 0x34;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000007) ]= 0x12;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000008) ]= 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000009) ]= 0xbe;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000a) ]= 0xad;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000b) ]= 0xde;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000c) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000d) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000e) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x2000000f) ]= 0x20;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000010) ]= 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000011) ]= 0xef;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000012) ]= 0xcd;
+  memoryBlock[ virtualMemToPhysicalMem(0x20000013) ]= 0xab;
+  
+  uint32_t instruction = 0xcbf80000;
+  
+  Try
+  {
+    ARMSimulator(instruction);                  //ldm r3, {r3,r7}
+    TEST_ASSERT_EQUAL( 0x0b19face, coreReg[3] );
+    TEST_ASSERT_EQUAL( 0x12345678, coreReg[4] );
+    TEST_ASSERT_EQUAL( 0xdeadbeef, coreReg[5]);
+    TEST_ASSERT_EQUAL( 0x20000000, coreReg[6]);
+    TEST_ASSERT_EQUAL( 0xabcdef00,coreReg[7] );
+
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
+}
