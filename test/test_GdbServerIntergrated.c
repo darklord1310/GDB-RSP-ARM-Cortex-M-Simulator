@@ -10,7 +10,49 @@
 #include "getMask.h"
 #include "CException.h"
 #include "ErrorSignal.h"
-#include "mock_ARMSimulator.h"
+#include "ARMSimulator.h"
+#include "ConditionalExecution.h"
+#include "StatusRegisters.h"
+#include "Thumb16bitsTable.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "ModifiedImmediateConstant.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ITandHints.h"
+#include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+#include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
+#include "LDRImmediate.h"
+#include "LDRLiteral.h"
+#include "SVC.h"
+#include "ADR.h"
+#include "ADDSPImmediate.h"
+#include "STRImmediate.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -305,7 +347,7 @@ void test_serveRSP_should_return_all_reg_val_including_fpu_reg(void)
     free(reply);
 }
 
-void test_serveRSP_given_data_with_P6_packet_should_write_value_to_sixth_coreReg(void)
+void test_serveRSP_given_data_with_P6_should_update_sixth_coreReg_value(void)
 {
     char data[] = "$P6=fe090008#23";
     char *reply = NULL;
@@ -320,7 +362,7 @@ void test_serveRSP_given_data_with_P6_packet_should_write_value_to_sixth_coreReg
     free(reply);
 }
 
-void test_serveRSP_given_P1b_packet_should_write_value_to_second_fpuDoublePrecision_and_update_the_fpuSinglePrecision(void)
+void test_serveRSP_given_P1b_packet_should_update_the_second_fpuDoublePrecision_and_fpuSinglePrecision(void)
 {
     char data[] = "$P1b=1234567887654321#68";
     char *reply = NULL;
@@ -537,6 +579,25 @@ void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     free(reply);
 }
 
+void test_serveRSP_given_m7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$m7ffffff,2#28";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
 void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
 {
     char data[] = "$M8000d06,2:0010#38";
@@ -588,12 +649,88 @@ void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     free(reply);
 }
 
+void test_serveRSP_given_M7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M7ffffff,2:4ff0#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
+void test_serveRSP_given_M8000d06_and_2_with_more_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,2:4ff0fff0#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
+void test_serveRSP_given_M8000d06_and_2_with_no_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,2:#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
+void test_serveRSP_given_M8000d06_and_2_with_less_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,2:4f#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
 void test_serveRSP_given_following_data_should_step_through_the_instruction(void)
 {
     char data[] = "$s#73";
     char *reply = NULL;
-
-    armStep_Expect();
+    
+    initializeSimulator();
 
     reply = serveRSP(data);
 

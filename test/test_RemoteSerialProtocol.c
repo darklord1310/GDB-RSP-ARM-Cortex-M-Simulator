@@ -12,44 +12,6 @@
 #include "CException.h"
 #include "ErrorSignal.h"
 #include "mock_ARMSimulator.h"
-// #include "ConditionalExecution.h"
-// #include "StatusRegisters.h"
-// #include "Thumb16bitsTable.h"
-// #include "LSLImmediate.h"
-// #include "LSRImmediate.h"
-// #include "MOVRegister.h"
-// #include "ASRImmediate.h"
-// #include "MOVImmediate.h"
-// #include "ModifiedImmediateConstant.h"
-// #include "CMPImmediate.h"
-// #include "ADDImmediate.h"
-// #include "SUBImmediate.h"
-// #include "ADDRegister.h"
-// #include "SUBRegister.h"
-// #include "ADDSPRegister.h"
-// #include "ITandHints.h"
-// #include "ANDRegister.h"
-// #include "LSLRegister.h"
-// #include "LSRRegister.h"
-// #include "ASRRegister.h"
-// #include "CMPRegister.h"
-// #include "CMNRegister.h"
-// #include "EORRegister.h"
-// #include "ORRRegister.h"
-// #include "RORRegister.h"
-// #include "MVNRegister.h"
-// #include "BICRegister.h"
-// #include "ADCRegister.h"
-// #include "BX.h"
-// #include "BLXRegister.h"
-// #include "MULRegister.h"
-// #include "TSTRegister.h"
-// #include "RSBImmediate.h"
-// #include "SBCRegister.h"
-// #include "UnconditionalAndConditionalBranch.h"
-// #include "STRRegister.h"
-// #include "LDRImmediate.h"
-// #include "LDRLiteral.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -492,7 +454,7 @@ void test_readAllRegister_should_return_all_reg_val_including_fpu_reg(void)
     TEST_ASSERT_EQUAL_STRING("$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000021436587785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000#6d", reply);
 }
 
-void test_writeSingleRegister_given_data_with_P6_should_write_value_sixth_coreReg(void)
+void test_writeSingleRegister_given_data_with_P6_should_update_sixth_coreReg_value(void)
 {
     char data[] = "$P6=fe090008#23";
     char *reply = NULL;
@@ -508,7 +470,7 @@ void test_writeSingleRegister_given_data_with_P6_should_write_value_sixth_coreRe
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 }
 
-void test_writeSingleRegister_given_P1b_should_write_value_second_fpuDoublePrecision_and_update_the_fpuSinglePrecision(void)
+void test_writeSingleRegister_given_P1b_should_update_the_second_fpuDoublePrecision_and_fpuSinglePrecision(void)
 {
     char data[] = "$P1b=1234567887654321#68";
     char *reply = NULL;
@@ -736,7 +698,7 @@ void xtest_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0
 {
     char data[] = "$m0,2#fb";
     char *reply = NULL;
-    
+
     memoryBlock[0] = 0x20;
     memoryBlock[1] = 0x3f;
 
@@ -755,7 +717,7 @@ void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_f
 {
     char data[] = "$m80009d6,4#68";
     char *reply = NULL;
-    
+
     memoryBlock[virtualMemToPhysicalMem(0x80009d6)] = 0xf6;
     memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)] = 0x43;
     memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)] = 0x70;
@@ -780,6 +742,25 @@ void test_readMemory_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
 {
     CEXCEPTION_T errorSignal;
     char data[] = "$m0,-2#28";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = readMemory(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
+void test_readMemory_given_m7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$m7ffffff,2#28";
     char *reply = NULL;
 
     Try
@@ -844,6 +825,82 @@ void test_writeMemory_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
+void test_writeMemory_given_M7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M7ffffff,2:4ff0#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = writeMemory(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
+void test_writeMemory_given_M8000d06_and_2_with_more_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,2:4ff0fff0#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = writeMemory(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
+void test_writeMemory_given_M8000d06_and_2_with_no_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,2:#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = writeMemory(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
+void test_writeMemory_given_M8000d06_and_2_with_less_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$M8000d06,2:4f#d4";
+    char *reply = NULL;
+
+    Try
+	{
+        reply = writeMemory(data);
+    }
+    Catch(errorSignal)
+	{
+		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
 void test_step_given_following_data_should_step_through_the_instruction(void)
 {
     char data[] = "$s#73";
@@ -855,6 +912,132 @@ void test_step_given_following_data_should_step_through_the_instruction(void)
     reply = step(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+}
+
+void test_addBreakpoint_given_0x80009d6_should_add_0x80009d6_bp_addr_into_Breakpoint_list(void)
+{
+    addBreakpoint(&bp, 0x80009d6);
+
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+    TEST_ASSERT_NULL(bp);
+}
+
+void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoint_list(void)
+{
+    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&bp, 0x8000ab6);
+    addBreakpoint(&bp, 0x8000bc6);
+
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NOT_NULL(bp->next);
+    TEST_ASSERT_NOT_NULL(bp->next->next);
+    TEST_ASSERT_NULL(bp->next->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(0x8000ab6, bp->next->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->next->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_removeBreakpoint_given_0x80009d6_should_remove_bp_from_Breakpoint_list(void)
+{
+    addBreakpoint(&bp, 0x80009d6);
+    removeBreakpoint(&bp, 0x80009d6);
+
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_removeBreakpoint_given_several_addr_should_remove_0x8000ab6_bp_from_Breakpoint_list(void)
+{
+    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&bp, 0x8000ab6);
+    addBreakpoint(&bp, 0x8000bc6);
+    removeBreakpoint(&bp, 0x8000ab6);
+
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NOT_NULL(bp->next);
+    TEST_ASSERT_NULL(bp->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_insertBreakpointOrWatchpoint_given_Z0_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$Z0,80009d6,2#af";
+    char *reply = NULL;
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = insertBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_insertBreakpointOrWatchpoint_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$Z0,7ffffff,2#af";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = insertBreakpointOrWatchpoint(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
+void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$z0,80009d6,2#cf";
+    char *reply = NULL;
+
+    addBreakpoint(&bp, 0x80009d6);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = removeBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_removeBreakpointOrWatchpoint_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$z0,7ffffff,2#cf";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = removeBreakpointOrWatchpoint(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 /*
 void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)

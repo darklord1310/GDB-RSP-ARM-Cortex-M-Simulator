@@ -26,6 +26,7 @@ char *serveRSP(char *data)
                 packet = gdbCreateMsgPacket("S05");
                 break;
             case 'c':   /* Continue */
+                packet = cont(data);
                 break;
             case 's':   /* Step */
                 packet = step(data);
@@ -53,8 +54,10 @@ char *serveRSP(char *data)
                 // packet = gdbCreateMsgPacket("OK");
                 // break;
             case 'z':   /* Remove breakpoint or watchpoint */
+                packet = removeBreakpointOrWatchpoint(data);
                 break;
             case 'Z':   /* Insert breakpoint or watchpoint */
+                packet = insertBreakpointOrWatchpoint(data);
                 break;
             case 'H':   /* Set thread */
                 packet = gdbCreateMsgPacket("");

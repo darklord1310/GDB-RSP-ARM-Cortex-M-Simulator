@@ -56,7 +56,7 @@ char *rsp_state(State *state, char *data)
             else
             {
                 packet = serveRSP(data);
-                // printf("yes\n");
+                printf("yes\n");
             }
 
             *state = INITIAL;
