@@ -64,8 +64,8 @@ uint32_t virtualMemToPhysicalMem(uint32_t mem)
     if(mem < 0x20000000)
     {
         if(mem >= 0x8000000)
-            virtualAddr = ((mem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR;
-        else
+            virtualAddr = ((mem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR + 0x10000;
+        else if(mem < 0x10000)
             virtualAddr = mem;
         // else
             // printf("Code space not enough\n");
@@ -73,7 +73,7 @@ uint32_t virtualMemToPhysicalMem(uint32_t mem)
     else if(mem < 0x40000000)
         virtualAddr = ((mem - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;
     else
-        printf("Memmory exceeded\n");
+        printf("Memory exceeded\n");
 
     return virtualAddr;
 }

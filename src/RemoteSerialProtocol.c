@@ -8,42 +8,7 @@
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
 #include "ARMSimulator.h"
-// #include "ConditionalExecution.h"
-// #include "StatusRegisters.h"
-// #include "Thumb16bitsTable.h"
-// #include "LSLImmediate.h"
-// #include "LSRImmediate.h"
-// #include "MOVRegister.h"
-// #include "ASRImmediate.h"
-// #include "MOVImmediate.h"
-// #include "ModifiedImmediateConstant.h"
-// #include "CMPImmediate.h"
-// #include "ADDImmediate.h"
-// #include "SUBImmediate.h"
-// #include "ADDRegister.h"
-// #include "SUBRegister.h"
-// #include "ADDSPRegister.h"
-// #include "ITandHints.h"
-// #include "ANDRegister.h"
-// #include "LSLRegister.h"
-// #include "LSRRegister.h"
-// #include "ASRRegister.h"
-// #include "CMPRegister.h"
-// #include "CMNRegister.h"
-// #include "EORRegister.h"
-// #include "ORRRegister.h"
-// #include "RORRegister.h"
-// #include "MVNRegister.h"
-// #include "BICRegister.h"
-// #include "ADCRegister.h"
-// #include "BX.h"
-// #include "BLXRegister.h"
-// #include "MULRegister.h"
-// #include "TSTRegister.h"
-// #include "RSBImmediate.h"
-// #include "SBCRegister.h"
-// #include "UnconditionalAndConditionalBranch.h"
-// #include "STRRegister.h"
+#include "CException.h"
 
 char *targetCortexM4_XML =
 "l<?xml version=\"1.0\"?>"
@@ -173,14 +138,14 @@ char *handleQueryPacket(char *data)
  */
 char *readSingleRegister(char *data)
 {
-    char *packet = NULL, *dummy;    //dummy ==> sscanf the "$p" from data
+    char *packet = NULL;
     int regNum, byteToSent;
     unsigned long long int decodeVal;    //64-bits value
     char *asciiString;
     // float f = 123.56789;
     // double d = 123.567890123456789;
 
-    sscanf(data, "%2c%x", &dummy, &regNum);
+    sscanf(data, "$p%x", &regNum);
     // printf("Reg no: %d\n", regNum);
 
     if(regNum <= 16 && regNum >= 0)
@@ -188,7 +153,7 @@ char *readSingleRegister(char *data)
         byteToSent = 4;
         decodeVal = decodeFourByte(coreReg[regNum]);
     }
-    else if(regNum == 0x2a)
+    else if(regNum == 0x2a)     //fPSCR
     {
         byteToSent = 4;
         decodeVal = decodeFourByte(coreReg[fPSCR]);
@@ -199,7 +164,10 @@ char *readSingleRegister(char *data)
         decodeVal = decodeEightByte(fpuDoublePrecision[regNum - 0x1a]);
     }
     else
+    {
+        printf("Warning: Attempt to read unknown registers\n");
         Throw(GDB_SIGNAL_0);
+    }
 
     asciiString = createdHexToString(decodeVal, byteToSent);
     packet = gdbCreateMsgPacket(asciiString);
@@ -265,11 +233,9 @@ char *readAllRegister()
 char *writeSingleRegister(char *data)
 {
     int regNum;
-    char *equal, *dummy;      //dummy ==> sscanf the "$P" from data
-                              //equal ==> sscanf the '=' from data
     unsigned long long int regValue, decodeVal;
 
-    sscanf(data, "%2c%x%c%llx", &dummy, &regNum, &equal, &regValue);
+    sscanf(data, "$P%x=%llx", &regNum, &regValue);
     // printf("Reg no: %d\n", regNum);
     // printf("Reg Value: %llx\n", regValue);
 
@@ -291,7 +257,10 @@ char *writeSingleRegister(char *data)
         writeSinglePrecision((regNum - 0x1a) * 2 + 1, decodeVal >> 32);         //upper 32-bits
     }
     else
+    {
+        printf("Warning: Attempt to write unknown registers\n");
         Throw(GDB_SIGNAL_0);
+    }
 
     return gdbCreateMsgPacket("OK");        //Write successfully
 }
@@ -320,7 +289,6 @@ char *writeAllRegister(char *data)
         coreReg[i] = decodeVal;
     }
 
-    // printf("j: %d\n", j);
     // printf("fpuRegHex: %s\n", fpuRegHex);
 
     //fpu register
@@ -372,18 +340,25 @@ char *writeAllRegister(char *data)
  */
 char *readMemory(char *data)
 {
-    char *packet = NULL, fullMemContent[1024] = "", *asciiString = NULL;
-    char *comma, *dummy;      //dummy ==> sscanf the "$m" from data
-                              //comma ==> sscanf the ',' from data
+    char *packet = NULL, fullMemContent[0x3fff] = "", *asciiString = NULL;
     unsigned int addr, memoryContent = 0;
     int i, length;
 
-    sscanf(data, "%2c%x%c%x", &dummy, &addr, &comma, &length);
+    sscanf(data, "$m%x,%x", &addr, &length);
     // printf("addr: %x\n", addr);
     // printf("length: %d\n", length);
 
-    if(length <= 0)
+    if(virtualMemToPhysicalMem(addr) == 0xffffffff || virtualMemToPhysicalMem(addr + length) == 0xffffffff)
+    {
+        printf("Warning: Memory exceeded\n");
         Throw(GDB_SIGNAL_ABRT);
+    }
+
+    if(length <= 0)
+    {
+        printf("Warning: Unknown byte's length\n");
+        Throw(GDB_SIGNAL_ABRT);
+    }
 
     for(i = 1; i < length + 1; i++)
     {
@@ -452,24 +427,38 @@ char *readMemory(char *data)
  */
 char *writeMemory(char *data)
 {
-    char *packet = NULL;
-    char *comma, *semicolonAddr, *dummy;    //dummy ==> sscanf the "$M" from data
-                                            //comma ==> sscanf the ',' from data
-                                            //semicolonAddr ==> addr starting from the semicolon in the data
-    unsigned int addr, memoryContent = 0, temp = 0, temp2 = 0;
+    char *packet = NULL, memCont[0x3fff] = {0};
+    char *memContentAddr;        //memContentAddr ==> addr starting from the first data
+    unsigned int addr, memoryContent = 0;
     int i, length;
 
-    sscanf(data, "%2c%x%c%x", &dummy, &addr, &comma, &length);
+    sscanf(data, "$M%x,%x:%s", &addr, &length, memCont);
     // printf("addr: %x\n", addr);
     // printf("length: %d\n", length);
-    semicolonAddr = strstr(data, ":") + 1;
+    // printf("memCont: %s\n", memCont);
+    memContentAddr = strstr(data, ":") + 1;
+
+    if(virtualMemToPhysicalMem(addr) == 0xffffffff || virtualMemToPhysicalMem(addr + length) == 0xffffffff)
+    {
+        printf("Warning: Memory exceeded\n");
+        Throw(GDB_SIGNAL_ABRT);
+    }
 
     if(length <= 0)
+    {
+        printf("Warning: Unknown byte's length\n");
         Throw(GDB_SIGNAL_ABRT);
+    }
+
+    if(memCont[length * 2] != '#')
+    {
+        printf("Warning: Data length and byte's length not match\n");
+        Throw(GDB_SIGNAL_ABRT);
+    }
 
     for(i = 1; i < length + 1; i++)
     {
-        sscanf(semicolonAddr, "%2x", &memoryContent);
+        sscanf(memContentAddr, "%2x", &memoryContent);
         // printf("memoryContent: %x\n", memoryContent);
 
         /* if(i % 2 != 0)
@@ -487,7 +476,7 @@ char *writeMemory(char *data)
 
         memoryBlock[virtualMemToPhysicalMem(addr)] = memoryContent;
         addr++;
-        semicolonAddr += 2;
+        memContentAddr += 2;
     }
 
     /* for(i = 1; i < length + 1; i++)
@@ -535,6 +524,7 @@ char *writeMemory(char *data)
 
 char *step(char *data)
 {
+    CEXCEPTION_T armException;
     char *packet = NULL;
     /* char *trapSignal = "T05";
     char *pcReg = "0f";
@@ -562,10 +552,246 @@ char *step(char *data)
 
     destroyHexToString(pcValue);
     destroyHexToString(r7Value); */
-    armStep();
+    Try
+    {
+        armStep();
+    }
+    Catch(armException)
+    {
+        if(armException == HardFault)
+            Throw(GDB_SIGNAL_ILL);
+    }
 
     packet = gdbCreateMsgPacket("S05");
     // packet = gdbCreateMsgPacket(msg);
 
     return packet;
+}
+
+char *cont(char *data)
+{
+    char *packet = NULL;
+
+    /* while(findBreakpoint(bp))
+    {
+        Try
+        {
+            armStep();
+        }
+        Catch(armException)
+        {
+            if(armException == HardFault)
+                Throw(GDB_SIGNAL_ILL);
+        }
+    } */
+    
+    packet = gdbCreateMsgPacket("S05");
+
+    return packet;
+}
+
+int findBreakpoint(Breakpoint *breakpoint)
+{
+    if(coreReg[PC] == breakpoint->addr)
+        return 1;
+    else
+        findBreakpoint(breakpoint->next);
+    
+    return 0;
+}
+
+/*
+ * Insert
+ * ‘Z0,addr,kind’ ==> A memory breakpoint at address addr of type kind. A memory breakpoint is
+ *                    implemented by replacing the instruction at addr with a software breakpoint
+ *                    or trap instruction. The kind is target-specific and typically indicates the
+ *                    size of the breakpoint in bytes that should be inserted. E.g.,the arm and mips
+ *                    can insert either a 2 or 4 byte breakpoint.
+ * ‘Z1,addr,kind’ ==> A hardware breakpoint at address addr. A hardware breakpoint is implemented
+ *                    using a mechanism that is not dependant on being able to modify the target’s
+ *                    memory.
+ *
+ * These breakpoint kinds are defined for the ‘Z0’ and ‘Z1’ packets.
+ *      2 16-bit Thumb mode breakpoint.
+ *      3 32-bit Thumb mode (Thumb-2) breakpoint.
+ *      4 32-bit ARM mode breakpoint.
+ *
+ * ‘Z2,addr,kind’ ==> A write watchpoint at addr. The number of bytes to watch is specified by kind.
+ * ‘Z3,addr,kind’ ==> A read watchpoint at addr. The number of bytes to watch is specified by kind.
+ * ‘Z4,addr,kind’ ==> An access watchpoint at addr. The number of bytes to watch is specified by kind.
+ *
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘’          Not supported
+ *
+ *      ‘E NN’      For an error (this includes the case where only part of the data was written).
+ */
+char *insertBreakpointOrWatchpoint(char *data)
+{
+    BP_Type type;           //Sort of breakpoint
+    unsigned int addr;      //Address specified
+	int kind;                //Breakpoint kinds
+
+    sscanf(data, "$Z%1d,%x,%1d", (int *)&type, &addr, &kind);
+    // printf("type: %d\n", type);
+    // printf("addr: %x\n", addr);
+    // printf("kind: %d\n", kind);
+
+    if(virtualMemToPhysicalMem(addr) == 0xffffffff)
+    {
+        printf("Warning: Memory exceeded\n");
+        Throw(GDB_SIGNAL_ABRT);
+    }
+
+    switch (type)
+    {
+        case BP_MEMORY:
+            addBreakpoint(&bp, addr);
+            break;
+        case BP_HARDWARE:
+            break;
+        case WP_WRITE:
+            break;
+        case WP_READ:
+            break;
+        case WP_ACCESS:
+            break;
+        default:
+            printf("Warning: breakpoint type not recognized\n");
+            Throw(GDB_SIGNAL_HUP);
+            break;
+    }
+
+    return gdbCreateMsgPacket("OK");
+}
+
+/*
+ * Remove
+ * ‘z0,addr,kind’ ==> A memory breakpoint at address addr of type kind. A memory breakpoint is
+ *                    implemented by replacing the instruction at addr with a software breakpoint
+ *                    or trap instruction. The kind is target-specific and typically indicates the
+ *                    size of the breakpoint in bytes that should be inserted. E.g.,the arm and mips
+ *                    can insert either a 2 or 4 byte breakpoint.
+ * ‘z1,addr,kind’ ==> A hardware breakpoint at address addr. A hardware breakpoint is implemented
+ *                    using a mechanism that is not dependant on being able to modify the target’s
+ *                    memory.
+ *
+ * These breakpoint kinds are defined for the ‘Z0’ and ‘Z1’ packets.
+ *      2 16-bit Thumb mode breakpoint.
+ *      3 32-bit Thumb mode (Thumb-2) breakpoint.
+ *      4 32-bit ARM mode breakpoint.
+ *
+ * ‘z2,addr,kind’ ==> A write watchpoint at addr. The number of bytes to watch is specified by kind.
+ * ‘z3,addr,kind’ ==> A read watchpoint at addr. The number of bytes to watch is specified by kind.
+ * ‘z4,addr,kind’ ==> An access watchpoint at addr. The number of bytes to watch is specified by kind.
+ *
+ * Reply:
+ *      ‘OK’        For success
+ *
+ *      ‘’          Not supported
+ *
+ *      ‘E NN’      For an error (this includes the case where only part of the data was written).
+ */
+char *removeBreakpointOrWatchpoint(char *data)
+{
+    BP_Type type;           //Sort of breakpoint
+    unsigned int addr;      //Address specified
+	int kind;                //Breakpoint kinds
+
+    sscanf(data, "$z%1d,%x,%1d", (int *)&type, &addr, &kind);
+    // printf("type: %d\n", type);
+    // printf("addr: %x\n", addr);
+    // printf("kind: %d\n", kind);
+
+    if(virtualMemToPhysicalMem(addr) == 0xffffffff)
+    {
+        printf("Warning: Memory exceeded\n");
+        Throw(GDB_SIGNAL_ABRT);
+    }
+
+    switch (type)
+    {
+        case BP_MEMORY:
+            removeBreakpoint(&bp, addr);
+            break;
+        case BP_HARDWARE:
+            break;
+        case WP_WRITE:
+            break;
+        case WP_READ:
+            break;
+        case WP_ACCESS:
+            break;
+        default:
+            printf("Warning: breakpoint type not recognized\n");
+            Throw(GDB_SIGNAL_HUP);
+            break;
+    }
+
+    return gdbCreateMsgPacket("OK");
+}
+
+Breakpoint *createBreakpoint(unsigned int addr)
+{
+    Breakpoint *breakpoint;
+    breakpoint = malloc(sizeof(Breakpoint));
+    breakpoint->addr = addr;
+    breakpoint->next = NULL;
+}
+
+void deleteBreakpoint(Breakpoint **breakpoint)
+{
+    if(*breakpoint != NULL)
+    {
+        free(*breakpoint);
+        *breakpoint = NULL;
+    }
+}
+
+void deleteAllBreakpoint(Breakpoint **breakpoint)
+{
+    Breakpoint *temp_bp = *breakpoint;
+
+    if(temp_bp != NULL)
+    {
+        if(temp_bp->next != NULL)
+            deleteAllBreakpoint(&(*breakpoint)->next);
+
+        deleteBreakpoint(&(*breakpoint));
+    }
+}
+
+void addBreakpoint(Breakpoint **breakpoint, unsigned int addr)
+{
+    Breakpoint *temp_bp = *breakpoint;
+
+    if(temp_bp == NULL)
+        *breakpoint = createBreakpoint(addr);
+    else
+    {
+        if(addr > temp_bp->addr)
+        {
+            if(temp_bp->next != NULL)
+                addBreakpoint(&(*breakpoint)->next, addr);
+            else
+                (*breakpoint)->next = createBreakpoint(addr);
+        }
+        else
+            printf("Error\n");
+    }
+}
+
+void removeBreakpoint(Breakpoint **breakpoint, unsigned int addr)
+{
+    Breakpoint *temp_bp = *breakpoint;
+
+    if(temp_bp->addr == addr)
+    {
+        // deleteBreakpoint(&(*breakpoint));
+        // *breakpoint = *temp_bp->next;
+        *breakpoint = (*breakpoint)->next;
+    }
+    else
+        removeBreakpoint(&(*breakpoint)->next, addr);
 }
