@@ -53,6 +53,7 @@
 #include "ADR.h"
 #include "ADDSPImmediate.h"
 #include "STRImmediate.h"
+#include "LDRRegister.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
@@ -554,7 +555,7 @@ void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_fro
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$f64370ff#36", reply);
-    
+
     free(reply);
 }
 
@@ -729,12 +730,26 @@ void test_serveRSP_given_following_data_should_step_through_the_instruction(void
 {
     char data[] = "$s#73";
     char *reply = NULL;
-    
+
     initializeSimulator();
 
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+}
+
+void xtest_serveRSP_given_following_data_should_throw_GDB_SIGNAL_ILL(void)
+{
+    char data[] = "$s#73";
+    char *reply = NULL;
+
+    initializeSimulator();
+    memoryBlock[0] = 0x01;
+    memoryBlock[1] = 0xe0;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$E04#a9", reply);
 }
 
 void test_serveRSP_given_following_data_should_response_S05(void)
@@ -745,6 +760,74 @@ void test_serveRSP_given_following_data_should_response_S05(void)
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+}
+
+void test_serveRSP_given_Z0_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$Z0,80009d6,2#af";
+    char *reply = NULL;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$Z0,7ffffff,2#af";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
+void test_serveRSP_given_z0_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$z0,80009d6,2#cf";
+    char *reply = NULL;
+
+    addBreakpoint(&bp, 0x80009d6);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$z0,7ffffff,2#cf";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
 /*
 void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
