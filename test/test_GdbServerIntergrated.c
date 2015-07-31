@@ -829,6 +829,43 @@ void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
+
+void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is_reach(void)
+{
+    char data[] = "$c#12";
+    char *reply = NULL;
+
+    resetMemoryBlock();
+    coreReg[PC] = 0x0;
+    // printf("PC: %x\n", coreReg[PC]);
+    addBreakpoint(&bp, 0xa);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0xa, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the_end_of_code_memory(void)
+{
+    char data[] = "$c#12";
+    char *reply = NULL;
+
+    resetMemoryBlock();
+    coreReg[PC] = 0x806fff0;
+    // printf("PC: %x\n", coreReg[PC]);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
 /*
 void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
 {

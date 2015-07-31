@@ -562,7 +562,7 @@ char *step(char *data)
             Throw(GDB_SIGNAL_ILL);
     }
 
-    packet = gdbCreateMsgPacket("S05");
+    packet = gdbCreateMsgPacket("S05");     //signal trap
     // packet = gdbCreateMsgPacket(msg);
 
     return packet;
@@ -570,9 +570,10 @@ char *step(char *data)
 
 char *cont(char *data)
 {
+    CEXCEPTION_T armException;
     char *packet = NULL;
 
-    /* while(findBreakpoint(bp))
+    while(!findBreakpoint(bp))
     {
         Try
         {
@@ -583,8 +584,11 @@ char *cont(char *data)
             if(armException == HardFault)
                 Throw(GDB_SIGNAL_ILL);
         }
-    } */
-    
+
+        if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)
+            break;
+    }
+
     packet = gdbCreateMsgPacket("S05");
 
     return packet;
@@ -592,14 +596,20 @@ char *cont(char *data)
 
 int findBreakpoint(Breakpoint *breakpoint)
 {
-    if(coreReg[PC] == breakpoint->addr)
-        return 1;
-    else
+    if(breakpoint != NULL)
     {
-        if(coreReg[PC] < breakpoint->addr)
-            findBreakpoint(breakpoint->next);
+        if(coreReg[PC] == breakpoint->addr)
+            return 1;
+        else
+        {
+            if(breakpoint->next != NULL)
+            {
+                if(coreReg[PC] > breakpoint->addr)
+                    findBreakpoint(breakpoint->next);
+            }
+        }
     }
-    
+
     return 0;
 }
 

@@ -1038,6 +1038,65 @@ void test_removeBreakpointOrWatchpoint_given_z0_should_should_throw_GDB_SIGNAL_A
 	}
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
+
+}
+
+void test_findBreakpoint_given_no_breakpoint_in_breakpoint_lits_should_return_0(void)
+{
+    resetMemoryBlock();
+    coreReg[PC] = 0x80009d6;
+
+    TEST_ASSERT_EQUAL(0, findBreakpoint(bp));
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d6_should_return_1(void)
+{
+    resetMemoryBlock();
+    coreReg[PC] = 0x80009d6;
+    addBreakpoint(&bp, 0x80009d6);
+
+    TEST_ASSERT_EQUAL(1, findBreakpoint(bp));
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_0(void)
+{
+    resetMemoryBlock();
+    coreReg[PC] = 0x80009d0;
+    addBreakpoint(&bp, 0x80009d6);
+
+    TEST_ASSERT_EQUAL(0, findBreakpoint(bp));
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_1_when_it_reach_during_while_loop(void)
+{
+    resetMemoryBlock();
+    coreReg[PC] = 0x80009d0;
+    addBreakpoint(&bp, 0x80009d6);
+
+    while(!findBreakpoint(bp))
+    {
+        coreReg[PC] += 2;
+    }
+
+    TEST_ASSERT_EQUAL(1, findBreakpoint(bp));
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
 }
 /*
 void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
