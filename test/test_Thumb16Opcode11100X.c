@@ -51,8 +51,8 @@
 #include "ADDSPImmediate.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
-
-
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
 
 void setUp(void)
 {
@@ -123,7 +123,7 @@ void test_unconditionalBranch_given_last_in_IT_block_should_not_throw_error()
 
 
 //test if not last instruction in IT block
-void test_unconditionalBranch_given_not_last_in_IT_block_should_not_throw_error()
+void test_unconditionalBranch_given_not_last_in_IT_block_should_throw_error()
 {
   CEXCEPTION_T err;
   uint32_t instruction = 0xe0010000;

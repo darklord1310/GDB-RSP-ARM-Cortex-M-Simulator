@@ -40,7 +40,7 @@ where:
 void UnconditionalBranchT1(uint32_t instruction)
 {
   uint32_t imm11 = getBits(instruction,26,16);
-  uint32_t signExtend = imm11 << 1;
+  uint32_t imm11AfterShift = imm11 << 1;
 
   if( !( inITBlock() ) || isLastInITBlock())
   { 
@@ -48,19 +48,15 @@ void UnconditionalBranchT1(uint32_t instruction)
     { 
       if( checkCondition(cond) )
       {
-        if( getBits(signExtend, 11,11) == 1)
-          signExtend = setBits(signExtend,0b11111111111111111111,31,12);
-      
-        coreReg[PC] = coreReg[PC] + signExtend + 4;
+        uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
+        coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
       }
       shiftITState();
     }
     else
     {
-      if( getBits(signExtend, 11,11) == 1)
-        signExtend = setBits(signExtend,0b11111111111111111111,31,12);
-      
-      coreReg[PC] = coreReg[PC] + signExtend + 4;
+      uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
+      coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
     }
   }
   else
@@ -101,7 +97,7 @@ where:
 void ConditionalBranchT1(uint32_t instruction)
 {
   uint32_t imm8 = getBits(instruction,23,16);
-  uint32_t signExtend = imm8 << 1;
+  uint32_t imm8AfterShift = imm8 << 1;
   uint32_t condition = getBits(instruction,27,24);
 
   if( !( inITBlock() ) && condition != 0b1110 )
@@ -110,10 +106,8 @@ void ConditionalBranchT1(uint32_t instruction)
     {
       if( checkCondition(condition) )
       { 
-        if( getBits(signExtend, 8,8) == 1)
-          signExtend = setBits(signExtend,0b11111111111111111111111,31,9);
-        
-        coreReg[PC] = coreReg[PC] + signExtend + 4;
+        uint32_t afterSignExtend = signExtend(imm8AfterShift, 9);
+        coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
       }
     }
     else
@@ -128,3 +122,22 @@ void ConditionalBranchT1(uint32_t instruction)
 
 
 
+
+/* This function will sign extend the value passing in and sign extend the number to 32 bits
+ * 
+ * Input:
+ *          value           the value that is going to be sign extend to 32bits
+ *          numberOfBits    number of bits of the value 
+ * 
+ * Return
+ *          the value after sign extend
+ */
+uint32_t signExtend(uint32_t value, int numberOfBits)
+{
+  if( getBits(value, numberOfBits-1, numberOfBits-1) == 1)        //if the sign bit of the value is 1, then set all the bits infront of it up to bit31 by 1
+    value = setBits(value, 0xffffffff, 31, numberOfBits);
+  else
+    value = setBits(value, 0x00000000, 31, numberOfBits);         //if the sign bit of the value is 0, then set all the bits infront of it up to bit31 by 0
+  
+  return value;
+}

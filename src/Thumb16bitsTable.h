@@ -39,6 +39,9 @@
 #include "SVC.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
+#include "ADDSPImmediate.h"
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
 
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);

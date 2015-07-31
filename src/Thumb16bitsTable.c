@@ -165,8 +165,24 @@ void initThumb16bitsOpcode1011XX()
   Thumb16Opcode1011XX[0b1111101] = ITandHints;
   Thumb16Opcode1011XX[0b1111110] = ITandHints;
   Thumb16Opcode1011XX[0b1111111] = ITandHints;
-    
-  
+  Thumb16Opcode1011XX[0b0000000] = ADDSPImmediateT2;
+  Thumb16Opcode1011XX[0b0000001] = ADDSPImmediateT2;
+  Thumb16Opcode1011XX[0b0000010] = ADDSPImmediateT2;
+  Thumb16Opcode1011XX[0b0000011] = ADDSPImmediateT2;
+  Thumb16Opcode1011XX[0b1010000] = REVT1;
+  Thumb16Opcode1011XX[0b1010001] = REVT1;
+  Thumb16Opcode1011XX[0b1010010] = REV16T1;
+  Thumb16Opcode1011XX[0b1010011] = REV16T1;
+  Thumb16Opcode1011XX[0b1010110] = REVSHT1;
+  Thumb16Opcode1011XX[0b1010111] = REVSHT1;
+  Thumb16Opcode1011XX[0b0010000] = SXTHT1;
+  Thumb16Opcode1011XX[0b0010001] = SXTHT1;
+  Thumb16Opcode1011XX[0b0010010] = SXTBT1;
+  Thumb16Opcode1011XX[0b0010011] = SXTBT1;
+  Thumb16Opcode1011XX[0b0010100] = UXTHT1;
+  Thumb16Opcode1011XX[0b0010101] = UXTHT1;
+  Thumb16Opcode1011XX[0b0010110] = UXTBT1;
+  Thumb16Opcode1011XX[0b0010111] = UXTBT1;
 }
 
 
