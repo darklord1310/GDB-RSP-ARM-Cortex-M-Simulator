@@ -51,7 +51,8 @@
 #include "ADR.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
-
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
 
 void setUp(void)
 {
@@ -67,28 +68,28 @@ void tearDown(void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //ADD (SP plus immediate)
   
-// test ADD r0,SP,#0xff
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r0_is_0x200010ff_xPSR_unchanged(void)
+// test ADD r0,SP,#0x20
+void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r0_is_0x20001020_xPSR_unchanged(void)
 {
-  uint32_t instruction = 0xa8ff0000;
+  uint32_t instruction = 0xa8080000;
   
   coreReg[SP] = 0x20001000;
   ARMSimulator(instruction);
 
-  TEST_ASSERT_EQUAL(0x200010ff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x20001020, coreReg[0]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 
-// test ADD r7,SP,#0xff
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r7_is_0x200010ff_xPSR_unchanged(void)
+// test ADD r7,SP,#0x20
+void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r7_is_0x20001020_xPSR_unchanged(void)
 {
-  uint32_t instruction = 0xafff0000;
+  uint32_t instruction = 0xaf080000;
   
   coreReg[SP] = 0x20001000;
   ARMSimulator(instruction);
 
-  TEST_ASSERT_EQUAL(0x200010ff, coreReg[7]);
+  TEST_ASSERT_EQUAL(0x20001020, coreReg[7]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 

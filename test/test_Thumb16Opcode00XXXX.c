@@ -53,6 +53,8 @@
 #include "ADDSPImmediate.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
 
 
 void setUp(void)

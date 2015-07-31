@@ -54,6 +54,9 @@
 #include "ADDSPImmediate.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
+
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;

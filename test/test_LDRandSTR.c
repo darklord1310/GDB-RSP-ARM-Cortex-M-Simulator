@@ -54,6 +54,9 @@
 #include "STRImmediate.h"
 #include "LDRRegister.h"
 #include "CException.h"
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
+
 
 
 void setUp(void)

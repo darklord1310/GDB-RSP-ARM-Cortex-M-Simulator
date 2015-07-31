@@ -51,7 +51,7 @@ void LDRLiteralT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      uint32_t temp = allignPC(coreReg[PC] + 4, 4);             // the PC need to add with 4 and allign it
+      uint32_t temp = alignPC(coreReg[PC] + 4, 4);              // the PC need to add with 4 and allign it
                                                                 // and the value is written into temp
       
       uint32_t imm10 = imm8 << 2;                               // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
@@ -66,7 +66,7 @@ void LDRLiteralT1(uint32_t instruction)
   }
   else
   {
-    uint32_t temp = allignPC(coreReg[PC] + 4, 4);             // the PC need to add with 4 and allign it
+    uint32_t temp = alignPC(coreReg[PC] + 4, 4);              // the PC need to add with 4 and allign it
                                                               // and the value is written into temp
     
     uint32_t imm10 = imm8 << 2;                               // the imm8 need to shift 2 times to the left and bit1:0 is force to 0

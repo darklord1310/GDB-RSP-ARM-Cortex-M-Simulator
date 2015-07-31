@@ -53,16 +53,16 @@ void ADRT1(uint32_t instruction)
 
 
 
-uint32_t allignPC(uint32_t value, uint32_t allignIndex)
+uint32_t alignPC(uint32_t value, uint32_t alignIndex)
 {
-  return (allignIndex * (value/allignIndex) );  
+  return (alignIndex * (value/alignIndex) );  
   
 }
 
 
 void executeADR(uint32_t Rd, uint32_t immediate)
 {
-  uint32_t PCAfterAllign = allignPC(coreReg[PC]+4, 4);
-  coreReg[Rd] =  PCAfterAllign + immediate;
+  uint32_t PCAfterAlign = alignPC(coreReg[PC]+4, 4);
+  coreReg[Rd] =  PCAfterAlign + immediate;
   
 }
