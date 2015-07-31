@@ -276,7 +276,7 @@ char *writeSingleRegister(char *data)
 char *writeAllRegister(char *data)
 {
     char *regHex = data + 2, *fpuRegHex = regHex + 8 * (NUM_OF_CORE_Register - 1), *fpuStatusHex = fpuRegHex + 16 * NUM_OF_FPUD_Register;
-    unsigned long long int regValue, decodeVal, temp;
+    unsigned long long int decodeVal, regValue, temp;
     int i;
 
     //core register r0 - r12, SP, LR, PC, xPSR
@@ -558,7 +558,7 @@ char *step(char *data)
     }
     Catch(armException)
     {
-        if(armException == HardFault)
+        if(armException == UsageFault)
             Throw(GDB_SIGNAL_ILL);
     }
 
@@ -595,7 +595,10 @@ int findBreakpoint(Breakpoint *breakpoint)
     if(coreReg[PC] == breakpoint->addr)
         return 1;
     else
-        findBreakpoint(breakpoint->next);
+    {
+        if(coreReg[PC] < breakpoint->addr)
+            findBreakpoint(breakpoint->next);
+    }
     
     return 0;
 }

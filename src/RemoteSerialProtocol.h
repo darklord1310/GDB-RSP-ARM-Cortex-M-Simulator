@@ -33,4 +33,6 @@ void deleteAllBreakpoint(Breakpoint **breakpoint);
 void addBreakpoint(Breakpoint **breakpoint, unsigned int addr);
 void removeBreakpoint(Breakpoint **breakpoint, unsigned int addr);
 
+int findBreakpoint(Breakpoint *breakpoint);
+
 #endif // RemoteSerialProtocol_H

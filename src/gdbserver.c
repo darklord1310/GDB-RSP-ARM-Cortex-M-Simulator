@@ -200,6 +200,8 @@ void main()
 
         free(reply);
     }
+    
+    // deleteAllBreakpoint(&bp);
 
     /****************Close our socket entirely****************/
 	closesocket(sock);
