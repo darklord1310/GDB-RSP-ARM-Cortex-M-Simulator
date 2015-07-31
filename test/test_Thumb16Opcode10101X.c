@@ -53,6 +53,8 @@
 #include "LDRRegister.h"
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
+#include "CBZandCBNZ.h"
+
 
 void setUp(void)
 {

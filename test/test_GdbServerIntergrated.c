@@ -56,7 +56,7 @@
 #include "LDRRegister.h"
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
-
+#include "CBZandCBNZ.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
