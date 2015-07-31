@@ -231,3 +231,119 @@ void test_REVSHT1_given_r7_0x10101010_should_get_r2_0x00001010()
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x00001010, coreReg[2]);
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Signed Extend Halfword T1
+
+//sign bit is 1
+//test SXTH r2,r5
+void test_SXTHT1_given_r5_0x88888888_should_get_r2_0xffff8888()
+{
+  coreReg[5] = 0x88888888;
+  uint32_t instruction = 0xb22a0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0xffff8888, coreReg[2]);
+  
+}
+
+
+//sign bit is 0
+//test SXTH r2,r5
+void test_SXTHT1_given_r5_0x00004888_should_get_r2_0x00004888()
+{
+  coreReg[5] = 0x00004888;
+  uint32_t instruction = 0xb22a0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x00004888, coreReg[2]);
+  
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Signed Extend Byte T1
+  
+//sign bit is 1
+//test SXTB r2,r5
+void test_SXTBT1_given_r5_0x88888888_should_get_r2_0xffffff88()
+{
+  coreReg[5] = 0x88888888;
+  uint32_t instruction = 0xb26a0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0xffffff88, coreReg[2]);
+  
+}
+
+
+
+//sign bit is 0
+//test SXTB r2,r5
+void test_SXTBT1_given_r5_0x00004848_should_get_r2_0x00000048()
+{
+  coreReg[5] = 0x00004848;
+  uint32_t instruction = 0xb26a0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x00000048, coreReg[2]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Unsigned Extend Byte T1
+  
+//test UXTH r2,r5
+void test_UXTHT1_given_r5_0x88888888_should_get_r2_0x00008888()
+{
+  coreReg[5] = 0x88888888;
+  uint32_t instruction = 0xb2aa0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x00008888, coreReg[2]);
+  
+}
+
+
+//test UXTH r2,r5
+void test_UXTHT1_given_r5_0xdeadbeef_should_get_r2_0x0000beef()
+{
+  coreReg[5] = 0xdeadbeef;
+  uint32_t instruction = 0xb2aa0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x0000beef, coreReg[2]);
+  
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Unsigned Extend Byte T1
+  
+//test UXTB r2,r5
+void test_UXTBT1_given_r5_0x88888888_should_get_r2_0x00000088()
+{
+  coreReg[5] = 0x88888888;
+  uint32_t instruction = 0xb2ea0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x00000088, coreReg[2]);
+  
+}
+
+
+//test UXTB r2,r5
+void test_UXTBT1_given_r5_0xdeadbeef_should_get_r2_0x000000ef()
+{
+  coreReg[5] = 0xdeadbeef;
+  uint32_t instruction = 0xb2ea0000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x000000ef, coreReg[2]);
+  
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Compare and Branch on Zero T1
