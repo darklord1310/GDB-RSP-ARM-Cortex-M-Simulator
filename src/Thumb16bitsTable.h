@@ -42,6 +42,7 @@
 #include "ADDSPImmediate.h"
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
+#include "CBZandCBNZ.h"
 
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);

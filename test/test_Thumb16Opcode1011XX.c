@@ -54,7 +54,7 @@
 #include "LDRRegister.h"
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
-
+#include "CBZandCBNZ.h"
 
 
 void setUp(void)
@@ -346,4 +346,61 @@ void test_UXTBT1_given_r5_0xdeadbeef_should_get_r2_0x000000ef()
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //Compare and Branch on Not Zero T1
+
+//test case where r0 is not 0, should jump
+//test CBNZ r0 , bla  (the bla label is at address 0x08000036)
+void test_CBNZ_given_r0_0x10_should_get_PC_0x08000036()
+{
+  coreReg[0] = 0x10;
+  coreReg[PC] = 0x0800002a;
+  uint32_t instruction = 0xb9200000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x08000036, coreReg[PC]);
+  
+}
+
+
+//test case where r0 is 0, should not jump
+//test CBNZ r0 , bla  (the bla label is at address 0x08000036)
+void test_CBNZ_given_r0_0x00_should_not_get_PC_0x08000036()
+{
+  coreReg[0] = 0x00;
+  coreReg[PC] = 0x0800002a;
+  uint32_t instruction = 0xb9200000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_NOT_EQUAL(0x08000036, coreReg[PC]);
+  
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Compare and Branch on Zero T1
+  
+
+//test case where r0 is not 0, should not jump
+//test CBZ r0 , bla  (the bla label is at address 0x08000036)
+void test_CBZ_given_r0_0x10_should_not_get_PC_0x08000036()
+{
+  coreReg[0] = 0x10;
+  coreReg[PC] = 0x0800002a;
+  uint32_t instruction = 0xb1200000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_NOT_EQUAL(0x08000036, coreReg[PC]);
+}
+
+
+//test case where r0 is 0, should jump
+//test CBZ r0 , bla  (the bla label is at address 0x08000030)
+void test_CBZ_given_r0_0x10_should_get_PC_0x08000030()
+{
+  coreReg[0] = 0x00;
+  coreReg[PC] = 0x08000024;
+  uint32_t instruction = 0xb1200000;
+  
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x08000030, coreReg[PC]);
+}
