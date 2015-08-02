@@ -5,11 +5,15 @@
 #include "ServeRSP.h"
 #include "Packet.h"
 
-/*
+/***********************************************************************
+ * State machine to handle communication between gdb client and server.
  *
+ * Input:
+ *      state       represent the state of the State Machine
  *
- *
- */
+ * Return:
+ *      packet      string of data reply to gdb
+ ***********************************************************************/
 char *rsp_state(State *state, char *data)
 {
     char *packet = NULL;
@@ -22,9 +26,6 @@ char *rsp_state(State *state, char *data)
                 *state = ACK;
             else if(!strcmp("-", data))
                 *state = NACK;
-            else if(!strcmp("$k#6b", data))
-                *state = KILL;
-            // printf("yes\n");
             break;
         case ACK:
             packet = malloc(2);
@@ -55,8 +56,13 @@ char *rsp_state(State *state, char *data)
             }
             else
             {
+                if(!strcmp("$k#6b", data))
+                {
+                    *state = KILL;
+                    break;
+                }
                 packet = serveRSP(data);
-                printf("yes\n");
+                // printf("yes\n");
             }
 
             *state = INITIAL;

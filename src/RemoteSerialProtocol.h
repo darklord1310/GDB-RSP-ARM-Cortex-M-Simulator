@@ -14,6 +14,7 @@ struct Breakpoint
 };
 
 Breakpoint *bp;
+Breakpoint *wp;
 
 char *handleQueryPacket(char *data);
 char *readSingleRegister(char *data);

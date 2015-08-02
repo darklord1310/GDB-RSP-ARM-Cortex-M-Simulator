@@ -6,11 +6,14 @@
 
 #define LOCAL_HOST_ADD  "127.0.0.1"
 #define DEFAULT_PORT    2010
+#define PACKET_SIZE     0x3fff
 
 void winsockInit();
 void createSocket(SOCKET *sock);
 void bindSocket(SOCKET *sock);
 void listenSocket(SOCKET sock);
 void waitingForConnection(SOCKET *sock);
+int sendBuffer(SOCKET *sock, char *sendbuf);
+int receiveBuffer(SOCKET *sock, char *recvbuf);
 
 #endif // gdbserver_H

@@ -8,42 +8,6 @@
 #include "gdbserver.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-// #include "ConditionalExecution.h"
-// #include "StatusRegisters.h"
-// #include "Thumb16bitsTable.h"
-// #include "LSLImmediate.h"
-// #include "LSRImmediate.h"
-// #include "MOVRegister.h"
-// #include "ASRImmediate.h"
-// #include "MOVImmediate.h"
-// #include "ModifiedImmediateConstant.h"
-// #include "CMPImmediate.h"
-// #include "ADDImmediate.h"
-// #include "SUBImmediate.h"
-// #include "ADDRegister.h"
-// #include "SUBRegister.h"
-// #include "ADDSPRegister.h"
-// #include "ITandHints.h"
-// #include "ANDRegister.h"
-// #include "LSLRegister.h"
-// #include "LSRRegister.h"
-// #include "ASRRegister.h"
-// #include "CMPRegister.h"
-// #include "CMNRegister.h"
-// #include "EORRegister.h"
-// #include "ORRRegister.h"
-// #include "RORRegister.h"
-// #include "MVNRegister.h"
-// #include "BICRegister.h"
-// #include "ADCRegister.h"
-// #include "BX.h"
-// #include "BLXRegister.h"
-// #include "MULRegister.h"
-// #include "TSTRegister.h"
-// #include "RSBImmediate.h"
-// #include "SBCRegister.h"
-// #include "UnconditionalAndConditionalBranch.h"
-// #include "STRRegister.h"
 #include "State.h"
 #include "stateRSP.h"
 
@@ -126,6 +90,28 @@ void waitingForConnection(SOCKET *sock)
     }
 }
 
+/****************Send data.****************/
+int sendBuffer(SOCKET *sock, char *sendbuf)
+{
+    int bytesSent;
+
+    bytesSent = send( *sock, sendbuf, strlen(sendbuf), 0 );
+    printf( "\nBytes Sent: %ld\n", bytesSent );
+
+    return bytesSent;
+}
+
+/****************Receive data.****************/
+int receiveBuffer(SOCKET *sock, char *recvbuf)
+{
+    int bytesRecv = SOCKET_ERROR;
+
+    bytesRecv = recv( *sock, recvbuf, PACKET_SIZE, 0 );
+    printf( "\nBytes Recv: %ld\n", bytesRecv );
+
+    return bytesRecv;
+}
+
 void main()
 {
     SOCKET sock;
@@ -138,15 +124,52 @@ void main()
     listenSocket(sock);
     waitingForConnection(&sock);
 
-    /****************Send and receive data.****************/
     int bytesSent;
     int bytesRecv = SOCKET_ERROR;
     char *reply = NULL;
-    char recvbuf[0x3fff] = "";
+    char recvbuf[PACKET_SIZE] = "";
     State state = INITIAL;
 
-    // while(recvbuf[1] != 'k')
-    // {
+    while(1)
+    {
+        bytesRecv = receiveBuffer(&sock, recvbuf);
+        if(bytesRecv != -1)
+        {
+            recvbuf[bytesRecv] = '\0';
+            printf( "recvbuf: %s\n", recvbuf );
+        }
+        else
+            state = NACK;
+
+        do {
+            reply = rsp_state(&state, recvbuf);
+        }while(state == ACK || state == NACK || state == KILL);
+
+        if(!strcmp("k", reply))
+        {
+            free(reply);
+            break;
+        }
+        else
+        {
+            bytesSent = sendBuffer(&sock, reply);
+            printf("reply: %s\n", reply);
+        }
+
+        free(reply);
+    }
+
+    // deleteAllBreakpoint(&bp);
+
+    /****************Close our socket entirely****************/
+	closesocket(sock);
+
+	/****************Cleanup Winsock****************/
+	WSACleanup();
+}
+
+    /* while(recvbuf[1] != 'k')
+    { */
         /*
          *  Recv ACK
          */
@@ -176,36 +199,3 @@ void main()
 
         free(reply);
     } */
-
-    while(1)
-    {
-        bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
-        printf( "\nBytes Recv: %ld\n", bytesRecv );
-        recvbuf[bytesRecv] = '\0';
-        printf( "recvbuf: %s\n", recvbuf );
-
-        // while(state == ACK || state == NACK)
-        do {
-            reply = rsp_state(&state, recvbuf);
-        }while(state == ACK || state == NACK || state == KILL);
-
-        printf("reply: %s\n", reply);
-        bytesSent = send( sock, reply, strlen(reply), 0 );
-
-        if(!strcmp("k", reply))
-        {
-            free(reply);
-            break;
-        }
-
-        free(reply);
-    }
-    
-    // deleteAllBreakpoint(&bp);
-
-    /****************Close our socket entirely****************/
-	closesocket(sock);
-
-	/****************Cleanup Winsock****************/
-	WSACleanup();
-}

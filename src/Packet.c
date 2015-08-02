@@ -7,7 +7,7 @@
 
 const char hex[] = "0123456789abcdef";
 
-/*
+/********************************************************************
  * This function make the msg to become complete packet
  * of data before send it back to gdb
  *
@@ -17,7 +17,7 @@ const char hex[] = "0123456789abcdef";
  *
  * Return:
  *      packet      complete string of data ( $<data>#<XS> in hex )
- */
+ ********************************************************************/
 char *gdbCreateMsgPacket(char *msg)
 {
     int length = strlen(msg) + 5, i;
@@ -47,7 +47,7 @@ void destroyPacket(char *packet)
         free(packet);
 }
 
-/*
+/*************************************************************
  * This function convert HEX value to ASCII string
  *
  * Input:
@@ -56,7 +56,7 @@ void destroyPacket(char *packet)
  *
  * Return:
  *      asciiString     HEX value in string form
- */
+ **************************************************************/
 char *createdHexToString(unsigned long long int regVal, int bytes)
 {
     assert(bytes > 0);
@@ -106,6 +106,15 @@ void destroyHexToString(char *asciiString)
         free(asciiString);
 }
 
+/****************************************************************
+ * This function swap upper byte with lower byte of the byteData
+ *
+ * Input:
+ *      byteData     data with two byte
+ *
+ * Return:
+ *      byteData     data with two byte after swap
+ ****************************************************************/
 uint32_t decodeTwoByte(uint32_t byteData)
 {
     uint32_t msb, lsb;
@@ -116,6 +125,15 @@ uint32_t decodeTwoByte(uint32_t byteData)
     return (msb | lsb << 8);
 }
 
+/****************************************************************
+ * This function swap upper word with lower word of the byteData
+ *
+ * Input:
+ *      byteData     data with four byte
+ *
+ * Return:
+ *      byteData     data with four byte after swap
+ *****************************************************************/
 uint32_t decodeFourByte(uint32_t byteData)
 {
     uint32_t msb, lsb;
@@ -126,6 +144,17 @@ uint32_t decodeFourByte(uint32_t byteData)
     return (msb | lsb << 16);
 }
 
+/*******************************************************************
+ * This function swap upper Dword with lower Dword of the byteData
+ * after swapping the upper word with lower word of upper Dword and
+ * lower Dword
+ *
+ * Input:
+ *      byteData     data with eight byte
+ *
+ * Return:
+ *      byteData     data with eight byte after swap
+ *******************************************************************/
 uint64_t decodeEightByte(uint64_t byteData)
 {
     uint64_t msb, lsb;
@@ -136,13 +165,24 @@ uint64_t decodeEightByte(uint64_t byteData)
     return (msb | lsb << 32);
 }
 
+/********************************************************************
+ * This function verify the data sent by the gdb client by check the
+ * data checksum
+ *
+ * Input:
+ *      data    string of data sent by gdb client
+ *
+ * Return:
+ *      0       checksum incorrect
+ *      1       checksum correct
+ ********************************************************************/
 int verifyChecksum(char *data)
 {
     char *hashAddr;
     uint32_t chksum = 0, dataChksum = 0;
     int i;
 
-    if(data[0] != '$')
+    if(data[0] != '$')      // first char in data should contain this
         return 0;
 
     for(i = 1; data[i] != '#'; i++)

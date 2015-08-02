@@ -53,7 +53,7 @@ void main()
     struct sockaddr_in clientService;
     clientService.sin_family = AF_INET;
     clientService.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
-    clientService.sin_port = htons( SERVER_PORT );
+    clientService.sin_port = htons( DEFAULT_PORT );
     if ( connect( clientSock, (SOCKADDR*) &clientService, sizeof(clientService) ) == SOCKET_ERROR )
     {
         printf( ">>>Failed to connect.\n" );
@@ -75,7 +75,7 @@ void main()
     struct sockaddr_in service;
     service.sin_family = AF_INET;
     service.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
-    service.sin_port = htons( DEFAULT_PORT );
+    service.sin_port = htons( SERVER_PORT );
     if ( bind( listenSock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
     {
         printf( ">>>Error at bind(): %ld\n", WSAGetLastError() );

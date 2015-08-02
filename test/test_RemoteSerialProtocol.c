@@ -907,6 +907,8 @@ void test_step_given_following_data_should_step_through_the_instruction(void)
     char *reply = NULL;
 
     armStep_Expect();
+    createdHexToString_ExpectAndReturn(GDB_SIGNAL_TRAP, 1, "05");
+    destroyHexToString_Expect("05");
     gdbCreateMsgPacket_ExpectAndReturn("S05", "$S05#b8");
 
     reply = step(data);
@@ -931,6 +933,23 @@ void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoin
     addBreakpoint(&bp, 0x80009d6);
     addBreakpoint(&bp, 0x8000ab6);
     addBreakpoint(&bp, 0x8000bc6);
+
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NOT_NULL(bp->next);
+    TEST_ASSERT_NOT_NULL(bp->next->next);
+    TEST_ASSERT_NULL(bp->next->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(0x8000ab6, bp->next->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->next->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoint_list_according_to_addr(void)
+{
+    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&bp, 0x8000bc6);
+    addBreakpoint(&bp, 0x8000ab6);
 
     TEST_ASSERT_NOT_NULL(bp);
     TEST_ASSERT_NOT_NULL(bp->next);

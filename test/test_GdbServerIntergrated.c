@@ -57,7 +57,6 @@
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
 
-
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
 extern char *arm_vfpv2;

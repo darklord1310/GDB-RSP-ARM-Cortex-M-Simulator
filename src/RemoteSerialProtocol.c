@@ -10,6 +10,7 @@
 #include "ARMSimulator.h"
 #include "CException.h"
 
+/* ARM Cortex-M4 Target with FPU */
 char *targetCortexM4_XML =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE target SYSTEM \"gdb-target.dtd\">"
@@ -18,6 +19,7 @@ char *targetCortexM4_XML =
 "  <xi:include href=\"arm-vfpv2.xml\"/>"
 "</target>";
 
+/* ARM Cortex-M4 Core Register */
 char *arm_m_profile =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">"
@@ -41,6 +43,7 @@ char *arm_m_profile =
 "   <reg name=\"xpsr\" bitsize=\"32\" type=\"uint32\" regnum=\"25\"/>"
 "</feature>";
 
+/* ARM Cortex-M4 FPU Register */
 char *arm_vfpv2 =
 "l<?xml version=\"1.0\"?>"
 "<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">"
@@ -64,7 +67,7 @@ char *arm_vfpv2 =
 "  <reg name=\"fpscr\" bitsize=\"32\" type=\"int\" group=\"float\"/>"
 "</feature>";
 
-/*
+/************************************************************
  * This function handle all the query packet receive from
  * gdb client and return the appropriate message back to it
  *
@@ -73,7 +76,7 @@ char *arm_vfpv2 =
  *
  * Return:
  *      packet  complete packet to reply to gdb client
- */
+ ************************************************************/
 char *handleQueryPacket(char *data)
 {
     char *packet = NULL;
@@ -126,7 +129,7 @@ char *handleQueryPacket(char *data)
     return packet;
 }
 
-/*
+/******************************************************
  * ‘p n’ ==> Read the value of register n; n is in hex.
  *
  * Reply:
@@ -135,15 +138,13 @@ char *handleQueryPacket(char *data)
  *      E NN    For an error
  *
  *      ‘’      Indicating an unrecognized query.
- */
+ ******************************************************/
 char *readSingleRegister(char *data)
 {
     char *packet = NULL;
     int regNum, byteToSent;
     unsigned long long int decodeVal;    //64-bits value
     char *asciiString;
-    // float f = 123.56789;
-    // double d = 123.567890123456789;
 
     sscanf(data, "$p%x", &regNum);
     // printf("Reg no: %d\n", regNum);
@@ -176,7 +177,7 @@ char *readSingleRegister(char *data)
     return packet;
 }
 
-/*
+/********************************************************************************
  * ‘g’ ==> Read general registers.
  *
  * Reply:
@@ -184,7 +185,7 @@ char *readSingleRegister(char *data)
  *              The bytes with the register are transmitted in target byte order.
  *
  *      E NN    For an error.
- */
+ ********************************************************************************/
 char *readAllRegister()
 {
     char *packet = NULL, fullRegValue[405] = "";
@@ -221,7 +222,7 @@ char *readAllRegister()
     return packet;
 }
 
-/*
+/************************************************************************************************
  * ‘P n…=r…’ ==> Write register n… with value r…. The register number n is in hexadecimal,
  *               and r… contains two hex digits for each byte in the register (target byte order).
  *
@@ -229,7 +230,7 @@ char *readAllRegister()
  *      ‘OK’        For success
  *
  *      ‘E NN’      For an error
- */
+ ************************************************************************************************/
 char *writeSingleRegister(char *data)
 {
     int regNum;
@@ -265,17 +266,18 @@ char *writeSingleRegister(char *data)
     return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
-/*
+/****************************************
  * ‘G XX...’ ==> Write general registers.
  *
  * Reply:
  *      ‘OK’        For success
  *
  *      ‘E NN’      For an error
- */
+ ****************************************/
 char *writeAllRegister(char *data)
 {
-    char *regHex = data + 2, *fpuRegHex = regHex + 8 * (NUM_OF_CORE_Register - 1), *fpuStatusHex = fpuRegHex + 16 * NUM_OF_FPUD_Register;
+    char *regHex = data + 2, *fpuRegHex = regHex + 8 * (NUM_OF_CORE_Register - 1),
+         *fpuStatusHex = fpuRegHex + 16 * NUM_OF_FPUD_Register;
     unsigned long long int decodeVal, regValue, temp;
     int i;
 
@@ -322,7 +324,7 @@ char *writeAllRegister(char *data)
     return gdbCreateMsgPacket("OK");        //Write successfully
 }
 
-/*
+/**********************************************************************************************
  * ‘m addr,length’ ==> Read length bytes of memory starting at address addr.
  *                     Note that addr may not be aligned to any particular boundary.
  *                     The stub need not use any particular size or alignment when
@@ -337,7 +339,7 @@ char *writeAllRegister(char *data)
  *                  read only part of the region of memory.
  *
  *      ‘E NN’      NN is errno
- */
+ **********************************************************************************************/
 char *readMemory(char *data)
 {
     char *packet = NULL, fullMemContent[0x3fff] = "", *asciiString = NULL;
@@ -364,59 +366,18 @@ char *readMemory(char *data)
     {
         memoryContent = memoryBlock[virtualMemToPhysicalMem(addr)];
         asciiString = createdHexToString(memoryContent, 1);
-        /* printf("memoryContent: %x\n", memoryContent);
-        printf("addr: %x\n", addr);
-        strcpy(temp, asciiString);
-        printf("temp: %s\n", temp);
-        strcat(temp, temp2);
-        strcpy(temp2, temp);
-        printf("temp2: %s\n", temp2); */
         strcat(fullMemContent, asciiString);
         destroyHexToString(asciiString);
 
-        /* if(i % 2 == 0)
-        {
-            strcat(fullMemContent, temp2);
-            strcpy(temp2, "");
-        } */
-
         addr++;
     }
-
-    /* for(i = 1; i < length + 1; i++)
-    {
-        memoryContent = rom->address[virtualMemToPhysicalMem(addr)].data;
-        // printf("PhysicalMem: %x\n", virtualMemToPhysicalMem(addr));
-        // printf("memoryContent: %x\n", memoryContent);
-        asciiString = createdHexToString(memoryContent, 1);
-        strcpy(temp, asciiString);
-        strcat(temp, temp2);
-        strcpy(temp2, temp);
-        destroyHexToString(asciiString);
-
-        if(i < 5)
-            strcpy(fullMemContent, temp2);
-
-        if(i % 4 == 0)
-        {
-            if(i % 8 == 0)
-                strcat(fullMemContent, temp2);
-
-            strcpy(temp2, "");
-        }
-
-        addr++;
-    }
-
-    if(length > 5 && length % 4 != 0)
-        strcat(fullMemContent, temp2); */
 
     packet = gdbCreateMsgPacket(fullMemContent);
 
     return packet;
 }
 
-/*
+/******************************************************************************************************
  * ‘M addr,length:XX…’ ==> Write length bytes of memory starting at address addr.
  *                         XX… is the data; each byte is transmitted as a two-digit hexadecimal number.
  *
@@ -424,7 +385,7 @@ char *readMemory(char *data)
  *      ‘OK’        For success
  *
  *      ‘E NN’      For an error (this includes the case where only part of the data was written).
- */
+ ******************************************************************************************************/
 char *writeMemory(char *data)
 {
     char *packet = NULL, memCont[0x3fff] = {0};
@@ -459,73 +420,55 @@ char *writeMemory(char *data)
     for(i = 1; i < length + 1; i++)
     {
         sscanf(memContentAddr, "%2x", &memoryContent);
-        // printf("memoryContent: %x\n", memoryContent);
-
-        /* if(i % 2 != 0)
-        {
-            temp = memoryContent;
-            // rom->address[virtualMemToPhysicalMem(addr)].data = temp;
-        }
-        else
-        {
-            temp = temp | (memoryContent << 8);
-            rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 8;
-            rom->address[virtualMemToPhysicalMem(addr + 1)].data = temp & 0xff;
-            addr += 2;
-        } */
-
         memoryBlock[virtualMemToPhysicalMem(addr)] = memoryContent;
         addr++;
         memContentAddr += 2;
     }
 
-    /* for(i = 1; i < length + 1; i++)
-    {
-        sscanf(semicolonAddr, "%2x", &memoryContent);
-        // printf("memoryContent: %x\n", memoryContent);
-
-        if(i % 4 == 0)
-        {
-            temp = temp | (memoryContent << 24);
-            rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 24;
-            rom->address[virtualMemToPhysicalMem(addr + 1)].data = (temp >> 16) & 0xff;
-            rom->address[virtualMemToPhysicalMem(addr + 2)].data = (temp >> 8) & 0xff;
-            rom->address[virtualMemToPhysicalMem(addr + 3)].data = temp & 0xff;
-            addr += 4;
-            temp = 0;
-        }
-        else
-        {
-            if(i % 4 == 1)
-            {
-                temp = memoryContent;
-                rom->address[virtualMemToPhysicalMem(addr)].data = temp;
-            }
-            else if(i % 4 == 2)
-            {
-                temp = temp | (memoryContent << 8);
-                rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 8;
-                rom->address[virtualMemToPhysicalMem(addr + 1)].data = temp & 0xff;
-            }
-            else
-            {
-                temp = temp | (memoryContent << 16);
-                rom->address[virtualMemToPhysicalMem(addr)].data = temp >> 16;
-                rom->address[virtualMemToPhysicalMem(addr + 1)].data = (temp >> 8) & 0xff;
-                rom->address[virtualMemToPhysicalMem(addr + 2)].data = temp & 0xff;
-            }
-        }
-
-        semicolonAddr += 2;
-    } */
-
     return gdbCreateMsgPacket("OK");
 }
 
+/*************************************************************************************************
+ * ‘s [addr]’       ==> Single step, resuming at addr. If addr is omitted, resume at same address.
+ * ‘S sig[;addr]’   ==> Step with signal. This is analogous to the ‘C’ packet, but requests a
+ *                      single-step, rather than a normal resumption of execution.
+ *
+ * Reply:
+ *      ‘S05’       Signal trap
+ *
+ *      ‘E NN’      For an error.
+ *************************************************************************************************/
 char *step(char *data)
 {
     CEXCEPTION_T armException;
-    char *packet = NULL;
+    char *packet = NULL, *asciiString = NULL;
+    char *signal = "S", *error = "E";
+    char msg[4] = "";
+
+    Try
+    {
+        armStep();
+    }
+    Catch(armException)
+    {
+        if(armException == UsageFault)
+        {
+            asciiString = createdHexToString(GDB_SIGNAL_ILL, 1);
+            strcat(msg, error);
+        }
+    }
+
+    if(asciiString == NULL)
+    {
+        asciiString = createdHexToString(GDB_SIGNAL_TRAP, 1);
+        strcat(msg, signal);
+    }
+
+    strcat(msg, asciiString);
+    destroyHexToString(asciiString);
+    packet = gdbCreateMsgPacket(msg);     //signal trap
+
+    return packet;
     /* char *trapSignal = "T05";
     char *pcReg = "0f";
     char *reg7 = "07";
@@ -551,23 +494,20 @@ char *step(char *data)
     // printf("msg: %s\n", msg);
 
     destroyHexToString(pcValue);
-    destroyHexToString(r7Value); */
-    Try
-    {
-        armStep();
-    }
-    Catch(armException)
-    {
-        if(armException == UsageFault)
-            Throw(GDB_SIGNAL_ILL);
-    }
+    destroyHexToString(r7Value);
 
-    packet = gdbCreateMsgPacket("S05");     //signal trap
-    // packet = gdbCreateMsgPacket(msg);
-
-    return packet;
+    packet = gdbCreateMsgPacket(msg);*/
 }
 
+/*****************************************************************************************
+ * ‘C sig[;addr]’ ==> Continue with signal sig (hex signal number). If ‘;addr’ is omitted,
+ *                    resume at same address.
+ *
+ * Reply:
+ *      ‘S05’       Signal trap
+ *
+ *      ‘E NN’      For an error.
+ *****************************************************************************************/
 char *cont(char *data)
 {
     CEXCEPTION_T armException;
@@ -585,7 +525,7 @@ char *cont(char *data)
                 Throw(GDB_SIGNAL_ILL);
         }
 
-        if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)
+        if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)   // stop if reach the end of code addr
             break;
     }
 
@@ -594,6 +534,16 @@ char *cont(char *data)
     return packet;
 }
 
+/********************************************************************
+ * To search the breakpoint available and compare to the PC register
+ *
+ * Input:
+ *      breakpoint
+ *
+ * Return:
+ *      0           if breakpoint do not match with PC register
+ *      1           if breakpoint match with PC register
+ ********************************************************************/
 int findBreakpoint(Breakpoint *breakpoint)
 {
     if(breakpoint != NULL)
@@ -613,7 +563,7 @@ int findBreakpoint(Breakpoint *breakpoint)
     return 0;
 }
 
-/*
+/*****************************************************************************************************
  * Insert
  * ‘Z0,addr,kind’ ==> A memory breakpoint at address addr of type kind. A memory breakpoint is
  *                    implemented by replacing the instruction at addr with a software breakpoint
@@ -639,7 +589,7 @@ int findBreakpoint(Breakpoint *breakpoint)
  *      ‘’          Not supported
  *
  *      ‘E NN’      For an error (this includes the case where only part of the data was written).
- */
+ *****************************************************************************************************/
 char *insertBreakpointOrWatchpoint(char *data)
 {
     BP_Type type;           //Sort of breakpoint
@@ -679,7 +629,7 @@ char *insertBreakpointOrWatchpoint(char *data)
     return gdbCreateMsgPacket("OK");
 }
 
-/*
+/******************************************************************************************************
  * Remove
  * ‘z0,addr,kind’ ==> A memory breakpoint at address addr of type kind. A memory breakpoint is
  *                    implemented by replacing the instruction at addr with a software breakpoint
@@ -705,7 +655,7 @@ char *insertBreakpointOrWatchpoint(char *data)
  *      ‘’          Not supported
  *
  *      ‘E NN’      For an error (this includes the case where only part of the data was written).
- */
+ ******************************************************************************************************/
 char *removeBreakpointOrWatchpoint(char *data)
 {
     BP_Type type;           //Sort of breakpoint
@@ -745,12 +695,23 @@ char *removeBreakpointOrWatchpoint(char *data)
     return gdbCreateMsgPacket("OK");
 }
 
+/*********************************************************
+ * This function create breakpoint contain address info
+ *
+ * Input:
+ *      addr            address of the breakpoint
+ *
+ * Return:
+ *      breakpoint      pointer to breakpoint object
+ **********************************************************/
 Breakpoint *createBreakpoint(unsigned int addr)
 {
     Breakpoint *breakpoint;
     breakpoint = malloc(sizeof(Breakpoint));
     breakpoint->addr = addr;
     breakpoint->next = NULL;
+
+    return breakpoint;
 }
 
 void deleteBreakpoint(Breakpoint **breakpoint)
@@ -775,6 +736,13 @@ void deleteAllBreakpoint(Breakpoint **breakpoint)
     }
 }
 
+/****************************************************
+ * This function add breakpoint to the list
+ *
+ * Input:
+ *      addr            address of the breakpoint
+ *      breakpoint      pointer to breakpoint object
+ ****************************************************/
 void addBreakpoint(Breakpoint **breakpoint, unsigned int addr)
 {
     Breakpoint *temp_bp = *breakpoint;
@@ -791,19 +759,31 @@ void addBreakpoint(Breakpoint **breakpoint, unsigned int addr)
                 (*breakpoint)->next = createBreakpoint(addr);
         }
         else
-            printf("Error\n");
+        {
+            temp_bp = NULL;
+            addBreakpoint(&temp_bp, addr);
+            temp_bp->next = *breakpoint;
+            *breakpoint = temp_bp;
+        }
     }
 }
 
+/****************************************************
+ * This function remove breakpoint from the list
+ *
+ * Input:
+ *      addr            address of the breakpoint
+ *      breakpoint      pointer to breakpoint object
+ ****************************************************/
 void removeBreakpoint(Breakpoint **breakpoint, unsigned int addr)
 {
     Breakpoint *temp_bp = *breakpoint;
 
     if(temp_bp->addr == addr)
     {
-        // deleteBreakpoint(&(*breakpoint));
-        // *breakpoint = *temp_bp->next;
-        *breakpoint = (*breakpoint)->next;
+        temp_bp = (*breakpoint)->next;
+        deleteBreakpoint(&(*breakpoint));
+        *breakpoint = temp_bp;
     }
     else
         removeBreakpoint(&(*breakpoint)->next, addr);
