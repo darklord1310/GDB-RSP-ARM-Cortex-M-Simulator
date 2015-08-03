@@ -76,6 +76,8 @@ void LDRLiteralT1(uint32_t instruction)
     
     coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register
   }
+  
+  coreReg[PC] += 2;
 }
 
 

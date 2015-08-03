@@ -52,6 +52,7 @@ void SBCRegisterT1(uint32_t instruction)
  else
     executeSBCRegister(Rdn, Rdn, Rm, 1);
  
+  coreReg[PC] += 2;
 }
 
 

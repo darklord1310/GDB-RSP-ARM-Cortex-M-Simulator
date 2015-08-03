@@ -37,6 +37,8 @@ void CMPImmediateT1(uint32_t instruction)
   }
   else
     executeCMP(imm8, Rn );
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -68,6 +70,7 @@ void CMPImmediateT2(uint32_t instruction)
   uint32_t modifiedConstant = ModifyImmediateConstant(i, imm3, bit7, imm8);
   executeCMP(modifiedConstant, Rn );
   
+
 }
 
 

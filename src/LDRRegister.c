@@ -58,6 +58,7 @@ void LDRRegisterT1(uint32_t instruction)
     coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
   }
   
+  coreReg[PC] += 2;
 }
 
 
@@ -111,6 +112,7 @@ void LDRHRegisterT1(uint32_t instruction)
     coreReg[Rt] = data;
   }  
   
+  coreReg[PC] += 2;
 }
 
 
@@ -162,7 +164,8 @@ void LDRBRegisterT1(uint32_t instruction)
     uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
     coreReg[Rt] = data;
   }  
-  
+ 
+  coreReg[PC] += 2; 
 }
 
 
@@ -223,6 +226,7 @@ void LDRSBRegisterT1(uint32_t instruction)
     coreReg[Rt] = data;
   }  
   
+  coreReg[PC] += 2;
 }
 
 
@@ -283,6 +287,7 @@ void LDRSHRegisterT1(uint32_t instruction)
     coreReg[Rt] = data;
   }    
   
+  coreReg[PC] += 2;
 }
 
 
@@ -340,7 +345,8 @@ void LDMRegisterT1(uint32_t instruction)
     int writeBack = determineWriteBack( Rn, registerList);              
     loadMultipleRegisterToMemory(coreReg[Rn], registerList, writeBack, Rn);
   }  
-  
+
+  coreReg[PC] += 2;
 }
 
 

@@ -42,6 +42,8 @@ void ASRImmediateT1(uint32_t instruction)
   }
   else
     executeASRImmediate(imm5, Rm, Rd, 1, MSBofRm);
+  
+  coreReg[PC] += 2;
 }
 
 

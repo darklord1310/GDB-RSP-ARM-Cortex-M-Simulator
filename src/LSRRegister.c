@@ -36,12 +36,16 @@ void LSRRegisterToRegisterT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    executeLSRRegister(Rm, Rdn, 0);
+      executeLSRRegister(Rm, Rdn, 0);
     
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
-  executeLSRRegister(Rm, Rdn, 1);
+  {
+    executeLSRRegister(Rm, Rdn, 1);
+    coreReg[PC] += 2;
+  }
   
 }
 

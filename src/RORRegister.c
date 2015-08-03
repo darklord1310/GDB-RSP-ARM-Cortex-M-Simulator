@@ -41,8 +41,9 @@ void RORRegisterT1(uint32_t instruction)
     shiftITState();
   }
   else
-  executeRORRegister(Rdn, Rdn, Rm, 1);
+    executeRORRegister(Rdn, Rdn, Rm, 1);
   
+  coreReg[PC] += 2;
 }
 
 

@@ -39,6 +39,8 @@ void REVT1(uint32_t instruction)
   }
   else
     executeREV(Rm, Rd);
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -87,6 +89,8 @@ void REV16T1(uint32_t instruction)
   }
   else
     executeREV16(Rm, Rd);
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -135,6 +139,8 @@ void REVSHT1(uint32_t instruction)
   }
   else
     executeREVSH(Rm, Rd);
+  
+  coreReg[PC] += 2;
 }
 
 

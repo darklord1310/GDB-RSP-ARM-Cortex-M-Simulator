@@ -35,4 +35,5 @@ void POPT1(uint32_t instruction)
   uint32_t register_list = getBits(instruction, 23, 16);
   
   
+  coreReg[PC] += 2;
 }

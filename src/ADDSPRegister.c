@@ -56,6 +56,7 @@ void ADDSPRegisterT1(uint32_t instruction)
   else
       executeADDSPRegister(d, d, 0, -1);
   
+  coreReg[PC] += 2;
 }
 
 
@@ -104,6 +105,8 @@ void ADDSPRegisterT2(uint32_t instruction)
   }
   else
     executeADDSPRegister(Rd, Rm, 0, -1);
+  
+  coreReg[PC] += 2;
 }
 
 

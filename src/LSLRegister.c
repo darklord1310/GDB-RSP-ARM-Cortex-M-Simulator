@@ -44,9 +44,13 @@ void LSLRegisterToRegisterT1(uint32_t instruction)
       executeLSLRegister(Rm, Rdn, 0);
     
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     executeLSLRegister(Rm, Rdn, 1);
+    coreReg[PC] += 2;
+  }
   
 }
 

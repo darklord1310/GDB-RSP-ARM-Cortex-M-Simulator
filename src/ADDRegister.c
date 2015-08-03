@@ -57,6 +57,9 @@ void ADDRegisterToRegisterT1(uint32_t instruction)
  }
  else
     executeADDRegister(Rn, Rd, Rm, 1);
+  
+  coreReg[PC] += 2;
+  
 }
 
 
@@ -126,6 +129,7 @@ void ADDRegisterToRegisterT2(uint32_t instruction)
       executeADDRegister(Rdn, Rdn, Rm, 0);
   }
   
+  coreReg[PC] += 2;
 }
 
 

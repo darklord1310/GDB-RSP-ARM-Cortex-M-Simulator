@@ -7,7 +7,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
-
+#include "STRRegister.h"
 
 
 /*Push Multiple Registers Encoding T1
@@ -29,8 +29,60 @@ where:
 */
 void PUSHT1(uint32_t instruction)
 {
-  uint32_t M = getBits(instruction, 24,24);
-  uint32_t register_list = getBits(instruction, 23,16);
+  uint8_t M = getBits(instruction, 24,24);
+  uint16_t temp = M << 6;
+  uint16_t register_list = ( temp << 8 ) | getBits(instruction, 23,16);
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      uint32_t address = coreReg[SP] - 4*bitCount(register_list);     
+      pushMultipleRegisterToMemory(address, register_list);
+    }
+    shiftITState();
+  }
+  else
+  {
+    uint32_t address = coreReg[SP] - 4*bitCount(register_list);      
+    pushMultipleRegisterToMemory(address, register_list);
+  }
   
+  coreReg[PC] += 2;
+}
+
+
+
+
+int bitCount(uint32_t value)
+{
+  int count = 0, i;
+
+  for(i = 0; i < 32; i++)
+  {
+    if(getBits(value,i,i) == 1)  
+      count++;
+    
+  }
+  
+  return count;
+}
+
+
+
+void pushMultipleRegisterToMemory(uint32_t address, uint32_t registerList)
+{
+  int sizeOfRegisterList = 8, i;
+  
+  for(i = 0; i < sizeOfRegisterList; i++)
+  {
+    if( getBits(registerList, i ,i) == 1)           //if the bit[i] of the registerList is 1, then write the value of r[i] into the address
+    {
+      writeByteToMemory(address, coreReg[i], 4);
+      address+=4;
+    }
+  }
+  
+  coreReg[SP] = coreReg[SP] - 4*bitCount(registerList);
   
 }

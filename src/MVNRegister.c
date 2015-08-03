@@ -49,6 +49,7 @@ void MVNRegisterT1(uint32_t instruction)
   else
     executeMVNRegister(Rm, Rd, 1,-1);   //status flag is affected
   
+  coreReg[PC] += 2;
 }
 
 

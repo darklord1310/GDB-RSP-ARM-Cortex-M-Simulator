@@ -54,7 +54,8 @@ void ADCRegisterT1(uint32_t instruction)
  }
  else
     executeADCRegister(Rdn, Rdn, Rm, 1);
- 
+  
+  coreReg[PC] += 2;
 }
 
 

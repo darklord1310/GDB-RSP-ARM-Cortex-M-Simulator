@@ -56,6 +56,8 @@ void ANDRegisterT1(uint32_t instruction)
  }
  else
     executeANDRegister(Rm, Rdn, 1,-1);   //status flag is affected, no shifting
+  
+  coreReg[PC] += 2;
 }
 
 

@@ -49,6 +49,7 @@ void SUBImmediateT1(uint32_t instruction)
  else
     executeSUBImmediate(Rn, Rd, imm3, 1);
   
+  coreReg[PC] += 2;
 }
 
 
@@ -98,6 +99,7 @@ void SUBImmediateT2(uint32_t instruction)
  else
     executeSUBImmediate(Rdn, Rdn, imm8, 1);
   
+  coreReg[PC] += 2;
 }
 
 

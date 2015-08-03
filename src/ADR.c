@@ -39,7 +39,8 @@ where:
 void ADRT1(uint32_t instruction)
 {
   uint32_t Rd = getBits(instruction,26,24);
-  uint32_t imm8 = getBits(instruction,23,16);
+  uint32_t imm8 = getBits(instruction,23,16) << 2;
+  
   
   if(inITBlock())
   {

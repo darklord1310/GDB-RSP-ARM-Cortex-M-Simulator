@@ -42,6 +42,8 @@ void ASRRegisterToRegisterT1(uint32_t instruction)
   }
   else
     executeASRRegister(Rm, Rdn, Rdn, 1);   //status flag is affected
+  
+  coreReg[PC] += 2;
 
 }
 
