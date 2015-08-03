@@ -14,7 +14,7 @@
   :test_file_prefix: test_
 
 :release_build:
-  :output: gdbDebugger.exe
+  :output: gdbServer.exe
 #  :use_assembly: FALSE
 
 :environment:
@@ -56,6 +56,22 @@
     uint32:   UINT32
     int8:     INT8
     bool:     UINT8
+
+:tools:
+  :release_compiler:
+    :executable: gcc                  #exists in system search path
+    :name: 'gcc compiler'
+    :arguments:
+      - -c ${1}                       #source code input file (Ruby method call param list sub)
+      - -o ${2}                       #object file output (Ruby method call param list sub)
+
+  :release_linker:
+    :executable: gcc                  #absolute file path
+    :name: 'gcc linker'
+    :arguments:
+      - ${1}                          #list of object files to link (Ruby method call param list sub)
+      - -lws2_32                      #link with winsock
+      - -o ${2}                       #executable file output (Ruby method call param list sub)
 
 #:tools:
 # Ceedling defaults to using gcc for compiling, linking, etc.
