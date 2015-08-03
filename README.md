@@ -12,8 +12,7 @@ Steps of using gdbserver
 
 3) Before using gdbserver, open another Git Bash under 'GDB-RSP-ARM-Cortex-M-Simulator' folder
 
-4) Then, type 'rake release' to compile and release gdbServer.exe. Open gdbServer.exe using 'build/release/gdbServer.exe'       
-   command as the .exe file release under 'build/release/' folder
+4) Then, type 'rake release' to compile and release gdbServer.exe. Open gdbServer.exe using 'build/release/gdbServer.exe' command as the .exe file release under 'build/release/' folder
 
 4) Connect the gdbserver using 'tar remote :2010' command under ARM GDB that was open in step 2
 
