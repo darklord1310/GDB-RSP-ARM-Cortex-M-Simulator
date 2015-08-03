@@ -1,0 +1,1 @@
+Type 'compile' to compile 'startup_stm32f429xx.s' into 'AssemblyCode.elf'
