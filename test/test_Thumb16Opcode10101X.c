@@ -54,6 +54,8 @@
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
 #include "CBZandCBNZ.h"
+#include "PUSH.h"
+#include "POP.h"
 
 
 void setUp(void)
