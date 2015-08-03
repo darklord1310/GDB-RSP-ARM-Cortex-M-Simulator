@@ -1,2 +1,2 @@
 arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -Wall -ffunction-sections -g -O0 -c -DSTM32F429ZI -DSTM32F429xx startup_stm32f429xx.s
-arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -nostartfiles -Wl,-Map=AssemblyCode.map -O0 -Wl,--gc-sections -Wl,-TC:/ProgramFiles/CoIDE/workspace/AssemblyCode/stm32f429zi_flash.ld -g -o AssemblyCode.elf startup_stm32f429xx.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -nostartfiles -Wl,-Map=AssemblyCode.map -O0 -Wl,--gc-sections -Wl,-Tstm32f429zi_flash.ld -g -o AssemblyCode.elf startup_stm32f429xx.o

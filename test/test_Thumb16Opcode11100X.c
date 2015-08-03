@@ -148,6 +148,19 @@ void test_unconditionalBranch_given_not_last_in_IT_block_should_throw_error()
 }
 
 
+
+void test_unconditionalBranch_should_branch_to_itself()
+{
+  coreReg[PC] = 0x080001b0;
+  uint32_t instruction = 0xe7fe0000;
+  
+  ARMSimulator(instruction);
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL( 0x080001b0, coreReg[PC]);
+}
+
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Conditional branch
 

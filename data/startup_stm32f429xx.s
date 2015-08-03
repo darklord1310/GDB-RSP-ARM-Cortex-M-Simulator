@@ -29,13 +29,20 @@ defined in linker script */
  * @retval : None
 */
 
+  .section  .data
+myData: .word 2
+
   .section  .text.Reset_Handler
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 Reset_Handler:
-	movs	r0, #2
-	movs	r1, #4
-	b		.
+  movs  r0, #0x50
+	movs  r1, #0x02
+  lsls  r1, #20
+  str   r0, [r1]
+  movs  r0, #0xc0
+  movs  r1, #0xde
+	b		  .
 .size  Reset_Handler, .-Reset_Handler
 
 /**

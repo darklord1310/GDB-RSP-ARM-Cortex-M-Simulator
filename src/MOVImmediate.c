@@ -128,10 +128,15 @@ void MOVImmediateT3(uint32_t instruction)
   constant = ( i << 11 ) | constant;
   constant = ( imm4 << 12) | constant;
  
-  executeMOVImmediate(constant, Rd, 0,0);
-  
-  if( inITBlock() )
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeMOVImmediate(constant, Rd, 0,0);
     shiftITState();
+  }
+  else
+    executeMOVImmediate(constant, Rd, 0,0);
+
 }
 
 
