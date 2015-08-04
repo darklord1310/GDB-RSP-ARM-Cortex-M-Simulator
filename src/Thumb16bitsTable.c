@@ -248,6 +248,10 @@ void initThumb16bitsOpcode1011XX()
   Thumb16Opcode1011XX[0b1101101] = POPT1;
   Thumb16Opcode1011XX[0b1101110] = POPT1;
   Thumb16Opcode1011XX[0b1101111] = POPT1;
+  Thumb16Opcode1011XX[0b0000100] = SUBSPImmediateT1;
+  Thumb16Opcode1011XX[0b0000101] = SUBSPImmediateT1;
+  Thumb16Opcode1011XX[0b0000110] = SUBSPImmediateT1;
+  Thumb16Opcode1011XX[0b0000111] = SUBSPImmediateT1;
 }
 
 

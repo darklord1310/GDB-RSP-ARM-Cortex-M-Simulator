@@ -1,4 +1,6 @@
 #include "POP.h"
+#include "LDRRegister.h"
+#include "LDRImmediate.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -33,7 +35,25 @@ void POPT1(uint32_t instruction)
 {
   uint32_t P = getBits(instruction, 24, 24);
   uint32_t register_list = getBits(instruction, 23, 16);
+  uint16_t temp = P << 7;
+  uint16_t registerlist = ( temp << 8 ) | register_list;
   
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      uint32_t address = coreReg[SP];     
+      loadMultipleRegisterFromMemory(address, registerlist, 1, SP);
+    }
+    shiftITState();
+    coreReg[PC] += 2;
+  }
+  else
+  {
+    uint32_t address = coreReg[SP];      
+    loadMultipleRegisterFromMemory(address, registerlist, 1, SP);
+    coreReg[PC] += 2;
+  }
   
-  coreReg[PC] += 2;
+ 
 }

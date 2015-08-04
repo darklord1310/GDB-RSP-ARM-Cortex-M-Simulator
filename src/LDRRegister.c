@@ -336,14 +336,14 @@ void LDMRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       int writeBack = determineWriteBack(Rn, registerList);
-      loadMultipleRegisterToMemory(coreReg[Rn], registerList, writeBack, Rn);
+      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
     }
     shiftITState();
   }
   else
   {
     int writeBack = determineWriteBack( Rn, registerList);              
-    loadMultipleRegisterToMemory(coreReg[Rn], registerList, writeBack, Rn);
+    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
   }  
 
   coreReg[PC] += 2;
@@ -360,7 +360,7 @@ void LDMRegisterT1(uint32_t instruction)
  *         Rn               the destination register which the value will be updated if writeback is 1
  * 
  */
-void loadMultipleRegisterToMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
+void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
 {
   int sizeOfRegisterList = 8, i, bitCount = 0;
   

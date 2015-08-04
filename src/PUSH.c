@@ -41,14 +41,15 @@ void PUSHT1(uint32_t instruction)
       pushMultipleRegisterToMemory(address, register_list);
     }
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
   {
     uint32_t address = coreReg[SP] - 4*bitCount(register_list);      
     pushMultipleRegisterToMemory(address, register_list);
+    coreReg[PC] += 2;
   }
-  
-  coreReg[PC] += 2;
+
 }
 
 

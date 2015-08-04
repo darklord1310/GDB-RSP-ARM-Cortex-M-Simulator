@@ -59,7 +59,7 @@
 #include "CBZandCBNZ.h"
 #include "PUSH.h"
 #include "POP.h"
-
+#include "SUBSPImmediate.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
