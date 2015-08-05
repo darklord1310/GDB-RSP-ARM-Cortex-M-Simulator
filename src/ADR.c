@@ -46,10 +46,15 @@ void ADRT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
       executeADR(Rd, imm8);
+    
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     executeADR(Rd, imm8);
+    coreReg[PC] += 2;
+  }
 }
 
 

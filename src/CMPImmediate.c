@@ -29,16 +29,18 @@ void CMPImmediateT1(uint32_t instruction)
   uint32_t Rn = getBits(instruction, 26, 24);
 
   if(inITBlock())
-  {
+  { 
     if( checkCondition(cond) )
       executeCMP(imm8, Rn );
     
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     executeCMP(imm8, Rn );
-  
-  coreReg[PC] += 2;
+    coreReg[PC] += 2;
+  }
 }
 
 
