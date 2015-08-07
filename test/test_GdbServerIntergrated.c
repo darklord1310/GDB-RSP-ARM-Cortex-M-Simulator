@@ -799,6 +799,40 @@ void test_serveRSP_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
 
+void test_serveRSP_given_Z1_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$Z1,80009d6,2#b0";
+    char *reply = NULL;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$Z1,7ffffff,2#b0";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
 void test_serveRSP_given_z0_should_insert_breakpoint_at_0x080009d6(void)
 {
     char data[] = "$z0,80009d6,2#cf";
@@ -833,9 +867,43 @@ void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
 
+void test_serveRSP_given_z1_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$z1,80009d6,2#d0";
+    char *reply = NULL;
+
+    addBreakpoint(&bp, 0x80009d6);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$z1,7ffffff,2#d0";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = serveRSP(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
 void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is_reach(void)
 {
-    char data[] = "$c#12";
+    char data[] = "$c#63";
     char *reply = NULL;
 
     resetMemoryBlock();
@@ -849,13 +917,45 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is
     TEST_ASSERT_NOT_NULL(bp);
     TEST_ASSERT_NULL(bp->next);
     TEST_ASSERT_EQUAL(0xa, bp->addr);
+    TEST_ASSERT_EQUAL(0xa, coreReg[PC]);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whenever_a_breakpoint_is_reach(void)
+{
+    char data[] = "$c#63";
+    char *reply = NULL;
+
+    resetMemoryBlock();
+    coreReg[PC] = 0x0;
+    // printf("PC: %x\n", coreReg[PC]);
+    addBreakpoint(&bp, 0xa);
+    addBreakpoint(&bp, 0x1a);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NOT_NULL(bp->next);
+    TEST_ASSERT_NULL(bp->next->next);
+    TEST_ASSERT_EQUAL(0xa, bp->addr);
+    TEST_ASSERT_EQUAL(0x1a, bp->next->addr);
+    TEST_ASSERT_EQUAL(0xa, coreReg[PC]);
+
+    removeBreakpoint(&bp, 0xa);
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+
+    TEST_ASSERT_EQUAL(0x1a, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the_end_of_code_memory(void)
 {
-    char data[] = "$c#12";
+    char data[] = "$c#63";
     char *reply = NULL;
 
     resetMemoryBlock();
@@ -866,6 +966,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
     TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_EQUAL(0x8070000, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
 }

@@ -610,9 +610,8 @@ char *insertBreakpointOrWatchpoint(char *data)
     switch (type)
     {
         case BP_MEMORY:
-            addBreakpoint(&bp, addr);
-            break;
         case BP_HARDWARE:
+            addBreakpoint(&bp, addr);
             break;
         case WP_WRITE:
             break;
@@ -676,9 +675,8 @@ char *removeBreakpointOrWatchpoint(char *data)
     switch (type)
     {
         case BP_MEMORY:
-            removeBreakpoint(&bp, addr);
-            break;
         case BP_HARDWARE:
+            removeBreakpoint(&bp, addr);
             break;
         case WP_WRITE:
             break;

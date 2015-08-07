@@ -8,6 +8,7 @@
 #define DEFAULT_PORT    2010
 #define PACKET_SIZE     0x3fff
 
+void main();
 void winsockInit();
 void createSocket(SOCKET *sock);
 void bindSocket(SOCKET *sock);

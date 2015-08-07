@@ -1024,6 +1024,42 @@ void test_insertBreakpointOrWatchpoint_given_Z0_should_should_throw_GDB_SIGNAL_A
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
+void test_insertBreakpointOrWatchpoint_given_Z1_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$Z1,80009d6,2#b0";
+    char *reply = NULL;
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = insertBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_insertBreakpointOrWatchpoint_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$Z1,7ffffff,2#b0";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = insertBreakpointOrWatchpoint(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
 void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x080009d6(void)
 {
     char data[] = "$z0,80009d6,2#cf";
@@ -1057,7 +1093,41 @@ void test_removeBreakpointOrWatchpoint_given_z0_should_should_throw_GDB_SIGNAL_A
 	}
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
 
+void test_removeBreakpointOrWatchpoint_given_z1_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$z1,80009d6,2#d0";
+    char *reply = NULL;
+
+    addBreakpoint(&bp, 0x80009d6);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = removeBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_removeBreakpointOrWatchpoint_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$z1,7ffffff,2#d0";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = removeBreakpointOrWatchpoint(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
 void test_findBreakpoint_given_no_breakpoint_in_breakpoint_lits_should_return_0(void)
