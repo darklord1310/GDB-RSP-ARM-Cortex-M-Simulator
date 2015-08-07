@@ -60,6 +60,8 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
+#include "LoadAndWriteMemory.h"
+
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;

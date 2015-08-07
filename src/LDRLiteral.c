@@ -9,9 +9,9 @@
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include <stdio.h>
-#include "LDRImmediate.h"
 #include "ErrorSignal.h"
 #include "ADR.h"
+#include "LoadAndWriteMemory.h"
 
 
 /*Load Register(literal) Encoding T1 
@@ -59,7 +59,7 @@ void LDRLiteralT1(uint32_t instruction)
       uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
                                                                 // a word from the memory
       
-      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+      coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register 
     }
 
     shiftITState();
@@ -74,7 +74,7 @@ void LDRLiteralT1(uint32_t instruction)
     uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
                                                               // a word from the memory
     
-    coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register
+    coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register 
   }
   
   coreReg[PC] += 2;
@@ -82,16 +82,3 @@ void LDRLiteralT1(uint32_t instruction)
 
 
 
-/*  This function will load a word from the memory based on the address given
- * 
- *  Input :   address     is the start address where it will load a word from it
- * 
- *  Return:   the wordLoaded
- * 
- */
-uint32_t executeLDR(uint32_t address)
-{
-  uint32_t wordLoaded = loadWordFromMemory(address);        // load the word from the memory
-  
-  return wordLoaded;
-}

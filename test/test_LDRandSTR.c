@@ -60,6 +60,7 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
+#include "LoadAndWriteMemory.h"
 
 
 void setUp(void)
