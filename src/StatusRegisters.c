@@ -253,3 +253,16 @@ void ALUWritePC(uint32_t address)
     
 }
 
+
+
+// AddWithCarry()
+// ==============
+/*
+(bits(N), bit, bit) AddWithCarry(bits(N) x, bits(N) y, bit carry_in)
+unsigned_sum = UInt(x) + UInt(y) + UInt(carry_in);
+signed_sum = SInt(x) + SInt(y) + UInt(carry_in);
+result = unsigned_sum<N-1:0>; // == signed_sum<N-1:0>
+carry_out = if UInt(result) == unsigned_sum then ’0’ else ’1’;
+overflow = if SInt(result) == signed_sum then ’0’ else ’1’;
+return (result, carry_out, overflow);
+*/

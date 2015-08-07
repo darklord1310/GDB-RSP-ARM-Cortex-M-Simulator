@@ -92,7 +92,20 @@ void MOVRegisterToRegisterT2(uint32_t instruction)
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
   
-  executeMOVRegister(Rm, Rd, 1);
+  if( inITBlock() )
+  {
+    if( checkCondition(cond) )
+      executeMOVRegister(Rm, Rd, 0);
+    
+    shiftITState();
+    coreReg[PC] += 2;
+  }
+  else
+  {
+    executeMOVRegister(Rm, Rd, 1);
+    coreReg[PC] += 2;
+  }
+  
 }
 
 
@@ -113,6 +126,7 @@ void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
     updateNegativeFlag(coreReg[Rd]);
   }
 }
+
 
 
 /* Move From Register To Register Encoding T3
