@@ -83,7 +83,6 @@ void test_ADRT1_given_PC_0x08000044_should_get_r3_0x0800004C(void)
 }
 
 
-
 // test for the conditional cases
 /* Test case 1
  *            ITETE EQ

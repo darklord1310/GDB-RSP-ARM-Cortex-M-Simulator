@@ -8,7 +8,7 @@
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include <stdio.h>
-
+#include "ADR.h"
 
 /*Add SP with Register Encoding T1
     ADD<c> <Rdm>, SP, <Rdm>
@@ -54,10 +54,8 @@ void ADDSPRegisterT1(uint32_t instruction)
     //here no need to shift IT State because it will be shifted when return back to its caller which is ADDRegister function
   }
   else
-      executeADDSPRegister(d, d, 0, -1);
+    executeADDSPRegister(d, d, 0, -1);
   
-  if( d != PC)
-    coreReg[PC] += 2;
 }
 
 
@@ -97,17 +95,15 @@ void ADDSPRegisterT2(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction,22,19);
   uint32_t Rd = 0b1101;
-  
+
   if(inITBlock())
   {
     if( checkCondition(cond) )
       executeADDSPRegister(Rd, Rm, 0, -1);
-    //here no need to shift IT State because it will be shifted when return back to its caller which is ADDRegister function
+    //here no need to shift IT State because it will be shifted when return back to its caller which is ADDRegister function  
   }
   else
     executeADDSPRegister(Rd, Rm, 0, -1);
-  
-  coreReg[PC] += 2;
 }
 
 
@@ -117,10 +113,21 @@ void executeADDSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, int shiftOrNoShi
 {
   if( shiftOrNoShift == -1)     //if no shifting no need to add with carry flag
   {
-    if(Rm == 15)
-      coreReg[Rd] = coreReg[Rm] + coreReg[SP] + 4;
+    if(Rd == PC)
+    {
+      uint32_t address = coreReg[Rm] + coreReg[SP] + 4;
+      ALUWritePC(address);
+    }
+    else if(Rm == PC)
+    {
+      coreReg[Rd] = alignPC(coreReg[Rm] + 2, 4) + coreReg[SP];
+    }
     else
+    {
       coreReg[Rd] = coreReg[Rm] + coreReg[SP];
+    }
   }
-    
+
 }
+
+
