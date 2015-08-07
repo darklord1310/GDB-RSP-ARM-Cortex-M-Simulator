@@ -8,6 +8,9 @@
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "STRRegister.h"
+#include "ErrorSignal.h"
+#include "CException.h"
+
 
 
 /*Push Multiple Registers Encoding T1
@@ -32,13 +35,20 @@ void PUSHT1(uint32_t instruction)
   uint8_t M = getBits(instruction, 24,24);
   uint16_t temp = M << 6;
   uint16_t register_list = ( temp << 8 ) | getBits(instruction, 23,16);
+  
+  if( bitCount(register_list) < 1)
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
+ 
 
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[SP] - 4*bitCount(register_list);     
-      pushMultipleRegisterToMemory(address, register_list);
+      pushMultipleRegisterToMemory(address, register_list, 16);
     }
     shiftITState();
     coreReg[PC] += 2;
@@ -46,7 +56,7 @@ void PUSHT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[SP] - 4*bitCount(register_list);      
-    pushMultipleRegisterToMemory(address, register_list);
+    pushMultipleRegisterToMemory(address, register_list, 16);
     coreReg[PC] += 2;
   }
 
@@ -71,9 +81,9 @@ int bitCount(uint32_t value)
 
 
 
-void pushMultipleRegisterToMemory(uint32_t address, uint32_t registerList)
+void pushMultipleRegisterToMemory(uint32_t address, uint32_t registerList, int sizeOfRegisterList)
 {
-  int sizeOfRegisterList = 8, i;
+  int i;
   
   for(i = 0; i < sizeOfRegisterList; i++)
   {

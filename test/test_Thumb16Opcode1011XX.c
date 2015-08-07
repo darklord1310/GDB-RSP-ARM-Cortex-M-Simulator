@@ -59,6 +59,8 @@
 #include "POP.h"
 #include "SUBSPImmediate.h"
 #include "LoadAndWriteMemory.h"
+#include "CException.h"
+
 
 void setUp(void)
 {
@@ -548,6 +550,25 @@ void test_PUSHT1_given_SP_0x20001000_should_get_SP_0x20000FFC()
 }
 
 
+//boundary case, if registerList < 1
+void test_PUSHT1_should_throw_error_when_registerlist_less_than_1()
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0xb4000000;
+  
+  Try
+  {
+    ARMSimulator(instruction);
+    TEST_FAIL_MESSAGE("Expect error to be throw\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT,coreReg[PC]);
+    TEST_ASSERT_EQUAL(UsageFault,err);
+  }
+
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -712,6 +733,27 @@ void test_POPT1_given_SP_0x20001000_should_get_SP_0x20000FE4()
 
 }
 
+
+
+
+//boundary case, if registerList < 1
+void test_POPT1_should_throw_error_when_registerlist_less_than_1()
+{
+  CEXCEPTION_T err;
+  uint32_t instruction = 0xbc000000;
+  
+  Try
+  {
+    ARMSimulator(instruction);
+    TEST_FAIL_MESSAGE("Expect error to be throw\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT,coreReg[PC]);
+    TEST_ASSERT_EQUAL(UsageFault,err);
+  }
+
+}
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/

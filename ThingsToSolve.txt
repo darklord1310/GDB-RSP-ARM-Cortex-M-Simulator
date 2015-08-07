@@ -1,2 +1,1 @@
-2) check the exception for the LDR,STR,POP and PUSH instruction
-4) implement the function AddWithCarry for easier implementation in the future
+2) implement the function AddWithCarry for easier implementation in the future

@@ -34,7 +34,7 @@ void BX(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction,22,19);            
   
-  if( !inITBlock() || isLastInITBlock() )                  //if not inside IT block or last instruction inside IT  
+  if( !inITBlock() || isLastInITBlock() )                 //if not inside IT block or last instruction inside IT  
   {                                                       //block only execute
     if( getBits(coreReg[Rm],0,0) == 1)                    //if the bit 0 is 1 only execute
     {

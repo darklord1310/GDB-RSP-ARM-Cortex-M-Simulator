@@ -285,7 +285,7 @@ void LDRSHRegisterT1(uint32_t instruction)
   LDM<c> <Rn>,<registers> <Rn> included in <registers>
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |1  1  0   0| 1|   Rn   |    register_list   |                 unused                |
+  |1  1  0   0| 1|   Rn   |       register_list   |                 unused              |
 
   where:
             <c><q>          See Standard assembler syntax fields on page A6-7.
@@ -323,14 +323,14 @@ void LDMRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       int writeBack = determineWriteBack(Rn, registerList);
-      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
+      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 8);
     }
     shiftITState();
   }
   else
   {
     int writeBack = determineWriteBack( Rn, registerList);              
-    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
+    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 8);
   }  
 
   coreReg[PC] += 2;
@@ -341,15 +341,15 @@ void LDMRegisterT1(uint32_t instruction)
 
 /* This function will load multiple register from memory based to the register list given
  * 
- * Input:  address          the base address of the memory
- *         registerList     the number of register which the value will be read and load into registers
- *         writeBack        if 1 then means writeback is true, 0 means false
- *         Rn               the destination register which the value will be updated if writeback is 1
- * 
+ * Input:  address              the base address of the memory
+ *         registerList         the number of register which the value will be read and load into registers
+ *         writeBack            if 1 then means writeback is true, 0 means false
+ *         Rn                   the destination register which the value will be updated if writeback is 1
+ *         sizeOfRegisterList   the size of register list/ number of bits of registerList  
  */
-void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
+void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn, int sizeOfRegisterList)
 {
-  int sizeOfRegisterList = 8, i, bitCount = 0;
+  int i, bitCount = 0;
   
   for(i = 0; i < sizeOfRegisterList; i++)
   {
