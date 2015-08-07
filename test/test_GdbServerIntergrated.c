@@ -836,7 +836,7 @@ void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
 
-void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is_reach(void)
+void xtest_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is_reach(void)
 {
     char data[] = "$c#12";
     char *reply = NULL;
@@ -856,7 +856,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is
     deleteAllBreakpoint(&bp);
 }
 
-void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the_end_of_code_memory(void)
+void xtest_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the_end_of_code_memory(void)
 {
     char data[] = "$c#12";
     char *reply = NULL;

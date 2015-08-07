@@ -43,11 +43,14 @@ void SXTHT1(uint32_t instruction)
     }
 
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     coreReg[Rd] = signExtend(coreReg[Rm], 16);
-  
-  coreReg[PC] += 2;
+    coreReg[PC] += 2;
+  }
+
 }
 
 
