@@ -81,6 +81,7 @@ void LDRLiteralT1(uint32_t instruction)
 }
 
 
+
 /*  This function will load a word from the memory based on the address given
  * 
  *  Input :   address     is the start address where it will load a word from it

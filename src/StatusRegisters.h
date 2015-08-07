@@ -28,6 +28,8 @@ int inITBlock();
 uint32_t getITCond();
 void shiftITState();
 int isLastInITBlock();
+void ALUWritePC(uint32_t address);
+
 
 
 #endif // StatusRegisters_H
