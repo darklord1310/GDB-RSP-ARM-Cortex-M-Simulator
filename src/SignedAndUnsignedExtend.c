@@ -43,10 +43,14 @@ void SXTHT1(uint32_t instruction)
     }
 
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     coreReg[Rd] = signExtend(coreReg[Rm], 16);
-  
+    coreReg[PC] += 2;
+  }
+
 }
 
 
@@ -87,6 +91,7 @@ void SXTBT1(uint32_t instruction)
   else
     coreReg[Rd] = signExtend(coreReg[Rm], 8);
   
+  coreReg[PC] += 2;
 }
 
 
@@ -127,6 +132,7 @@ void UXTHT1(uint32_t instruction)
   else
     coreReg[Rd] = getBits(coreReg[Rm], 15, 0);
   
+  coreReg[PC] += 2;
 }
 
 
@@ -167,6 +173,7 @@ void UXTBT1(uint32_t instruction)
   else
   coreReg[Rd] = getBits(coreReg[Rm], 7, 0);  
   
+  coreReg[PC] += 2;
 }
 
 

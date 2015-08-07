@@ -39,17 +39,23 @@ where:
 void ADRT1(uint32_t instruction)
 {
   uint32_t Rd = getBits(instruction,26,24);
-  uint32_t imm8 = getBits(instruction,23,16);
+  uint32_t imm8 = getBits(instruction,23,16) << 2;
+  
   
   //bug here, forgot to shift left twice
   if(inITBlock())
   {
     if( checkCondition(cond) )
       executeADR(Rd, imm8);
+    
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     executeADR(Rd, imm8);
+    coreReg[PC] += 2;
+  }
 }
 
 

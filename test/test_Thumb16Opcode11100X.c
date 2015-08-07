@@ -54,7 +54,9 @@
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
 #include "CBZandCBNZ.h"
-
+#include "PUSH.h"
+#include "POP.h"
+#include "SUBSPImmediate.h"
 
 
 void setUp(void)
@@ -107,7 +109,7 @@ void test_unconditionalBranch_given_last_in_IT_block_should_not_throw_error()
   CEXCEPTION_T err;
   uint32_t instruction = 0xe0010000;
   
-  coreReg[PC] = 0x0800000c;
+  coreReg[PC] = 0x08000008;
 
   Try
   {

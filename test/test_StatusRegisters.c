@@ -320,3 +320,24 @@ void test_shiftITState_given_xPSR_0x03001000_shift_4_times_should_get_0x01000000
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
 
+
+void test_ALUWritePC_given_PC_0x0800000f_should_get_PC_0x0800000e()
+{
+  coreReg[PC] = 0x0800000f;
+    
+  ALUWritePC(coreReg[PC]);
+  
+  TEST_ASSERT_EQUAL(0x0800000e, coreReg[PC]);
+}
+
+
+
+void test_ALUWritePC_given_PC_0x08000001_should_get_PC_0x08000000()
+{
+  coreReg[PC] = 0x08000001;
+    
+  ALUWritePC(coreReg[PC]);
+  
+  TEST_ASSERT_EQUAL(0x08000000, coreReg[PC]);
+}
+

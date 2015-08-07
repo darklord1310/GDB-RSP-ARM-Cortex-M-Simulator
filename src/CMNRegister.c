@@ -44,6 +44,8 @@ void CMNRegisterT1(uint32_t instruction)
   }
   else
     executeCMNRegister(Rm, Rn, -1);
+  
+  coreReg[PC] += 2;
 }
 
 

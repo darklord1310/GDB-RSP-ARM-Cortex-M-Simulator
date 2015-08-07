@@ -41,7 +41,11 @@ void LSLImmediateT1(uint32_t instruction)
     }
     else
       executeLSLImmediate(imm5, Rm, Rd, 1);
+    
+    coreReg[PC] += 2;
   }
+  
+
 }
 
 /*  This function will perform the logical shift left for immediate

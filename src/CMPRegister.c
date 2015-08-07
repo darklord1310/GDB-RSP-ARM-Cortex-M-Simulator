@@ -44,6 +44,8 @@ void CMPRegisterT1(uint32_t instruction)
   }
   else
     executeCMPRegister(Rm, Rn, -1);
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -86,6 +88,8 @@ void CMPRegisterT2(uint32_t instruction)
   }
   else
     executeCMPRegister(Rm, Rn, -1); 
+  
+  coreReg[PC] += 2;
 }
 
 

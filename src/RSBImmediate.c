@@ -40,6 +40,7 @@ void RSBImmediateT1(uint32_t instruction)
  else
     executeRSBImmediate(Rn, Rd, 1);
   
+  coreReg[PC] += 2;
 }
 
 

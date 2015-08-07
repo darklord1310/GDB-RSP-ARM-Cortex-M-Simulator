@@ -203,10 +203,6 @@ void armStep()
   //else
     //armSimulate32(instruction);
 
-  if(check == INSTRUCTION16bits)                                  //move the pc to the next instruction
-    coreReg[PC]+=2;
-  else
-    coreReg[PC]+=4;
 }
 
 

@@ -58,6 +58,7 @@ void ORRRegisterT1(uint32_t instruction)
   else
     executeORRRegister(Rm, Rdn, 1,-1);
   
+  coreReg[PC] += 2;
 }
 
 

@@ -8,6 +8,7 @@
 #include "StatusRegisters.h"
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
+#include "ConditionalExecution.h"
 
 void setUp(void)
 {

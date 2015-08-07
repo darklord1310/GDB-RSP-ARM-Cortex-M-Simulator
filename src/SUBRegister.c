@@ -51,6 +51,8 @@ void SUBRegisterToRegisterT1(uint32_t instruction)
  }
  else
     executeSUBRegister(Rn, Rd, Rm, 1);
+  
+  coreReg[PC] += 2;
 }
 
 

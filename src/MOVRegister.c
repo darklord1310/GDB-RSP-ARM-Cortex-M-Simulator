@@ -42,10 +42,21 @@ void MOVRegisterToRegisterT1(uint32_t instruction)
   Rd = ( D << 3 ) | Rd;     // this is to merge the D with Rd to make Rd becomes 4 bits
                             // Eg. new Rd = D Rd2 Rd1 Rd0
 
-  executeMOVRegister(Rm, Rd, 0);
+  
   
   if( inITBlock() )
+  {
+    if( checkCondition(cond) )
+      executeMOVRegister(Rm, Rd, 0);
+    
     shiftITState();
+    coreReg[PC] += 2;
+  }
+  else
+  {
+    executeMOVRegister(Rm, Rd, 0);
+    coreReg[PC] += 2;
+  }
 }
 
 

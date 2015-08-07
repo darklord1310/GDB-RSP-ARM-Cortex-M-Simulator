@@ -41,6 +41,8 @@ void TSTRegisterT1(uint32_t instruction)
   }
   else
     executeTSTRegister(Rn, Rm);
+  
+  coreReg[PC] += 2;
 }
 
 

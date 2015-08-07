@@ -58,6 +58,9 @@ void STRImmediateT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + 4*imm5;                    
     writeByteToMemory(address, coreReg[Rt],4);               //store a word to the address and store it into the memory
   }
+  
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -110,7 +113,7 @@ void STRBImmediateT1(uint32_t instruction)
     writeByteToMemory(address, coreReg[Rt],1);               //store a byte to the address and store it into the memory
   }
     
-  
+  coreReg[PC] += 2;
 }
 
 
@@ -161,6 +164,8 @@ void STRHImmediateT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + 2*imm5;                    
     writeByteToMemory(address, coreReg[Rt],2);               //store a half word to the address and store it into the memory
   } 
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -211,6 +216,8 @@ void STRImmediateT2(uint32_t instruction)
     uint32_t address = coreReg[SP] + 4*imm8;    
     writeByteToMemory(address, coreReg[Rt],4);               //store a word to the address and store it into the memory
   }
+  
+  coreReg[PC] += 2;
 }
 
 

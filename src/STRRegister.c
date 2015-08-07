@@ -53,6 +53,8 @@ void STRRegisterT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
     writeByteToMemory(address, coreReg[Rt],4);               //store a word to the address and store it into the memory
   }
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -99,6 +101,8 @@ void STRHRegisterT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
     writeByteToMemory(address, coreReg[Rt],2);               //store half word to the address and store it into the memory
   }
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -144,6 +148,8 @@ void STRBRegisterT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
     writeByteToMemory(address, coreReg[Rt],1);               //store a byte to the address and store it into the memory
   }
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -195,6 +201,7 @@ void STMRegisterT1(uint32_t instruction)
     writeMultipleRegisterToMemory(coreReg[Rn], registerList, 1, Rn);
   }
   
+  coreReg[PC] += 2;
 }
 
 

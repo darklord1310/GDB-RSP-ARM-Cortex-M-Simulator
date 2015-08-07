@@ -52,6 +52,8 @@ void ADDSPImmediateT1(uint32_t instruction)
   else
     coreReg[Rd] = coreReg[SP] + ( imm8 << 2);
   
+  coreReg[PC] += 2;
+  
 }
 
 
@@ -98,4 +100,6 @@ void ADDSPImmediateT2(uint32_t instruction)
   }
   else
     coreReg[SP] = coreReg[SP] + ( imm7 << 2);
+  
+  coreReg[PC] += 2;
 }

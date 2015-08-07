@@ -63,4 +63,6 @@ void ITandHints(uint32_t instruction)
   coreReg[xPSR] = setBits(coreReg[xPSR], IT1to0, 26, 25);
   
   cond = getITCond();                                         //update the condition
+  
+  coreReg[PC] += 2;
 }

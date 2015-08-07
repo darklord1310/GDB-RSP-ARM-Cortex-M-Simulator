@@ -46,6 +46,8 @@ void MULRegisterT1(uint32_t instruction)
   else
     executeMULRegister(Rdm, Rdm, Rn, 1);   //status flag is affected
   
+  
+  coreReg[PC] += 2;
 }
 
 

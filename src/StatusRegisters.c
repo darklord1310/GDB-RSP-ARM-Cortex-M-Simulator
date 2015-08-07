@@ -247,5 +247,9 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
 
 
 
-
+void ALUWritePC(uint32_t address)
+{
+  coreReg[PC] = setBits(address, 0b0, 0, 0); 
+    
+}
 

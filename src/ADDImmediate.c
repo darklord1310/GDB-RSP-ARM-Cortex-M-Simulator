@@ -53,6 +53,7 @@ void ADDImmediateT1(uint32_t instruction)
  else
     executeADDImmediate(Rn, Rd, imm3, 1);
   
+  coreReg[PC] += 2;
 }
 
 
@@ -102,6 +103,7 @@ void ADDImmediateT2(uint32_t instruction)
   else
     executeADDImmediate(Rdn, Rdn, imm8, 1);
   
+  coreReg[PC] += 2;
 }
 
 

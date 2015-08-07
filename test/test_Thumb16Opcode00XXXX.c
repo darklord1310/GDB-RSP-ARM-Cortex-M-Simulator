@@ -56,6 +56,10 @@
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
 #include "CBZandCBNZ.h"
+#include "PUSH.h"
+#include "POP.h"
+#include "SUBSPImmediate.h"
+
 
 void setUp(void)
 {
@@ -1437,16 +1441,16 @@ void test_ADDSPRegisterT1_given_r3_is_0x18888888_SP_is_0x20010000_should_get_0x3
 
 
 
-//test add R15,SP,R15 given R15 = 0x08000028, SP = 0x20010000
-void test_ADDSPRegisterT1_given_r15_is_0x08000028_SP_is_0x20010000_should_get_0x2800102c_at_r15_xPSR_unchanged(void)
+//test add R15,SP,R15 given R15 = 0x0800003e, SP = 0x20010000
+void test_ADDSPRegisterT1_given_r15_is_0x0800003e_SP_is_0x20010000_should_get_0x28001042_at_r15_xPSR_unchanged(void)
 {
   uint32_t instruction = 0x44ef0000;
-  
+
   coreReg[SP] = 0x20001000;
-  coreReg[15]  = 0x08000028;
+  coreReg[15]  = 0x0800003e;
   ARMSimulator(instruction);
-  
-  TEST_ASSERT_EQUAL(0x2800102c, coreReg[15]);
+
+  TEST_ASSERT_EQUAL(0x28001042, coreReg[15]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
@@ -1461,22 +1465,25 @@ void test_ADDSPRegisterT1_given_r15_is_0x08000028_SP_is_0x20010000_should_get_0x
  * 
  * Expected Result:
  *            r0 = 0x00
- *            SP = 0x28001028
+ *            PC = 0x28001044
  *  
  */
 void test_ADDSPRegisterT1_conditonal_cases_should_get_the_expected_result()
-{
+{ 
   coreReg[0] = 0x84444444;
   coreReg[1] = 0x0fffffff;
   coreReg[SP] = 0x20001000;
-  coreReg[PC] = 0x08000026;
+  coreReg[PC] = 0x0800003e;
   
   resetCarryFlag();
   ARMSimulator(0xbf380000);   //IT CC
+  TEST_ASSERT_EQUAL(0x08000040,coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01003800,coreReg[xPSR]);
   ARMSimulator(0x44ef0000);   //addcc   PC,SP,PC
 
-  TEST_ASSERT_EQUAL(0x2800102a,coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x28001044,coreReg[PC]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+
 }
 
 
@@ -1498,16 +1505,17 @@ void test_ADDSPRegisterT2_given_r0_is_0x84444444_SP_is_0x20010000_should_get_0xa
 
 
 
-//test add SP,R15 given R15 = 0x08000028, SP = 0x20010000
-void test_ADDSPRegisterT2_given_r15_is_0x08000028_SP_is_0x20010000_should_get_0x2800102c_at_SP_xPSR_unchanged(void)
+//test add SP,R15 given R15 = 0x0800003e, SP = 0x20010000
+void test_ADDSPRegisterT2_given_r15_is_0x0800003e_SP_is_0x20010000_should_get_0x28001040_at_SP_xPSR_unchanged(void)
 {
   uint32_t instruction = 0x44fd0000;
-  
+  printf("here\n");
   coreReg[SP] = 0x20001000;
-  coreReg[PC]  = 0x08000028;
+  coreReg[PC]  = 0x0800003e;
   ARMSimulator(instruction);
-
-  TEST_ASSERT_EQUAL(0x2800102c, coreReg[SP]);
+  printf("%x\n", coreReg[SP]);
+  printf("end\n");
+  TEST_ASSERT_EQUAL(0x28001040, coreReg[SP]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 

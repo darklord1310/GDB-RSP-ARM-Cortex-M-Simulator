@@ -37,6 +37,8 @@ void MOVImmediateT1(uint32_t instruction)
   }
   else
     executeMOVImmediate(imm8, destinationRegister, 1,0);
+  
+  coreReg[PC] += 2;
 }
 
 

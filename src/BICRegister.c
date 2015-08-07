@@ -49,6 +49,7 @@ void BICRegisterT1(uint32_t instruction)
   else
     executeBICRegister(Rm, Rdn, Rdn, 1,-1);   //status flag is affected
   
+  coreReg[PC] += 2;
 }
 
 

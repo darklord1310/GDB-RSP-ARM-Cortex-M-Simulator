@@ -1,6 +1,6 @@
 #include "unity.h"
 #include "gdbAndArmSimulator.h"
-#include <malloc.h>
+/* #include <malloc.h>
 #include <string.h>
 #include "unity.h"
 #include "gdbserver.h"
@@ -59,7 +59,7 @@
 #include "LDRRegister.h"
 #include "REV.h"
 #include "SignedAndUnsignedExtend.h"
-#include "CBZandCBNZ.h"
+#include "CBZandCBNZ.h" */
 
 void setUp(void)
 {

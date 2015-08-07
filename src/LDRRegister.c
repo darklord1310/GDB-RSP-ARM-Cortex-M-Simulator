@@ -58,6 +58,8 @@ void LDRRegisterT1(uint32_t instruction)
     coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
   }
   
+  
+  coreReg[PC] += 2;
 }
 
 
@@ -111,6 +113,7 @@ void LDRHRegisterT1(uint32_t instruction)
     coreReg[Rt] = data;
   }  
   
+  coreReg[PC] += 2;
 }
 
 
@@ -162,7 +165,8 @@ void LDRBRegisterT1(uint32_t instruction)
     uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
     coreReg[Rt] = data;
   }  
-  
+ 
+  coreReg[PC] += 2; 
 }
 
 
@@ -203,9 +207,7 @@ void LDRSBRegisterT1(uint32_t instruction)
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
       uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
-      
-      if( getBits(data, 7,7) == 1)
-        data = setBits(data,0b111111111111111111111111,31,8);
+      data = signExtend(data, 8);
       
       coreReg[Rt] = data;
     }
@@ -216,13 +218,12 @@ void LDRSBRegisterT1(uint32_t instruction)
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
     uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
-    
-    if( getBits(data, 7,7) == 1)
-      data = setBits(data,0b111111111111111111111111,31,8);
+    data = signExtend(data, 8);
   
     coreReg[Rt] = data;
   }  
   
+  coreReg[PC] += 2;
 }
 
 
@@ -263,9 +264,7 @@ void LDRSHRegisterT1(uint32_t instruction)
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
       uint32_t data =  (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
-      
-      if( getBits(data, 15,15) == 1)
-      data = setBits(data,0b1111111111111111,31,16);
+      data = signExtend(data, 16);
       
       coreReg[Rt] = data;
     }
@@ -276,13 +275,12 @@ void LDRSHRegisterT1(uint32_t instruction)
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
     uint32_t data =  (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
-    
-    if( getBits(data, 15,15) == 1)
-      data = setBits(data,0b1111111111111111,31,16);
+    data = signExtend(data, 16);
     
     coreReg[Rt] = data;
   }    
   
+  coreReg[PC] += 2;
 }
 
 
@@ -331,16 +329,17 @@ void LDMRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       int writeBack = determineWriteBack(Rn, registerList);
-      loadMultipleRegisterToMemory(coreReg[Rn], registerList, writeBack, Rn);
+      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
     }
     shiftITState();
   }
   else
   {
     int writeBack = determineWriteBack( Rn, registerList);              
-    loadMultipleRegisterToMemory(coreReg[Rn], registerList, writeBack, Rn);
+    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
   }  
-  
+
+  coreReg[PC] += 2;
 }
 
 
@@ -354,7 +353,7 @@ void LDMRegisterT1(uint32_t instruction)
  *         Rn               the destination register which the value will be updated if writeback is 1
  * 
  */
-void loadMultipleRegisterToMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
+void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
 {
   int sizeOfRegisterList = 8, i, bitCount = 0;
   

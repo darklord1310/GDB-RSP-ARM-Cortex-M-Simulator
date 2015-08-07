@@ -34,9 +34,13 @@ void LSRImmediateT1(uint32_t instruction)
     if( checkCondition(cond) )
       executeLSRImmediate(imm5, Rm, Rd, 0);
     shiftITState();
+    coreReg[PC] += 2;
   }
   else
+  {
     executeLSRImmediate(imm5, Rm, Rd, 1);
+    coreReg[PC] += 2;
+  }
 }
 
 

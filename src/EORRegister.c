@@ -58,6 +58,7 @@ void EORRegisterT1(uint32_t instruction)
   else
     executeEORRegister(Rm, Rdn, 1,-1);
   
+  coreReg[PC] += 2;
 }
 
 
