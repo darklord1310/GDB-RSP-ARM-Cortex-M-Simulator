@@ -50,7 +50,7 @@ void test_rsp_state_given_nack_data_and_INITIAL_state_should_change_to_NACK_stat
 
 void test_rsp_state_given_k_data_packet_and_INITIAL_state_should_change_to_KILL_state(void)
 {
-    State state = INITIAL;
+    State state = SERVE_RSP;
     char data[] = "$k#6b";
     char *packet = NULL;
 
@@ -119,7 +119,7 @@ void test_rsp_state_given_NACK_state_should_change_to_KILL_state_if_nack_data_re
 
 void test_rsp_state_twice_given_k_data_packet_and_INITIAL_state_should_return_k_packet(void)
 {
-    State state = INITIAL;
+    State state = SERVE_RSP;
     char data[] = "$k#6b";
     char *packet = NULL;
 

@@ -7,6 +7,15 @@
 #include "CException.h"
 #include "ErrorSignal.h"
 
+/***************************************************************************
+ * Serve remote serial protocol to handle every specific packet sent by gdb
+ *
+ * Input:
+ *      data        string of data receive from gdb client
+ *
+ * Return:
+ *      packet      string of data reply to gdb
+ ***************************************************************************/
 char *serveRSP(char *data)
 {
     CEXCEPTION_T errorSignal;
@@ -50,9 +59,9 @@ char *serveRSP(char *data)
                 packet = writeMemory(data);
                 break;
             // case 'X':   /* Write data to memory */
-                // writeMemory(data);
-                // packet = gdbCreateMsgPacket("OK");
-                // break;
+                /* writeMemory(data);
+                packet = gdbCreateMsgPacket("OK");
+                break; */   //not supported right now
             case 'z':   /* Remove breakpoint or watchpoint */
                 packet = removeBreakpointOrWatchpoint(data);
                 break;

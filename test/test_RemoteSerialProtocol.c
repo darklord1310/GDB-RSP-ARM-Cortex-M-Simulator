@@ -907,6 +907,8 @@ void test_step_given_following_data_should_step_through_the_instruction(void)
     char *reply = NULL;
 
     armStep_Expect();
+    createdHexToString_ExpectAndReturn(GDB_SIGNAL_TRAP, 1, "05");
+    destroyHexToString_Expect("05");
     gdbCreateMsgPacket_ExpectAndReturn("S05", "$S05#b8");
 
     reply = step(data);
@@ -931,6 +933,23 @@ void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoin
     addBreakpoint(&bp, 0x80009d6);
     addBreakpoint(&bp, 0x8000ab6);
     addBreakpoint(&bp, 0x8000bc6);
+
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NOT_NULL(bp->next);
+    TEST_ASSERT_NOT_NULL(bp->next->next);
+    TEST_ASSERT_NULL(bp->next->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(0x8000ab6, bp->next->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->next->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoint_list_according_to_addr(void)
+{
+    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&bp, 0x8000bc6);
+    addBreakpoint(&bp, 0x8000ab6);
 
     TEST_ASSERT_NOT_NULL(bp);
     TEST_ASSERT_NOT_NULL(bp->next);
@@ -1005,6 +1024,42 @@ void test_insertBreakpointOrWatchpoint_given_Z0_should_should_throw_GDB_SIGNAL_A
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
+void test_insertBreakpointOrWatchpoint_given_Z1_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$Z1,80009d6,2#b0";
+    char *reply = NULL;
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = insertBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_insertBreakpointOrWatchpoint_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$Z1,7ffffff,2#b0";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = insertBreakpointOrWatchpoint(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
+
 void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x080009d6(void)
 {
     char data[] = "$z0,80009d6,2#cf";
@@ -1038,7 +1093,41 @@ void test_removeBreakpointOrWatchpoint_given_z0_should_should_throw_GDB_SIGNAL_A
 	}
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
+}
 
+void test_removeBreakpointOrWatchpoint_given_z1_should_insert_breakpoint_at_0x080009d6(void)
+{
+    char data[] = "$z1,80009d6,2#d0";
+    char *reply = NULL;
+
+    addBreakpoint(&bp, 0x80009d6);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = removeBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NULL(bp);
+
+    deleteAllBreakpoint(&bp);
+}
+
+void test_removeBreakpointOrWatchpoint_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
+{
+    CEXCEPTION_T errorSignal;
+    char data[] = "$z1,7ffffff,2#d0";
+    char *reply = NULL;
+
+    Try
+    {
+        reply = removeBreakpointOrWatchpoint(data);
+    }
+    Catch(errorSignal)
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+		printf("Error signal: %x\n", errorSignal);
+	}
+
+    TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
 void test_findBreakpoint_given_no_breakpoint_in_breakpoint_lits_should_return_0(void)

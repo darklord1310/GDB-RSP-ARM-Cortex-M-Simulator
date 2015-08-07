@@ -42,6 +42,7 @@ void ADRT1(uint32_t instruction)
   uint32_t imm8 = getBits(instruction,23,16) << 2;
   
   
+  //bug here, forgot to shift left twice
   if(inITBlock())
   {
     if( checkCondition(cond) )

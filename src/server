@@ -54,4 +54,8 @@ gcc gdbserver.c                     \
     ADR.c                           \
     ADDSPImmediate.c                \
     STRImmediate.c                  \
+    LDRRegister.c                   \
+    REV.c                           \
+    SignedAndUnsignedExtend.c       \
+    CBZandCBNZ.c                    \
     -o Winsocks.exe -lws2_32
