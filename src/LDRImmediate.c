@@ -10,6 +10,8 @@
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
 #include "ADR.h"
+#include "LoadAndWriteMemory.h"
+
 
 
 /*Load Register(Immediate) Encoding T1 
@@ -51,7 +53,7 @@ void LDRImmediateT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  4*imm5;                    
-      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+      coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
     }
     
     shiftITState();
@@ -59,7 +61,7 @@ void LDRImmediateT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + 4*imm5;                    
-    coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+    coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
   }
   
   coreReg[PC] += 2;
@@ -105,7 +107,7 @@ void LDRImmediateT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[SP] +  4*imm8;                    
-      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+      coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
     }
     
     shiftITState();
@@ -113,7 +115,7 @@ void LDRImmediateT2(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[SP] + 4*imm8;                    
-    coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+    coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
   }
   
   coreReg[PC] += 2;
@@ -160,8 +162,7 @@ void LDRBImmediateT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  imm5;
-      uint32_t data = memoryBlock[virtualMemToPhysicalMem(address)];
-      coreReg[Rt] = data;                       
+      coreReg[Rt] = loadByteFromMemory(address, 1);                       
     }
     
     shiftITState();
@@ -169,8 +170,7 @@ void LDRBImmediateT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + imm5;                    
-    uint32_t data = memoryBlock[virtualMemToPhysicalMem(address)];
-    coreReg[Rt] = data;     
+    coreReg[Rt] = loadByteFromMemory(address, 1);     
   }
   
   
@@ -218,8 +218,7 @@ void LDRHImmediateT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  2*imm5;
-      uint32_t data = (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
-      coreReg[Rt] = data;                       
+      coreReg[Rt] = loadByteFromMemory(address, 2);                      
     }
     
     shiftITState();
@@ -227,19 +226,10 @@ void LDRHImmediateT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + 2*imm5;                    
-    uint32_t data = (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
-    coreReg[Rt] = data;     
+    coreReg[Rt] = loadByteFromMemory(address, 2);     
   }
   
   coreReg[PC] += 2;
 }
 
 
-uint32_t loadWordFromMemory(uint32_t address)
-{
-  uint32_t upper16bits = ( memoryBlock[ virtualMemToPhysicalMem(address+3) ] << 8 ) | memoryBlock[ virtualMemToPhysicalMem(address+2) ];
-  uint32_t lower16bits = ( memoryBlock[ virtualMemToPhysicalMem(address+1) ] << 8 ) | memoryBlock[ virtualMemToPhysicalMem(address) ];
-  
-  return (  (upper16bits << 16) | lower16bits );
-  
-}

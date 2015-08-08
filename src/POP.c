@@ -1,6 +1,5 @@
 #include "POP.h"
-#include "LDRRegister.h"
-#include "LDRImmediate.h"
+#include "LoadAndWriteMemory.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -9,8 +8,9 @@
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
-
-
+#include "PUSH.h"
+#include "CException.h"
+#include "ErrorSignal.h"
 
 
 /*Pop Multiple Registers Encoding T1
@@ -38,12 +38,19 @@ void POPT1(uint32_t instruction)
   uint16_t temp = P << 7;
   uint16_t registerlist = ( temp << 8 ) | register_list;
   
+  if( bitCount(register_list) < 1)
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
+  
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[SP];     
-      loadMultipleRegisterFromMemory(address, registerlist, 1, SP);
+      loadMultipleRegisterFromMemory(address, registerlist, 1, SP, 16);
     }
     shiftITState();
     coreReg[PC] += 2;
@@ -51,7 +58,7 @@ void POPT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[SP];      
-    loadMultipleRegisterFromMemory(address, registerlist, 1, SP);
+    loadMultipleRegisterFromMemory(address, registerlist, 1, SP, 16);
     coreReg[PC] += 2;
   }
   

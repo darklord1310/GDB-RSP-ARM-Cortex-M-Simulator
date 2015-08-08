@@ -1,5 +1,4 @@
 #include "LDRRegister.h"
-#include "LDRImmediate.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -10,7 +9,7 @@
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
-
+#include "LoadAndWriteMemory.h"
 
 
 /*Load Register (register) Encoding T1 
@@ -47,7 +46,7 @@ void LDRRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
-      coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+      coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
     }
     
     shiftITState();
@@ -55,9 +54,8 @@ void LDRRegisterT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
-    coreReg[Rt] = executeLDR(address);                        //load a word from the address and store it into the register 
+    coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
   }
-  
   
   coreReg[PC] += 2;
 }
@@ -100,8 +98,7 @@ void LDRHRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
-      uint32_t data = (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
-      coreReg[Rt] = data;
+      coreReg[Rt] = loadByteFromMemory(address, 2);
     }
     
     shiftITState();
@@ -109,8 +106,7 @@ void LDRHRegisterT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
-    uint32_t data = (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
-    coreReg[Rt] = data;
+    coreReg[Rt] = loadByteFromMemory(address, 2);
   }  
   
   coreReg[PC] += 2;
@@ -153,8 +149,7 @@ void LDRBRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
-      uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
-      coreReg[Rt] = data;
+      coreReg[Rt] = loadByteFromMemory(address, 1);
     }
     
     shiftITState();
@@ -162,8 +157,7 @@ void LDRBRegisterT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
-    uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
-    coreReg[Rt] = data;
+    coreReg[Rt] = loadByteFromMemory(address, 1);
   }  
  
   coreReg[PC] += 2; 
@@ -206,7 +200,7 @@ void LDRSBRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
-      uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
+      uint32_t data =  loadByteFromMemory(address, 1);
       data = signExtend(data, 8);
       
       coreReg[Rt] = data;
@@ -217,7 +211,7 @@ void LDRSBRegisterT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
-    uint32_t data =  memoryBlock[virtualMemToPhysicalMem(address)];
+    uint32_t data =  loadByteFromMemory(address, 1);
     data = signExtend(data, 8);
   
     coreReg[Rt] = data;
@@ -263,7 +257,7 @@ void LDRSHRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
-      uint32_t data =  (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
+      uint32_t data =  loadByteFromMemory(address, 2);
       data = signExtend(data, 16);
       
       coreReg[Rt] = data;
@@ -274,7 +268,7 @@ void LDRSHRegisterT1(uint32_t instruction)
   else
   {
     uint32_t address = coreReg[Rn] + coreReg[Rm];                    
-    uint32_t data =  (memoryBlock[virtualMemToPhysicalMem(address+1)] << 8) | memoryBlock[virtualMemToPhysicalMem(address)];
+    uint32_t data =  loadByteFromMemory(address, 2);
     data = signExtend(data, 16);
     
     coreReg[Rt] = data;
@@ -291,7 +285,7 @@ void LDRSHRegisterT1(uint32_t instruction)
   LDM<c> <Rn>,<registers> <Rn> included in <registers>
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |1  1  0   0| 1|   Rn   |    register_list   |                 unused                |
+  |1  1  0   0| 1|   Rn   |       register_list   |                 unused              |
 
   where:
             <c><q>          See Standard assembler syntax fields on page A6-7.
@@ -329,14 +323,14 @@ void LDMRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       int writeBack = determineWriteBack(Rn, registerList);
-      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
+      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 8);
     }
     shiftITState();
   }
   else
   {
     int writeBack = determineWriteBack( Rn, registerList);              
-    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn);
+    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 8);
   }  
 
   coreReg[PC] += 2;
@@ -347,21 +341,21 @@ void LDMRegisterT1(uint32_t instruction)
 
 /* This function will load multiple register from memory based to the register list given
  * 
- * Input:  address          the base address of the memory
- *         registerList     the number of register which the value will be read and load into registers
- *         writeBack        if 1 then means writeback is true, 0 means false
- *         Rn               the destination register which the value will be updated if writeback is 1
- * 
+ * Input:  address              the base address of the memory
+ *         registerList         the number of register which the value will be read and load into registers
+ *         writeBack            if 1 then means writeback is true, 0 means false
+ *         Rn                   the destination register which the value will be updated if writeback is 1
+ *         sizeOfRegisterList   the size of register list/ number of bits of registerList  
  */
-void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
+void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn, int sizeOfRegisterList)
 {
-  int sizeOfRegisterList = 8, i, bitCount = 0;
+  int i, bitCount = 0;
   
   for(i = 0; i < sizeOfRegisterList; i++)
   {
     if( getBits(registerList, i ,i) == 1)           //if the bit[i] of the registerList is 1, then load the value of the address into r[i]
     {
-      coreReg[i] = executeLDR(address);
+      coreReg[i] = loadByteFromMemory(address, 4);
       bitCount++;
       address+=4;
     }

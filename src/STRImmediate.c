@@ -10,6 +10,8 @@
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
 #include "ADR.h"
+#include "LoadAndWriteMemory.h"
+
 
 
 /*Store Register (immediate) Encoding T1
@@ -222,14 +224,3 @@ void STRImmediateT2(uint32_t instruction)
 
 
 
-void writeByteToMemory(uint32_t address, uint32_t valueToWrite, int numberOfByteToWrite)
-{
-  int i, x = 7 , y = 0;
-  for(i = 0; i < numberOfByteToWrite; i++)
-  {
-    memoryBlock[ virtualMemToPhysicalMem(address) ] = (short int)getBits(valueToWrite, x,y);
-    address++;
-    x+=8;
-    y+=8;
-  }
-}

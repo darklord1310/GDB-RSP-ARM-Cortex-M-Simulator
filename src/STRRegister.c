@@ -10,7 +10,7 @@
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
-
+#include "LoadAndWriteMemory.h"
 
 
 /*Store Register (register) Encoding T1
