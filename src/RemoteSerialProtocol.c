@@ -67,6 +67,8 @@ char *arm_vfpv2 =
 "  <reg name=\"fpscr\" bitsize=\"32\" type=\"int\" group=\"float\"/>"
 "</feature>";
 
+int watchpointIndex = 0;
+
 /************************************************************
  * This function handle all the query packet receive from
  * gdb client and return the appropriate message back to it
@@ -454,49 +456,21 @@ char *step(char *data)
         if(armException == UsageFault)
         {
             asciiString = createdHexToString(GDB_SIGNAL_ILL, 1);
-            strcat(msg, error);
+            strcat(msg, error);     //error msg
         }
     }
 
     if(asciiString == NULL)
     {
         asciiString = createdHexToString(GDB_SIGNAL_TRAP, 1);
-        strcat(msg, signal);
+        strcat(msg, signal);        //signal trap
     }
 
     strcat(msg, asciiString);
     destroyHexToString(asciiString);
-    packet = gdbCreateMsgPacket(msg);     //signal trap
+    packet = gdbCreateMsgPacket(msg);
 
     return packet;
-    /* char *trapSignal = "T05";
-    char *pcReg = "0f";
-    char *reg7 = "07";
-    char *pcValue;
-    char *r7Value;
-    char msg[50] = "";
-    unsigned int decodeVal;
-
-    decodeVal = decodeFourByte(coreReg[PC]);
-    pcValue = createdHexToString(decodeVal, 4);
-    decodeVal = decodeFourByte(coreReg[7]);
-    r7Value = createdHexToString(decodeVal, 4);
-
-    strcat(msg, trapSignal);
-    strcat(msg, pcReg);
-    strcat(msg, ":");
-    strcat(msg, pcValue);
-    strcat(msg, ";");
-    strcat(msg, reg7);
-    strcat(msg, ":");
-    strcat(msg, r7Value);
-
-    // printf("msg: %s\n", msg);
-
-    destroyHexToString(pcValue);
-    destroyHexToString(r7Value);
-
-    packet = gdbCreateMsgPacket(msg);*/
 }
 
 /*****************************************************************************************
@@ -511,7 +485,9 @@ char *step(char *data)
 char *cont(char *data)
 {
     CEXCEPTION_T armException;
-    char *packet = NULL;
+    char *packet = NULL, *asciiString = NULL;
+    char *signal = "S", *error = "E";
+    char msg[4] = "";
 
     while(!findBreakpoint(bp))
     {
@@ -521,15 +497,28 @@ char *cont(char *data)
         }
         Catch(armException)
         {
-            if(armException == HardFault)
-                Throw(GDB_SIGNAL_ILL);
+            if(armException == UsageFault)
+            {
+                asciiString = createdHexToString(GDB_SIGNAL_ILL, 1);
+                strcat(msg, error);     //error msg
+            }
+
+            break;
         }
 
         if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)   // stop if reach the end of code addr
             break;
     }
 
-    packet = gdbCreateMsgPacket("S05");
+    if(asciiString == NULL)
+    {
+        asciiString = createdHexToString(GDB_SIGNAL_TRAP, 1);
+        strcat(msg, signal);        //signal trap
+    }
+
+    strcat(msg, asciiString);
+    destroyHexToString(asciiString);
+    packet = gdbCreateMsgPacket(msg);
 
     return packet;
 }
@@ -785,4 +774,46 @@ void removeBreakpoint(Breakpoint **breakpoint, unsigned int addr)
     }
     else
         removeBreakpoint(&(*breakpoint)->next, addr);
+}
+
+void initializeWatchpoint()
+{
+    int i;
+
+    for(i = 0; i < MAX_HW_WATCHPOINT; i++)
+    {
+        wp[i].type = NONE;
+        wp[i].addr = 0;
+        wp[i].size = 0;
+    }
+}
+
+void addWatchpoint(unsigned int addr, unsigned int size, BP_Type type)
+{
+    wp[watchpointIndex].type = type;
+    wp[watchpointIndex].addr = addr;
+    wp[watchpointIndex].size = size;
+    watchpointIndex++;
+}
+
+void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type)
+{
+    int i;
+
+    for(i = 0; i <MAX_HW_WATCHPOINT; i++)
+    {
+        if(wp[i].addr == addr && wp[i].type == type && wp[i].size == size)
+        {
+            wp[i].type = NONE;
+            wp[i].addr = 0;
+            wp[i].size = 0;
+            watchpointIndex--;
+            break;
+        }
+    }
+    
+    for(; i < MAX_HW_WATCHPOINT - 1; i++)
+    {
+        wp[i] = wp[i + 1];
+    }
 }

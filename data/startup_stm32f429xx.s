@@ -36,11 +36,20 @@ mydata: .word	4
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 Reset_Handler:
-  ldr	r0, =mydata
+  /*ldr	r0, =mydata
   movs	r1, #5
   str	r1, [r0]
+  movs  r2, #0x20 */
+  
+  ldr   r0, =mydata
+  movs  r1, #5
+  str   r1, [r0]
+again:
+  ldr   r1, [r0]
+  adds  r1, #1
+  str   r1, [r0]
   movs  r2, #0x20
-  b     .
+  b     again
 .size  Reset_Handler, .-Reset_Handler
 
 /**

@@ -167,35 +167,3 @@ void main()
 	/****************Cleanup Winsock****************/
 	WSACleanup();
 }
-
-    /* while(recvbuf[1] != 'k')
-    { */
-        /*
-         *  Recv ACK
-         */
-        // bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
-
-        /*
-         *  Response ACK
-         */
-        // bytesSent = send( sock, "+", strlen("+"), 0 );
-
-        /*
-         *  Recv packet
-         */
-        /* bytesRecv = recv( sock, recvbuf, 0x3fff, 0 );
-        printf( "\nBytes Recv: %ld\n", bytesRecv );
-        recvbuf[bytesRecv] = '\0';
-        printf( "recvbuf: %s\n", recvbuf );
-
-        reply = serveRSP(recvbuf); */
-
-        /*
-         *  Response packet
-         */
-        /* bytesSent = send( sock, reply, strlen(reply), 0 );
-        printf( "\nBytes Sent: %ld\n", bytesSent );
-        printf( "sendbuf: %s\n", reply );
-
-        free(reply);
-    } */

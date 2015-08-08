@@ -16,9 +16,11 @@
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
 extern char *arm_vfpv2;
+extern int watchpointIndex;
 
 void setUp(void)
 {
+    initializeWatchpoint();
 }
 
 void tearDown(void)
@@ -1060,6 +1062,94 @@ void test_insertBreakpointOrWatchpoint_given_Z1_should_should_throw_GDB_SIGNAL_A
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
+void test_initializeWatchpoint_should_initialize_all_4_watchpoint(void)
+{
+    int i;
+
+    for(i = 0; i < MAX_HW_WATCHPOINT; i++)
+    {
+        TEST_ASSERT_EQUAL(NONE, wp[i].type);
+        TEST_ASSERT_EQUAL(0, wp[i].addr);
+        TEST_ASSERT_EQUAL(0, wp[i].size);
+    }
+}
+
+void test_addWatchpoint_given_the_address_0x20000000_size_2_and_WP_WRITE_type_should_add_watchpoint(void)
+{
+    addWatchpoint(0x20000000, 2, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+}
+
+void test_addWatchpoint_given_several_address_size_type_should_add_all_watchpoint(void)
+{
+    watchpointIndex = 0;
+
+    addWatchpoint(0x20000002, 2, WP_WRITE);
+    addWatchpoint(0x20000004, 4, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000002, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[1].type);
+    TEST_ASSERT_EQUAL(0x20000004, wp[1].addr);
+    TEST_ASSERT_EQUAL(4, wp[1].size);
+}
+
+void test_removeWatchpoint_given_the_address_0x20000000_size_2_and_WP_WRITE_type_should_delete_watchpoint(void)
+{
+    watchpointIndex = 0;
+    addWatchpoint(0x20000000, 2, WP_WRITE);
+    removeWatchpoint(0x20000000, 2, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(NONE, wp[0].type);
+    TEST_ASSERT_EQUAL(0, wp[0].addr);
+    TEST_ASSERT_EQUAL(0, wp[0].size);
+    TEST_ASSERT_EQUAL(0, watchpointIndex);
+}
+
+void test_removeWatchpoint_given_several_address_size_type_should_delete_watchpoint(void)
+{
+    watchpointIndex = 0;
+    addWatchpoint(0x20000000, 2, WP_WRITE);
+    addWatchpoint(0x20000010, 4, WP_WRITE);
+    addWatchpoint(0x20000006, 4, WP_READ);
+    removeWatchpoint(0x20000010, 4, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+
+    TEST_ASSERT_EQUAL(WP_READ, wp[1].type);
+    TEST_ASSERT_EQUAL(0x20000006, wp[1].addr);
+    TEST_ASSERT_EQUAL(4, wp[1].size);
+
+    TEST_ASSERT_EQUAL(NONE, wp[2].type);
+    TEST_ASSERT_EQUAL(0, wp[2].addr);
+    TEST_ASSERT_EQUAL(0, wp[2].size);
+    TEST_ASSERT_EQUAL(2, watchpointIndex);
+}
+
+void xtest_insertBreakpointOrWatchpoint_given_Z3_should_insert_watchpoint_at_0x20000000(void)
+{
+    char data[] = "$Z2,20000000,2#af";
+    char *reply = NULL;
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+
+    reply = insertBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_NOT_NULL(bp);
+    TEST_ASSERT_NULL(bp->next);
+    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+
+    deleteAllBreakpoint(&bp);
+}
+
 void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x080009d6(void)
 {
     char data[] = "$z0,80009d6,2#cf";
@@ -1187,190 +1277,3 @@ void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_
 
     deleteAllBreakpoint(&bp);
 }
-/*
-void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
-{
-    char data[] = "$m0,2#fb";
-    char *reply = NULL;
-
-    createROM();
-
-    rom->address[0x0].data = 0xf0;
-    rom->address[0x1].data = 0x4f;
-
-    createdHexToString_ExpectAndReturn(0xf0, 1, "f0");
-    destroyHexToString_Expect("f0");
-    createdHexToString_ExpectAndReturn(0x4f, 1, "4f");
-    destroyHexToString_Expect("4f");
-    gdbCreateMsgPacket_ExpectAndReturn("4ff0", "$4ff0#30");
-
-    reply = readMemory(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4ff0#30", reply);
-
-    destroyROM();
-}
-
-void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
-{
-    char data[] = "$m80009d6,4#68";
-    char *reply = NULL;
-
-    createROM();
-
-    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
-
-    createdHexToString_ExpectAndReturn(0x02, 1, "02");
-    destroyHexToString_Expect("02");
-    createdHexToString_ExpectAndReturn(0x00, 1, "00");
-    destroyHexToString_Expect("00");
-    createdHexToString_ExpectAndReturn(0xf0, 1, "f0");
-    destroyHexToString_Expect("f0");
-    createdHexToString_ExpectAndReturn(0x4f, 1, "4f");
-    destroyHexToString_Expect("4f");
-    gdbCreateMsgPacket_ExpectAndReturn("4ff00002", "$4ff00002#f2");
-
-    reply = readMemory(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4ff00002#f2", reply);
-
-    destroyROM();
-}
-
-void test_readMemory_given_m80009d6_and_10_should_retrieve_memory_content_start_from_0x080009d6(void)
-{
-    char data[] = "$m80009d6,a#95";
-    char *reply = NULL;
-
-    createROM();
-
-    rom->address[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 4)].data = 0x08;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 5)].data = 0x00;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 6)].data = 0x10;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 7)].data = 0x24;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 8)].data = 0xad;
-    rom->address[virtualMemToPhysicalMem(0x80009d6 + 9)].data = 0xde;
-
-    createdHexToString_ExpectAndReturn(0x02, 1, "02");
-    destroyHexToString_Expect("02");
-    createdHexToString_ExpectAndReturn(0x00, 1, "00");
-    destroyHexToString_Expect("00");
-    createdHexToString_ExpectAndReturn(0xf0, 1, "f0");
-    destroyHexToString_Expect("f0");
-    createdHexToString_ExpectAndReturn(0x4f, 1, "4f");
-    destroyHexToString_Expect("4f");
-    createdHexToString_ExpectAndReturn(0x08, 1, "08");
-    destroyHexToString_Expect("08");
-    createdHexToString_ExpectAndReturn(0x00, 1, "00");
-    destroyHexToString_Expect("00");
-    createdHexToString_ExpectAndReturn(0x10, 1, "10");
-    destroyHexToString_Expect("10");
-    createdHexToString_ExpectAndReturn(0x24, 1, "24");
-    destroyHexToString_Expect("24");
-    createdHexToString_ExpectAndReturn(0xad, 1, "ad");
-    destroyHexToString_Expect("ad");
-    createdHexToString_ExpectAndReturn(0xde, 1, "de");
-    destroyHexToString_Expect("de");
-    gdbCreateMsgPacket_ExpectAndReturn("4ff0000224100008dead", "$4ff0000224100008dead#0f");
-
-    reply = readMemory(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4ff0000224100008dead#0f", reply);
-
-    destroyROM();
-}
-
-void test_writeMemory_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$M8000d06,2:4a4d#a4";
-    char *reply = NULL;
-
-    createROM();
-
-    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
-
-    reply = writeMemory(data);
-
-    TEST_ASSERT_EQUAL(0x4d, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x4a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
-}
-
-void test_writeMemory_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$M8000d06,4:4ff00008#71";
-    char *reply = NULL;
-
-    createROM();
-
-    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
-
-    reply = writeMemory(data);
-
-    TEST_ASSERT_EQUAL(0x08, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0xf0, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x4f, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
-    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
-}
-
-void test_writeMemory_given_M8000d06_and_10_should_write_10_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$M8000d06,a:4ff00008094b9a424a4d#ca";
-    char *reply = NULL;
-
-    createROM();
-
-    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
-
-    reply = writeMemory(data);
-
-    TEST_ASSERT_EQUAL(0x08, rom->address[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, rom->address[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0xf0, rom->address[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x4f, rom->address[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
-
-    TEST_ASSERT_EQUAL(0x42, rom->address[virtualMemToPhysicalMem(0x8000d06 + 4)].data);
-    TEST_ASSERT_EQUAL(0x9a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 5)].data);
-    TEST_ASSERT_EQUAL(0x4b, rom->address[virtualMemToPhysicalMem(0x8000d06 + 6)].data);
-    TEST_ASSERT_EQUAL(0x09, rom->address[virtualMemToPhysicalMem(0x8000d06 + 7)].data);
-
-    TEST_ASSERT_EQUAL(0x4d, rom->address[virtualMemToPhysicalMem(0x8000d06 + 8)].data);
-    TEST_ASSERT_EQUAL(0x4a, rom->address[virtualMemToPhysicalMem(0x8000d06 + 9)].data);
-    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
-}
-
-void test_step_given_following_data_should_return_signal_value_pc_reg_value_and_r7_value(void)
-{
-    char data[] = "$s#73";
-    char *reply = NULL;
-
-    initCoreRegister();
-    coreReg[PC] = 0x08000d08;
-    coreReg[7] = 0x2001ff7c;
-
-    decodeFourByte_ExpectAndReturn(0x08000d08, 0x080d0008);
-    createdHexToString_ExpectAndReturn(0x080d0008, 4, "080d0008");
-    decodeFourByte_ExpectAndReturn(0x2001ff7c, 0x7cff0120);
-    createdHexToString_ExpectAndReturn(0x7cff0120, 4, "7cff0120");
-    destroyHexToString_Expect("080d0008");
-    destroyHexToString_Expect("7cff0120");
-    gdbCreateMsgPacket_ExpectAndReturn("T050f:080d0008;07:7cff0120", "$T050f:080d0008;07:7cff0120#52");
-
-    reply = step(data);
-
-    TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
-} */

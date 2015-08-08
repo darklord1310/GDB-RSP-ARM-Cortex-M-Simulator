@@ -24,30 +24,6 @@ Address range               Memory region       Memory type[a]      Execute Neve
 0xE0100000- 0xFFFFFFFF      Device              Device              XN                      Implementation-specific.
 
 */
-/* void createROM()
-{
-    rom = malloc(sizeof(ROM));
-    rom->address = calloc(TWO_HUND_FIFTY_SIX_KB * 2, sizeof(ROMData));
-}
-
-void resetROM()
-{
-    int i;
-
-    for(i = 0; i < TWO_HUND_FIFTY_SIX_KB * 2; i++)
-    {
-        rom->address[i].data = 0;
-    }
-}
-
-void destroyROM()
-{
-    if(rom != NULL)
-    {
-        free(rom->address);
-        free(rom);
-    }
-} */
 
 void resetMemoryBlock()
 {
