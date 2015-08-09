@@ -3,9 +3,13 @@
 
 #include <stdint.h>
 
-typedef enum {BP_MEMORY, BP_HARDWARE, WP_WRITE, WP_READ, WP_ACCESS} BP_Type;
+#define MAX_HW_WATCHPOINT      4       //max hardware watchpoint is 4 for now
+
+//type of breakpoint and watchpoint
+typedef enum {BP_MEMORY, BP_HARDWARE, WP_WRITE, WP_READ, WP_ACCESS, NONE} BP_Type;
 
 typedef struct Breakpoint Breakpoint;
+typedef struct Watchpoint Watchpoint;
 
 struct Breakpoint
 {
@@ -13,8 +17,15 @@ struct Breakpoint
     unsigned int addr;
 };
 
+struct Watchpoint
+{
+    BP_Type type;
+    unsigned int addr;
+    unsigned int size;
+};
+
 Breakpoint *bp;
-Breakpoint *wp;
+Watchpoint wp[MAX_HW_WATCHPOINT];
 
 char *handleQueryPacket(char *data);
 char *readSingleRegister(char *data);
@@ -33,6 +44,9 @@ void deleteBreakpoint(Breakpoint **breakpoint);
 void deleteAllBreakpoint(Breakpoint **breakpoint);
 void addBreakpoint(Breakpoint **breakpoint, unsigned int addr);
 void removeBreakpoint(Breakpoint **breakpoint, unsigned int addr);
+
+void addWatchpoint(unsigned int addr, unsigned int size, BP_Type type);
+void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type);
 
 int findBreakpoint(Breakpoint *breakpoint);
 

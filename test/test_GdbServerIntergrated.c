@@ -748,15 +748,18 @@ void test_serveRSP_given_following_data_and_PC_0x2_should_step_through_the_instr
     TEST_ASSERT_EQUAL(0x4, coreReg[PC]);
 }
 
-void xtest_serveRSP_given_following_data_should_throw_GDB_SIGNAL_ILL(void)
+void test_serveRSP_given_following_data_should_generate_an_GDB_SIGNAL_ILL_error_msg(void)
 {
     char data[] = "$s#73";
     char *reply = NULL;
 
     initializeSimulator();
-    memoryBlock[0] = 0x01;
-    memoryBlock[1] = 0xe0;
+    memoryBlock[0] = 0x34;
+    memoryBlock[1] = 0xbf;      //ITE CC
+    memoryBlock[2] = 0x01;
+    memoryBlock[3] = 0xe0;      //expect an error after stepping this
 
+    reply = serveRSP(data);
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$E04#a9", reply);
@@ -915,16 +918,18 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is
 
     resetMemoryBlock();
     coreReg[PC] = 0x0;
-    /* memoryBlock[0] = 0x50;
-    memoryBlock[1] = 0x20;  //movs  r1, #0x20 
+    memoryBlock[0] = 0x50;
+    memoryBlock[1] = 0x20;  //movs  r0, #0x50
     memoryBlock[2] = 0x20;
-    memoryBlock[3] = 0x21;  //lsls  r1, #24
+    memoryBlock[3] = 0x21;  //movs  r1, #0x20
     memoryBlock[4] = 0x09;
-    memoryBlock[5] = 0x06;  //str   r0, [r1]
+    memoryBlock[5] = 0x06;  //lsls  r1, #24
     memoryBlock[6] = 0x08;
-    memoryBlock[7] = 0x60;  //movs  r0, #0xc0
+    memoryBlock[7] = 0x60;  //str   r0, [r1]
+    memoryBlock[8] = 0xc0;
+    memoryBlock[9] = 0x20;  //movs  r0, #0xc0
     memoryBlock[8] = 0xde;
-    memoryBlock[9] = 0x21;  //movs  r1, #0xde */
+    memoryBlock[9] = 0x21;  //movs  r1, #0xde
     // printf("PC: %x\n", coreReg[PC]);
     addBreakpoint(&bp, 0xa);
 
@@ -946,9 +951,27 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whe
 
     resetMemoryBlock();
     coreReg[PC] = 0x0;
+    memoryBlock[0] = 0x50;
+    memoryBlock[1] = 0x20;  //movs  r0, #0x50
+    memoryBlock[2] = 0x20;
+    memoryBlock[3] = 0x21;  //movs  r1, #0x20
+    memoryBlock[4] = 0x09;
+    memoryBlock[5] = 0x06;  //lsls  r1, #24
+    memoryBlock[6] = 0x08;
+    memoryBlock[7] = 0x60;  //str   r0, [r1]
+    memoryBlock[8] = 0xc0;
+    memoryBlock[9] = 0x20;  //movs  r0, #0xc0
+    memoryBlock[8] = 0xde;
+    memoryBlock[9] = 0x21;  //movs  r1, #0xde
+    memoryBlock[10] = 0x14;
+    memoryBlock[11] = 0x22;  //movs  r2, #20
+    memoryBlock[12] = 0x28;
+    memoryBlock[13] = 0x23;  //movs  r3, #40
+    memoryBlock[14] = 0x32;
+    memoryBlock[15] = 0x24;  //movs  r4, #50
     // printf("PC: %x\n", coreReg[PC]);
     addBreakpoint(&bp, 0xa);
-    addBreakpoint(&bp, 0x1a);
+    addBreakpoint(&bp, 0x10);
 
     reply = serveRSP(data);
 
@@ -957,7 +980,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whe
     TEST_ASSERT_NOT_NULL(bp->next);
     TEST_ASSERT_NULL(bp->next->next);
     TEST_ASSERT_EQUAL(0xa, bp->addr);
-    TEST_ASSERT_EQUAL(0x1a, bp->next->addr);
+    TEST_ASSERT_EQUAL(0x10, bp->next->addr);
     TEST_ASSERT_EQUAL(0xa, coreReg[PC]);
 
     removeBreakpoint(&bp, 0xa);
@@ -965,9 +988,27 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whe
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
 
-    TEST_ASSERT_EQUAL(0x1a, coreReg[PC]);
+    TEST_ASSERT_EQUAL(0x10, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_c_packet_and_PC_is_0x0_should_generate_an_GDB_SIGNAL_ILL_error_msg(void)
+{
+    char data[] = "$c#63";
+    char *reply = NULL;
+
+    resetMemoryBlock();
+    coreReg[PC] = 0x0;
+    memoryBlock[0] = 0x34;
+    memoryBlock[1] = 0xbf;      //ITE CC
+    memoryBlock[2] = 0x01;
+    memoryBlock[3] = 0xe0;      //expect an error after execute this
+    // printf("PC: %x\n", coreReg[PC]);
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$E04#a9", reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the_end_of_code_memory(void)
@@ -987,141 +1028,3 @@ void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the
 
     deleteAllBreakpoint(&bp);
 }
-/*
-void test_serveRSP_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
-{
-    char data[] = "$m0,2#fb";
-    char *reply = NULL;
-
-    createROM();
-
-    memoryBlock[0x0].data = 0xf0;
-    memoryBlock[0x1].data = 0x4f;
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4ff0#30", reply);
-
-    destroyROM();
-    free(reply);
-}
-
-void test_serveRSP_given_m80009d6_and_4_should_retrieve_memory_content_start_from_0x080009d6(void)
-{
-    char data[] = "$m80009d6,4#68";
-    char *reply = NULL;
-
-    createROM();
-
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4ff00002#f2", reply);
-
-    destroyROM();
-    free(reply);
-}
-
-void test_serveRSP_given_m80009d6_and_10_should_retrieve_memory_content_start_from_0x080009d6(void)
-{
-    char data[] = "$m80009d6,a#95";
-    char *reply = NULL;
-
-    createROM();
-
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6)].data = 0x02;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 1)].data = 0x00;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)].data = 0xf0;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)].data = 0x4f;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 4)].data = 0x08;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 5)].data = 0x00;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 6)].data = 0x10;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 7)].data = 0x24;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 8)].data = 0xad;
-    memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 9)].data = 0xde;
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL_STRING("$4ff0000224100008dead#0f", reply);
-
-    destroyROM();
-    free(reply);
-}
-
-void test_serveRSP_given_M8000d06_and_2_should_write_2_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$M8000d06,2:4a4d#a4";
-    char *reply = NULL;
-
-    createROM();
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL(0x4d, memoryBlock[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x4a, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
-}
-
-void test_serveRSP_given_M8000d06_and_4_should_write_4_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$M8000d06,4:4ff00008#71";
-    char *reply = NULL;
-
-    createROM();
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL(0x08, memoryBlock[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0xf0, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x4f, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
-    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
-}
-
-void test_serveRSP_given_M8000d06_and_10_should_write_10_byte_data_in_the_memory_addr(void)
-{
-    char data[] = "$M8000d06,a:4ff00008094b9a424a4d#ca";
-    char *reply = NULL;
-
-    createROM();
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL(0x08, memoryBlock[virtualMemToPhysicalMem(0x8000d06)].data);
-    TEST_ASSERT_EQUAL(0x00, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 1)].data);
-    TEST_ASSERT_EQUAL(0xf0, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 2)].data);
-    TEST_ASSERT_EQUAL(0x4f, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 3)].data);
-
-    TEST_ASSERT_EQUAL(0x42, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 4)].data);
-    TEST_ASSERT_EQUAL(0x9a, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 5)].data);
-    TEST_ASSERT_EQUAL(0x4b, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 6)].data);
-    TEST_ASSERT_EQUAL(0x09, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 7)].data);
-
-    TEST_ASSERT_EQUAL(0x4d, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 8)].data);
-    TEST_ASSERT_EQUAL(0x4a, memoryBlock[virtualMemToPhysicalMem(0x8000d06 + 9)].data);
-    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-
-    destroyROM();
-}
-
-void test_serveRSP_given_data_with_s_packet_should_return_appropriate_response(void)
-{
-    char data[] = "$s#73";
-    char *reply = NULL;
-
-    initCoreRegister();
-    coreReg[PC] = 0x080d0008;
-    coreReg[7] = 0x7cff0120;
-
-    reply = serveRSP(data);
-
-    TEST_ASSERT_EQUAL_STRING("$T050f:080d0008;07:7cff0120#52", reply);
-} */
