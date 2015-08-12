@@ -254,6 +254,10 @@ void ALUWritePC(uint32_t address)
 }
 
 
+//Utility
+//all the functions below are actually use by many of the other functions, it should be place in other module but due to the troublesome to manually include
+//all the header inside the source file, so it is written in this module instead 
+//____________________________________________________________________________________________________________________________________________________________________
 
 // AddWithCarry()
 // ==============
@@ -266,3 +270,26 @@ carry_out = if UInt(result) == unsigned_sum then ’0’ else ’1’;
 overflow = if SInt(result) == signed_sum then ’0’ else ’1’;
 return (result, carry_out, overflow);
 */
+void AddWithCarry(uint32_t num1, uint32_t num2, uint32_t carryIn)
+{
+  uint32_t unsignedSum = num1 + num2 + carryIn;
+  int signedSum = (int)num1 + (int)num2 + carryIn;
+  
+}
+
+
+int SInt(uint32_t value, int numberOfBitsOfValue)
+{
+  int result = 0, i;
+  
+  for(i = 0; i < numberOfBitsOfValue-1; i++)
+  {
+    if(getBits(value, i ,i) == 1)
+      result = result + (2^i);
+  }
+  
+  if( getBits(value, numberOfBitsOfValue-1, numberOfBitsOfValue-1) == 1)
+    result = result - 2^(numberOfBitsOfValue);
+  
+  return result;
+}

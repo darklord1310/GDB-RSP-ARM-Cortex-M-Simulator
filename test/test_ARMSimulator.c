@@ -141,3 +141,47 @@ void test_retrieveInstructionFromROM_given_16bits_instruction_and_ROM_value_as_a
   retrievedValue = retrieveInstructionFromMemory();
   TEST_ASSERT_EQUAL(0x07c90000, retrievedValue);                  //read instruction 0x07c9
 }
+
+
+/*
+ * address           = 0x08000002
+ * instruction       = 0x07c90000
+ *
+ * Expect: 
+ *        ROM[0x08000002]      = 0xc9
+ *        ROM[0x08000003]      = 0x07
+ */
+void test_writeInstructionToMemory_given_0x07c90000_address_0x08000002_should_load_the_correct_value_in_memory()
+{
+  uint32_t instruction = 0x07c90000;
+  uint32_t address = 0x08000002;
+  
+  writeInstructionToMemoryGivenByAddress(instruction, address);
+  
+  TEST_ASSERT_EQUAL(0xc9, memoryBlock[virtualMemToPhysicalMem(0x08000002)] );
+  TEST_ASSERT_EQUAL(0x07, memoryBlock[virtualMemToPhysicalMem(0x08000003)] );
+}
+
+
+/*
+ * address           = 0x08000000
+ * instruction       = 0xf6f370ff
+ *
+ * Expect: 
+ *        ROM[0x08000000]      = 0xf3
+ *        ROM[0x08000001]      = 0xf6
+ *        ROM[0x08000002]      = 0xff
+ *        ROM[0x08000003]      = 0x70
+ */
+void test_writeInstructionToMemory_given_0xf6f370ff_address_0x08000000_should_load_the_correct_value_in_memory()
+{
+  uint32_t instruction = 0xf6f370ff;
+  uint32_t address = 0x08000000;
+  
+  writeInstructionToMemoryGivenByAddress(instruction, address);
+  
+  TEST_ASSERT_EQUAL(0xf3, memoryBlock[virtualMemToPhysicalMem(0x08000000)] );
+  TEST_ASSERT_EQUAL(0xf6, memoryBlock[virtualMemToPhysicalMem(0x08000001)] );
+  TEST_ASSERT_EQUAL(0xff, memoryBlock[virtualMemToPhysicalMem(0x08000002)] );
+  TEST_ASSERT_EQUAL(0x70, memoryBlock[virtualMemToPhysicalMem(0x08000003)] );
+}

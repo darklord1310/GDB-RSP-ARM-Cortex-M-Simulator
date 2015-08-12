@@ -207,6 +207,7 @@ void armStep()
 
 
 
+//this function is only used for testing purposes
 void printRegister()
 {
   int i;
@@ -239,5 +240,22 @@ void printRegister()
 }
 
 
-
-
+//this function is only used for testing purposes
+void writeInstructionToMemoryGivenByAddress(uint32_t instruction, uint32_t address)
+{
+  int check = is32or16instruction(instruction);
+  
+  if(check == INSTRUCTION16bits)
+  {
+    memoryBlock[virtualMemToPhysicalMem(address) ] = getBits(instruction,23,16);
+    memoryBlock[virtualMemToPhysicalMem(address+1) ] = getBits(instruction,31,24);
+  }
+  else
+  {
+    memoryBlock[virtualMemToPhysicalMem(address) ] = getBits(instruction,23,16);
+    memoryBlock[virtualMemToPhysicalMem(address + 1) ] = getBits(instruction,31,24);
+    memoryBlock[virtualMemToPhysicalMem(address + 2) ] = getBits(instruction,7,0);
+    memoryBlock[virtualMemToPhysicalMem(address + 3) ] = getBits(instruction,15,8);
+  }
+  
+}

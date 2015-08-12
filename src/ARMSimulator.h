@@ -14,5 +14,7 @@ void initializeSimulator();
 void ARMSimulator(uint32_t instruction);
 void armStep();
 uint32_t retrieveInstructionFromMemory();
+void writeInstructionToMemoryGivenByAddress(uint32_t instruction, uint32_t address);
+
 
 #endif // ARMSimulator_H

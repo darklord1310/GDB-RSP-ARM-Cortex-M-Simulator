@@ -1,13 +1,71 @@
 #include "unity.h"
-#include "LoadAndWriteMemory.h"
+#include "ModifiedImmediateConstant.h"
+#include "ConditionalExecution.h"
+#include "Thumb16bitsTable.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-#include "ARMRegisters.h"
+#include "ARMSimulator.h"
+#include "ITandHints.h"
+#include "ADDImmediate.h"
+#include "LSLImmediate.h"
+#include "LSRImmediate.h"
+#include "MOVRegister.h"
+#include "ASRImmediate.h"
+#include "MOVImmediate.h"
+#include "CMPImmediate.h"
+#include "ADDImmediate.h"
+#include "SUBImmediate.h"
+#include "ADDRegister.h"
+#include "SUBRegister.h"
+#include "ADDSPRegister.h"
+#include "ANDRegister.h"
+#include "LSLRegister.h"
+#include "LSRRegister.h"
+#include "ASRRegister.h"
+#include "CMPRegister.h"
+#include "CMNRegister.h"
+#include "EORRegister.h"
+#include "ORRRegister.h"
+#include "RORRegister.h"
+#include "MVNRegister.h"
+#include "BICRegister.h"
+#include "ADCRegister.h"
+#include "BX.h"
+#include "BLXRegister.h"
+#include "MOVRegister.h"
+#include "CMPRegister.h"
+#include "MULRegister.h"
+#include "TSTRegister.h"
+#include "RSBImmediate.h"
+#include "SBCRegister.h"
+#include "UnconditionalAndConditionalBranch.h"
+#include "STRRegister.h"
+#include "LDRImmediate.h"
 #include "MemoryBlock.h"
-
+#include "LDRLiteral.h"
+#include "ErrorSignal.h"
+#include "SVC.h"
+#include "ADR.h"
+#include "ADDSPRegister.h"
+#include "ADDSPImmediate.h"
+#include "STRImmediate.h"
+#include "LDRRegister.h"
+#include "REV.h"
+#include "SignedAndUnsignedExtend.h"
+#include "CBZandCBNZ.h"
+#include "PUSH.h"
+#include "POP.h"
+#include "SUBSPImmediate.h"
+#include "LoadAndWriteMemory.h"
+#include "CException.h"
+#include "RemoteSerialProtocol.h"
+#include "mock_Packet.h"
 
 void setUp(void)
 {
+  initializeSimulator();
 }
 
 void tearDown(void)
@@ -124,4 +182,236 @@ void test_loadByteFromMemory_value_given_below_and_size_4_should_get_the_expecte
   uint32_t data = loadByteFromMemory(address, 4);
 
   TEST_ASSERT_EQUAL( 0x88ff4422 , data);
+}
+
+
+
+/* Watch Condition:
+ *      type = WP_READ
+ *      addr = 0x08000000
+ *      size = 2;
+ * 
+ */
+void test_loadByteFromMemory_given_condition_is_meet_should_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  uint32_t value = 1;
+  wp[0].type = WP_READ;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 2;
+  
+  Try{
+     
+      value = loadByteFromMemory(0x08000000, 2);
+      TEST_FAIL_MESSAGE("Expect to throw here\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(GDB_SIGNAL_TRAP, err);
+    TEST_ASSERT_EQUAL(1, value);    //the value is remain 1 because it is throw before execute
+  }
+}
+
+
+
+/* Watch Condition:
+ *      type = WP_READ
+ *      addr = 0x08000002
+ *      size = 2;
+ * 
+ */
+void test_loadByteFromMemory_given_addr_condition_is_not_meet_should_not_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0x44140000, 0x08000000);
+  uint32_t value = 1;
+  wp[0].type = WP_READ;
+  wp[0].addr = 0x08000002;
+  wp[0].size = 2;
+  
+  Try{
+     
+      value = loadByteFromMemory(0x08000000, 2);
+      TEST_ASSERT_EQUAL(0x4414,value);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect throw\n");
+  }
+}
+
+
+
+/* Watch Condition:
+ *      type = WP_WRITE
+ *      addr = 0x08000000
+ *      size = 2;
+ * 
+ */
+void test_loadByteFromMemory_given_type_condition_is_not_meet_should_not_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0x44140000, 0x08000000);
+  uint32_t value = 1;
+  wp[0].type = WP_WRITE;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 2;
+  
+  Try{
+     
+      value = loadByteFromMemory(0x08000000, 2);
+      TEST_ASSERT_EQUAL(0x4414,value);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect throw\n");
+  }
+}
+
+
+
+/* Watch Condition:
+ *      type = WP_READ
+ *      addr = 0x08000000
+ *      size = 1;
+ * 
+ */
+void test_loadByteFromMemory_given_size_condition_is_not_meet_should_not_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0x44140000, 0x08000000);
+  uint32_t value = 1;
+  wp[0].type = WP_READ;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 1;
+  
+  Try{
+     
+      value = loadByteFromMemory(0x08000000, 2);
+      TEST_ASSERT_EQUAL(0x4414,value);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect throw\n");
+  }
+}
+
+
+
+/* Watch Condition:
+ *      type = WP_WRITE
+ *      addr = 0x08000000
+ *      size = 1;
+ * 
+ */
+void test_writeByteToMemory_given_all_conditions_are_meet_should_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  memoryBlock[ virtualMemToPhysicalMem(0x08000000) ] = 0x11;
+  wp[0].type = WP_WRITE;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 1;
+  
+  Try{
+     
+      writeByteToMemory(0x08000000, 0x44, 1);
+      TEST_FAIL_MESSAGE("Expect throw here\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(GDB_SIGNAL_TRAP, err);
+    TEST_ASSERT_EQUAL(0x11, memoryBlock[ virtualMemToPhysicalMem(0x08000000) ] ); //expect 0x11 here because 0x44 will failed to write into the memory
+  }
+}
+
+
+/* Watch Condition:
+ *      type = WP_WRITE
+ *      addr = 0x08000000
+ *      size = 1;
+ * 
+ */
+void test_writeByteToMemory_given_addr_condition_is_not_meet_should_not_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  wp[0].type = WP_WRITE;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 1;
+  
+  Try{
+     
+      writeByteToMemory(0x080000002, 0x44, 1);
+      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x080000002) ]);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect throw\n");
+  }
+}
+
+
+
+/* Watch Condition:
+ *      type = WP_READ
+ *      addr = 0x08000000
+ *      size = 1;
+ * 
+ */
+void test_writeByteToMemory_given_type_condition_is_not_meet_should_not_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  wp[0].type = WP_READ;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 1;
+  
+  Try{
+     
+      writeByteToMemory(0x080000000, 0x44, 1);
+      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x080000000) ]);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect throw\n");
+  }
+}
+
+
+/* Watch Condition:
+ *      type = WP_READ
+ *      addr = 0x08000000
+ *      size = 2;
+ * 
+ */
+void test_writeByteToMemory_given_size_condition_is_not_meet_should_not_throw()
+{
+  CEXCEPTION_T err;
+  
+  //create test fixture
+  wp[0].type = WP_READ;
+  wp[0].addr = 0x08000000;
+  wp[0].size = 2;
+  
+  Try{
+     
+      writeByteToMemory(0x080000000, 0x44, 1);
+      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x080000000) ]);
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect throw\n");
+  }
 }

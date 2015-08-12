@@ -341,3 +341,13 @@ void test_ALUWritePC_given_PC_0x08000001_should_get_PC_0x08000000()
   TEST_ASSERT_EQUAL(0x08000000, coreReg[PC]);
 }
 
+
+
+void test_SInt_given()
+{               //0010000
+  int value = 0b1110000;
+  printf("value : %i\n", value);
+  value = SInt(value, 7);
+    
+  printf("%i\n", value);
+}
