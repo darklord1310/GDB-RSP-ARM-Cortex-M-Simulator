@@ -153,14 +153,12 @@ void MOVImmediateT3(uint32_t instruction)
     Input:  immediate       the immediate going to move into Rd
             Rd              destination register
             S               indicator for affecting the flag or not
-            affectCarry     this bit indicate whether the instruction will affect the carry flag or not
 
 */
 void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
 {
   coreReg[Rd] = immediate;                              //move immediate into destination register
-  int MSBofImmediate = getBits(coreReg[Rd],31,31);      //check the bit31 of the immediate, set carry flag
-                                                        //accordingly
+
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);

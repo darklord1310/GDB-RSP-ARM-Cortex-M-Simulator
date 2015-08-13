@@ -7,7 +7,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
-
+#include "ShiftOperation.h"
 
 /*  
   Move Not Register to Register Encoding T1 
@@ -42,12 +42,23 @@ void MVNRegisterT1(uint32_t instruction)
   if(inITBlock())
   {  
     if( checkCondition(cond) )
-      executeMVNRegister(Rm, Rd, 0,-1);  //status flag is not affected
-    
+    {
+      uint32_t result = executeShiftOperation(OMITTED, 0, coreReg[Rm], 0);
+      coreReg[Rd] = ~result; 
+      //no update flag here
+    }
+   
     shiftITState();
   }
   else
-    executeMVNRegister(Rm, Rd, 1,-1);   //status flag is affected
+  {
+    uint32_t result = executeShiftOperation(OMITTED, 0, coreReg[Rm], 1);
+    coreReg[Rd] = ~result; 
+
+    updateZeroFlag(coreReg[Rd]);
+    updateNegativeFlag(coreReg[Rd]);
+    // overflow flag will not be affected and the handling of carry flag is inside the executeShiftOperation
+  }
   
   coreReg[PC] += 2;
 }
@@ -88,31 +99,43 @@ void MVNRegisterT2(uint32_t instruction)
   uint32_t imm2 = getBits(instruction,7,6);
   uint32_t imm3 = getBits(instruction,14,12);
   uint32_t S = getBits(instruction,20,20);
+  uint32_t shiftAmount = (imm3 << 2) | imm2;
   
-  
-  
-  
-}
+  if(inITBlock())
+  {  
+    if( checkCondition(cond) )
+    {
+      int shiftType = determineShiftOperation(type, shiftAmount);
+      uint32_t result = executeShiftOperation(shiftType, shiftAmount, coreReg[Rm], S);
+      coreReg[Rd] = ~result; 
+      if(S == 1)
+      {
+        updateZeroFlag(coreReg[Rd]);
+        updateNegativeFlag(coreReg[Rd]);
+        // overflow flag will not be affected and the handling of carry flag is inside the executeShiftOperation
+      }  
+    }
 
-
-/*  Bitwise NOT (register) writes the bitwise inverse of a register value to the destination register. It can
-    optionally update the condition flags based on the result.
-  
-    Input:  Rm              source register
-            Rd              destination register
-            S               indicator for affecting the flag or not
-            shiftType       determine what type of shifting is needed, -1 if no shifting
-
-*/
-void executeMVNRegister(uint32_t Rm, uint32_t Rd, uint32_t S, uint32_t shiftType)
-{
-  coreReg[Rd] = ~coreReg[Rm];
-  
-  if(S == 1)
-  {
-    updateZeroFlag(coreReg[Rd]);
-    updateNegativeFlag(coreReg[Rd]);
+    shiftITState();
   }
+  else
+  {
+    int shiftType = determineShiftOperation(type, shiftAmount);
+    uint32_t result = executeShiftOperation(shiftType, shiftAmount, coreReg[Rm], S);
+
+    coreReg[Rd] = ~result; 
+    if(S == 1)
+    {
+      updateZeroFlag(coreReg[Rd]);
+      updateNegativeFlag(coreReg[Rd]);
+      // overflow flag will not be affected and the handling of carry flag is inside the executeShiftOperation
+    }
+  }  
+  
+  coreReg[PC] += 4;
 }
+
+
+
 
 
