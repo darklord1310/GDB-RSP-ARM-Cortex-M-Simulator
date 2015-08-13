@@ -7,8 +7,8 @@
 
 void initThumb32Table()
 {
-  Thumb32Table[0b1000000000] = &Thumb32DataProcessingModifiedImmediate;
-  Thumb32Table[0b1010001010] = &Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000000000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1010001010] = Thumb32DataProcessingModifiedImmediate;
   //10x0xxxxx0
 }
 

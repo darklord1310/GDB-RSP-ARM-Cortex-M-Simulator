@@ -28,6 +28,7 @@ typedef enum {
   PendSV,
   SysTick,
   Interrupt,
+  Watchpoint_Break
 } armException;
 
 

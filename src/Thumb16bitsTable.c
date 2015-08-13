@@ -1,20 +1,6 @@
 #include "Thumb16bitsTable.h"
 
 
-int add(int a, int b)
-{
-    return a + b + a + a;
-}
-
-void funcToFuncPointer(int a, int b)
-{
-    funcPointer1 = add;
-    funcPointer2 = &funcPointer1;
-    
-    printf("Ans: %d\n", (*funcPointer2)(a, b));
-}
-
-
 /*
 000xx     Logical Shift Left LSL (immediate) on page A6-134
 

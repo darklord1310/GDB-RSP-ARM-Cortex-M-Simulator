@@ -117,6 +117,7 @@ void main()
     SOCKET sock;
 
     initializeSimulator();
+    initializeWatchpoint();
 
     winsockInit();
     createSocket(&sock);

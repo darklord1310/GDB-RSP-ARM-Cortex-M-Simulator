@@ -45,6 +45,7 @@ void deleteAllBreakpoint(Breakpoint **breakpoint);
 void addBreakpoint(Breakpoint **breakpoint, unsigned int addr);
 void removeBreakpoint(Breakpoint **breakpoint, unsigned int addr);
 
+void initializeWatchpoint();
 void addWatchpoint(unsigned int addr, unsigned int size, BP_Type type);
 void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type);
 

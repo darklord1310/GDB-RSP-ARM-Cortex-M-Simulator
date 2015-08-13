@@ -1032,14 +1032,14 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whe
     memoryBlock[7] = 0x60;  //str   r0, [r1]
     memoryBlock[8] = 0xc0;
     memoryBlock[9] = 0x20;  //movs  r0, #0xc0
-    memoryBlock[8] = 0xde;
-    memoryBlock[9] = 0x21;  //movs  r1, #0xde
-    memoryBlock[10] = 0x14;
-    memoryBlock[11] = 0x22;  //movs  r2, #20
-    memoryBlock[12] = 0x28;
-    memoryBlock[13] = 0x23;  //movs  r3, #40
-    memoryBlock[14] = 0x32;
-    memoryBlock[15] = 0x24;  //movs  r4, #50
+    memoryBlock[10] = 0xde;
+    memoryBlock[11] = 0x21; //movs  r1, #0xde
+    memoryBlock[12] = 0x14;
+    memoryBlock[13] = 0x22; //movs  r2, #20
+    memoryBlock[14] = 0x28;
+    memoryBlock[15] = 0x23; //movs  r3, #40
+    memoryBlock[16] = 0x32;
+    memoryBlock[17] = 0x24; //movs  r4, #50
     // printf("PC: %x\n", coreReg[PC]);
     addBreakpoint(&bp, 0xa);
     addBreakpoint(&bp, 0x10);
@@ -1089,7 +1089,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the
 
     resetMemoryBlock();
     coreReg[PC] = 0x806fff0;
-    // printf("PC: %x\n", coreReg[PC]);
+    // printf("PC: %d\n", coreReg[PC]);
 
     reply = serveRSP(data);
 
@@ -1098,4 +1098,78 @@ void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the
     TEST_ASSERT_EQUAL(0x8070000, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
+}
+
+void test_serveRSP_given_c_packet_and_PC_is_0x0_and_read_watchpoint_should_stop_before_load_from_memory(void)
+{
+    char data[] = "$c#63";
+    char data2[] = "$Z3,20000000,4#9b";
+    char data3[] = "$M8000000,1ac:ffff0220ad010008c1010008c1010008c1010008c1010008c101000800000000000000000000000000000000c1010008c101000800000000c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c101000800000000c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008#61";
+    char data4[] = "$M80001ac,18:0348052101600168013101602022fae700000020fee70000#64";
+    char data5[] = "$M80001c4,4:04000000#fb";
+    char *reply = NULL;
+
+    watchpointIndex = 0;
+
+    resetMemoryBlock();
+    coreReg[PC] = 0x80001ac;
+
+    reply = serveRSP(data3);        //write to memory first     /* ldr   r0, =mydata */     using this assembly
+    reply = serveRSP(data4);                                    /* movs  r1, #5      */
+    reply = serveRSP(data5);                                    /* str   r1, [r0]    */
+                                                              /* again:              */
+                                                                /* ldr   r1, [r0]    */     /* should stop over here */
+                                                                /* adds  r1, #1      */
+                                                                /* str   r1, [r0]    */
+                                                                /* movs  r2, #0x20   */
+                                                                /* b     again       */
+
+    reply = serveRSP(data2);        //add watchpoint first
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_READ, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(4, wp[0].size);
+
+    reply = serveRSP(data);         //continue
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    TEST_ASSERT_EQUAL(0x80001b2, coreReg[PC]);
+}
+
+void test_serveRSP_given_c_packet_and_PC_is_0x0_and_watch_watchpoint_should_stop_before_write_from_memory(void)
+{
+    char data[] = "$c#63";
+    char data2[] = "$Z2,20000000,4#9a";
+    char data3[] = "$M8000000,1ac:ffff0220ad010008c1010008c1010008c1010008c1010008c101000800000000000000000000000000000000c1010008c101000800000000c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c101000800000000c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008c1010008#61";
+    char data4[] = "$M80001ac,18:0348052101600168013101602022fae700000020fee70000#64";
+    char data5[] = "$M80001c4,4:04000000#fb";
+    char *reply = NULL;
+
+    watchpointIndex = 0;
+
+    resetMemoryBlock();
+    coreReg[PC] = 0x80001ac;
+
+    reply = serveRSP(data3);        //write to memory first......same as previos test
+    reply = serveRSP(data4);
+    reply = serveRSP(data5);
+
+    reply = serveRSP(data2);        //add watchpoint first
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(4, wp[0].size);
+
+    reply = serveRSP(data);         //continue
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    TEST_ASSERT_EQUAL(0x80001b0, coreReg[PC]);
+    
+    coreReg[PC] = 0x80001b2;
+    reply = serveRSP(data);         //continue
+
+    TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    TEST_ASSERT_EQUAL(0x80001b6, coreReg[PC]);
 }

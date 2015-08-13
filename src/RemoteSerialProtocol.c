@@ -484,7 +484,7 @@ char *step(char *data)
  *****************************************************************************************/
 char *cont(char *data)
 {
-    CEXCEPTION_T armException, ErrorSignal;
+    CEXCEPTION_T armException;
     char *packet = NULL, *asciiString = NULL;
     char *signal = "S", *error = "E";
     char msg[4] = "";
@@ -505,10 +505,6 @@ char *cont(char *data)
 
             break;
         }
-        // Catch(ErrorSignal)
-        // {
-            // break;
-        // }
 
         if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)   // stop if reach the end of code addr
             break;
