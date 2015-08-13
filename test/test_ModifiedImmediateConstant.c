@@ -1,5 +1,9 @@
 #include "unity.h"
 #include "ModifiedImmediateConstant.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+#include "StatusRegisters.h"
+
 
 void setUp(void)
 {

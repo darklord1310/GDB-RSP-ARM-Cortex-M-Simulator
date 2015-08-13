@@ -7,6 +7,7 @@
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
 #include "Thumb16bitsTable.h"
+#include "Thumb32bitsTable.h"
 #include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
@@ -30,6 +31,7 @@ void initializeAllTable()
   initThumb16bitsOpcode1011XX();
   initThumb16LoadStoreSingleData();
   initThumb16bitsOpcode1101XX();
+  initThumb32bitsDataProcessingModifiedImmediate();
 }
 
 
@@ -92,6 +94,18 @@ void armSimulate16(uint32_t instruction)
 
   executeInstructionFrom16bitsTable(opcode1,instruction);
 
+}
+
+
+void armSimulate32(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,28,27);
+  uint32_t op2 = getBits(instruction,26,20);
+  uint32_t op = getBits(instruction,15,15);
+  
+  uint32_t opcode = ( ( (op1 << 7) | op2 ) << 1 ) | op;
+  
+  (*Thumb32Table[opcode])(instruction);
 }
 
 
@@ -165,7 +179,10 @@ void ARMSimulator(uint32_t instruction)
   {
     armSimulate16(instruction);
   }
-
+  else
+  {
+    armSimulate32(instruction);
+  }
 
 }
 
@@ -200,8 +217,8 @@ void armStep()
 
   if(check == INSTRUCTION16bits)                                  //execute 16 or 32 bits instruction
     armSimulate16(instruction);
-  //else
-    //armSimulate32(instruction);
+  else
+    armSimulate32(instruction);
 
 }
 

@@ -53,15 +53,18 @@ void test_MOVImmediateT2_given_instruction_0xf05f35ff_should_move_into_0xfffffff
 }
 
 //test case modify control larger than 0b00111
-// movs r0, #80000000 and affect flag register
-void test_MOVImmediateT2_given_instruction_0xf05f4000_should_move_into_0x80000000_into_R0_and_set_negative_flag()
+//modifyControl = 0b01000
+// movs.w  r0, #0x88000000
+void test_MOVImmediateT2_given_instruction_0xf05f4008_should_move_into_0x88000000_into_R0_and_set_carry_and_negative_flag()
 {
-  uint32_t instruction = 0xf05f4000;
+  uint32_t instruction = 0xf05f4008;
 
   MOVImmediateT2(instruction);
-  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+
+  TEST_ASSERT_EQUAL(0x88000000, coreReg[0]);
   TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
 }
+
 
 
 /* case 1: i = 0

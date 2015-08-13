@@ -69,8 +69,8 @@ void CMPImmediateT2(uint32_t instruction)
   uint32_t Rn = getBits(instruction, 19, 16);
   uint32_t bit7 = getBits(imm8,7,7);
   
-  uint32_t modifiedConstant = ModifyImmediateConstant(i, imm3, bit7, imm8);
-  executeCMP(modifiedConstant, Rn );
+  //uint32_t modifiedConstant = ModifyImmediateConstant(i, imm3, bit7, imm8);
+  //executeCMP(modifiedConstant, Rn );
   
 
 }

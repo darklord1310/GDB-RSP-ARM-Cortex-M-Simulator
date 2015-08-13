@@ -1,10 +1,12 @@
 #include "ASRImmediate.h"
+#include "ShiftOperation.h"
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include <stdio.h>
+
 
 /*Arithmetic Shift Right Immediate Encoding T1
       ASRS <Rd>,<Rm>,#<imm5>        Outside IT block.
@@ -32,16 +34,15 @@ void ASRImmediateT1(uint32_t instruction)
   uint32_t imm5 = getBits(instruction, 26 , 22);
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
-  uint32_t MSBofRm = getBits( coreReg[Rm], 31,31 );
   
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      executeASRImmediate(imm5, Rm, Rd, 0, MSBofRm);
+      executeASRImmediate(imm5, Rm, Rd, 0);
     shiftITState();
   }
   else
-    executeASRImmediate(imm5, Rm, Rd, 1, MSBofRm);
+    executeASRImmediate(imm5, Rm, Rd, 1);
   
   coreReg[PC] += 2;
 }
@@ -56,35 +57,16 @@ void ASRImmediateT1(uint32_t instruction)
             MSBofRm     MSB of source register
 
 */
-void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t StatusBit, uint32_t MSBofRm)
+void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  int i, timesToShift, lastBitShifted;
-  uint32_t mask = MSBofRm << 31;                //create mask to achieve arithmetic shift
-                                                
-  uint32_t temp = coreReg[Rm];                  //create a dummy to prevent changing the register value
+  coreReg[Rd] = executeASR(imm5, coreReg[Rm], S);
   
-  if( imm5 != 0)                                //if imm5 is not zero, means not maximum 32 shift
-    timesToShift = imm5;
-  else
-    timesToShift = 32;
-  
-  for(i = 0; i < timesToShift; i++)
+  if(S == 1)
   {
-    if( i == timesToShift - 1)                  //this is to get the last bit of Rm before shifted out
-      lastBitShifted = getBits(temp, 0,0);
-    temp = ( temp >> 1 ) | mask;
-  }
-  
-  coreReg[Rd] = temp;
-  
-  if(StatusBit == 1)
-  {
-    updateZeroFlag(temp);
-    updateNegativeFlag(temp); 
-    if(lastBitShifted == 1)                     //if lastBitShifted is 1, the carry is set, else carry not set
-      setCarryFlag();
-    else
-      resetCarryFlag();
+    updateNegativeFlag(coreReg[Rd]);
+    updateZeroFlag(coreReg[Rd]);
+    
+    // Overflow flag will not be affected and the carry flag handling is inside the executeASR function
   }
 }
 
