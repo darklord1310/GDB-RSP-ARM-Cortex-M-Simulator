@@ -7,13 +7,60 @@
 
 void initThumb32Table()
 {
-  Thumb32Table[0b1000000000] = &Thumb32DataProcessingModifiedImmediate;
-  Thumb32Table[0b1010001010] = &Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000000000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000000010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000000010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000000100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000000110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000001000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000001010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000001100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000001110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000010000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000010010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000010100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000010110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000011000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000011010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000011100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000011110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000011110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000100000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000100010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000100100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000100110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000101000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000101010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000101100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000101110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000110000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000110010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000110100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000110110] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000111000] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000111010] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000111100] = Thumb32DataProcessingModifiedImmediate;
+  Thumb32Table[0b1000111110] = Thumb32DataProcessingModifiedImmediate;
+  //Thumb32Table[0b1000xxxxx0] = Thumb32DataProcessingModifiedImmediate;
+  //Thumb32Table[0b10x0xxxxx0] = Thumb32DataProcessingModifiedImmediate;
   //10x0xxxxx0
+  /*
+  xxxxx
+
+  
+  
+  
+  
+
+  */
 }
 
 
-
+void initThumb32bitsDataProcessingShiftedRegister()
+{
+    
+  
+}
 
 
 

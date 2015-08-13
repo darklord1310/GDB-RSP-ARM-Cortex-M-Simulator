@@ -53,6 +53,7 @@ void (*(*Thumb32Table[1024]))(uint32_t instruction);
 
 
 void initThumb32bitsDataProcessingModifiedImmediate();
+void initThumb32bitsDataProcessingShiftedRegister();
 void initThumb32Table();
 
 
