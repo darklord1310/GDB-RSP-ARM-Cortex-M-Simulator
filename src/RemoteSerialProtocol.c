@@ -484,7 +484,7 @@ char *step(char *data)
  *****************************************************************************************/
 char *cont(char *data)
 {
-    CEXCEPTION_T armException;
+    CEXCEPTION_T armException, ErrorSignal;
     char *packet = NULL, *asciiString = NULL;
     char *signal = "S", *error = "E";
     char msg[4] = "";
@@ -505,6 +505,10 @@ char *cont(char *data)
 
             break;
         }
+        // Catch(ErrorSignal)
+        // {
+            // break;
+        // }
 
         if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)   // stop if reach the end of code addr
             break;
@@ -603,10 +607,11 @@ char *insertBreakpointOrWatchpoint(char *data)
             addBreakpoint(&bp, addr);
             break;
         case WP_WRITE:
-            break;
+            // break;
         case WP_READ:
-            break;
+            // break;
         case WP_ACCESS:
+            addWatchpoint(addr, kind, type);
             break;
         default:
             printf("Warning: breakpoint type not recognized\n");
@@ -668,10 +673,11 @@ char *removeBreakpointOrWatchpoint(char *data)
             removeBreakpoint(&bp, addr);
             break;
         case WP_WRITE:
-            break;
+            // break;
         case WP_READ:
-            break;
+            // break;
         case WP_ACCESS:
+            removeWatchpoint(addr, kind, type);
             break;
         default:
             printf("Warning: breakpoint type not recognized\n");
@@ -800,7 +806,7 @@ void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type)
 {
     int i;
 
-    for(i = 0; i <MAX_HW_WATCHPOINT; i++)
+    for(i = 0; i < MAX_HW_WATCHPOINT; i++)
     {
         if(wp[i].addr == addr && wp[i].type == type && wp[i].size == size)
         {
@@ -811,7 +817,7 @@ void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type)
             break;
         }
     }
-    
+
     for(; i < MAX_HW_WATCHPOINT - 1; i++)
     {
         wp[i] = wp[i + 1];

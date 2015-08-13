@@ -64,4 +64,10 @@ void initThumb16LoadStoreSingleData();
 void initThumb16bitsOpcode1101XX();
 
 
+int (*funcPointer1)(int a, int b);
+int (*(*funcPointer2))(int a, int b);
+int add(int a, int b);
+void funcToFuncPointer(int a, int b);
+
+
 #endif // Thumb16bitsTable_H

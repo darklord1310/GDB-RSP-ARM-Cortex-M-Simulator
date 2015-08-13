@@ -17,17 +17,17 @@ typedef enum {
 } ErrorSignal;
 
 typedef enum {
-  Reset,      
-  Nmi,     
-  HardFault,    
-  MemManage,    
-  BusFault,     
-  UsageFault,    
-  DebugMonitor,    
+  Reset,
+  Nmi,
+  HardFault,
+  MemManage,
+  BusFault,
+  UsageFault,
+  DebugMonitor,
   SVCall,
   PendSV,
   SysTick,
-  Interrupt,  
+  Interrupt,
 } armException;
 
 
@@ -41,7 +41,7 @@ typedef enum {
 #define SVCALL      0x0000002c    //offset for SVCall
 #define PENDSV      0x00000038    //offset for PendSV
 #define SYSTICK     0x0000003c    //offset for SysTick
-#define INTERRUPT   0x0000003c    //offset for Interrupt 
+#define INTERRUPT   0x0000003c    //offset for Interrupt
 
 uint32_t vectorTable;
 void resetVectorTableAddress();

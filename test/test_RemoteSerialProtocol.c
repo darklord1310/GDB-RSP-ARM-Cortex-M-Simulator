@@ -1062,84 +1062,38 @@ void test_insertBreakpointOrWatchpoint_given_Z1_should_should_throw_GDB_SIGNAL_A
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
-void test_initializeWatchpoint_should_initialize_all_4_watchpoint(void)
+void test_insertBreakpointOrWatchpoint_given_Z3_and_Z2_should_insert_read_and_write_watchpoint_at_0x20000000_and_0x20000010_respectively(void)
 {
-    int i;
+    char data[] = "$Z3,20000000,2#99";
+    char *reply = NULL;
 
-    for(i = 0; i < MAX_HW_WATCHPOINT; i++)
-    {
-        TEST_ASSERT_EQUAL(NONE, wp[i].type);
-        TEST_ASSERT_EQUAL(0, wp[i].addr);
-        TEST_ASSERT_EQUAL(0, wp[i].size);
-    }
-}
-
-void test_addWatchpoint_given_the_address_0x20000000_size_2_and_WP_WRITE_type_should_add_watchpoint(void)
-{
-    addWatchpoint(0x20000000, 2, WP_WRITE);
-
-    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
-    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
-    TEST_ASSERT_EQUAL(2, wp[0].size);
-}
-
-void test_addWatchpoint_given_several_address_size_type_should_add_all_watchpoint(void)
-{
     watchpointIndex = 0;
 
-    addWatchpoint(0x20000002, 2, WP_WRITE);
-    addWatchpoint(0x20000004, 4, WP_WRITE);
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+    reply = insertBreakpointOrWatchpoint(data);
 
-    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
-    TEST_ASSERT_EQUAL(0x20000002, wp[0].addr);
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_READ, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
     TEST_ASSERT_EQUAL(2, wp[0].size);
 
+    char data2[] = "$Z2,20000010,4#9c";
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+    reply = insertBreakpointOrWatchpoint(data2);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
     TEST_ASSERT_EQUAL(WP_WRITE, wp[1].type);
-    TEST_ASSERT_EQUAL(0x20000004, wp[1].addr);
+    TEST_ASSERT_EQUAL(0x20000010, wp[1].addr);
     TEST_ASSERT_EQUAL(4, wp[1].size);
 }
 
-void test_removeWatchpoint_given_the_address_0x20000000_size_2_and_WP_WRITE_type_should_delete_watchpoint(void)
+void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x080009d6(void)
 {
-    watchpointIndex = 0;
-    addWatchpoint(0x20000000, 2, WP_WRITE);
-    removeWatchpoint(0x20000000, 2, WP_WRITE);
-
-    TEST_ASSERT_EQUAL(NONE, wp[0].type);
-    TEST_ASSERT_EQUAL(0, wp[0].addr);
-    TEST_ASSERT_EQUAL(0, wp[0].size);
-    TEST_ASSERT_EQUAL(0, watchpointIndex);
-}
-
-void test_removeWatchpoint_given_several_address_size_type_should_delete_watchpoint(void)
-{
-    watchpointIndex = 0;
-    addWatchpoint(0x20000000, 2, WP_WRITE);
-    addWatchpoint(0x20000010, 4, WP_WRITE);
-    addWatchpoint(0x20000006, 4, WP_READ);
-    removeWatchpoint(0x20000010, 4, WP_WRITE);
-
-    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
-    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
-    TEST_ASSERT_EQUAL(2, wp[0].size);
-
-    TEST_ASSERT_EQUAL(WP_READ, wp[1].type);
-    TEST_ASSERT_EQUAL(0x20000006, wp[1].addr);
-    TEST_ASSERT_EQUAL(4, wp[1].size);
-
-    TEST_ASSERT_EQUAL(NONE, wp[2].type);
-    TEST_ASSERT_EQUAL(0, wp[2].addr);
-    TEST_ASSERT_EQUAL(0, wp[2].size);
-    TEST_ASSERT_EQUAL(2, watchpointIndex);
-}
-
-void xtest_insertBreakpointOrWatchpoint_given_Z3_should_insert_watchpoint_at_0x20000000(void)
-{
-    char data[] = "$Z2,20000000,2#af";
+    char data[] = "$Z0,80009d6,2#af";
     char *reply = NULL;
 
     gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
-
     reply = insertBreakpointOrWatchpoint(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
@@ -1147,18 +1101,10 @@ void xtest_insertBreakpointOrWatchpoint_given_Z3_should_insert_watchpoint_at_0x2
     TEST_ASSERT_NULL(bp->next);
     TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
 
-    deleteAllBreakpoint(&bp);
-}
+    char data2[] = "$z0,80009d6,2#cf";
 
-void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x080009d6(void)
-{
-    char data[] = "$z0,80009d6,2#cf";
-    char *reply = NULL;
-
-    addBreakpoint(&bp, 0x80009d6);
     gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
-
-    reply = removeBreakpointOrWatchpoint(data);
+    reply = removeBreakpointOrWatchpoint(data2);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
     TEST_ASSERT_NULL(bp);
@@ -1220,6 +1166,47 @@ void test_removeBreakpointOrWatchpoint_given_z1_should_should_throw_GDB_SIGNAL_A
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
+void test_removeBreakpointOrWatchpoint_given_z3_and_z2_should_insert_read_and_write_watchpoint_at_0x20000000_and_0x20000010_respectively(void)
+{
+    char data[] = "$Z3,20000000,2#99";
+    char data2[] = "$Z2,20000010,4#9c";
+    char *reply = NULL;
+
+    watchpointIndex = 0;
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+    reply = insertBreakpointOrWatchpoint(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+    reply = insertBreakpointOrWatchpoint(data2);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    char data3[] = "$z3,20000000,2#b9";
+    char data4[] = "$z2,20000010,4#bc";
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+    reply = removeBreakpointOrWatchpoint(data3);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000010, wp[0].addr);
+    TEST_ASSERT_EQUAL(4, wp[0].size);
+    TEST_ASSERT_EQUAL(NONE, wp[1].type);
+    TEST_ASSERT_EQUAL(0, wp[1].addr);
+    TEST_ASSERT_EQUAL(0, wp[1].size);
+
+    gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
+    reply = removeBreakpointOrWatchpoint(data4);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(NONE, wp[0].type);
+    TEST_ASSERT_EQUAL(0, wp[0].addr);
+    TEST_ASSERT_EQUAL(0, wp[0].size);
+}
+
 void test_findBreakpoint_given_no_breakpoint_in_breakpoint_lits_should_return_0(void)
 {
     resetMemoryBlock();
@@ -1276,4 +1263,76 @@ void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_
     TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
 
     deleteAllBreakpoint(&bp);
+}
+
+void test_initializeWatchpoint_should_initialize_all_4_watchpoint(void)
+{
+    int i;
+
+    for(i = 0; i < MAX_HW_WATCHPOINT; i++)
+    {
+        TEST_ASSERT_EQUAL(NONE, wp[i].type);
+        TEST_ASSERT_EQUAL(0, wp[i].addr);
+        TEST_ASSERT_EQUAL(0, wp[i].size);
+    }
+}
+
+void test_addWatchpoint_given_the_address_0x20000000_size_2_and_WP_WRITE_type_should_add_watchpoint(void)
+{
+    watchpointIndex = 0;
+    addWatchpoint(0x20000000, 2, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+}
+
+void test_addWatchpoint_given_several_address_size_type_should_add_all_watchpoint(void)
+{
+    watchpointIndex = 0;
+
+    addWatchpoint(0x20000002, 2, WP_WRITE);
+    addWatchpoint(0x20000004, 4, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000002, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[1].type);
+    TEST_ASSERT_EQUAL(0x20000004, wp[1].addr);
+    TEST_ASSERT_EQUAL(4, wp[1].size);
+}
+
+void test_removeWatchpoint_given_the_address_0x20000000_size_2_and_WP_WRITE_type_should_delete_watchpoint(void)
+{
+    watchpointIndex = 0;
+    addWatchpoint(0x20000000, 2, WP_WRITE);
+    removeWatchpoint(0x20000000, 2, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(NONE, wp[0].type);
+    TEST_ASSERT_EQUAL(0, wp[0].addr);
+    TEST_ASSERT_EQUAL(0, wp[0].size);
+    TEST_ASSERT_EQUAL(0, watchpointIndex);
+}
+
+void test_removeWatchpoint_given_several_address_size_type_should_delete_watchpoint(void)
+{
+    watchpointIndex = 0;
+    addWatchpoint(0x20000000, 2, WP_WRITE);
+    addWatchpoint(0x20000010, 4, WP_WRITE);
+    addWatchpoint(0x20000006, 4, WP_READ);
+    removeWatchpoint(0x20000010, 4, WP_WRITE);
+
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+
+    TEST_ASSERT_EQUAL(WP_READ, wp[1].type);
+    TEST_ASSERT_EQUAL(0x20000006, wp[1].addr);
+    TEST_ASSERT_EQUAL(4, wp[1].size);
+
+    TEST_ASSERT_EQUAL(NONE, wp[2].type);
+    TEST_ASSERT_EQUAL(0, wp[2].addr);
+    TEST_ASSERT_EQUAL(0, wp[2].size);
+    TEST_ASSERT_EQUAL(2, watchpointIndex);
 }

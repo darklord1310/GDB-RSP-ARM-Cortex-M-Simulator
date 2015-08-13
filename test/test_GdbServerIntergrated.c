@@ -66,9 +66,11 @@
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
 extern char *arm_vfpv2;
+extern int watchpointIndex;
 
 void setUp(void)
 {
+    initializeWatchpoint();
 }
 
 void tearDown(void)
@@ -843,6 +845,30 @@ void test_serveRSP_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
 
+void test_serveRSP_given_Z3_and_Z2_should_insert_read_and_write_watchpoint_at_0x20000000_and_0x20000010_respectively(void)
+{
+    char data[] = "$Z3,20000000,2#99";
+    char *reply = NULL;
+
+    watchpointIndex = 0;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_READ, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+
+    char data2[] = "$Z2,20000010,4#9c";
+
+    reply = serveRSP(data2);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[1].type);
+    TEST_ASSERT_EQUAL(0x20000010, wp[1].addr);
+    TEST_ASSERT_EQUAL(4, wp[1].size);
+}
+
 void test_serveRSP_given_z0_should_insert_breakpoint_at_0x080009d6(void)
 {
     char data[] = "$z0,80009d6,2#cf";
@@ -909,6 +935,49 @@ void test_serveRSP_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+}
+
+void test_serveRSP_given_z3_and_z2_should_insert_read_and_write_watchpoint_at_0x20000000_and_0x20000010_respectively(void)
+{
+    char data[] = "$Z3,20000000,2#99";
+    char data2[] = "$Z2,20000010,4#9c";
+    char *reply = NULL;
+
+    watchpointIndex = 0;
+
+    reply = serveRSP(data);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+
+    reply = serveRSP(data2);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_READ, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
+    TEST_ASSERT_EQUAL(2, wp[0].size);
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[1].type);
+    TEST_ASSERT_EQUAL(0x20000010, wp[1].addr);
+    TEST_ASSERT_EQUAL(4, wp[1].size);
+
+    char data3[] = "$z3,20000000,2#b9";
+    char data4[] = "$z2,20000010,4#bc";
+
+    reply = serveRSP(data3);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
+    TEST_ASSERT_EQUAL(0x20000010, wp[0].addr);
+    TEST_ASSERT_EQUAL(4, wp[0].size);
+    TEST_ASSERT_EQUAL(NONE, wp[1].type);
+    TEST_ASSERT_EQUAL(0, wp[1].addr);
+    TEST_ASSERT_EQUAL(0, wp[1].size);
+
+    reply = serveRSP(data4);
+
+    TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
+    TEST_ASSERT_EQUAL(NONE, wp[0].type);
+    TEST_ASSERT_EQUAL(0, wp[0].addr);
+    TEST_ASSERT_EQUAL(0, wp[0].size);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is_reach(void)
