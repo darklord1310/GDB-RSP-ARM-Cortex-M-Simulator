@@ -1,4 +1,5 @@
 #include "LSLImmediate.h"
+#include "ShiftOperation.h"
 #include <stdint.h>
 
 
@@ -58,18 +59,13 @@ void LSLImmediateT1(uint32_t instruction)
 */
 void executeLSLImmediate(uint32_t immediate, uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  int lastBitShifted;
+  coreReg[Rd] = executeLSL(immediate, coreReg[Rm], S);
   
-  lastBitShifted = getBits(coreReg[Rm], 32-immediate, 32-immediate) ;  //this is to get the lastBitShifted out, the value will determine the carry flag
-  coreReg[Rd] = coreReg[Rm] << immediate;
-
-  if(S == 1)                                                                      //update status register
+  if(S == 1)
   {
     updateNegativeFlag(coreReg[Rd]);
     updateZeroFlag(coreReg[Rd]);
-    if(lastBitShifted == 1)
-      setCarryFlag();
-    else
-      resetCarryFlag();
+    
+    // Overflow flag will not be affected and the carry flag handling is inside the executeLSL function
   }
 }

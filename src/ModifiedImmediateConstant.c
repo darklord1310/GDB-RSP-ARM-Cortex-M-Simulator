@@ -1,4 +1,5 @@
 #include "ModifiedImmediateConstant.h"
+#include "StatusRegisters.h"
 #include <stdio.h>
 
 
@@ -26,12 +27,9 @@ case 11111        00000000 00000000 00000001 bcdefgh0
 Return :  the modified constant
 
 */
-uint32_t ModifyImmediateConstant(uint32_t i, uint32_t imm3, uint32_t bit7, uint32_t input_value)
+uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value, uint32_t affectCarry)
 {
-  uint32_t ModifyControl;
-  
-  ModifyControl = ( imm3 << 1 ) | bit7;
-  ModifyControl = ( i << 4) | ModifyControl;
+  uint32_t returnValue;
   
   if( ModifyControl < 0b00010)
   {
@@ -39,22 +37,28 @@ uint32_t ModifyImmediateConstant(uint32_t i, uint32_t imm3, uint32_t bit7, uint3
   }
   else if( ModifyControl < 4)
   {
-    uint32_t returnValue = ModifyControlLessThan4(input_value);
+    returnValue = ModifyControlLessThan4(input_value);
     return returnValue;
   }
   else if( ModifyControl < 6)
   {
-    uint32_t returnValue = ModifyControlLessThan6(input_value);
+    returnValue = ModifyControlLessThan6(input_value);
     return returnValue;
   }
   else if( ModifyControl < 8)
   {
-    uint32_t returnValue = ModifyControlLessThan8(input_value);
+    returnValue = ModifyControlLessThan8(input_value);
     return returnValue;
   }
   else if( ModifyControl >= 8)
   {
-    uint32_t returnValue = SetFirstBitAndShiftRight(input_value, ModifyControl);
+    returnValue = SetFirstBitAndShiftRight(input_value, ModifyControl);
+    
+    if(getBits(returnValue,31,31) == 1)
+      setCarryFlag();
+    else
+      resetCarryFlag();
+    
     return returnValue;
   }
 }

@@ -1,4 +1,5 @@
 #include "RORRegister.h"
+#include "ShiftOperation.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -49,40 +50,15 @@ void RORRegisterT1(uint32_t instruction)
 
 void executeRORRegister(uint32_t Rd, uint32_t Rn, uint32_t Rm, uint32_t S)
 {
-  int i, timesToRotate, lastBitRotated;
-  uint32_t temp = coreReg[Rn];                   //this temp is used to perform the rotate operation and to avoid destroy the value in Rn
-  timesToRotate = getBits(coreReg[Rm], 7 ,0);
+  uint32_t timesToRotate = getBits(coreReg[Rm], 7 ,0);
+  coreReg[Rd] = executeROR(timesToRotate, coreReg[Rn], S);
   
-  for(i=0; i<timesToRotate; i++)
-  {
-    if(i == timesToRotate -1 )                    //to get the last bit rotated       
-      lastBitRotated = getBits(temp,0,0);
-      
-    if( getBits(temp,0,0) == 1)
-    {
-      temp = temp >> 1;
-      temp = setBits(temp, 1, 31, 31);
-    }
-    else
-    {
-      temp = temp >> 1;
-      temp = setBits(temp, 0, 31, 31);
-    }
-  }
-  
-  coreReg[Rd] = temp;
-
   if( S == 1)
   {
     updateNegativeFlag(coreReg[Rd]);
     updateZeroFlag(coreReg[Rd]);
-    if(timesToRotate != 0)
-    {
-      if(lastBitRotated == 1)
-        setCarryFlag();
-      else
-        resetCarryFlag();
-    }
+    
+    // overflow flag is not affected and the handling of carry flag is done in the executeROR function
   }
 
 }

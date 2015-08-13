@@ -32,11 +32,11 @@ void MOVImmediateT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      executeMOVImmediate(imm8, destinationRegister, 0,0);
+      executeMOVImmediate(imm8, destinationRegister, 0);
     shiftITState();
   }
   else
-    executeMOVImmediate(imm8, destinationRegister, 1,0);
+    executeMOVImmediate(imm8, destinationRegister, 1);
   
   coreReg[PC] += 2;
 }
@@ -72,19 +72,24 @@ void MOVImmediateT2(uint32_t instruction)
   uint32_t Rd = getBits(instruction, 11, 8);
   uint32_t imm3 = getBits(instruction, 14, 12);
   uint32_t statusFlag = getBits(instruction, 20, 20);
+  
   uint32_t i = getBits(instruction, 26, 26);
   uint32_t bit7 = getBits(instruction, 7, 7);
   uint32_t temp = (i << 3 ) | imm3; 
   uint32_t modifyControl = (temp << 1) | getBits(imm8,7,7);
-  uint32_t ModifiedConstant = ModifyImmediateConstant(i,imm3, bit7, imm8);
-
-  if(modifyControl <= 0b00111)                                       //if the modify control is smaller than 0b00111, then wont update carry flag
-    executeMOVImmediate(ModifiedConstant, Rd, statusFlag, 0);
-  else
-    executeMOVImmediate(ModifiedConstant, Rd, statusFlag, 1);
   
-  if( inITBlock() )
+  uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8, statusFlag);
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeMOVImmediate(ModifiedConstant, Rd, statusFlag);
     shiftITState();
+  }
+  else
+    executeMOVImmediate(ModifiedConstant, Rd, statusFlag);
+  
+  coreReg[PC] += 4;
 }
 
 
@@ -133,11 +138,11 @@ void MOVImmediateT3(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      executeMOVImmediate(constant, Rd, 0,0);
+      executeMOVImmediate(constant, Rd, 0);
     shiftITState();
   }
   else
-    executeMOVImmediate(constant, Rd, 0,0);
+    executeMOVImmediate(constant, Rd, 0);
 
 }
 
@@ -151,7 +156,7 @@ void MOVImmediateT3(uint32_t instruction)
             affectCarry     this bit indicate whether the instruction will affect the carry flag or not
 
 */
-void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S, uint32_t affectCarry)
+void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
 {
   coreReg[Rd] = immediate;                              //move immediate into destination register
   int MSBofImmediate = getBits(coreReg[Rd],31,31);      //check the bit31 of the immediate, set carry flag
@@ -160,6 +165,7 @@ void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S, uint32_t a
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
+    /*
     if(affectCarry == 1)                                //When an Operand2 constant is used with the instructions MOVS, MVNS, ANDS, ORRS, 
     {                                                   //ORNS, EORS, BICS, TEQ or TST, the carry flag is updated to bit[31] of the constant
                                                         //if the constant is greater than 255 and can be produced by shifting an 8-bit value
@@ -168,6 +174,7 @@ void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S, uint32_t a
       else
         resetCarryFlag();
     }
+    */
   }
 }
 

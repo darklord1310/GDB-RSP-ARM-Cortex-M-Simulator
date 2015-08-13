@@ -60,6 +60,8 @@
 #include "SUBSPImmediate.h"
 #include "LoadAndWriteMemory.h"
 #include "CException.h"
+#include "Thumb32bitsTable.h"
+#include "ShiftOperation.h"
 
 
 void setUp(void)

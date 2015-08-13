@@ -61,57 +61,27 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 
-
-
 void setUp(void)
 {
   initializeSimulator();
 }
 
+
 void tearDown(void)
 {
 }
 
-//test adr r3, bla
-void test_ADRT1_given_PC_0x08000044_should_get_r3_0x0800004C(void)
-{
-  uint32_t instruction = 0xa3010000;
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //MOV Immediate T2
   
-  coreReg[PC] = 0x08000044;
+void testing()
+{
+  uint32_t instruction = 0xf05f4008;
+  
   ARMSimulator(instruction);
   
-  TEST_ASSERT_EQUAL(0x0800004C, coreReg[3]);
-  TEST_ASSERT_EQUAL(0x08000046, coreReg[PC]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
-
 }
 
 
-// test for the conditional cases
-/* Test case 1
- *            ITETE EQ
- *            adrne.n r2, bla
- *            adreq.n r3, bla
- *            CMPNE r7, #200
- * 
- * Expected Result:
- *            r2 = 0x08000054
- *            r7 = 0x0ddddddd
- *            PC = 0x0800004c
- *            xPSR = 0x21000000
- *  
- */
-void test_ADRT1_conditional_cases_should_get_the_expected_result()
-{
-  coreReg[PC] = 0x08000044;
-  
-  resetZeroFlag();
-  ARMSimulator(0xbf160000);   //ITETE NE
-  ARMSimulator(0xa2030000);   //adrne.n r2, bla
-  ARMSimulator(0xa3020000);   //adreq.n r3, bla
-  ARMSimulator(0x2fc80000);   //CMPNE r7, #200
-  
-  TEST_ASSERT_EQUAL(0x08000054,coreReg[2]);
-  TEST_ASSERT_EQUAL(0x0800004c,coreReg[PC]);
-  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
-}
+

@@ -59,7 +59,10 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
+#include "Thumb32bitsTable.h"
 #include "LoadAndWriteMemory.h"
+#include "ShiftOperation.h"
+
 
 void setUp(void)
 {

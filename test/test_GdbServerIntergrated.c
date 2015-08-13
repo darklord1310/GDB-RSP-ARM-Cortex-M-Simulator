@@ -61,6 +61,8 @@
 #include "POP.h"
 #include "SUBSPImmediate.h"
 #include "LoadAndWriteMemory.h"
+#include "Thumb32bitsTable.h"
+#include "ShiftOperation.h"
 
 
 extern char *targetCortexM4_XML;
