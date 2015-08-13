@@ -679,6 +679,7 @@ void test_serveRSP_given_M7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_M8000d06_and_2_with_more_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
@@ -698,6 +699,7 @@ void test_serveRSP_given_M8000d06_and_2_with_more_data_supply_should_throw_GDB_S
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_M8000d06_and_2_with_no_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
@@ -717,6 +719,7 @@ void test_serveRSP_given_M8000d06_and_2_with_no_data_supply_should_throw_GDB_SIG
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_M8000d06_and_2_with_less_data_supply_should_throw_GDB_SIGNAL_ABRT(void)
@@ -736,6 +739,7 @@ void test_serveRSP_given_M8000d06_and_2_with_less_data_supply_should_throw_GDB_S
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_following_data_and_PC_0x2_should_step_through_the_instruction(void)
@@ -750,6 +754,7 @@ void test_serveRSP_given_following_data_and_PC_0x2_should_step_through_the_instr
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
     TEST_ASSERT_EQUAL(0x4, coreReg[PC]);
+    free(reply);
 }
 
 void test_serveRSP_given_following_data_should_generate_an_GDB_SIGNAL_ILL_error_msg(void)
@@ -767,6 +772,7 @@ void test_serveRSP_given_following_data_should_generate_an_GDB_SIGNAL_ILL_error_
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$E04#a9", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_following_data_should_response_S05(void)
@@ -777,6 +783,7 @@ void test_serveRSP_given_following_data_should_response_S05(void)
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_Z0_should_insert_breakpoint_at_0x080009d6(void)
@@ -792,6 +799,7 @@ void test_serveRSP_given_Z0_should_insert_breakpoint_at_0x080009d6(void)
     TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -811,6 +819,7 @@ void test_serveRSP_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_Z1_should_insert_breakpoint_at_0x080009d6(void)
@@ -826,6 +835,7 @@ void test_serveRSP_given_Z1_should_insert_breakpoint_at_0x080009d6(void)
     TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -845,6 +855,7 @@ void test_serveRSP_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_Z3_and_Z2_should_insert_read_and_write_watchpoint_at_0x20000000_and_0x20000010_respectively(void)
@@ -869,6 +880,7 @@ void test_serveRSP_given_Z3_and_Z2_should_insert_read_and_write_watchpoint_at_0x
     TEST_ASSERT_EQUAL(WP_WRITE, wp[1].type);
     TEST_ASSERT_EQUAL(0x20000010, wp[1].addr);
     TEST_ASSERT_EQUAL(4, wp[1].size);
+    free(reply);
 }
 
 void test_serveRSP_given_z0_should_insert_breakpoint_at_0x080009d6(void)
@@ -884,6 +896,7 @@ void test_serveRSP_given_z0_should_insert_breakpoint_at_0x080009d6(void)
     TEST_ASSERT_NULL(bp);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -903,6 +916,7 @@ void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_z1_should_insert_breakpoint_at_0x080009d6(void)
@@ -918,6 +932,7 @@ void test_serveRSP_given_z1_should_insert_breakpoint_at_0x080009d6(void)
     TEST_ASSERT_NULL(bp);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -937,6 +952,7 @@ void test_serveRSP_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
 	}
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_z3_and_z2_should_insert_read_and_write_watchpoint_at_0x20000000_and_0x20000010_respectively(void)
@@ -980,6 +996,7 @@ void test_serveRSP_given_z3_and_z2_should_insert_read_and_write_watchpoint_at_0x
     TEST_ASSERT_EQUAL(NONE, wp[0].type);
     TEST_ASSERT_EQUAL(0, wp[0].addr);
     TEST_ASSERT_EQUAL(0, wp[0].size);
+    free(reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is_reach(void)
@@ -1013,6 +1030,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is
     TEST_ASSERT_EQUAL(0xa, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whenever_a_breakpoint_is_reach(void)
@@ -1062,6 +1080,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whe
     TEST_ASSERT_EQUAL(0x10, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x0_should_generate_an_GDB_SIGNAL_ILL_error_msg(void)
@@ -1080,6 +1099,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_should_generate_an_GDB_SIGNAL_IL
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$E04#a9", reply);
+    free(reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the_end_of_code_memory(void)
@@ -1098,6 +1118,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the
     TEST_ASSERT_EQUAL(0x8070000, coreReg[PC]);
 
     deleteAllBreakpoint(&bp);
+    free(reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x0_and_read_watchpoint_should_stop_before_load_from_memory(void)
@@ -1135,6 +1156,8 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_read_watchpoint_should_stop_
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
     TEST_ASSERT_EQUAL(0x80001b2, coreReg[PC]);
+
+    free(reply);
 }
 
 void test_serveRSP_given_c_packet_and_PC_is_0x0_and_watch_watchpoint_should_stop_before_write_from_memory(void)
@@ -1166,10 +1189,12 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_watch_watchpoint_should_stop
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
     TEST_ASSERT_EQUAL(0x80001b0, coreReg[PC]);
-    
+
     coreReg[PC] = 0x80001b2;
     reply = serveRSP(data);         //continue
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
     TEST_ASSERT_EQUAL(0x80001b6, coreReg[PC]);
+
+    free(reply);
 }
