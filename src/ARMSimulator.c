@@ -25,12 +25,16 @@ void initializeSimulator()
 
 void initializeAllTable()
 {
+  //16bits
   initThumb16bitsOpcode00XXXX();
   initThumb16bitsOpcode010000();
   initThumb16bitsOpcode010001();
   initThumb16bitsOpcode1011XX();
   initThumb16LoadStoreSingleData();
   initThumb16bitsOpcode1101XX();
+  
+  //32bits
+  initThumb32bitsDataProcessingPlainImmediate();
   initThumb32bitsDataProcessingModifiedImmediate();
   initThumb32bitsDataProcessingShiftedRegister();
   initThumb32Table();
@@ -104,14 +108,33 @@ void armSimulate32(uint32_t instruction)
   uint32_t op1 = getBits(instruction,28,27);
   uint32_t op2 = getBits(instruction,26,20);
   uint32_t op = getBits(instruction,15,15);
-  printf("%x\n", op1);
-  printf("%x\n", op2);
-  printf("%x\n", op);
   uint32_t opcode = ( ( (op1 << 7) | op2 ) << 1 ) | op;
-  printf("%x\n", opcode);
+
   (*Thumb32Table[opcode])(instruction);
 }
 
+
+void executeDataProcessingModifiedImmediate(uint32_t instruction)
+{
+  uint32_t op = getBits(instruction,24,20);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rd = getBits(instruction,11,8);
+  uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
+  
+  (*Thumb32DataProcessingModifiedImmediate[opcode])(instruction);
+  
+}
+
+
+void executeDataProcessingPlainImmediate(uint32_t instruction)
+{
+  uint32_t op = getBits(instruction,24,20);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t opcode = (op << 4) | Rn ;
+  
+  (*Thumb32DataProcessingPlainImmediate[opcode])(instruction);
+  
+}
 
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
@@ -261,7 +284,7 @@ void printRegister()
 }
 
 
-//this function is only used for testing purposes
+//this function is only used for testing purposes only
 void writeInstructionToMemoryGivenByAddress(uint32_t instruction, uint32_t address)
 {
   int check = is32or16instruction(instruction);

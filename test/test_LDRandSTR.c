@@ -159,7 +159,49 @@ void test_LDRLiteralT1_given_inside_IT_block_should_load_r0_0x08444444_xPSR_0x01
   ARMSimulator(0x49090000);                   //ldr r1, [pc,#36]
   TEST_ASSERT_EQUAL( 0x01000000, coreReg[xPSR]);
 }
+
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDR Literal T2
+
+//test bit 1 is 0 after PC add with 4
+//test ldr r0, [pc,#36]
+/*  PC = 0x08000008
+ *  Memory address 0x08000030 = 0x44
+ *  Memory address 0x08000031 = 0x44
+ *  Memory address 0x08000032 = 0x44
+ *  Memory address 0x08000033 = 0x84
+ */
+void test_LDRLiteralT2_given_ROM_value_as_above_should_load_r0_wth_0x84444444(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x08000030) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000031) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000032) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000033) ] = 0x84;
   
+  coreReg[PC] = 0x08000008;
+  uint32_t instruction = 0x48090000;
+  ARMSimulator(instruction);                  //ldr r0, [pc,#36]
+ 
+  TEST_ASSERT_EQUAL( 0x84444444, coreReg[0]);
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Immediate T1
 
@@ -530,6 +572,7 @@ void test_STRImmediateT1_given_offset_0_r3_0x0b19face_and_r4_0x20000000_should_g
   TEST_ASSERT_EQUAL( 0x19, memoryBlock[ virtualMemToPhysicalMem(0x20000002) ]);
   TEST_ASSERT_EQUAL( 0x0b, memoryBlock[ virtualMemToPhysicalMem(0x20000003) ]);
 }
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/

@@ -64,6 +64,7 @@
 void setUp(void)
 {
   initializeSimulator();
+  
 }
 
 
@@ -76,11 +77,11 @@ void tearDown(void)
   //MOV Immediate T2
   
 // mov r7, #0x2f00
-void test_MOVImmediateT2_given_instruction_0xf44f573c_should_move_into_0x2f00_into_R7_and_update_the_flag()
+void test_MOVImmediateT2_given_instruction_0xf45f573c_should_move_into_0x2f00_into_R7_and_update_the_flag()
 {
   uint32_t instruction = 0xf45f573c;
-  
-  MOVImmediateT2(instruction);
+
+  ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x2f00, coreReg[7]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
@@ -91,7 +92,7 @@ void test_MOVImmediateT2_given_instruction_0xf04f35ff_should_move_into_0xfffffff
 {
   uint32_t instruction = 0xf04f35ff;
 
-  MOVImmediateT2(instruction);
+  ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[5]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
@@ -102,23 +103,29 @@ void test_MOVImmediateT2_given_instruction_0xf05f35ff_should_move_into_0xfffffff
 {
   uint32_t instruction = 0xf05f35ff;
 
-  MOVImmediateT2(instruction);
+  ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[5]);
   TEST_ASSERT_EQUAL(0x81000000, coreReg[xPSR]);
 }
+
 
 //test case modify control larger than 0b00111
 //modifyControl = 0b01000
 // movs.w  r0, #0x88000000
 void test_MOVImmediateT2_given_instruction_0xf05f4008_should_move_into_0x88000000_into_R0_and_set_carry_and_negative_flag()
 {
-  uint32_t instruction = 0xf05f4008;
-
-  MOVImmediateT2(instruction);
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf05f4008, 0x0800000C);  // movs.w  r0, #0x88000000
+  coreReg[PC] = 0x0800000C;
+  
+  //test
+  armStep();
 
   TEST_ASSERT_EQUAL(0x88000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
   TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
 }
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -134,7 +141,7 @@ void test_MOVImmediateT3_given_instruction_0xf2400542_should_move_into_0x42_into
 {
   uint32_t instruction = 0xf2400542;
   
-  MOVImmediateT3(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x42, coreReg[5]);
 
@@ -151,7 +158,7 @@ void test_MOVImmediateT3_given_instruction_0xf2405c42_should_move_into_0x542_int
 {
   uint32_t instruction = 0xf2405c42;
   
-  MOVImmediateT3(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x542, coreReg[12]);
 }
@@ -168,7 +175,7 @@ void test_MOVImmediateT3_given_instruction_0xf6405c42_should_move_into_0xd42_int
 {
   uint32_t instruction = 0xf6405c42;
   
-  MOVImmediateT3(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xd42, coreReg[12]);
 }
@@ -185,17 +192,18 @@ void test_MOVImmediateT3_given_instruction_0xf6435342_should_move_into_0x3d42_in
 {
   uint32_t instruction = 0xf6435342;
   
-  MOVImmediateT3(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0x3d42, coreReg[3]);
 }
+
 
 // MOVW r5, 0xF360
 void test_MOVImmediateT3_given_instruction_0xf24f3560_should_move_into_0xf360_into_R5()
 {
   uint32_t instruction = 0xf24f3560;
   
-  MOVImmediateT3(instruction);
+  ARMSimulator(instruction);
   
   TEST_ASSERT_EQUAL(0xf360, coreReg[5]);
 }
