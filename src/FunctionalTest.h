@@ -33,7 +33,8 @@ struct AffectedReg
 AffectedReg reg;
 
 void tarRemoteCommand();
-void loadMemory();
+void loadSimpleAssembly();
+void loadITBlock();
 void singleStep();
 
 #endif // FunctionalTest_H

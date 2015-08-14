@@ -47,7 +47,9 @@ void initCoreRegister()
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i != 16)
-      coreReg[i] = 0;
+    {
+      coreReg[i] = 0;    
+    }
     else
       coreReg[i] = 0x01000000;
   }

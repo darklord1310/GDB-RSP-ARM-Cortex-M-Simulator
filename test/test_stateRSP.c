@@ -183,3 +183,60 @@ void test_rsp_state_given_data_and_INITIAL_state_should_return_appropriate_packe
     TEST_ASSERT_EQUAL(INITIAL, state);
     free(packet);
 }
+
+void test_rsp_state_to_do_a_regression_test(void)
+{
+    State state = INITIAL;
+    char *packet = NULL;
+
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(ACK, state);
+
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING("+", packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, state);
+    free(packet);
+
+    packet = rsp_state(&state, "$qSupported:multiprocess+;qRelocInsn+#2a");
+    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
+    TEST_ASSERT_EQUAL(INITIAL, state);
+    free(packet);
+
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(ACK, state);
+
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING("+", packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, state);
+    free(packet);
+    
+    packet = rsp_state(&state, "$Hg0#df");
+    TEST_ASSERT_EQUAL_STRING("$#00", packet);
+    TEST_ASSERT_EQUAL(INITIAL, state);
+    free(packet);
+    
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(ACK, state);
+
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING("+", packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, state);
+    free(packet);
+    
+    packet = rsp_state(&state, "$qXfer:features:read:target.xml:0,fff#7d");
+    TEST_ASSERT_EQUAL_STRING("$l<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target>  <xi:include href=\"arm-m-profile.xml\"/>  <xi:include href=\"arm-vfpv2.xml\"/></target>#dd", packet);
+    TEST_ASSERT_EQUAL(INITIAL, state);
+    free(packet);
+    
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(ACK, state);
+
+    packet = rsp_state(&state, "+");
+    TEST_ASSERT_EQUAL_STRING("+", packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, state);
+    free(packet);
+}

@@ -50,6 +50,18 @@ again:
   str   r1, [r0]
   movs  r2, #0x20
   b     again
+  
+  /*IT    CC
+  CMPCC	r1, r0
+  ITE   EQ
+  ROREQ	r1, r0
+  RORNE	r2, r3
+  ITET  CS
+  LSRCS	r2, r3
+  LSRCC	r4, r5
+  LSRCS	r7, r6
+  b     . */
+  
 .size  Reset_Handler, .-Reset_Handler
 
 /**
