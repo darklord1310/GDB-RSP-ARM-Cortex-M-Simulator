@@ -3,8 +3,6 @@
 
 
 
-
-
 void initThumb32Table()
 {
   Thumb32Table[0b1000000000] = executeDataProcessingModifiedImmediate;
@@ -144,12 +142,6 @@ void initThumb32Table()
   Thumb32Table[0b1011111010] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1011111100] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1011111110] = executeDataProcessingPlainImmediate;
-
-  
-  
-  
-  
-
 
 }
 
