@@ -41,7 +41,7 @@ void assertEqualRegister(AffectedReg *reg, int line)
     
     if(reg->regValue != coreReg[reg->regNum])
     {
-        sprintf(msg, "Register r%d not the same as expected. \nExpected %x but was %x", reg->regNum, reg->regValue, coreReg[reg->regNum]);
+        sprintf(msg, "Register r%d not the same as expected. Expected %x but was %x", reg->regNum, reg->regValue, coreReg[reg->regNum]);
         UNITY_TEST_FAIL(line, msg);
     }
 }

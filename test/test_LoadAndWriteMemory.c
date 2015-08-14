@@ -355,8 +355,8 @@ void test_writeByteToMemory_given_addr_condition_is_not_meet_should_not_throw()
   
   Try{
      
-      writeByteToMemory(0x080000002, 0x44, 1);
-      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x080000002) ]);
+      writeByteToMemory(0x08000002, 0x44, 1);
+      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x08000002) ]);
   }
   Catch(err)
   {
@@ -383,8 +383,8 @@ void test_writeByteToMemory_given_type_condition_is_not_meet_should_not_throw()
   
   Try{
      
-      writeByteToMemory(0x080000000, 0x44, 1);
-      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x080000000) ]);
+      writeByteToMemory(0x08000000, 0x44, 1);
+      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x08000000) ]);
   }
   Catch(err)
   {
@@ -410,8 +410,8 @@ void test_writeByteToMemory_given_size_condition_is_not_meet_should_not_throw()
   
   Try{
      
-      writeByteToMemory(0x080000000, 0x44, 1);
-      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x080000000) ]);
+      writeByteToMemory(0x08000000, 0x44, 1);
+      TEST_ASSERT_EQUAL(0x44 ,memoryBlock[ virtualMemToPhysicalMem(0x08000000) ]);
   }
   Catch(err)
   {

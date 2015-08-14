@@ -81,7 +81,24 @@ void tearDown(void)
 {
 }
 
-void test_gdb_tar_remote_command(void)
+/*
+080001ac <Reset_Handler>:
+ 80001ac:       4803            ldr     r0, [pc, #12]   ; (80001bc <again+0xa>)
+ 80001ae:       2105            movs    r1, #5
+ 80001b0:       6001            str     r1, [r0, #0]
+
+080001b2 <again>:
+ 80001b2:       6801            ldr     r1, [r0, #0]
+ 80001b4:       3101            adds    r1, #1
+ 80001b6:       6001            str     r1, [r0, #0]
+ 80001b8:       2220            movs    r2, #32
+ 80001ba:       e7fa            b.n     80001b2 <again>
+ 80001bc:       20000000        .word   0x20000000
+
+080001c0 <ADC_IRQHandler>:
+ 80001c0:       e7fe            b.n     80001c0 <ADC_IRQHandler>
+*/
+void test_simple_assembly_code_elf(void)
 {
     /* char *packet = NULL;
 
@@ -91,11 +108,55 @@ void test_gdb_tar_remote_command(void)
     free(packet);
     free(reply); */
 
-    tarRemoteCommand();
+    // tarRemoteCommand();
     loadMemory();
-    singleStep();
+    
+    singleStep();                           //ldr     r0, [pc, #12]
     storeAffectedReg(R0, 0x20000000);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001ae);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //movs    r1, #5
+    storeAffectedReg(R1, 0x5);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b0);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //str     r1, [r0, #0]
+    TEST_ASSERT_EQUAL(0x5, memoryBlock[virtualMemToPhysicalMem(0x20000000)]);
+    storeAffectedReg(PC_REG, 0x080001b2);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //ldr     r1, [r0, #0]
+    storeAffectedReg(R1, 0x5);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b4);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //adds    r1, #1
+    storeAffectedReg(R1, 0x6);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b6);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //str     r1, [r0, #0]
+    TEST_ASSERT_EQUAL(0x6, memoryBlock[virtualMemToPhysicalMem(0x20000000)]);
+    storeAffectedReg(PC_REG, 0x080001b8);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //movs    r2, #32
+    storeAffectedReg(R2, 0x20);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001ba);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //b.n     80001b2 <again>
+    storeAffectedReg(PC_REG, 0x080001b2);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    coreReg[PC] = 0x80001c0;
+    singleStep();                           //b.n     80001c0
+    storeAffectedReg(PC_REG, 0x80001c0);
     TEST_ASSERT_EQUAL_Register(&reg);
 }
