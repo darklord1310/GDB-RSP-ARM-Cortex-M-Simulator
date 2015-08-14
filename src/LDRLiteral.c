@@ -178,8 +178,7 @@ void LDRLiteralT2(uint32_t instruction)
       
       coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register 
     }
-    
-     coreReg[PC] += 4;  
+    coreReg[PC] += 4;  
   }
 
 }

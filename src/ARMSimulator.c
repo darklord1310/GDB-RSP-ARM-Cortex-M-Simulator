@@ -137,6 +137,18 @@ void executeDataProcessingPlainImmediate(uint32_t instruction)
 }
 
 
+void executeDataProcessingShiftedRegister(uint32_t instruction)
+{
+  uint32_t op = getBits(instruction,24,21);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rd = getBits(instruction,11,8);  
+  uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
+  
+  
+  (*Thumb32DataProcessingShiftedRegister[opcode])(instruction);
+  
+}
+
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {
   uint32_t opcode2;

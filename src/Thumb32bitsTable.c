@@ -142,7 +142,70 @@ void initThumb32Table()
   Thumb32Table[0b1011111010] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1011111100] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1011111110] = executeDataProcessingPlainImmediate;
-
+  //
+  Thumb32Table[0b0101000000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101000111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101001111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101010111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101011111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101100111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101101111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101110111] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111000] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111001] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111010] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111011] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111100] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111101] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111110] = executeDataProcessingShiftedRegister;
+  Thumb32Table[0b0101111111] = executeDataProcessingShiftedRegister;
 }
 
 
@@ -150,8 +213,22 @@ void initThumb32Table()
 
 void initThumb32bitsDataProcessingShiftedRegister()
 {
-    
-  
+  Thumb32DataProcessingShiftedRegister[0b001111110000] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110001] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110010] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110011] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110100] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110101] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110110] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111110111] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111000] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111001] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111010] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111011] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111100] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111101] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111110] = MVNRegisterT2;
+  Thumb32DataProcessingShiftedRegister[0b001111111111] = MVNRegisterT2;
 }
 
 
