@@ -166,38 +166,81 @@ void test_LDRLiteralT1_given_inside_IT_block_should_load_r0_0x08444444_xPSR_0x01
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDR Literal T2
 
-//test bit 1 is 0 after PC add with 4
-//test ldr r0, [pc,#36]
-/*  PC = 0x08000008
+//test U is 0
+//test ldr.w r0, [pc,#14]
+/*  PC = 0x08000042
  *  Memory address 0x08000030 = 0x44
  *  Memory address 0x08000031 = 0x44
  *  Memory address 0x08000032 = 0x44
  *  Memory address 0x08000033 = 0x84
  */
-void test_LDRLiteralT2_given_ROM_value_as_above_should_load_r0_wth_0x84444444(void)
+void test_LDRLiteralT2_given_ROM_value_as_above_should_load_r0_wth_0x2fc84414(void)
 {
-  memoryBlock[ virtualMemToPhysicalMem(0x08000030) ] = 0x44;
-  memoryBlock[ virtualMemToPhysicalMem(0x08000031) ] = 0x44;
-  memoryBlock[ virtualMemToPhysicalMem(0x08000032) ] = 0x44;
-  memoryBlock[ virtualMemToPhysicalMem(0x08000033) ] = 0x84;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000052) ] = 0x14;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000053) ] = 0x44;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000054) ] = 0xc8;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000055) ] = 0x2f;
   
-  coreReg[PC] = 0x08000008;
-  uint32_t instruction = 0x48090000;
-  ARMSimulator(instruction);                  //ldr r0, [pc,#36]
- 
-  TEST_ASSERT_EQUAL( 0x84444444, coreReg[0]);
+  coreReg[PC] = 0x08000042;
+  uint32_t instruction = 0xf8df000e;
+  LDRLiteralT2(instruction);                  //ldr.w r0, [pc,#14]
+
+  TEST_ASSERT_EQUAL( 0x08000046, coreReg[PC]);
+  TEST_ASSERT_EQUAL( 0x2fc84414, coreReg[0]);
 }
   
   
   
   
   
+//test U is 1
+//test ldr.w r0, [pc,#-38]
+/*  PC = 0x08000042
+ *  Memory address 0x0800001e = 0x4f
+ *  Memory address 0x0800001f = 0xf0
+ *  Memory address 0x08000020 = 0x66
+ *  Memory address 0x08000021 = 0x35
+ */
+void test_LDRLiteralT2_given_ROM_value_as_above_should_load_r0_wth_0x3566f04f(void)
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x0800001e) ] = 0x4f;
+  memoryBlock[ virtualMemToPhysicalMem(0x0800001f) ] = 0xf0;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000020) ] = 0x66;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000021) ] = 0x35;
   
-  
-  
-  
-  
+  coreReg[PC] = 0x08000042;
+  uint32_t instruction = 0xf85f0026;
+  LDRLiteralT2(instruction);                  //ldr.w r0, [pc,#-38]
 
+  TEST_ASSERT_EQUAL( 0x08000046, coreReg[PC]);
+  TEST_ASSERT_EQUAL( 0x3566f04f, coreReg[0]);
+}
+
+
+//test write to PC when the address 1:0 is not 0
+//test ldr.w pc, [pc,#2]
+/*  PC = 0x08000042
+ *  Memory address 0x0800001e = 0x4f
+ *  Memory address 0x0800001f = 0xf0
+ *  Memory address 0x08000020 = 0x66
+ *  Memory address 0x08000021 = 0x35
+ */
+void test_LDRLiteralT2_given_ROM_value_as_above_should_throw_error(void)
+{
+  CEXCEPTION_T err;
+  
+  Try
+  {
+    coreReg[PC] = 0x08000042;
+    uint32_t instruction = 0xf8dff002;
+    LDRLiteralT2(instruction);                  //ldr.w pc, [pc,#2]
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(UsageFault,err);
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT,coreReg[PC]);
+  }
+}
 
 
 

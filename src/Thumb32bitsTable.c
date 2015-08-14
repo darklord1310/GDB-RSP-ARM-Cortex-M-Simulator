@@ -213,5 +213,4 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   Thumb32DataProcessingModifiedImmediate[0b0010111111101] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111110] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2;
-  
 }

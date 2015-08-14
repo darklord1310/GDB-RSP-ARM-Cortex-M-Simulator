@@ -244,17 +244,17 @@ Linker script and memory map
                 0x00000000       0x21 startup_stm32f429xx.o
 LOAD startup_stm32f429xx.o
 START GROUP
-LOAD c:/gnu tools arm embedded/4.9 2015q1/bin/../lib/gcc/arm-none-eabi/4.9.3/armv7e-m\libgcc.a
-LOAD c:/gnu tools arm embedded/4.9 2015q1/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7e-m\libg.a
-LOAD c:/gnu tools arm embedded/4.9 2015q1/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7e-m\libc.a
+LOAD c:/bin/../lib/gcc/arm-none-eabi/4.9.3/armv7e-m\libgcc.a
+LOAD c:/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7e-m\libg.a
+LOAD c:/bin/../lib/gcc/arm-none-eabi/4.9.3/../../../../arm-none-eabi/lib/armv7e-m\libc.a
 END GROUP
 OUTPUT(AssemblyCode.elf elf32-littlearm)
 
 .debug_line     0x00000000       0x5f
  .debug_line    0x00000000       0x5f startup_stm32f429xx.o
 
-.debug_info     0x00000000       0x80
- .debug_info    0x00000000       0x80 startup_stm32f429xx.o
+.debug_info     0x00000000       0x73
+ .debug_info    0x00000000       0x73 startup_stm32f429xx.o
 
 .debug_abbrev   0x00000000       0x12
  .debug_abbrev  0x00000000       0x12 startup_stm32f429xx.o
