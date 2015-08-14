@@ -603,10 +603,11 @@ char *insertBreakpointOrWatchpoint(char *data)
             addBreakpoint(&bp, addr);
             break;
         case WP_WRITE:
-            break;
+            // break;
         case WP_READ:
-            break;
+            // break;
         case WP_ACCESS:
+            addWatchpoint(addr, kind, type);
             break;
         default:
             printf("Warning: breakpoint type not recognized\n");
@@ -668,10 +669,11 @@ char *removeBreakpointOrWatchpoint(char *data)
             removeBreakpoint(&bp, addr);
             break;
         case WP_WRITE:
-            break;
+            // break;
         case WP_READ:
-            break;
+            // break;
         case WP_ACCESS:
+            removeWatchpoint(addr, kind, type);
             break;
         default:
             printf("Warning: breakpoint type not recognized\n");
@@ -800,7 +802,7 @@ void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type)
 {
     int i;
 
-    for(i = 0; i <MAX_HW_WATCHPOINT; i++)
+    for(i = 0; i < MAX_HW_WATCHPOINT; i++)
     {
         if(wp[i].addr == addr && wp[i].type == type && wp[i].size == size)
         {
@@ -811,7 +813,7 @@ void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type)
             break;
         }
     }
-    
+
     for(; i < MAX_HW_WATCHPOINT - 1; i++)
     {
         wp[i] = wp[i + 1];

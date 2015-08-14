@@ -212,7 +212,7 @@ void test_loadByteFromMemory_given_condition_is_meet_should_throw()
   }
   Catch(err)
   {
-    TEST_ASSERT_EQUAL(GDB_SIGNAL_TRAP, err);
+    TEST_ASSERT_EQUAL(Watchpoint_Break, err);
     TEST_ASSERT_EQUAL(1, value);    //the value is remain 1 because it is throw before execute
   }
 }
@@ -332,7 +332,7 @@ void test_writeByteToMemory_given_all_conditions_are_meet_should_throw()
   }
   Catch(err)
   {
-    TEST_ASSERT_EQUAL(GDB_SIGNAL_TRAP, err);
+    TEST_ASSERT_EQUAL(Watchpoint_Break, err);
     TEST_ASSERT_EQUAL(0x11, memoryBlock[ virtualMemToPhysicalMem(0x08000000) ] ); //expect 0x11 here because 0x44 will failed to write into the memory
   }
 }
