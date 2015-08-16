@@ -14,25 +14,41 @@
  * Return:
  *      packet      string of data reply to gdb
  ***********************************************************************/
-char *rsp_state(State *state, char *data)
+char *rsp_state(RspData *rspData, char *data)
 {
     char *packet = NULL;
     static int nack = 0;
+    
+    if(!strcmp("+", data))
+    {
+        nack = 0;
+        sendReply(rspData->sock, "+");
+    }
+    else if(!strcmp("-", data))
+    {
+        sendReply(rspData->sock, "-");
+    }
 
-    switch(*state)
+    switch(rspData->state)
     {
         case INITIAL:
             if(!strcmp("+", data))
-                *state = ACK;
+            {
+                rspData->state = ACK;
+                
+            }
             else if(!strcmp("-", data))
-                *state = NACK;
+            {
+                rspData->state = NACK;
+                
+            }
             break;
         case ACK:
             packet = malloc(2);
             packet[0] = '+';
             packet[1] = '\0';
             nack = 0;
-            *state = SERVE_RSP;
+            rspData->state = SERVE_RSP;
             // printf("yes\n");
             break;
         case NACK:
@@ -42,9 +58,9 @@ char *rsp_state(State *state, char *data)
             nack++;
 
             if(nack == 5)
-                *state = KILL;
+                rspData->state = KILL;
             else
-                *state = INITIAL;
+                rspData->state = INITIAL;
             break;
         case SERVE_RSP:
             if(!verifyChecksum(data))
@@ -58,23 +74,23 @@ char *rsp_state(State *state, char *data)
             {
                 if(!strcmp("$k#6b", data))
                 {
-                    *state = KILL;
+                    rspData->state = KILL;
                     break;
                 }
                 packet = serveRSP(data);
                 // printf("yes\n");
             }
 
-            *state = INITIAL;
+            rspData->state = INITIAL;
             break;
         case KILL:
             packet = malloc(2);
             packet[0] = 'k';
             packet[1] = '\0';
-            *state = INITIAL;
+            rspData->state = INITIAL;
             break;
         default:
-            *state= INITIAL;
+            rspData->state= INITIAL;
             break;
     }
 

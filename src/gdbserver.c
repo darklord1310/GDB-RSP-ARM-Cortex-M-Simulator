@@ -61,10 +61,10 @@ void bindSocket(SOCKET *sock)
 }
 
 /****************Listen on the socket.****************/
-void listenSocket(SOCKET sock)
+void listenSocket(SOCKET *sock)
 {
     printf( "4. Listening to socket................" );
-    if ( listen( sock, 1 ) == SOCKET_ERROR )
+    if ( listen( *sock, 1 ) == SOCKET_ERROR )
         printf( ">>>Error listening on socket\n");
     else
         printf( "Listening...\n" );
@@ -112,28 +112,34 @@ int receiveBuffer(SOCKET *sock, char *recvbuf)
     return bytesRecv;
 }
 
+void sendReply(SOCKET *sock, char *reply)
+{
+    sendBuffer(*sock, reply);
+}
+
 void main()
 {
-    SOCKET sock;
+    // SOCKET sock;
+    RspData rspData;
 
     initializeSimulator();
     initializeWatchpoint();
 
     winsockInit();
-    createSocket(&sock);
-    bindSocket(&sock);
-    listenSocket(sock);
-    waitingForConnection(&sock);
+    createSocket(&rspData.sock);
+    bindSocket(&rspData.sock);
+    listenSocket(&rspData.sock);
+    waitingForConnection(&rspData.sock);
 
     int bytesSent;
     int bytesRecv = SOCKET_ERROR;
     char *reply = NULL;
     char recvbuf[PACKET_SIZE] = "";
-    State state = INITIAL;
+    rspData.state = INITIAL;
 
     while(1)
     {
-        bytesRecv = receiveBuffer(&sock, recvbuf);
+        bytesRecv = receiveBuffer(&rspData.sock, recvbuf);
         if(bytesRecv != -1)
         {
             recvbuf[bytesRecv] = '\0';
@@ -143,7 +149,7 @@ void main()
             state = NACK;
 
         do {
-            reply = rsp_state(&state, recvbuf);
+            reply = rsp_state(&rspData, recvbuf);
         }while(state == ACK || state == NACK || state == KILL);
 
         if(!strcmp("k", reply))
@@ -153,7 +159,7 @@ void main()
         }
         else
         {
-            bytesSent = sendBuffer(&sock, reply);
+            bytesSent = sendBuffer(&rspData.sock, reply);
             printf("reply: %s\n", reply);
         }
 
