@@ -10,9 +10,10 @@ typedef struct RspData RspData;
 struct RspData
 {
   State state;
-  SOCKET *sock;
+  SOCKET sock;
 };
 
-char *rsp_state(RspData *rspData, char *data);
+// char *rspState(RspData *rspData, char *data);
+void rspState(RspData *rspData, char *data);
 
 #endif // stateRSP_H

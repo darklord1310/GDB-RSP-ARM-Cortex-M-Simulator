@@ -13,6 +13,6 @@ uint32_t decodeTwoByte(uint32_t byteData);
 uint32_t decodeFourByte(uint32_t byteData);
 uint64_t decodeEightByte(uint64_t byteData);
 
-int verifyChecksum(char *data);
+int verifyPacket(char *data);
 
 #endif // Packet_H

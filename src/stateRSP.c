@@ -9,53 +9,75 @@
  * State machine to handle communication between gdb client and server.
  *
  * Input:
- *      state       represent the state of the State Machine
+ *      rspData     pointer to RspData data structure
  *
  * Return:
  *      packet      string of data reply to gdb
  ***********************************************************************/
-char *rsp_state(RspData *rspData, char *data)
+// char *rspState(RspData *rspData, char *data)
+void rspState(RspData *rspData, char *data)
 {
-    char *packet = NULL;
+    // char *packet = NULL;
     static int nack = 0;
-    
-    if(!strcmp("+", data))
+
+    if(data[0] == '+')
     {
-        nack = 0;
-        sendReply(rspData->sock, "+");
+        switch(data[1])
+        {
+            case '\0':
+                sendBuffer(&(rspData->sock), "+");
+                rspData->state = ACK;
+                break;
+            case '$':
+                data++;
+                // printf("data: %s\n", data);
+
+                if(!verifyPacket(data))
+                {
+                    // printf("yes\n");
+                    sendBuffer(&(rspData->sock), "-");
+                    rspData->state = NACK;
+                }
+                else
+                {
+                    sendBuffer(&(rspData->sock), "+");
+                    rspData->state = SERVE_RSP;
+                }
+                break;
+            default:
+                sendBuffer(&(rspData->sock), "-");
+                rspData->state = NACK;
+                break;
+        }
     }
-    else if(!strcmp("-", data))
+    else if(data[0] == '-')
     {
-        sendReply(rspData->sock, "-");
+        sendBuffer(&(rspData->sock), "-");
+        rspData->state = NACK;
     }
 
+again:
     switch(rspData->state)
     {
         case INITIAL:
-            if(!strcmp("+", data))
+            if(data[0] == '+')
             {
                 rspData->state = ACK;
-                
             }
-            else if(!strcmp("-", data))
+            else if(data[0] == '-')
             {
                 rspData->state = NACK;
-                
             }
+
             break;
         case ACK:
-            packet = malloc(2);
-            packet[0] = '+';
-            packet[1] = '\0';
             nack = 0;
             rspData->state = SERVE_RSP;
             // printf("yes\n");
             break;
         case NACK:
-            packet = malloc(2);
-            packet[0] = '-';
-            packet[1] = '\0';
             nack++;
+            // printf("nack: %d\n", nack);
 
             if(nack == 5)
                 rspData->state = KILL;
@@ -63,30 +85,27 @@ char *rsp_state(RspData *rspData, char *data)
                 rspData->state = INITIAL;
             break;
         case SERVE_RSP:
-            if(!verifyChecksum(data))
+            /* if(!verifyPacket(data))
             {
-                // printf("yes\n");
-                packet = malloc(2);
-                packet[0] = '-';
-                packet[1] = '\0';
-            }
-            else
-            {
+                printf("yes\n");
+                sendBuffer(&(rspData->sock), "-");
+                rspData->state = NACK;
+            } */
+            // else
+            // {
                 if(!strcmp("$k#6b", data))
                 {
                     rspData->state = KILL;
                     break;
                 }
-                packet = serveRSP(data);
+                sendBuffer(&(rspData->sock), serveRSP(data));
+                // packet = serveRSP(data);
                 // printf("yes\n");
-            }
+            // }
 
             rspData->state = INITIAL;
             break;
         case KILL:
-            packet = malloc(2);
-            packet[0] = 'k';
-            packet[1] = '\0';
             rspData->state = INITIAL;
             break;
         default:
@@ -94,5 +113,7 @@ char *rsp_state(RspData *rspData, char *data)
             break;
     }
 
-    return packet;
+    if(rspData->state == NACK)
+        goto again;
+    // return packet;
 }

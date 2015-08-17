@@ -97,6 +97,7 @@ int sendBuffer(SOCKET *sock, char *sendbuf)
 
     bytesSent = send( *sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
+    printf( "Reply: %s\n", sendbuf );
 
     return bytesSent;
 }
@@ -114,13 +115,13 @@ int receiveBuffer(SOCKET *sock, char *recvbuf)
 
 void sendReply(SOCKET *sock, char *reply)
 {
-    sendBuffer(*sock, reply);
+    // sendBuffer(*sock, reply);
 }
 
 void main()
 {
-    // SOCKET sock;
-    RspData rspData;
+    SOCKET sock;
+    RspData rspData = {INITIAL, sock};
 
     initializeSimulator();
     initializeWatchpoint();
@@ -146,30 +147,31 @@ void main()
             printf( "recvbuf: %s\n", recvbuf );
         }
         else
-            state = NACK;
+            rspData.state = NACK;
 
-        do {
-            reply = rsp_state(&rspData, recvbuf);
-        }while(state == ACK || state == NACK || state == KILL);
+        // do {
+            // reply = rspState(&rspData, recvbuf);
+            rspState(&rspData, recvbuf);
+        // }while(state == ACK || state == NACK || state == KILL);
 
-        if(!strcmp("k", reply))
+        if(rspData.state == KILL)
         {
-            free(reply);
             break;
         }
-        else
+        /* else
         {
             bytesSent = sendBuffer(&rspData.sock, reply);
             printf("reply: %s\n", reply);
-        }
+        } */
 
-        free(reply);
+        /* if(reply != NULL)
+            free(reply); */
     }
 
     // deleteAllBreakpoint(&bp);
 
     /****************Close our socket entirely****************/
-	closesocket(sock);
+	closesocket(rspData.sock);
 
 	/****************Cleanup Winsock****************/
 	WSACleanup();

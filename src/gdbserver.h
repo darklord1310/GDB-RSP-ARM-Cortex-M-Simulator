@@ -16,6 +16,6 @@ void listenSocket(SOCKET *sock);
 void waitingForConnection(SOCKET *sock);
 int sendBuffer(SOCKET *sock, char *sendbuf);
 int receiveBuffer(SOCKET *sock, char *recvbuf);
-void sendReply(SOCKET *sock, char *reply);
+// void sendReply(SOCKET *sock, char *reply);
 
 #endif // gdbserver_H
