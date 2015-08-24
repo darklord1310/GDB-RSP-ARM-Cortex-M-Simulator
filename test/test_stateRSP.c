@@ -13,6 +13,7 @@
 #include "ErrorSignal.h"
 #include "State.h"
 #include "mock_ARMSimulator.h"
+#include "mock_gdbserver.h"
 
 void setUp(void)
 {
@@ -22,164 +23,250 @@ void tearDown(void)
 {
 }
 
-void test_rsp_state_given_ack_data_and_INITIAL_state_should_change_to_ACK_state(void)
+void test_rspState_given_ack_data_and_INITIAL_state_should_reply_ack(void)
 {
-    State state = INITIAL;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
     char data[] = "+";
-    char *packet = NULL;
+    ////char *packet = NULL;
 
-    packet = rsp_state(&state, data);
+    sendBuffer_ExpectAndReturn(&rspData.sock, data, 1);
 
-    TEST_ASSERT_EQUAL_STRING(NULL, packet);
-    TEST_ASSERT_EQUAL(ACK, state);
+    rspState(&rspData, data);
+
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
 }
 
-void test_rsp_state_given_nack_data_and_INITIAL_state_should_change_to_NACK_state(void)
+void test_rspState_given_nack_data_and_INITIAL_state_reply_nack(void)
 {
-    State state = INITIAL;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
     char data[] = "-";
-    char *packet = NULL;
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data);
+    sendBuffer_ExpectAndReturn(&rspData.sock, data, 1);
 
-    TEST_ASSERT_EQUAL_STRING(NULL, packet);
-    TEST_ASSERT_EQUAL(NACK, state);
+    rspState(&rspData, data);
 
-    free(packet);
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
 }
 
-void test_rsp_state_given_k_data_packet_and_INITIAL_state_should_change_to_KILL_state(void)
+void test_rspState_given_ack_with_packet_data_and_INITIAL_state_should_serve_the_packet_data(void)
 {
-    State state = SERVE_RSP;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
+    char data[] = "+$qSupported:multiprocess+;qRelocInsn+#2a";
+    //char *packet = NULL;
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", strlen("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58"));
+
+    rspState(&rspData, data);
+
+    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
+
+    //free(packet);
+}
+
+void test_rspState_given_two_ack_and_INITIAL_state_should_reply_nack(void)
+{
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
+    char data[] = "++";
+    //char *packet = NULL;
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+
+    rspState(&rspData, data);
+
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
+}
+
+void test_rspState_given_k_data_packet_and_INITIAL_state_should_change_to_KILL_state(void)
+{
+    SOCKET sock;
+    RspData rspData = { SERVE_RSP, sock };
     char data[] = "$k#6b";
-    char *packet = NULL;
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data);
+    rspState(&rspData, data);
 
-    TEST_ASSERT_EQUAL_STRING(NULL, packet);
-    TEST_ASSERT_EQUAL(KILL, state);
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(KILL, rspData.state);
 
-    free(packet);
+    //free(packet);
 }
 
-void test_rsp_state_twice_given_ack_data_and_INITIAL_state_should_return_ack_packet(void)
+void test_rspState_given_INITIAL_state_should_change_to_KILL_state_if_nack_data_recveive_more_than_five_time(void)
 {
-    State state = INITIAL;
-    char data[] = "+";
-    char *packet = NULL;
-
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-
-    TEST_ASSERT_EQUAL_STRING("+", packet);
-    TEST_ASSERT_EQUAL(SERVE_RSP, state);
-
-    free(packet);
-}
-
-void test_rsp_state_twice_given_nack_data_and_INITIAL_state_should_return_nack_packet(void)
-{
-    State state = INITIAL;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
     char data[] = "-";
-    char *packet = NULL;
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
 
-    TEST_ASSERT_EQUAL_STRING("-", packet);
-    TEST_ASSERT_EQUAL(INITIAL, state);
+    rspState(&rspData, "+");            //to clear the nack value
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    // rspState(&rspData, data);
+    // rspState(&rspData, data);
+    // rspState(&rspData, data);
+    // rspState(&rspData, data);
+    // rspState(&rspData, data);
 
-    free(packet);
+    // TEST_ASSERT_EQUAL_STRING("-", packet);
+    TEST_ASSERT_EQUAL(KILL, rspData.state);
+
+    //free(packet);
 }
 
-void test_rsp_state_given_NACK_state_should_change_to_KILL_state_if_nack_data_recveive_more_than_five_time(void)
+void test_rspState_given_INITIAL_state_should_reply_nack_and_change_to_KILL_state_if_incorrect_packet_format_is_receive_five_time(void)
 {
-    State state = ACK;      //to clear the nack
-    char data[] = "-";
-    char *packet = NULL;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
+    char data[] = "+$$qSupported:multiprocess+;qRelocInsn+#2a";
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "-", 1);
 
-    state = NACK;
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
+    rspState(&rspData, "+");        //to clear the nack value
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    rspState(&rspData, data);
+    rspState(&rspData, data);
 
-    TEST_ASSERT_EQUAL_STRING("-", packet);
-    TEST_ASSERT_EQUAL(KILL, state);
+    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
+    TEST_ASSERT_EQUAL(KILL, rspData.state);
 
-    free(packet);
+    //free(packet);
 }
 
-void test_rsp_state_twice_given_k_data_packet_and_INITIAL_state_should_return_k_packet(void)
+void test_rspState_given_ack_and_data_and_INITIAL_state_should_reply_ack_and_appropriate_packet(void)
 {
-    State state = SERVE_RSP;
-    char data[] = "$k#6b";
-    char *packet = NULL;
-
-    packet = rsp_state(&state, data);
-    packet = rsp_state(&state, data);
-
-    TEST_ASSERT_EQUAL_STRING("k", packet);
-    TEST_ASSERT_EQUAL(INITIAL, state);
-
-    free(packet);
-}
-
-void test_rsp_state_given_data_and_SERVE_RSP_state_should_return_appropriate_packet(void)
-{
-    State state = SERVE_RSP;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
+    char ack[] = "+";
     char data[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
-    char *packet = NULL;
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", strlen("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58"));
 
-    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
+    rspState(&rspData, ack);
+    rspState(&rspData, data);
+
+    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
     // TEST_ASSERT_EQUAL_STRING("$qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#88", packet);
-    TEST_ASSERT_EQUAL(INITIAL, state);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
 
-    free(packet);
+    //free(packet);
 }
 
-void test_rsp_state_given_data_with_wrong_chksum_and_SERVE_RSP_state_should_return_nack_packet(void)
+void test_rspState_to_do_a_regression_test(void)
 {
-    State state = SERVE_RSP;
-    char data[] = "$qSupported:multiprocess+;qRelocInsn+#4a";
-    char *packet = NULL;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
 
-    TEST_ASSERT_EQUAL_STRING("-", packet);
-    TEST_ASSERT_EQUAL(INITIAL, state);
+    // packet = rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING("+", packet);
+    // TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+    //free(packet);
 
-    free(packet);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", strlen("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58"));
+    rspState(&rspData, "$qSupported:multiprocess+;qRelocInsn+#2a");
+    // TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
+    //free(packet);
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+
+    // packet = rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING("+", packet);
+    // TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+    //free(packet);
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$#00", strlen("$#00"));
+    rspState(&rspData, "$Hg0#df");
+    // TEST_ASSERT_EQUAL_STRING("$#00", packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
+    //free(packet);
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+
+    // packet = rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING("+", packet);
+    // TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+    //free(packet);
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$l<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target>  <xi:include href=\"arm-m-profile.xml\"/>  <xi:include href=\"arm-vfpv2.xml\"/></target>#dd", strlen("$l<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target>  <xi:include href=\"arm-m-profile.xml\"/>  <xi:include href=\"arm-vfpv2.xml\"/></target>#dd"));
+    rspState(&rspData, "$qXfer:features:read:target.xml:0,fff#7d");
+    // TEST_ASSERT_EQUAL_STRING("$l<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target>  <xi:include href=\"arm-m-profile.xml\"/>  <xi:include href=\"arm-vfpv2.xml\"/></target>#dd", packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
+    //free(packet);
+
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+
+    // packet = rspState(&rspData, "+");
+    // TEST_ASSERT_EQUAL_STRING("+", packet);
+    // TEST_ASSERT_EQUAL(SERVE_RSP, rspData.state);
+    //free(packet);
 }
 
-void test_rsp_state_given_data_and_INITIAL_state_should_return_appropriate_packet(void)
+void test_rspState_to_do_a_regression_test2(void)
 {
-    State state = INITIAL;
-    char data1[] = "+";
-    char *packet = NULL;
+    SOCKET sock;
+    RspData rspData = { INITIAL, sock };
+    //char *packet = NULL;
 
-    packet = rsp_state(&state, data1);
-    TEST_ASSERT_EQUAL_STRING(NULL, packet);
-    TEST_ASSERT_EQUAL(ACK, state);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", strlen("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58"));
+    rspState(&rspData, "+$qSupported:multiprocess+;qRelocInsn+#2a");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
 
-    packet = rsp_state(&state, data1);
-    TEST_ASSERT_EQUAL_STRING("+", packet);
-    TEST_ASSERT_EQUAL(SERVE_RSP, state);
-    free(packet);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$#00", strlen("$#00"));
+    rspState(&rspData, "+$Hg0#df");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
 
-    char data2[] = "$qSupported:multiprocess+;qRelocInsn+#2a";
-
-    packet = rsp_state(&state, data2);
-    TEST_ASSERT_EQUAL_STRING("$PacketSize=3fff;qXfer:memory-map:read-;qXfer:features:read+;qRelocInsn-#58", packet);
-    TEST_ASSERT_EQUAL(INITIAL, state);
-    free(packet);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "+", 1);
+    sendBuffer_ExpectAndReturn(&rspData.sock, "$l<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target>  <xi:include href=\"arm-m-profile.xml\"/>  <xi:include href=\"arm-vfpv2.xml\"/></target>#dd", strlen("$l<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target>  <xi:include href=\"arm-m-profile.xml\"/>  <xi:include href=\"arm-vfpv2.xml\"/></target>#dd"));
+    rspState(&rspData, "+$qXfer:features:read:target.xml:0,fff#7d");
+    // TEST_ASSERT_EQUAL_STRING(NULL, packet);
+    TEST_ASSERT_EQUAL(INITIAL, rspData.state);
 }

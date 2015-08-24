@@ -173,16 +173,16 @@ uint64_t decodeEightByte(uint64_t byteData)
  *      data    string of data sent by gdb client
  *
  * Return:
- *      0       checksum incorrect
- *      1       checksum correct
+ *      0       checksum or packet data incorrect
+ *      1       checksum or packet data correct
  ********************************************************************/
-int verifyChecksum(char *data)
+int verifyPacket(char *data)
 {
     char *hashAddr;
     uint32_t chksum = 0, dataChksum = 0;
     int i;
 
-    if(data[0] != '$')      // first char in data should contain this
+    if(data[0] != '$' || data[1] == '$')      // first char in data should contain this
         return 0;
 
     for(i = 1; data[i] != '#'; i++)
@@ -191,6 +191,9 @@ int verifyChecksum(char *data)
     chksum = chksum & 0xff;
     hashAddr = strstr(data, "#") + 1;
     sscanf(hashAddr, "%2x", &dataChksum);
+
+    if(hashAddr[2] != '\0')     //not a correct format of packet
+        return 0;
 
     if(chksum != dataChksum)
     {

@@ -9,74 +9,111 @@
  * State machine to handle communication between gdb client and server.
  *
  * Input:
- *      state       represent the state of the State Machine
+ *      rspData     pointer to RspData data structure
  *
  * Return:
  *      packet      string of data reply to gdb
  ***********************************************************************/
-char *rsp_state(State *state, char *data)
+// char *rspState(RspData *rspData, char *data)
+void rspState(RspData *rspData, char *data)
 {
-    char *packet = NULL;
+    // char *packet = NULL;
     static int nack = 0;
 
-    switch(*state)
+    if(data[0] == '+')
+    {
+        switch(data[1])
+        {
+            case '\0':
+                sendBuffer(&(rspData->sock), "+");
+                rspData->state = ACK;
+                break;
+            case '$':
+                data++;
+                // printf("data: %s\n", data);
+
+                if(!verifyPacket(data))
+                {
+                    // printf("yes\n");
+                    sendBuffer(&(rspData->sock), "-");
+                    rspData->state = NACK;
+                }
+                else
+                {
+                    sendBuffer(&(rspData->sock), "+");
+                    rspData->state = SERVE_RSP;
+                }
+                break;
+            default:
+                sendBuffer(&(rspData->sock), "-");
+                rspData->state = NACK;
+                break;
+        }
+    }
+    else if(data[0] == '-')
+    {
+        sendBuffer(&(rspData->sock), "-");
+        rspData->state = NACK;
+    }
+
+again:
+    switch(rspData->state)
     {
         case INITIAL:
-            if(!strcmp("+", data))
-                *state = ACK;
-            else if(!strcmp("-", data))
-                *state = NACK;
+            if(data[0] == '+')
+            {
+                rspData->state = ACK;
+            }
+            else if(data[0] == '-')
+            {
+                rspData->state = NACK;
+            }
+
             break;
         case ACK:
-            packet = malloc(2);
-            packet[0] = '+';
-            packet[1] = '\0';
             nack = 0;
-            *state = SERVE_RSP;
+            rspData->state = SERVE_RSP;
             // printf("yes\n");
             break;
         case NACK:
-            packet = malloc(2);
-            packet[0] = '-';
-            packet[1] = '\0';
             nack++;
+            // printf("nack: %d\n", nack);
 
             if(nack == 5)
-                *state = KILL;
+                rspData->state = KILL;
             else
-                *state = INITIAL;
+                rspData->state = INITIAL;
             break;
         case SERVE_RSP:
-            if(!verifyChecksum(data))
+            /* if(!verifyPacket(data))
             {
-                // printf("yes\n");
-                packet = malloc(2);
-                packet[0] = '-';
-                packet[1] = '\0';
-            }
-            else
-            {
+                printf("yes\n");
+                sendBuffer(&(rspData->sock), "-");
+                rspData->state = NACK;
+            } */
+            // else
+            // {
                 if(!strcmp("$k#6b", data))
                 {
-                    *state = KILL;
+                    rspData->state = KILL;
                     break;
                 }
-                packet = serveRSP(data);
+                sendBuffer(&(rspData->sock), serveRSP(data));
+                // packet = serveRSP(data);
                 // printf("yes\n");
-            }
+            // }
 
-            *state = INITIAL;
+            rspData->state = INITIAL;
             break;
         case KILL:
-            packet = malloc(2);
-            packet[0] = 'k';
-            packet[1] = '\0';
-            *state = INITIAL;
+            rspData->state = INITIAL;
             break;
         default:
-            *state= INITIAL;
+            rspData->state= INITIAL;
             break;
     }
 
-    return packet;
+    if(rspData->state == NACK)
+        goto again;
+    // return packet;
 }

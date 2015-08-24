@@ -61,10 +61,10 @@ void bindSocket(SOCKET *sock)
 }
 
 /****************Listen on the socket.****************/
-void listenSocket(SOCKET sock)
+void listenSocket(SOCKET *sock)
 {
     printf( "4. Listening to socket................" );
-    if ( listen( sock, 1 ) == SOCKET_ERROR )
+    if ( listen( *sock, 1 ) == SOCKET_ERROR )
         printf( ">>>Error listening on socket\n");
     else
         printf( "Listening...\n" );
@@ -97,6 +97,7 @@ int sendBuffer(SOCKET *sock, char *sendbuf)
 
     bytesSent = send( *sock, sendbuf, strlen(sendbuf), 0 );
     printf( "\nBytes Sent: %ld\n", bytesSent );
+    printf( "Reply: %s\n", sendbuf );
 
     return bytesSent;
 }
@@ -112,58 +113,65 @@ int receiveBuffer(SOCKET *sock, char *recvbuf)
     return bytesRecv;
 }
 
+void sendReply(SOCKET *sock, char *reply)
+{
+    // sendBuffer(*sock, reply);
+}
+
 void main()
 {
     SOCKET sock;
+    RspData rspData = {INITIAL, sock};
 
     initializeSimulator();
     initializeWatchpoint();
 
     winsockInit();
-    createSocket(&sock);
-    bindSocket(&sock);
-    listenSocket(sock);
-    waitingForConnection(&sock);
+    createSocket(&rspData.sock);
+    bindSocket(&rspData.sock);
+    listenSocket(&rspData.sock);
+    waitingForConnection(&rspData.sock);
 
     int bytesSent;
     int bytesRecv = SOCKET_ERROR;
     char *reply = NULL;
     char recvbuf[PACKET_SIZE] = "";
-    State state = INITIAL;
+    rspData.state = INITIAL;
 
     while(1)
     {
-        bytesRecv = receiveBuffer(&sock, recvbuf);
+        bytesRecv = receiveBuffer(&rspData.sock, recvbuf);
         if(bytesRecv != -1)
         {
             recvbuf[bytesRecv] = '\0';
             printf( "recvbuf: %s\n", recvbuf );
         }
         else
-            state = NACK;
+            rspData.state = NACK;
 
-        do {
-            reply = rsp_state(&state, recvbuf);
-        }while(state == ACK || state == NACK || state == KILL);
+        // do {
+            // reply = rspState(&rspData, recvbuf);
+            rspState(&rspData, recvbuf);
+        // }while(state == ACK || state == NACK || state == KILL);
 
-        if(!strcmp("k", reply))
+        if(rspData.state == KILL)
         {
-            free(reply);
             break;
         }
-        else
+        /* else
         {
-            bytesSent = sendBuffer(&sock, reply);
+            bytesSent = sendBuffer(&rspData.sock, reply);
             printf("reply: %s\n", reply);
-        }
+        } */
 
-        free(reply);
+        /* if(reply != NULL)
+            free(reply); */
     }
 
     // deleteAllBreakpoint(&bp);
 
     /****************Close our socket entirely****************/
-	closesocket(sock);
+	closesocket(rspData.sock);
 
 	/****************Cleanup Winsock****************/
 	WSACleanup();

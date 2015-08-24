@@ -82,6 +82,7 @@ void tearDown(void)
 }
 
 /*
+Simple assembly
 080001ac <Reset_Handler>:
  80001ac:       4803            ldr     r0, [pc, #12]   ; (80001bc <again+0xa>)
  80001ae:       2105            movs    r1, #5
@@ -98,7 +99,7 @@ void tearDown(void)
 080001c0 <ADC_IRQHandler>:
  80001c0:       e7fe            b.n     80001c0 <ADC_IRQHandler>
 */
-void test_simple_assembly_code_elf(void)
+void test_simple_assembly_code(void)
 {
     /* char *packet = NULL;
 
@@ -109,54 +110,132 @@ void test_simple_assembly_code_elf(void)
     free(reply); */
 
     // tarRemoteCommand();
-    loadMemory();
-    
+    loadSimpleAssembly();
+
     singleStep();                           //ldr     r0, [pc, #12]
     storeAffectedReg(R0, 0x20000000);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001ae);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //movs    r1, #5
     storeAffectedReg(R1, 0x5);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001b0);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //str     r1, [r0, #0]
     TEST_ASSERT_EQUAL(0x5, memoryBlock[virtualMemToPhysicalMem(0x20000000)]);
     storeAffectedReg(PC_REG, 0x080001b2);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //ldr     r1, [r0, #0]
     storeAffectedReg(R1, 0x5);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001b4);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //adds    r1, #1
     storeAffectedReg(R1, 0x6);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001b6);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //str     r1, [r0, #0]
     TEST_ASSERT_EQUAL(0x6, memoryBlock[virtualMemToPhysicalMem(0x20000000)]);
     storeAffectedReg(PC_REG, 0x080001b8);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //movs    r2, #32
     storeAffectedReg(R2, 0x20);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001ba);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     singleStep();                           //b.n     80001b2 <again>
     storeAffectedReg(PC_REG, 0x080001b2);
     TEST_ASSERT_EQUAL_Register(&reg);
-    
+
     coreReg[PC] = 0x80001c0;
     singleStep();                           //b.n     80001c0
     storeAffectedReg(PC_REG, 0x80001c0);
     TEST_ASSERT_EQUAL_Register(&reg);
 }
+
+/*
+IT block
+080001ac <Reset_Handler>:
+ 80001ac:       bf38            it      cc
+ 80001ae:       4281            cmpcc   r1, r0
+ 80001b0:       bf0c            ite     eq
+ 80001b2:       41c1            roreq   r1, r0
+ 80001b4:       41da            rorne   r2, r3
+ 80001b6:       bf2a            itet    cs
+ 80001b8:       40da            lsrcs   r2, r3
+ 80001ba:       40ec            lsrcc   r4, r5
+ 80001bc:       40f7            lsrcs   r7, r6
+ 80001be:       e7fe            b.n     80001be <Reset_Handler+0x12>
+
+080001c0 <ADC_IRQHandler>:
+ 80001c0:       e7fe            b.n     80001c0 <ADC_IRQHandler>
+*/
+void test_IT_block_assmbly_code()
+{
+    loadITBlock();
+
+    singleStep();                           //it      cc
+    storeAffectedReg(XPSR, 0x01003800);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001ae);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //cmpcc   r1, r0
+    storeAffectedReg(XPSR, 0x61000000);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b0);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //ite     eq
+    storeAffectedReg(XPSR, 0x61000C00);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b2);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //roreq   r1, r0
+    storeAffectedReg(XPSR, 0x61001800);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b4);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //rorne   r2, r3
+    storeAffectedReg(XPSR, 0x61000000);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b6);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //itet    cs
+    storeAffectedReg(XPSR, 0x65002800);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001b8);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //lsrcs   r2, r3
+    storeAffectedReg(XPSR, 0x61003400);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001ba);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //lsrcc   r4, r5
+    storeAffectedReg(XPSR, 0x61002800);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001bc);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    
+    singleStep();                           //lsrcs   r7, r6
+    storeAffectedReg(XPSR, 0x61000000);
+    TEST_ASSERT_EQUAL_Register(&reg);
+    storeAffectedReg(PC_REG, 0x080001be);
+    TEST_ASSERT_EQUAL_Register(&reg);
+}
+
+
