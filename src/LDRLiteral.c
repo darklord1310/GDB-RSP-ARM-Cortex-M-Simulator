@@ -119,7 +119,7 @@ void LDRLiteralT2(uint32_t instruction)
   uint32_t Rt   = getBits(instruction,15,12);
   uint32_t U = getBits(instruction,23,23);
   uint32_t address;
-  
+
   if(Rt == PC)                                                    //if the Rt is PC
   {
     if(inITBlock() && isLastInITBlock())                          //if it is last or inside the IT block, then only execute, else throw error
@@ -132,8 +132,14 @@ void LDRLiteralT2(uint32_t instruction)
           address = temp + imm12;
         else
           address = temp - imm12;
-
-        coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register 
+        
+        if(getBits(address,1,0) == 0b00)
+          coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register 
+        else
+        {
+          placePCtoVectorTable(UsageFault);
+          Throw(UsageFault);
+        }
       }
       shiftITState();
     }
@@ -172,8 +178,7 @@ void LDRLiteralT2(uint32_t instruction)
       
       coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register 
     }
-    
-     coreReg[PC] += 4;  
+    coreReg[PC] += 4;  
   }
 
 }

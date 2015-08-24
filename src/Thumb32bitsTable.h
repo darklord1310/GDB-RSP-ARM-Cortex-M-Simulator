@@ -50,6 +50,7 @@
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);
 void (*Thumb32DataProcessingPlainImmediate[512])(uint32_t instruction);
+void (*Thumb32DataProcessingShiftedRegister[4096])(uint32_t instruction);
 void (*Thumb32Table[1024])(uint32_t instruction);
 
 

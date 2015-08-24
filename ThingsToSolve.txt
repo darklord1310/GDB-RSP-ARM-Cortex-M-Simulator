@@ -1,1 +1,2 @@
-2) implement the function AddWithCarry for easier implementation in the future
+1) implement the function AddWithCarry for easier implementation in the future
+2) breakpoint, SVC and some instructions inside ITandHints
