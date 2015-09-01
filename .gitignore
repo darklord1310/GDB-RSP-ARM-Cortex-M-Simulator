@@ -1,5 +1,7 @@
 build/*
 !build/README.txt
-data/*.o
-data/*.elf
-data/*.map
+data/*
+!data/README.txt
+!data/compile
+!data/startup_stm32f429xx.s
+!data/STM32F429ZI_FLASH.ld
