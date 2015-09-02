@@ -64,6 +64,7 @@
 #include "Thumb32bitsTable.h"
 #include "mock_Packet.h"
 #include "ShiftOperation.h"
+#include "ANDImmediate.h"
 
 
 void setUp(void)
