@@ -174,20 +174,14 @@ void updateCarryFlagAddition(uint32_t value1, uint32_t value2)
 {
   int bit0 = 0, intermediateCarry = 0, i,adder;
   
-  for(i = 0; i < 32; i++)
-  {
-    adder = intermediateCarry + getBits(value1,bit0,bit0) + getBits(value2,bit0,bit0);
-    if(adder >= 2)
-      intermediateCarry = 1;
-    else
-      intermediateCarry = 0;
-    bit0++;
-  }
-
-  if( intermediateCarry == 1)
+  long long int v1 = (long long int)value1;
+  long long int v2 = (long long int)value2;
+  
+  if(v1 + v2 >= 0x100000000)  
     setCarryFlag();
   else
     resetCarryFlag();
+
 }
 
 
