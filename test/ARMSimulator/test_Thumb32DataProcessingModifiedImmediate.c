@@ -60,6 +60,7 @@
 #include "LoadAndWriteMemory.h"
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
+#include "ANDImmediate.h"
 
 void setUp(void)
 {
@@ -136,7 +137,7 @@ void test_MOVImmediateT2_given_instruction_0xf05f4008_should_move_into_0x8800000
            imm3 = 0
            imm8 = 0x42
    MOVW R5, #0x42
- */
+*/
 void test_MOVImmediateT3_given_instruction_0xf2400542_should_move_into_0x42_into_R5()
 {
   uint32_t instruction = 0xf2400542;
@@ -153,7 +154,7 @@ void test_MOVImmediateT3_given_instruction_0xf2400542_should_move_into_0x42_into
            imm3 = 0x5
            imm8 = 0x42
    MOVW R12, #0x542 
- */
+*/
 void test_MOVImmediateT3_given_instruction_0xf2405c42_should_move_into_0x542_into_R12()
 {
   uint32_t instruction = 0xf2405c42;
@@ -170,7 +171,7 @@ void test_MOVImmediateT3_given_instruction_0xf2405c42_should_move_into_0x542_int
            imm3 = 0x5
            imm8 = 0x42
    MOVW R12, #0xd42 
- */
+*/
 void test_MOVImmediateT3_given_instruction_0xf6405c42_should_move_into_0xd42_into_R12()
 {
   uint32_t instruction = 0xf6405c42;
@@ -187,7 +188,7 @@ void test_MOVImmediateT3_given_instruction_0xf6405c42_should_move_into_0xd42_int
            imm3 = 0x5
            imm8 = 0x42
    MOVW R3, #0xd42 
- */
+*/
 void test_MOVImmediateT3_given_instruction_0xf6435342_should_move_into_0x3d42_into_R3()
 {
   uint32_t instruction = 0xf6435342;
@@ -210,3 +211,16 @@ void test_MOVImmediateT3_given_instruction_0xf24f3560_should_move_into_0xf360_in
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //AND Immediate T1
+  
+// AND r0 ,#0xab
+void test_ANDImmediateT1_given_instruction_0xf00000ab_should_AND_0xab_with_R0_and_place_it_into_R0()
+{
+  uint32_t instruction = 0xf00000ab;
+  coreReg[0] = 0xabababab;
+
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0xab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}

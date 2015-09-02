@@ -1,5 +1,6 @@
 build/*
 !build/README.txt
+data/*
 data/*.o
 data/*.elf
 data/*.map
