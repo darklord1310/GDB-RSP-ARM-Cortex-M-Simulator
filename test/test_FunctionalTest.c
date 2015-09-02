@@ -65,6 +65,7 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "CustomTypeAssertion.h"
+#include "ANDImmediate.h"
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;

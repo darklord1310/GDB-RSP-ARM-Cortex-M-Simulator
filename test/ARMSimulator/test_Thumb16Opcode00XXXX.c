@@ -62,6 +62,7 @@
 #include "Thumb32bitsTable.h"
 #include "LoadAndWriteMemory.h"
 #include "ShiftOperation.h"
+#include "ANDImmediate.h"
 
 
 void setUp(void)
