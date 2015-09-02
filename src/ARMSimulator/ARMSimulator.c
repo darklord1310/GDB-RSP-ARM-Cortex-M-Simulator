@@ -122,7 +122,6 @@ void executeDataProcessingModifiedImmediate(uint32_t instruction)
   uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
   
   (*Thumb32DataProcessingModifiedImmediate[opcode])(instruction);
-  
 }
 
 
@@ -133,7 +132,6 @@ void executeDataProcessingPlainImmediate(uint32_t instruction)
   uint32_t opcode = (op << 4) | Rn ;
   
   (*Thumb32DataProcessingPlainImmediate[opcode])(instruction);
-  
 }
 
 
@@ -222,7 +220,6 @@ void ARMSimulator(uint32_t instruction)
   {
     armSimulate32(instruction);
   }
-
 }
 
 

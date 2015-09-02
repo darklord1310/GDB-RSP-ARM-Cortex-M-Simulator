@@ -61,11 +61,12 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
+#include "TSTImmediate.h"
 
 void setUp(void)
 {
   initializeSimulator();
-  
+
 }
 
 
@@ -76,7 +77,7 @@ void tearDown(void)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //MOV Immediate T2
-  
+
 // mov r7, #0x2f00
 void test_MOVImmediateT2_given_instruction_0xf45f573c_should_move_into_0x2f00_into_R7_and_update_the_flag()
 {
@@ -118,7 +119,7 @@ void test_MOVImmediateT2_given_instruction_0xf05f4008_should_move_into_0x8800000
   //create test fixture
   writeInstructionToMemoryGivenByAddress(0xf05f4008, 0x0800000C);  // movs.w  r0, #0x88000000
   coreReg[PC] = 0x0800000C;
-  
+
   //test
   armStep();
 
@@ -141,9 +142,9 @@ void test_MOVImmediateT2_given_instruction_0xf05f4008_should_move_into_0x8800000
 void test_MOVImmediateT3_given_instruction_0xf2400542_should_move_into_0x42_into_R5()
 {
   uint32_t instruction = 0xf2400542;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x42, coreReg[5]);
 
 }
@@ -153,14 +154,14 @@ void test_MOVImmediateT3_given_instruction_0xf2400542_should_move_into_0x42_into
            imm4 = 0
            imm3 = 0x5
            imm8 = 0x42
-   MOVW R12, #0x542 
+   MOVW R12, #0x542
 */
 void test_MOVImmediateT3_given_instruction_0xf2405c42_should_move_into_0x542_into_R12()
 {
   uint32_t instruction = 0xf2405c42;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x542, coreReg[12]);
 }
 
@@ -170,14 +171,14 @@ void test_MOVImmediateT3_given_instruction_0xf2405c42_should_move_into_0x542_int
            imm4 = 0x00
            imm3 = 0x5
            imm8 = 0x42
-   MOVW R12, #0xd42 
+   MOVW R12, #0xd42
 */
 void test_MOVImmediateT3_given_instruction_0xf6405c42_should_move_into_0xd42_into_R12()
 {
   uint32_t instruction = 0xf6405c42;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0xd42, coreReg[12]);
 }
 
@@ -187,14 +188,14 @@ void test_MOVImmediateT3_given_instruction_0xf6405c42_should_move_into_0xd42_int
            imm4 = 0x3
            imm3 = 0x5
            imm8 = 0x42
-   MOVW R3, #0xd42 
+   MOVW R3, #0xd42
 */
 void test_MOVImmediateT3_given_instruction_0xf6435342_should_move_into_0x3d42_into_R3()
 {
   uint32_t instruction = 0xf6435342;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x3d42, coreReg[3]);
 }
 
@@ -203,17 +204,16 @@ void test_MOVImmediateT3_given_instruction_0xf6435342_should_move_into_0x3d42_in
 void test_MOVImmediateT3_given_instruction_0xf24f3560_should_move_into_0xf360_into_R5()
 {
   uint32_t instruction = 0xf24f3560;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0xf360, coreReg[5]);
 }
 
 
-
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //AND Immediate T1
-  
+
 // AND r0 ,#0xab
 void test_ANDImmediateT1_given_instruction_0xf00000ab_should_AND_0xab_with_R0_and_place_it_into_R0()
 {
@@ -223,4 +223,136 @@ void test_ANDImmediateT1_given_instruction_0xf00000ab_should_AND_0xab_with_R0_an
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xab, coreReg[0]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
+// AND r0 ,#-1 and affecting the flag register
+void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_set_negative_flag()
+{
+  uint32_t instruction = 0xf01030ff;
+  coreReg[0] = 0xabababab;
+
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+//test case modify control smaller than 0b00111
+//modifyControl = 0b00111
+// AND r0 ,#0x0 and affecting the flag register
+void test_ANDImmediateT1_given_instruction_0xf0100000_should_AND_0x0_with_R0_set_zero_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0100000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control larger than 0b00111
+//modifyControl = 0b01000
+// AND r0 ,#0x80000000 and affecting the flag register
+void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0x80000000_with_R0_set_carry_and_negative_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0104000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //TST Immediate T1
+
+// TST r0 ,#0x0
+void test_TSTImmediateT1_given_instruction_0xf00000ab_should_AND_0x0_with_R0_and_update_zero_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0100f00, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// TST r0 ,#-1 and affecting the flag register
+void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_set_negative_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0103fff, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control smaller than 0b00111
+//modifyControl = 0b00111
+// TST r0 ,#0xab and not affecting the flag register
+void test_TSTImmediateT1_given_instruction_0xf0100000_should_AND_0x10_with_R0_set_zero_flag_and_do_not_update_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0100fab, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control larger than 0b00111
+//modifyControl = 0b01000
+// TST r0 ,#0x80000000 and affecting the flag register
+void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0x80000000_with_R0_set_carry_and_negative_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0104f00, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }

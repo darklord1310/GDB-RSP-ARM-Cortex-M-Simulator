@@ -297,6 +297,11 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   {
       if((i & 0b0000000001111) != 0b1111)
           Thumb32DataProcessingModifiedImmediate[i] = ANDImmediateT1;
+      else
+      {
+          if(i >= 0b0000100000000)
+              Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
+      }
   }
 
   /*
