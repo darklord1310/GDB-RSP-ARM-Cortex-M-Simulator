@@ -141,6 +141,34 @@ void test_updateCarryFlagAddition_given_value1_0x0fffffff_and_value2_0x01_should
 }
 
 
+void test_updateCarryFlagSubtraction_given_value1_3_and_value2_1_should_set_carry_flag()
+{
+  uint32_t value1 = 3;
+  uint32_t value2 = 2;
+  updateCarryFlagSubtraction(value1,value2);
+  
+  TEST_ASSERT_EQUAL( 1 , isCarry() );
+}
+
+
+void test_updateCarryFlagSubtraction_given_value1_3_and_value2_3_should_set_carry_flag()
+{
+  uint32_t value1 = 3;
+  uint32_t value2 = 3;
+  updateCarryFlagSubtraction(value1,value2);
+  
+  TEST_ASSERT_EQUAL( 1 , isCarry() );
+}
+
+void test_updateCarryFlagSubtraction_given_value1_1_and_value2_3_should_not_set_carry_flag()
+{
+  uint32_t value1 = 1;
+  uint32_t value2 = 3;
+  updateCarryFlagSubtraction(value1,value2);
+  
+  TEST_ASSERT_EQUAL(0 , isCarry() );
+}
+
 void test_updateCarryFlagSubtraction_given_value1_0x0fffffff_and_value2_0x01_should_set_carry_flag()
 {
   

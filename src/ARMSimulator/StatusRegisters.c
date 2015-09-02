@@ -213,10 +213,13 @@ void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t resul
   int signForValue2 = getBits(value2,31,31);
   int signForResult = getBits(result,31,31);
   
+  setOverflow(~(signForValue1 ^ signForValue2) | signForResult);
+  /*
   if(   ( signForValue1 == 0 && signForValue2 == 0 && signForResult == 1) || ( signForValue1 == 1 && signForValue2 == 1 && signForResult == 0)   )
     setOverflowFlag();
   else
     resetOverflowFlag();
+  */
 }
 
 /*
@@ -233,10 +236,13 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
   int signForValue2 = getBits(value2,31,31);
   int signForResult = getBits(result,31,31);
   
+  setOverflow((signForValue1 ^ signForValue2) | signForResult);
+  /*
   if(   ( signForValue1 == 0 && signForValue2 == 1 && signForResult == 1) || ( signForValue1 == 1 && signForValue2 == 0 && signForResult == 0)   )
     setOverflowFlag();
   else
     resetOverflowFlag();
+  */
 }
 
 
@@ -246,6 +252,7 @@ void ALUWritePC(uint32_t address)
   coreReg[PC] = setBits(address, 0b0, 0, 0); 
     
 }
+
 
 
 //Utility
