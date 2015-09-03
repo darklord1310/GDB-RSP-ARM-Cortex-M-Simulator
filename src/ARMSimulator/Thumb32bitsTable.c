@@ -290,7 +290,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   Thumb32DataProcessingModifiedImmediate[0b0010111111101] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111110] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2; */
-  //
+  // AND and TST Immediate
   int i;
 
   for(i = 0b0000000000000; i < 0b0001000000000; i++)
@@ -302,16 +302,24 @@ void initThumb32bitsDataProcessingModifiedImmediate()
           if(i >= 0b0000100000000)
               Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
       }
-  } 
-  //
+  }
+  // BIC Immediate
   for(i = 0b0001000000000; i < 0b0010000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = BICImmediateT1;
-  //
+  // ORR and MOV Immediate
   for(i = 0b0010000000000; i < 0b0011000000000; i++)
   {
       if((i & 0b0000011110000) != 0b11110000)
           Thumb32DataProcessingModifiedImmediate[i] = ORRImmediateT1;
       else
           Thumb32DataProcessingModifiedImmediate[i] = MOVImmediateT2;
-  } 
+  }
+  // ORN and MVN Immediate
+  for(i = 0b0011000000000; i < 0b0100000000000; i++)
+  {
+      if((i & 0b0000011110000) != 0b11110000)
+          Thumb32DataProcessingModifiedImmediate[i] = ORNImmediateT1;
+      // else
+          // Thumb32DataProcessingModifiedImmediate[i] = MOVImmediateT2;
+  }
 }

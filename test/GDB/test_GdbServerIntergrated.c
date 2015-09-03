@@ -67,6 +67,7 @@
 #include "TSTImmediate.h"
 #include "BICImmediate.h"
 #include "ORRImmediate.h"
+#include "ORNImmediate.h"
 
 
 extern char *targetCortexM4_XML;

@@ -1,14 +1,14 @@
-#include "ORRImmediate.h"
+#include "ORNImmediate.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include <stdio.h>
 
-/*  ORR Immediate Encoding T1
+/*  ORN Immediate Encoding T1
 
-ORR{S}<c> <Rd>,<Rn>,#<const>
+ORN{S}<c> <Rd>,<Rn>,#<const>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-|1  1  1  1 0 |i||0| 0  0  1  0 |S|     Rn     |0|  imm3   |    Rd   |     imm8      |
+|1  1  1  1 0 |i||0| 0  0  1  1 |S|     Rn     |0|  imm3   |    Rd   |     imm8      |
 
 where:
           S         If present, specifies that the instruction updates the flags. Otherwise, the
@@ -25,7 +25,7 @@ where:
                     Modified immediate constants in Thumb instructions on page A5-15 for the range of
                     allowed values.
 */
-void ORRImmediateT1(uint32_t instruction)
+void ORNImmediateT1(uint32_t instruction)
 {
     uint32_t imm8 = getBits(instruction, 7, 0);
     uint32_t Rd = getBits(instruction, 11, 8);
@@ -42,26 +42,26 @@ void ORRImmediateT1(uint32_t instruction)
     if(inITBlock())
     {
         if( checkCondition(cond) )
-            executeORRImmediate(ModifiedConstant, Rd, Rn, statusFlag);
+            executeORNImmediate(ModifiedConstant, Rd, Rn, statusFlag);
         shiftITState();
     }
     else
-        executeORRImmediate(ModifiedConstant, Rd, Rn, statusFlag);
+        executeORNImmediate(ModifiedConstant, Rd, Rn, statusFlag);
 
     coreReg[PC] += 4;
 }
 
 
-/*  This function will perform the ORR immediate
+/*  This function will perform the ORN immediate
 
-    Input:  immediate       the immediate going to OR with Rn and move into Rd
+    Input:  immediate       the NOT immediate going to OR with Rn and move into Rd
             Rd              destination register
             Rn              register that contains the first operand
             S               indicator for affecting the flag or not
 */
-void executeORRImmediate(uint32_t immediate, uint32_t Rd, uint32_t Rn, uint32_t S)
+void executeORNImmediate(uint32_t immediate, uint32_t Rd, uint32_t Rn, uint32_t S)
 {
-    coreReg[Rd] = immediate | coreReg[Rn];
+    coreReg[Rd] = ~immediate | coreReg[Rn];
 
     if(S == 1)
     {

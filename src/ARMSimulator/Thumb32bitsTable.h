@@ -50,6 +50,7 @@
 #include "TSTImmediate.h"
 #include "BICImmediate.h"
 #include "ORRImmediate.h"
+#include "ORNImmediate.h"
 #include "ARMSimulator.h"
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);
