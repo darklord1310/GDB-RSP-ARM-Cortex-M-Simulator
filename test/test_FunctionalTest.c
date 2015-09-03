@@ -68,6 +68,7 @@
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
 #include "BICImmediate.h"
+#include "ORRImmediate.h"
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;

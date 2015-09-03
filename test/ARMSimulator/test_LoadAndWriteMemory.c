@@ -67,6 +67,7 @@
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
 #include "BICImmediate.h"
+#include "ORRImmediate.h"
 
 
 void setUp(void)

@@ -258,7 +258,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
 
 void initThumb32bitsDataProcessingModifiedImmediate()
 {
-  Thumb32DataProcessingModifiedImmediate[0b0010011110000] = MOVImmediateT2;
+  /* Thumb32DataProcessingModifiedImmediate[0b0010011110000] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010011110001] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010011110010] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010011110011] = MOVImmediateT2;
@@ -289,9 +289,8 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   Thumb32DataProcessingModifiedImmediate[0b0010111111100] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111101] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2;
+  Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2; */
   //
-  
   int i;
 
   for(i = 0b0000000000000; i < 0b0001000000000; i++)
@@ -303,14 +302,16 @@ void initThumb32bitsDataProcessingModifiedImmediate()
           if(i >= 0b0000100000000)
               Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
       }
-  }
-  
+  } 
   //
-  
   for(i = 0b0001000000000; i < 0b0010000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = BICImmediateT1;
-
   //
-  
-  
+  for(i = 0b0010000000000; i < 0b0011000000000; i++)
+  {
+      if((i & 0b0000011110000) != 0b11110000)
+          Thumb32DataProcessingModifiedImmediate[i] = ORRImmediateT1;
+      else
+          Thumb32DataProcessingModifiedImmediate[i] = MOVImmediateT2;
+  } 
 }
