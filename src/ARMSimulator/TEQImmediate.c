@@ -1,25 +1,24 @@
-#include "TSTImmediate.h"
+#include "TEQImmediate.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include <stdio.h>
 
-/*  TST Immediate Encoding T1
+/*  TEQ Immediate Encoding T1
 
-TST<c> <Rn>,#<const>
+TEQ<c> <Rn>,#<const>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-|1  1  1  1 0 |i||0| 0  0  0  0 |1|     Rn     |0|  imm3   | 1  1 1 1|     imm8      |
+|1  1  1  1 0 |i||0| 0  1  0  0 |1|     Rn     |0|  imm3   |1  1  1 1|     imm8      |
 
 where:
           <c><q>    See Standard assembler syntax fields on page A6-7.
 
           <Rn>      Specifies the register that contains the operand.
 
-          <const>   Specifies the immediate value to be tested against the value obtained from <Rn>. See
-                    Modified immediate constants in Thumb instructions on page A5-15 for the range of
-                    allowed values.
+          <const>   Specifies the immediate value to be added to the value obtained from <Rn>. See Modified
+                    immediate constants in Thumb instructions on page A5-15 for the range of allowed values
 */
-void TSTImmediateT1(uint32_t instruction)
+void TEQImmediateT1(uint32_t instruction)
 {
     uint32_t imm8 = getBits(instruction, 7, 0);
     uint32_t Rn = getBits(instruction, 19, 16);
@@ -34,24 +33,24 @@ void TSTImmediateT1(uint32_t instruction)
     if(inITBlock())
     {
         if( checkCondition(cond) )
-            executeTSTImmediate(ModifiedConstant, Rn);
+            executeTEQImmediate(ModifiedConstant, Rn);
         shiftITState();
     }
     else
-        executeTSTImmediate(ModifiedConstant, Rn);
+        executeTEQImmediate(ModifiedConstant, Rn);
 
     coreReg[PC] += 4;
 }
 
 
-/*  This function will perform the TST immediate
+/*  This function will perform the TEQ immediate
 
-    Input:  immediate       the immediate going to AND with Rn and update status flag
+    Input:  immediate       the immediate going to XOR with Rn and update the status flag
             Rn              register that contains the first operand
 */
-void executeTSTImmediate(uint32_t immediate, uint32_t Rn)
+void executeTEQImmediate(uint32_t immediate, uint32_t Rn)
 {
-    uint32_t result = immediate & coreReg[Rn];
+    uint32_t result = immediate ^ coreReg[Rn];
 
     updateZeroFlag(result);
     updateNegativeFlag(result);

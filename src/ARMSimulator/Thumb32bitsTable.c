@@ -327,7 +327,10 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   {
       if((i & 0b0000000001111) != 0b1111)
           Thumb32DataProcessingModifiedImmediate[i] = EORImmediateT1;
-      // else
-          // Thumb32DataProcessingModifiedImmediate[i] = MVNImmediateT1;
+      else
+      {
+          if(i >= 0b0100100000000)
+            Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
+      }
   }
 }

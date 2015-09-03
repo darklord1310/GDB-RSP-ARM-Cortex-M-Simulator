@@ -51,9 +51,9 @@ void EORImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the ORR immediate
+/*  This function will perform the EOR immediate
 
-    Input:  immediate       the immediate going to OR with Rn and move into Rd
+    Input:  immediate       the immediate going to XOR with Rn and move into Rd
             Rd              destination register
             Rn              register that contains the first operand
             S               indicator for affecting the flag or not

@@ -67,6 +67,7 @@
 #include "ORNImmediate.h"
 #include "MVNImmediate.h"
 #include "EORImmediate.h"
+#include "TEQImmediate.h"
 
 
 void setUp(void)

@@ -67,6 +67,7 @@
 #include "ORNImmediate.h"
 #include "MVNImmediate.h"
 #include "EORImmediate.h"
+#include "TEQImmediate.h"
 
 void setUp(void)
 {
@@ -762,3 +763,86 @@ void test_EORImmediateT1_given_instruction_0xf0904000_should_XOR_0x80000000_with
   TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //TEQ Immediate T1
+
+// TEQ r0 ,#0x54
+void test_TEQImmediateT1_given_instruction_0xf0900f54_should_XOR_0x54_with_R0_and_update_negative_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0900f54, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// TEQ r0 ,#-1 and affecting the flag register
+void test_TEQImmediateT1_given_instruction_0xf0903fff_should_XOR_0xffffffff_with_R0_and_set_zero_flag()
+{
+  coreReg[0] = 0xffffffff;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0903fff, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control smaller than 0b00111
+//modifyControl = 0b00111
+// TEQ r0 ,#0xab and not affecting the flag register
+void test_TEQImmediateT1_given_instruction_0xf0900fab_should_XOR_0xab_with_R0_and_do_not_update_flag()
+{
+  coreReg[0] = 0xabab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0900fab, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control larger than 0b00111
+//modifyControl = 0b01000
+// TEQ r0 ,#0x80000000 and affecting the flag register
+void test_TEQImmediateT1_given_instruction_0xf0904f00_should_XOR_0x80000000_with_R0_and_set_carry_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0904f00, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+
