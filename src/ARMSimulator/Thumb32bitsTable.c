@@ -1,4 +1,5 @@
 #include "Thumb32bitsTable.h"
+#include <stdio.h>
 
 
 
@@ -329,19 +330,22 @@ void initThumb32bitsDataProcessingModifiedImmediate()
           Thumb32DataProcessingModifiedImmediate[i] = EORImmediateT1;
       else
       {
-          if(i >= 0b0100100000000)
+          if(i >= 0b0100100000000)      // S == 1 and Rd == 1111
             Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
       }
   }
-  // ADD Immediate
+  // ADD and CMN Immediate
   for(i = 0b1000000000000; i < 0b1001000000000; i++)
   {
-      if((i & 0b0000000001111) != 0b1111 || (i & 0b0000011010000) != 0b11010000)
-          Thumb32DataProcessingModifiedImmediate[i] = ADDImmediateT3;
-      // else
-      // {
-          // if(i >= 0b0100100000000)
-            // Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
-      // }
+      if((i & 0b0000000001111) != 0b1111)
+      {
+          if((i & 0b0000011010000) != 0b11010000)    // Rd != 1111 and Rn != 1101
+            Thumb32DataProcessingModifiedImmediate[i] = ADDImmediateT3;
+      }
+      else
+      {
+          if(i >= 0b1000100000000)      // S == 1 and Rd == 1111
+            Thumb32DataProcessingModifiedImmediate[i] = CMNImmediateT1;
+      }
   }
 }

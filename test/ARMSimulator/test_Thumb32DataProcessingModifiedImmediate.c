@@ -68,6 +68,7 @@
 #include "MVNImmediate.h"
 #include "EORImmediate.h"
 #include "TEQImmediate.h"
+#include "CMNImmediate.h"
 
 void setUp(void)
 {
@@ -852,7 +853,7 @@ void test_TEQImmediateT1_given_instruction_0xf0904f00_should_XOR_0x80000000_with
 //without affect status flag
 //boundary test, maximum immediate number allowed which is 0xffffffff
 //test ADD.w R2, R3, #0xffffffff given R3 = 0xffffffff
-void test_ADDImmediateT1_given_0xf10332ff_and_r3_is_0xffffffff_should_get_0xfffffffe_at_r2_xPSR_unchanged(void)
+void test_ADDImmediateT3_given_0xf10332ff_and_r3_is_0xffffffff_should_get_0xfffffffe_at_r2_xPSR_unchanged(void)
 {
   coreReg[3] = 0xffffffff;
 
@@ -870,7 +871,7 @@ void test_ADDImmediateT1_given_0xf10332ff_and_r3_is_0xffffffff_should_get_0xffff
 
 //boundary test, minimum immediate number allowed which is 0
 //test ADD.w R2, R3, #0x0 given R3 = 3000
-void test_ADDImmediateT1_given_0xf1030200_and_r3_is_3000_should_get_3000_at_r2_xPSR_unchanged(void)
+void test_ADDImmediateT3_given_0xf1030200_and_r3_is_3000_should_get_3000_at_r2_xPSR_unchanged(void)
 {
   coreReg[3] = 3000;
 
@@ -888,7 +889,7 @@ void test_ADDImmediateT1_given_0xf1030200_and_r3_is_3000_should_get_3000_at_r2_x
 
 //affect status flag (negative)
 //test ADD.w R2, R3, #0x80000000 given R3 = 0x2fffffff
-void test_ADDImmediateT1_given_0xf1134200_and_r3_is_0x2fffffff_should_get_0xafffffff_at_r2_and_set_neg_flag(void)
+void test_ADDImmediateT3_given_0xf1134200_and_r3_is_0x2fffffff_should_get_0xafffffff_at_r2_and_set_neg_flag(void)
 {
   coreReg[3] = 0x2fffffff;
 
@@ -906,7 +907,7 @@ void test_ADDImmediateT1_given_0xf1134200_and_r3_is_0x2fffffff_should_get_0xafff
 
 //affect status flag (zero and carry)
 //test ADD.w R2, R3, #0x10000000 given R3 = 0xf0000000
-void test_ADDImmediateT1_given_0xf1135280_and_r3_is_0xf0000000_should_get_0x0_at_r2_and_set_zero_and_carry_flag(void)
+void test_ADDImmediateT3_given_0xf1135280_and_r3_is_0xf0000000_should_get_0x0_at_r2_and_set_zero_and_carry_flag(void)
 {
   coreReg[3] = 0xf0000000;
 
@@ -924,7 +925,7 @@ void test_ADDImmediateT1_given_0xf1135280_and_r3_is_0xf0000000_should_get_0x0_at
 
 //affect status flag (overflow)
 //test ADD.w R2, R3, #0x80000000 given R3 = 0x7fffffff
-void test_ADDImmediateT1_given_0xf1136200_and_r3_is_0x7fffffff_should_get_0x87ffffff_at_r2_and_set_neg_and_overflow_flag(void)
+void test_ADDImmediateT3_given_0xf1136200_and_r3_is_0x7fffffff_should_get_0x87ffffff_at_r2_and_set_neg_and_overflow_flag(void)
 {
   coreReg[3] = 0x7fffffff;
 
@@ -942,3 +943,59 @@ void test_ADDImmediateT1_given_0xf1136200_and_r3_is_0x7fffffff_should_get_0x87ff
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //CMN Immediate T1
+
+//affect status flag (negative)
+//test CMN R0, #0x80000000 given R3 = 0x2fffffff
+void test_CMNImmediateT1_given_0xf1104f00_and_r0_is_0x2fffffff_should_get_set_neg_flag(void)
+{
+  coreReg[0] = 0x2fffffff;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1104f00, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x2fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (zero and carry)
+//test CMN R0, #0x10000000 given R3 = 0xf0000000
+void test_CMNImmediateT1_given_0xf1105f80_and_r0_is_0xf0000000_should_set_zero_and_carry_flag(void)
+{
+  coreReg[0] = 0xf0000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1105f80, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf0000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (overflow)
+//test CMN R0, #0x80000000 given R3 = 0x7fffffff
+void test_CMNImmediateT1_given_0xf1106f00_and_r0_is_0x7fffffff_should_set_neg_and_overflow_flag(void)
+{
+  coreReg[0] = 0x7fffffff;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1106f00, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}

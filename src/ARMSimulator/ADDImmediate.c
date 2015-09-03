@@ -1,9 +1,4 @@
 #include "ADDImmediate.h"
-#include "ARMRegisters.h"
-#include "getAndSetBits.h"
-#include "ADDImmediate.h"
-
-
 
 
 /*Add Immediate Encoding T1 (Add Immediate 3bits)

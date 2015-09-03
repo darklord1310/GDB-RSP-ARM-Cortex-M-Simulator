@@ -1,5 +1,6 @@
 #include "unity.h"
 #include <stdint.h>
+#include "CMNImmediate.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"
