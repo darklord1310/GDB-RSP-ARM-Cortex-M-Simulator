@@ -276,11 +276,13 @@ void test_serveRSP_given_data_with_p1a_packet_should_return_first_fpuDoublePreci
     char *reply = NULL;
 
     initCoreRegister();
-    fpuDoublePrecision[0] = 0x2143658778563412;
+    // fpuDoublePrecision[0] = 0x2143658778563412;
+    fpuDoublePrecision[0] = 0x2143650000000000;
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$1234567887654321#48", reply);
+    // TEST_ASSERT_EQUAL_STRING("$1234567887654321#48", reply);
+    TEST_ASSERT_EQUAL_STRING("$0000000000654321#15", reply);
 
     free(reply);
 }
@@ -291,11 +293,13 @@ void test_serveRSP_given_data_with_p2_packet_should_return_second_coreReg_value(
     char *reply = NULL;
 
     initCoreRegister();
-    coreReg[2] = 0x21436587;
+    // coreReg[2] = 0x21436587;
+    coreReg[2] = 0x21430000;
 
     reply = serveRSP(data);
 
-    TEST_ASSERT_EQUAL_STRING("$87654321#a4", reply);
+    // TEST_ASSERT_EQUAL_STRING("$87654321#a4", reply);
+    TEST_ASSERT_EQUAL_STRING("$00004321#8a", reply);
 
     free(reply);
 }
