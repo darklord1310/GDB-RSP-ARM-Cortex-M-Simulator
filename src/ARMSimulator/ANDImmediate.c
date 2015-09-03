@@ -49,9 +49,9 @@ void ANDImmediateT1(uint32_t instruction)
     coreReg[PC] += 4;
 }
 
-/*  This function will perform the AND immediate
+/*  This instruction AND an immediate value to a register value, and writes the result to the destination register.
 
-    Input:  immediate       the immediate going to move into Rd
+    Input:  immediate       the immediate going to AND with Rn and move into Rd
             Rd              destination register
             Rn              register that contains the first operand
             S               indicator for affecting the flag or not

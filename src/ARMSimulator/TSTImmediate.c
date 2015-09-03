@@ -44,7 +44,7 @@ void TSTImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the TST immediate
+/*  This instruction AND an immediate value to a register value, and discard the result.
 
     Input:  immediate       the immediate going to AND with Rn and update status flag
             Rn              register that contains the first operand

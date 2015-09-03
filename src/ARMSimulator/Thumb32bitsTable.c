@@ -333,4 +333,15 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
       }
   }
+  // ADD Immediate
+  for(i = 0b1000000000000; i < 0b1001000000000; i++)
+  {
+      if((i & 0b0000000001111) != 0b1111 || (i & 0b0000011010000) != 0b11010000)
+          Thumb32DataProcessingModifiedImmediate[i] = ADDImmediateT3;
+      // else
+      // {
+          // if(i >= 0b0100100000000)
+            // Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
+      // }
+  }
 }

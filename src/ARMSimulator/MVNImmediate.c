@@ -47,7 +47,7 @@ void MVNImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the move immediate
+/*  This function will perform the move invert immediate
 
     Input:  immediate       the NOT immediate going to move into Rd
             Rd              destination register

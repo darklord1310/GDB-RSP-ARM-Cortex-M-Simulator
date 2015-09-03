@@ -52,7 +52,7 @@ void ORNImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the ORN immediate
+/*  This instruction OR an invert immediate value to a register value, and writes the result to the destination register.
 
     Input:  immediate       the NOT immediate going to OR with Rn and move into Rd
             Rd              destination register

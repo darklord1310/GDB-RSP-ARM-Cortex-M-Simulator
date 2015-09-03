@@ -51,7 +51,7 @@ void EORImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the EOR immediate
+/*  This instruction XOR an immediate value to a register value, and writes the result to the destination register.
 
     Input:  immediate       the immediate going to XOR with Rn and move into Rd
             Rd              destination register

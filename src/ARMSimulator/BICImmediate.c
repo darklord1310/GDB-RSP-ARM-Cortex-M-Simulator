@@ -52,7 +52,7 @@ void BICImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the BIC immediate
+/*  This instruction AND an invert immediate value to a register value, and writes the result to the destination register.
 
     Input:  immediate       the NOT immediate going to AND with Rn and move into Rd
             Rd              destination register

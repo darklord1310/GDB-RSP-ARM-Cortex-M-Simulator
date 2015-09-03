@@ -43,7 +43,7 @@ void TEQImmediateT1(uint32_t instruction)
 }
 
 
-/*  This function will perform the TEQ immediate
+/*  This instruction XOR an immediate value to a register value, and discard the result.
 
     Input:  immediate       the immediate going to XOR with Rn and update the status flag
             Rn              register that contains the first operand
