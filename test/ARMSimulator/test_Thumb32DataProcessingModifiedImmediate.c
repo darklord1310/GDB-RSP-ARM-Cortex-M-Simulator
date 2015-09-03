@@ -62,6 +62,7 @@
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
+#include "BICImmediate.h"
 
 void setUp(void)
 {
@@ -226,8 +227,8 @@ void test_ANDImmediateT1_given_instruction_0xf00000ab_should_AND_0xab_with_R0_an
 }
 
 
-// AND r0 ,#-1 and affecting the flag register
-void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_set_negative_flag()
+// ANDS r0 ,#-1 and affecting the flag register
+void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_and_set_negative_flag()
 {
   uint32_t instruction = 0xf01030ff;
   coreReg[0] = 0xabababab;
@@ -240,8 +241,8 @@ void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_se
 
 //test case modify control smaller than 0b00111
 //modifyControl = 0b00111
-// AND r0 ,#0x0 and affecting the flag register
-void test_ANDImmediateT1_given_instruction_0xf0100000_should_AND_0x0_with_R0_set_zero_flag()
+// ANDS r0 ,#0x0 and affecting the flag register
+void test_ANDImmediateT1_given_instruction_0xf0100000_should_AND_0x0_with_R0_and_set_zero_flag()
 {
   coreReg[0] = 0xabababab;
 
@@ -260,8 +261,8 @@ void test_ANDImmediateT1_given_instruction_0xf0100000_should_AND_0x0_with_R0_set
 
 //test case modify control larger than 0b00111
 //modifyControl = 0b01000
-// AND r0 ,#0x80000000 and affecting the flag register
-void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0x80000000_with_R0_set_carry_and_negative_flag()
+// ANDS r0 ,#0x80000000 and affecting the flag register
+void test_ANDImmediateT1_given_instruction_0xf0104000_should_AND_0x80000000_with_R0_and_set_carry_and_negative_flag()
 {
   coreReg[0] = 0xabababab;
 
@@ -283,7 +284,7 @@ void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0x80000000_with
   //TST Immediate T1
 
 // TST r0 ,#0x0
-void test_TSTImmediateT1_given_instruction_0xf00000ab_should_AND_0x0_with_R0_and_update_zero_flag()
+void test_TSTImmediateT1_given_instruction_0xf0100f00_should_AND_0x0_with_R0_and_update_zero_flag()
 {
   coreReg[0] = 0xabababab;
 
@@ -301,7 +302,7 @@ void test_TSTImmediateT1_given_instruction_0xf00000ab_should_AND_0x0_with_R0_and
 
 
 // TST r0 ,#-1 and affecting the flag register
-void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_set_negative_flag()
+void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_and_set_negative_flag()
 {
   coreReg[0] = 0xabababab;
 
@@ -321,7 +322,7 @@ void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0xff_with_R0_se
 //test case modify control smaller than 0b00111
 //modifyControl = 0b00111
 // TST r0 ,#0xab and not affecting the flag register
-void test_TSTImmediateT1_given_instruction_0xf0100000_should_AND_0x10_with_R0_set_zero_flag_and_do_not_update_flag()
+void test_TSTImmediateT1_given_instruction_0xf0100fab_should_AND_0xab_with_R0_and_do_not_update_flag()
 {
   coreReg[0] = 0xabababab;
 
@@ -341,7 +342,7 @@ void test_TSTImmediateT1_given_instruction_0xf0100000_should_AND_0x10_with_R0_se
 //test case modify control larger than 0b00111
 //modifyControl = 0b01000
 // TST r0 ,#0x80000000 and affecting the flag register
-void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0x80000000_with_R0_set_carry_and_negative_flag()
+void test_TSTImmediateT1_given_instruction_0xf0104f00_should_AND_0x80000000_with_R0_and_set_carry_and_negative_flag()
 {
   coreReg[0] = 0xabababab;
 
@@ -356,3 +357,88 @@ void test_TSTImmediateT1_given_instruction_0xf01030ff_should_AND_0x80000000_with
   TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //BIC Immediate T1
+
+// BIC r1, r0 ,#0x1
+void test_BICImmediateT1_given_instruction_0xf0200101_should_AND_0xfe_with_R0_and_place_it_into_R1()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0200101, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xabababaa, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// BICS r0 ,#-1 and affecting the flag register
+void test_BICImmediateT1_given_instruction_0xf03030ff_should_AND_0x0_with_R0_and_set_zero_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf03030ff, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control smaller than 0b00111
+//modifyControl = 0b00111
+// BICS r0 ,#0xab and affecting the flag register
+void test_BICImmediateT1_given_instruction_0xf03000ab_should_AND_0xffffff54_with_R0_and_update_negative_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf03000ab, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xababab00, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control larger than 0b00111
+//modifyControl = 0b01000
+// BICS r0 ,#0x80000000 and affecting the flag register
+void test_BICImmediateT1_given_instruction_0xf0304000_should_AND_0x7fffffff_with_R0_and_set_carry_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0304000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x2bababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+
+

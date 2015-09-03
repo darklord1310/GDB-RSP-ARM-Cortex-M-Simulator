@@ -291,9 +291,10 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   Thumb32DataProcessingModifiedImmediate[0b0010111111110] = MOVImmediateT2;
   Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2;
   //
-  int i = 0b0000000000000;
+  
+  int i;
 
-  for(i = 0; i < 0b0001000000000; i++)
+  for(i = 0b0000000000000; i < 0b0001000000000; i++)
   {
       if((i & 0b0000000001111) != 0b1111)
           Thumb32DataProcessingModifiedImmediate[i] = ANDImmediateT1;
@@ -303,74 +304,13 @@ void initThumb32bitsDataProcessingModifiedImmediate()
               Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
       }
   }
+  
+  //
+  
+  for(i = 0b0001000000000; i < 0b0010000000000; i++)
+    Thumb32DataProcessingModifiedImmediate[i] = BICImmediateT1;
 
-  /*
-  Thumb32DataProcessingModifiedImmediate[0b0000000000000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001111] = ANDImmediateT1;
-
-  Thumb32DataProcessingModifiedImmediate[0b0000000010000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011111] = ANDImmediateT1;
-
-  Thumb32DataProcessingModifiedImmediate[0b0000000100000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101111] = ANDImmediateT1;
-
-  Thumb32DataProcessingModifiedImmediate[0b0000000100000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101111] = ANDImmediateT1;
-  */
+  //
+  
+  
 }

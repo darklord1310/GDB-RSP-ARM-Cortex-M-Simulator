@@ -65,6 +65,8 @@
 #include "mock_Packet.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
+#include "TSTImmediate.h"
+#include "BICImmediate.h"
 
 
 void setUp(void)

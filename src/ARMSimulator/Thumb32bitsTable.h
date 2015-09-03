@@ -48,6 +48,7 @@
 #include "SUBSPImmediate.h"
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
+#include "BICImmediate.h"
 #include "ARMSimulator.h"
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);

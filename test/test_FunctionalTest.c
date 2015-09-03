@@ -66,6 +66,8 @@
 #include "ShiftOperation.h"
 #include "CustomTypeAssertion.h"
 #include "ANDImmediate.h"
+#include "TSTImmediate.h"
+#include "BICImmediate.h"
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
