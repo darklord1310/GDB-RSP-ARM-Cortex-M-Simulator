@@ -61,6 +61,7 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
+#include "NOP.h"
 
 
 void setUp(void)
@@ -408,5 +409,56 @@ void test_LDRImmediateT4_given_instruction_0xf850ff14_should_throw_error()
   }
 
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDR Register T2
+
+//test with minimum shifting, 0
+// ldr.w r5, [r4, r1, lsl #0]
+void test_LDRRegisterT2_given_instruction_0xf8545001_should_load_0x0800004f_into_r5()
+{
+  //create test fixture
+  memoryBlock[ virtualMemToPhysicalMem(0x08000060) ] = 0x4f;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000061) ] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000062) ] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000063) ] = 0x08;
+  coreReg[4] = 0x0;
+  coreReg[1] = 0x08000060;
+  writeInstructionToMemoryGivenByAddress(0xf8545001, 0x0800003c);  // ldr.w r5, [r4, r1, lsl #0]
+  coreReg[PC] = 0x0800003c;
+  
+  //test
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x0800004f, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x08000040, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+
+//test with maximum shifting, 3
+// ldr.w r5, [r4, r1, lsl #3]
+void test_LDRRegisterT2_given_instruction_0xf8545031_should_load_0x0800004f_into_r5()
+{
+  //create test fixture
+  memoryBlock[ virtualMemToPhysicalMem(0x08000060) ] = 0x4f;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000061) ] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000062) ] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x08000063) ] = 0x08;
+  coreReg[4] = 0x0;
+  coreReg[1] = 0x100000c;
+  writeInstructionToMemoryGivenByAddress(0xf8545031, 0x0800003c);  // ldr.w r5, [r4, r1, lsl #3]
+  coreReg[PC] = 0x0800003c;
+  
+  //test
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x0800004f, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x08000040, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+
 
 

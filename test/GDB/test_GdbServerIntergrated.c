@@ -64,6 +64,7 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
+#include "NOP.h"
 
 
 extern char *targetCortexM4_XML;

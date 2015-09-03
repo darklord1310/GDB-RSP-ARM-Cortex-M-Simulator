@@ -63,7 +63,7 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
-
+#include "NOP.h"
 
 void setUp(void)
 {
@@ -794,5 +794,21 @@ void test_SUBSPImmediateT1_given_SP_0x20000FE4_and_carry_is_1_should_get_SP_0x20
   
   TEST_ASSERT_EQUAL(  0x20000FDC, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x08000056, coreReg[PC]);
+  
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //NOP T1
+
+void test_NOPT1_should_get_PC_0x0800000C()
+{
+  coreReg[PC] = 0x0800000a;
+  
+  uint32_t instruction = 0xbf000000;
+  
+  ARMSimulator(instruction);          
+  
+  TEST_ASSERT_EQUAL(  0x0800000c, coreReg[PC]);
   
 }

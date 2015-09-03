@@ -10,6 +10,7 @@
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
 #include "LoadAndWriteMemory.h"
+#include "ShiftOperation.h"
 
 
 /*Load Register (register) Encoding T1 
@@ -88,28 +89,52 @@ void LDRRegisterT1(uint32_t instruction)
 */
 void LDRRegisterT2(uint32_t instruction)
 {
+  uint32_t temp;
   uint32_t Rm   = getBits(instruction,3,0);  
   uint32_t imm2   = getBits(instruction,5,4);
   uint32_t Rt   = getBits(instruction,15,12);
   uint32_t Rn   = getBits(instruction,19,16);  
   
+  temp = executeShiftOperation(LSL, imm2, coreReg[Rm], 0);            //no update carry flag
+  uint32_t address = coreReg[Rn] +  temp;
+      
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      uint32_t address = coreReg[Rn] +  coreReg[Rm];                    
-      coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
+      if(Rt == PC)
+      {
+        if( getBits(address,1,0) == 0b00)
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+        else
+        {
+          placePCtoVectorTable(UsageFault);
+          Throw(UsageFault);
+        }
+      }
+      else
+        coreReg[Rt] = loadByteFromMemory(address, 4);                        
     }
-    
     shiftITState();
   }
   else
   {
-    uint32_t address = coreReg[Rn] + coreReg[Rm];                    
-    coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
+    if(Rt == PC)
+    {
+      if( getBits(address,1,0) == 0b00)
+        coreReg[Rt] = loadByteFromMemory(address, 4);
+      else
+      {
+        placePCtoVectorTable(UsageFault);
+        Throw(UsageFault);
+      }
+    }
+    else
+      coreReg[Rt] = loadByteFromMemory(address, 4);                       
   }
   
-  coreReg[PC] += 4;
+  if(Rt != PC)
+    coreReg[PC] += 4;
 }
 
 

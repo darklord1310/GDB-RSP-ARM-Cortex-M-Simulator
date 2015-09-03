@@ -9,6 +9,7 @@
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include "NOP.h"
 
 void setUp(void)
 {

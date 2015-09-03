@@ -153,6 +153,7 @@ void LDRImmediateT2(uint32_t instruction)
 */
 void LDRImmediateT3(uint32_t instruction)
 {
+  uint32_t address;
   uint32_t imm12 = getBits(instruction,11,0);  
   uint32_t Rn   = getBits(instruction,19,16);  
   uint32_t Rt   = getBits(instruction,15,12);  
@@ -161,16 +162,38 @@ void LDRImmediateT3(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      uint32_t address = coreReg[Rn] + imm12;  
-      coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
+      address = coreReg[Rn] + imm12;
+      if(Rt == PC)
+      {
+        if( getBits(address,1,0) == 0b00)
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+        else
+        {
+          placePCtoVectorTable(UsageFault);
+          Throw(UsageFault);
+        }
+      }
+      else
+        coreReg[Rt] = loadByteFromMemory(address, 4);                      
     }
     
     shiftITState();
   }
   else
   {
-    uint32_t address = coreReg[Rn] + imm12;  
-    coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register 
+    address = coreReg[Rn] + imm12; 
+    if(Rt == PC)
+    {
+      if( getBits(address,1,0) == 0b00)
+        coreReg[Rt] = loadByteFromMemory(address, 4);
+      else
+      {
+        placePCtoVectorTable(UsageFault);
+        Throw(UsageFault);
+      }
+    }
+    else
+      coreReg[Rt] = loadByteFromMemory(address, 4);  
   }
   
   if(Rt != PC)

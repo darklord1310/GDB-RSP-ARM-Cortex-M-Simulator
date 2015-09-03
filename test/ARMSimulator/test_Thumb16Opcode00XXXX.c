@@ -63,7 +63,7 @@
 #include "LoadAndWriteMemory.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
-
+#include "NOP.h"
 
 void setUp(void)
 {

@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include "NOP.h"
+
 
 void setUp(void)
 {
@@ -26,7 +28,6 @@ void test_setNegativeFlag_xPSR_should_get_0x81000000(void)
   TEST_ASSERT_EQUAL( 1 , isNegative() );
 
 }
-
 
 
 void test_setCarryFlag_xPSR_should_get_0x21000000(void)
