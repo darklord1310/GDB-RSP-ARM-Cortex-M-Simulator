@@ -66,6 +66,7 @@
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
 #include "MVNImmediate.h"
+#include "EORImmediate.h"
 
 void setUp(void)
 {
@@ -679,4 +680,85 @@ void test_MVNImmediateT2_given_instruction_0xf07f4000_should_move_0x7ffffff_into
   TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
   TEST_ASSERT_EQUAL(0x21000000, coreReg[xPSR]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //EOR Immediate T1
+
+// EOR r1 ,r0 ,#0x54
+void test_EORImmediateT1_given_instruction_0xf0800154_should_XOR_0x54_with_R0_and_place_it_into_R1()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0800154, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xabababff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// EORS r0 ,#-1 and affecting the flag register
+void test_EORImmediateT1_given_instruction_0xf09030ff_should_XOR_0xffffffff_with_R0_and_update_zero_flag()
+{
+  coreReg[0] = 0xffffffff;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf09030ff, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control smaller than 0b00111
+//modifyControl = 0b00111
+// EORS r0 ,#0x0 and affecting the flag register
+void test_EORImmediateT1_given_instruction_0xf0900000_should_XOR_0x0_with_R0_and_set_negative_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0900000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control larger than 0b00111
+//modifyControl = 0b01000
+// EORS r0 ,#0x80000000 and affecting the flag register
+void test_EORImmediateT1_given_instruction_0xf0904000_should_XOR_0x80000000_with_R0_and_set_carry_flag()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0904000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x2bababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }

@@ -299,7 +299,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
           Thumb32DataProcessingModifiedImmediate[i] = ANDImmediateT1;
       else
       {
-          if(i >= 0b0000100000000)
+          if(i >= 0b0000100000000)      // S == 1 and Rd == 1111
               Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
       }
   }
@@ -321,5 +321,13 @@ void initThumb32bitsDataProcessingModifiedImmediate()
           Thumb32DataProcessingModifiedImmediate[i] = ORNImmediateT1;
       else
           Thumb32DataProcessingModifiedImmediate[i] = MVNImmediateT1;
+  }
+  // EOR and TEQ Immediate
+  for(i = 0b0100000000000; i < 0b0101000000000; i++)
+  {
+      if((i & 0b0000000001111) != 0b1111)
+          Thumb32DataProcessingModifiedImmediate[i] = EORImmediateT1;
+      // else
+          // Thumb32DataProcessingModifiedImmediate[i] = MVNImmediateT1;
   }
 }

@@ -52,6 +52,7 @@
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
 #include "MVNImmediate.h"
+#include "EORImmediate.h"
 #include "ARMSimulator.h"
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);

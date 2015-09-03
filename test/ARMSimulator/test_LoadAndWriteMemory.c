@@ -70,6 +70,7 @@
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
 #include "MVNImmediate.h"
+#include "EORImmediate.h"
 
 
 void setUp(void)

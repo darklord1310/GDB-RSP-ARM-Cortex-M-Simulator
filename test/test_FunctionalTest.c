@@ -71,6 +71,7 @@
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
 #include "MVNImmediate.h"
+#include "EORImmediate.h"
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
