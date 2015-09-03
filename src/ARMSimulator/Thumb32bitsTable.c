@@ -206,6 +206,15 @@ void initThumb32Table()
   Thumb32Table[0b0101111101] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101111110] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101111111] = executeDataProcessingShiftedRegister;
+  //
+  Thumb32Table[0b1100001010] = executeLoadWord;
+  Thumb32Table[0b1100011010] = executeLoadWord;
+  Thumb32Table[0b1100101010] = executeLoadWord;
+  Thumb32Table[0b1100111010] = executeLoadWord;
+  Thumb32Table[0b1100001011] = executeLoadWord;
+  Thumb32Table[0b1100011011] = executeLoadWord;
+  Thumb32Table[0b1100101011] = executeLoadWord;
+  Thumb32Table[0b1100111011] = executeLoadWord;
 }
 
 
@@ -298,74 +307,89 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       if((i & 0b0000000001111) != 0b1111)
           Thumb32DataProcessingModifiedImmediate[i] = ANDImmediateT1;
   }
-
-  /*
-  Thumb32DataProcessingModifiedImmediate[0b0000000000000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000000111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000001111] = ANDImmediateT1;
-
-  Thumb32DataProcessingModifiedImmediate[0b0000000010000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000010111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000011111] = ANDImmediateT1;
-
-  Thumb32DataProcessingModifiedImmediate[0b0000000100000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101111] = ANDImmediateT1;
-
-  Thumb32DataProcessingModifiedImmediate[0b0000000100000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000100111] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101000] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101001] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101010] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101011] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101100] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101101] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101110] = ANDImmediateT1;
-  Thumb32DataProcessingModifiedImmediate[0b0000000101111] = ANDImmediateT1;
-  */
 }
+
+
+
+void initThumb32bitsLoadWord()
+{
+  int i,j,k;
+  uint32_t dummy;
+  
+  //LDRLiteral T2
+  dummy = 0b000000001111;
+  for(i = 0b0000000; i <= 0b1111111; i++)
+  {
+    dummy = setBits(dummy,i,10,4);
+    Thumb32LoadWord[dummy] = LDRLiteralT2;
+  }
+  
+  //LDRImmediate T3 
+  for(k = 0b000000; k <= 0b111111; k++)
+  {
+    dummy = setBits(dummy,k,9,4);
+    for(j = 0; j < 0b1111; j ++)
+    {
+      dummy = setBits(dummy,j,3,0);
+      Thumb32LoadWord[dummy] = LDRImmediateT3;
+    }
+  }
+
+  
+  //LDRImmediate T4
+  dummy = 0b001001000000;
+  for(k = 0; k < 4; k++)
+  {
+    dummy = setBits(dummy,k,8,7);
+    for(i = 0; i < 4; i ++)
+    {
+      dummy = setBits(dummy, i, 5, 4);
+      for(j = 0; j < 0b1111; j ++)
+      {
+        dummy = setBits(dummy,j,3,0);
+        Thumb32LoadWord[dummy] = LDRImmediateT4;
+      }
+    }
+  }
+  
+  dummy = 0b001100000000;
+  for(i = 0; i < 4; i ++)
+  {
+    dummy = setBits(dummy, i, 5, 4);
+    for(j = 0; j < 0b1111; j ++)
+    {
+      dummy = setBits(dummy,j,3,0);
+      Thumb32LoadWord[dummy] = LDRImmediateT4;
+    }
+  }
+  
+  //LDR Register T2
+  dummy = 0b000000000000;
+  for(j = 0; j < 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,3,0);
+    Thumb32LoadWord[dummy] = LDRRegisterT2;
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

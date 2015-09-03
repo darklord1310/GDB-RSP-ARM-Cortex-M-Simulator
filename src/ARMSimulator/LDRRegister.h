@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 void LDRRegisterT1(uint32_t instruction);
+void LDRRegisterT2(uint32_t instruction);
 void LDRHRegisterT1(uint32_t instruction);
 void LDRBRegisterT1(uint32_t instruction);
 void LDRSBRegisterT1(uint32_t instruction);

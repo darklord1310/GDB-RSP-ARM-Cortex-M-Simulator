@@ -18,5 +18,6 @@ void writeInstructionToMemoryGivenByAddress(uint32_t instruction, uint32_t addre
 void executeDataProcessingModifiedImmediate(uint32_t instruction);
 void executeDataProcessingPlainImmediate(uint32_t instruction);
 void executeDataProcessingShiftedRegister(uint32_t instruction);
+void executeLoadWord(uint32_t instruction);
 
 #endif // ARMSimulator_H
