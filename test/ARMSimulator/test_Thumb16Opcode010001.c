@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "CMNImmediate.h"
+#include "ADCImmediate.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"

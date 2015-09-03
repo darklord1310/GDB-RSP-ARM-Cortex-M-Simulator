@@ -348,4 +348,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = CMNImmediateT1;
       }
   }
+  // ADC Immediate
+  for(i = 0b1010000000000; i < 0b1011000000000; i++)
+    Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
 }

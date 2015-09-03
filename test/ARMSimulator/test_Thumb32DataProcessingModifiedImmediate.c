@@ -69,6 +69,7 @@
 #include "EORImmediate.h"
 #include "TEQImmediate.h"
 #include "CMNImmediate.h"
+#include "ADCImmediate.h"
 
 void setUp(void)
 {
@@ -888,7 +889,7 @@ void test_ADDImmediateT3_given_0xf1030200_and_r3_is_3000_should_get_3000_at_r2_x
 }
 
 //affect status flag (negative)
-//test ADD.w R2, R3, #0x80000000 given R3 = 0x2fffffff
+//test ADDS.w R2, R3, #0x80000000 given R3 = 0x2fffffff
 void test_ADDImmediateT3_given_0xf1134200_and_r3_is_0x2fffffff_should_get_0xafffffff_at_r2_and_set_neg_flag(void)
 {
   coreReg[3] = 0x2fffffff;
@@ -906,7 +907,7 @@ void test_ADDImmediateT3_given_0xf1134200_and_r3_is_0x2fffffff_should_get_0xafff
 }
 
 //affect status flag (zero and carry)
-//test ADD.w R2, R3, #0x10000000 given R3 = 0xf0000000
+//test ADDS.w R2, R3, #0x10000000 given R3 = 0xf0000000
 void test_ADDImmediateT3_given_0xf1135280_and_r3_is_0xf0000000_should_get_0x0_at_r2_and_set_zero_and_carry_flag(void)
 {
   coreReg[3] = 0xf0000000;
@@ -924,7 +925,7 @@ void test_ADDImmediateT3_given_0xf1135280_and_r3_is_0xf0000000_should_get_0x0_at
 }
 
 //affect status flag (overflow)
-//test ADD.w R2, R3, #0x80000000 given R3 = 0x7fffffff
+//test ADDS.w R2, R3, #0x80000000 given R3 = 0x7fffffff
 void test_ADDImmediateT3_given_0xf1136200_and_r3_is_0x7fffffff_should_get_0x87ffffff_at_r2_and_set_neg_and_overflow_flag(void)
 {
   coreReg[3] = 0x7fffffff;
@@ -997,5 +998,106 @@ void test_CMNImmediateT1_given_0xf1106f00_and_r0_is_0x7fffffff_should_set_neg_an
 
   TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
   TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ADC Immediate T1
+
+//without affect status flag
+//boundary test, maximum immediate number allowed which is 0xffffffff
+//test ADC R2, R3, #0xffffffff given R3 = 0xffffffff
+void test_ADCImmediateT1_given_0xf14332ff_and_r3_is_0xffffffff_should_get_0xffffffff_at_r2_xPSR_unchanged(void)
+{
+  coreReg[3] = 0xffffffff;
+  coreReg[xPSR] = 0x21000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf14332ff, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//boundary test, minimum immediate number allowed which is 0
+//test ADC R2, R3, #0x0 given R3 = 3000
+void test_ADCImmediateT1_given_0xf1430200_and_r3_is_3000_should_get_3001_at_r2_xPSR_unchanged(void)
+{
+  coreReg[3] = 3000;
+  coreReg[xPSR] = 0x21000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1430200, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(3001, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (negative)
+//test ADCS R2, R3, #0x80000000 given R3 = 0x2fffffff
+void test_ADCImmediateT1_given_0xf1534200_and_r3_is_0x2fffffff_should_get_0xb0000000_at_r2_and_set_neg_flag(void)
+{
+  coreReg[3] = 0x2fffffff;
+  coreReg[xPSR] = 0x21000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1534200, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xb0000000, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (zero and carry)
+//test ADCS R2, R3, #0x0 given R3 = 0xffffffff
+void test_ADCImmediateT1_given_0xf1530200_and_r3_is_0xffffffff_should_get_0x0_at_r2_and_set_zero_and_carry_flag(void)
+{
+  coreReg[3] = 0xffffffff;
+  coreReg[xPSR] = 0x21000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1530200, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x0, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (overflow)
+//test ADCS R2, R3, #0x80000000 given R3 = 0x80000000
+void test_ADCImmediateT1_given_0xf1534200_and_r3_is_0x80000000_should_get_0x1_at_r2_and_set_overflow_flag(void)
+{
+  coreReg[3] = 0x80000000;
+  coreReg[xPSR] = 0x21000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1534200, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x1, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x31000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }

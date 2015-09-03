@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "CMNImmediate.h"
+#include "ADCImmediate.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"
