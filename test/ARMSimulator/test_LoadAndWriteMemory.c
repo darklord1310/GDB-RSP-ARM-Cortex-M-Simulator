@@ -69,6 +69,7 @@
 #include "BICImmediate.h"
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
+#include "MVNImmediate.h"
 
 
 void setUp(void)

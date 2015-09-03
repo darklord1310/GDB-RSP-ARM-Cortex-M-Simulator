@@ -319,7 +319,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   {
       if((i & 0b0000011110000) != 0b11110000)
           Thumb32DataProcessingModifiedImmediate[i] = ORNImmediateT1;
-      // else
-          // Thumb32DataProcessingModifiedImmediate[i] = MOVImmediateT2;
+      else
+          Thumb32DataProcessingModifiedImmediate[i] = MVNImmediateT1;
   }
 }

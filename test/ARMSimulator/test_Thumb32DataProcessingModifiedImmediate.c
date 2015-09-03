@@ -65,6 +65,7 @@
 #include "BICImmediate.h"
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
+#include "MVNImmediate.h"
 
 void setUp(void)
 {
@@ -602,4 +603,80 @@ void test_ORNImmediateT1_given_instruction_0xf0704000_should_OR_0x7fffffff_with_
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[0]);
   TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //MVN Immediate T2
+
+// MVN r7, #0xabababab
+void test_MVNImmediateT2_given_instruction_0xf06f07ab_should_move_0xffffff54_into_R7()
+{
+  coreReg[7] = 0xcdcdcdcd;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf06f07ab, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffff54, coreReg[7]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// MVNS r5, #-1 and not affecting the flag register
+void test_MVNImmediateT2_given_instruction_0xf07f35ff_should_move_0x0_into_R5_and_update_zero_flag()
+{
+  coreReg[5] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf07f35ff, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//test case modify control smaller than 0b00111
+// MVNS r5, #0x0 and affect flag register
+void test_MVNImmediateT2_given_instruction_0xf07f0500_should_move_0xffffffff_into_R5_and_set_negative_flag()
+{
+  coreReg[5] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf07f0500, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+//test case modify control larger than 0b00111
+//modifyControl = 0b01000
+// MVNS  r0, #0x80000000
+void test_MVNImmediateT2_given_instruction_0xf07f4000_should_move_0x7ffffff_into_R0_and_set_carry_flag()
+{
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf07f4000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x21000000, coreReg[xPSR]);
 }

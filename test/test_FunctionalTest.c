@@ -70,6 +70,7 @@
 #include "BICImmediate.h"
 #include "ORRImmediate.h"
 #include "ORNImmediate.h"
+#include "MVNImmediate.h"
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
