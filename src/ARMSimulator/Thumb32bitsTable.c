@@ -371,6 +371,18 @@ void initThumb32bitsLoadWord()
     Thumb32LoadWord[dummy] = LDRRegisterT2;
   }
   
+  //LDRT T1
+  dummy = 0b001110000000;
+  for(i = 0; i < 4; i ++)
+  {
+    dummy = setBits(dummy, i, 5, 4);
+    for(j = 0; j < 0b1111; j ++)
+    {
+      dummy = setBits(dummy,j,3,0);
+      Thumb32LoadWord[dummy] = LDRTT1;
+    }
+  }
+  
 }
 
 

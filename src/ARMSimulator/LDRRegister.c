@@ -139,6 +139,51 @@ void LDRRegisterT2(uint32_t instruction)
 
 
 
+
+/*Load Register Unpriviledged Encoding T1
+ * 
+    LDRT<c> <Rt>,[<Rn>,#<imm8>]
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  | 1  1  1  1  1| 0  0| 0  0|1   0| 1|     Rn    |      Rt   |1|  1 1 0|      imm8     |  
+
+  where:
+            <c><q>          See Standard assembler syntax fields on page A6-7.
+            
+            <Rt>            Specifies the destination register.
+            
+            <Rn>            Specifies the base register. This register is allowed to be the SP.
+            
+            <imm>           Specifies the immediate offset added to the value of <Rn> to form the address. The range of
+                            allowed values is 0-255. <imm> can be omitted, meaning an offset of 0.
+          
+*/
+void LDRTT1(uint32_t instruction)
+{
+  uint32_t imm8 = getBits(instruction,7,0);
+  uint32_t Rt   = getBits(instruction,15,12);
+  uint32_t Rn   = getBits(instruction,19,16);  
+  
+  if(Rt == PC || Rt == SP)
+    Throw(UsageFault);
+  
+  uint32_t address = coreReg[Rn] +  imm8;
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+        coreReg[Rt] = loadByteFromMemory(address, 4);
+      
+    shiftITState();
+  }
+  else
+    coreReg[Rt] = loadByteFromMemory(address, 4);                       
+  
+  coreReg[PC] += 4;
+}
+
+
+
 /*Load Register Halfword (register) Encoding T1 
  * 
     LDRH<c> <Rt>,[<Rn>,<Rm>]

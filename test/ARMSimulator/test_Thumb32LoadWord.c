@@ -407,7 +407,6 @@ void test_LDRImmediateT4_given_instruction_0xf850ff14_should_throw_error()
   {
     TEST_ASSERT_EQUAL(UsageFault, err);
   }
-
 }
 
 
@@ -461,4 +460,70 @@ void test_LDRRegisterT2_given_instruction_0xf8545031_should_load_0x0800004f_into
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LDRT Register T1
 
+//test ldrt.w LR, [r0, #8]
+void test_LDRTT1_given_instruction_0xf850ee08_should_load_0xf850bf00_into_LR()
+{
+  //create test fixture
+  memoryBlock[ virtualMemToPhysicalMem(0x00000008) ] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x00000009) ] = 0xbf;
+  memoryBlock[ virtualMemToPhysicalMem(0x0000000a) ] = 0x50;
+  memoryBlock[ virtualMemToPhysicalMem(0x0000000b) ] = 0xf8;
+  coreReg[0] = 0x00000000;
+  writeInstructionToMemoryGivenByAddress(0xf850ee08, 0x0800000a);  // ldrt.w LR, [r0, #8]
+  coreReg[PC] = 0x0800000a;
+  
+  //test
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xf850bf00, coreReg[LR]);
+  TEST_ASSERT_EQUAL(0x0800000e, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+
+//test if Rt is PC
+// ldrt.w PC, [r0, #8]
+void test_LDRTT1_given_instruction_0xf850fe08_should_throw_error()
+{
+  //create test fixture
+  CEXCEPTION_T err;
+  coreReg[0] = 0x800004f;
+  writeInstructionToMemoryGivenByAddress(0xf850fe08, 0x0800003c);  // ldrt.w PC, [r0, #8]
+  coreReg[PC] = 0x0800003c;
+  
+  //test
+  Try{
+    armStep();
+    TEST_FAIL_MESSAGE("Expect to throw here\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(UsageFault, err);
+  }
+}
+
+
+
+//test if Rt is SP
+// ldrt.w SP, [r0, #8]
+void test_LDRTT1_given_instruction_0xf850de08_should_throw_error()
+{
+  //create test fixture
+  CEXCEPTION_T err;
+  coreReg[0] = 0x800004f;
+  writeInstructionToMemoryGivenByAddress(0xf850de08, 0x0800003c);  // ldrt.w SP, [r0, #8]
+  coreReg[PC] = 0x0800003c;
+  
+  //test
+  Try{
+    armStep();
+    TEST_FAIL_MESSAGE("Expect to throw here\n");
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(UsageFault, err);
+  }
+}
