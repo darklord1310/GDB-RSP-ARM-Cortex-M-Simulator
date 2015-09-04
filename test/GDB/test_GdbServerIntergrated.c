@@ -65,6 +65,8 @@
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
 #include "NOP.h"
+#include "MLA.h"
+#include "MLS.h"
 
 
 extern char *targetCortexM4_XML;

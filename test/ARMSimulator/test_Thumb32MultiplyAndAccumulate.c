@@ -65,7 +65,6 @@
 #include "MLA.h"
 #include "MLS.h"
 
-
 void setUp(void)
 {
   initializeSimulator();
@@ -78,31 +77,7 @@ void tearDown(void)
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //ADD (SP plus immediate)
-  
-// test ADD r0,SP,#0x20
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r0_is_0x20001020_xPSR_unchanged(void)
-{
-  uint32_t instruction = 0xa8080000;
-  
-  coreReg[SP] = 0x20001000;
-  ARMSimulator(instruction);
+  //LDR Literal T2
 
-  TEST_ASSERT_EQUAL(0x20001020, coreReg[0]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
-}
-
-
-// test ADD r7,SP,#0x20
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r7_is_0x20001020_xPSR_unchanged(void)
-{
-  uint32_t instruction = 0xaf080000;
-  
-  coreReg[SP] = 0x20001000;
-  ARMSimulator(instruction);
-
-  TEST_ASSERT_EQUAL(0x20001020, coreReg[7]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
-}
 
 

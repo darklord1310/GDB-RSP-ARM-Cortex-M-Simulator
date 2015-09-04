@@ -215,6 +215,24 @@ void initThumb32Table()
   Thumb32Table[0b1100011011] = executeLoadWord;
   Thumb32Table[0b1100101011] = executeLoadWord;
   Thumb32Table[0b1100111011] = executeLoadWord;
+  //       
+  Thumb32Table[0b1101100000] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100001] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100010] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100011] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100100] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100101] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100110] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100111] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101000] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101001] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101010] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101011] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101100] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101101] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101110] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101111] = executeMultiplyAccumulate;
+  
 }
 
 
@@ -386,7 +404,30 @@ void initThumb32bitsLoadWord()
 }
 
 
-
+void initThumb32bitsMultiplyAccumulate()
+{
+  int i,j,k;
+  uint32_t dummy;
+  
+  //MLA T1
+  dummy = 0b000000000;
+  for(j = 0; j < 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,3,0);
+    Thumb32MultiplyAccumulate[dummy] = MLAT1;
+  }
+  
+  //MUL T2
+  Thumb32MultiplyAccumulate[0b000001111] = MULRegisterT2;
+  
+  //MLS
+  dummy = 0b000010000;
+  for(j = 0; j <= 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,3,0);
+    Thumb32MultiplyAccumulate[dummy] = MLST1;
+  }
+}
 
 
 

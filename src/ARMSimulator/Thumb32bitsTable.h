@@ -51,12 +51,16 @@
 #include "LDRLiteral.h"
 #include "getMask.h"
 #include "getAndSetBits.h"
+#include "MLA.h"
+#include "MLS.h"
 #include <stdint.h>
+
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);
 void (*Thumb32DataProcessingPlainImmediate[512])(uint32_t instruction);
 void (*Thumb32DataProcessingShiftedRegister[4096])(uint32_t instruction);
 void (*Thumb32LoadWord[4096])(uint32_t instruction);
+void (*Thumb32MultiplyAccumulate[512])(uint32_t instruction);
 void (*Thumb32Table[1024])(uint32_t instruction);
 
 
@@ -64,6 +68,7 @@ void initThumb32bitsDataProcessingModifiedImmediate();
 void initThumb32bitsDataProcessingPlainImmediate();
 void initThumb32bitsDataProcessingShiftedRegister();
 void initThumb32bitsLoadWord();
+void initThumb32bitsMultiplyAccumulate();
 void initThumb32Table();
 
 

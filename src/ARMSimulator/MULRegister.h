@@ -5,6 +5,7 @@
 
 
 void MULRegisterT1(uint32_t instruction);
+void MULRegisterT2(uint32_t instruction);
 void executeMULRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S);
 
 #endif // MULRegister_H

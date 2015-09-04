@@ -67,6 +67,9 @@
 #include "CustomTypeAssertion.h"
 #include "ANDImmediate.h"
 #include "NOP.h"
+#include "MLA.h"
+#include "MLS.h"
+
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;
