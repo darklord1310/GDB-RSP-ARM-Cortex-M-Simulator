@@ -61,6 +61,15 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
+#include "TSTImmediate.h"
+#include "BICImmediate.h"
+#include "ORRImmediate.h"
+#include "ORNImmediate.h"
+#include "MVNImmediate.h"
+#include "EORImmediate.h"
+#include "TEQImmediate.h"
+#include "CMNImmediate.h"
+#include "ADCImmediate.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -90,10 +99,10 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xffffff
   coreReg[2] = 0x33333333;
   coreReg[PC] = 0x08000014;
   writeInstructionToMemoryGivenByAddress(0xEA7F70E2, 0x08000014); //mvns.w r0, r2, ASR #31
-  
+
   //execute
   armStep();
-  
+
   TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000018,coreReg[PC]);
   TEST_ASSERT_EQUAL(0xffffffff,coreReg[0]);
@@ -109,9 +118,9 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xf33333
   coreReg[PC] = 0x08000014;
   uint32_t instruction = 0xEA7F00A2;
   writeInstructionToMemoryGivenByAddress(instruction, 0x08000014); //mvns.w r0, r2, ASR #2
-   
+
   armStep();
-  
+
   TEST_ASSERT_EQUAL(0xA1000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000018,coreReg[PC]);
   TEST_ASSERT_EQUAL(0xf3333333,coreReg[0]);
@@ -129,7 +138,7 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0x3fffff
   coreReg[PC] = 0x08000040;
   uint32_t instruction = 0xEA7F7082;
   writeInstructionToMemoryGivenByAddress(instruction, 0x08000040); //mvns.w r0, r2, LSL #30
-  
+
   armStep();
 
   TEST_ASSERT_EQUAL(0x3fffffff,coreReg[0]);
@@ -148,9 +157,9 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xcccccc
   coreReg[PC] = 0x08000040;
   uint32_t instruction = 0xEA7F0002;
   writeInstructionToMemoryGivenByAddress(instruction, coreReg[PC]); //mvns.w r0, r2
-  
+
   armStep();
-  
+
   TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044,coreReg[PC]);
   TEST_ASSERT_EQUAL(0xcccccccc,coreReg[0]);

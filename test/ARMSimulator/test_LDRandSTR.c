@@ -1,4 +1,6 @@
 #include "unity.h"
+#include "CMNImmediate.h"
+#include "ADCImmediate.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"
@@ -64,10 +66,16 @@
 #include "Thumb32bitsTable.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
+#include "TSTImmediate.h"
+#include "BICImmediate.h"
+#include "ORRImmediate.h"
+#include "ORNImmediate.h"
+#include "MVNImmediate.h"
+#include "EORImmediate.h"
+#include "TEQImmediate.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
-
 
 
 void setUp(void)

@@ -79,7 +79,7 @@ void MOVImmediateT2(uint32_t instruction)
   uint32_t temp = (i << 3 ) | imm3; 
   uint32_t modifyControl = (temp << 1) | getBits(imm8,7,7);
   
-  uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8, statusFlag);
+  uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
 
   if(inITBlock())
   {

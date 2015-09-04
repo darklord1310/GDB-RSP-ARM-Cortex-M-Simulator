@@ -32,7 +32,7 @@ void initializeAllTable()
   initThumb16bitsOpcode1011XX();
   initThumb16LoadStoreSingleData();
   initThumb16bitsOpcode1101XX();
-  
+
   //32bits
   initThumb32bitsDataProcessingPlainImmediate();
   initThumb32bitsDataProcessingModifiedImmediate();
@@ -122,9 +122,8 @@ void executeDataProcessingModifiedImmediate(uint32_t instruction)
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t Rd = getBits(instruction,11,8);
   uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
-  
+
   (*Thumb32DataProcessingModifiedImmediate[opcode])(instruction);
-  
 }
 
 
@@ -133,9 +132,8 @@ void executeDataProcessingPlainImmediate(uint32_t instruction)
   uint32_t op = getBits(instruction,24,20);
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t opcode = (op << 4) | Rn ;
-  
+
   (*Thumb32DataProcessingPlainImmediate[opcode])(instruction);
-  
 }
 
 
@@ -143,7 +141,7 @@ void executeDataProcessingShiftedRegister(uint32_t instruction)
 {
   uint32_t op = getBits(instruction,24,21);
   uint32_t Rn = getBits(instruction,19,16);
-  uint32_t Rd = getBits(instruction,11,8);  
+  uint32_t Rd = getBits(instruction,11,8);
   uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
   
   (*Thumb32DataProcessingShiftedRegister[opcode])(instruction);
@@ -158,7 +156,6 @@ void executeLoadWord(uint32_t instruction)
   uint32_t opcode = (((op1 << 6) | op2 ) << 4) | Rn;
   
   (*Thumb32LoadWord[opcode])(instruction);
-  
 }
 
 
@@ -177,17 +174,17 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {
   uint32_t opcode2;
 
-  if( opcode1 <= 0b001111)                              //Shift (immediate), add, subtract, move, and compare 
+  if( opcode1 <= 0b001111)                              //Shift (immediate), add, subtract, move, and compare
   {
     opcode2 = getBits(instruction,29,25);
     (*Thumb16Opcode00XXXX[opcode2])(instruction);
   }
-  else if(opcode1 == 0b010000)                          //Data processing 
+  else if(opcode1 == 0b010000)                          //Data processing
   {
     opcode2 = getBits(instruction,25,22);
     (*Thumb16Opcode010000[opcode2])(instruction);
   }
-  else if(opcode1 == 0b010001)                          //Special data instructions and branch and exchange 
+  else if(opcode1 == 0b010001)                          //Special data instructions and branch and exchange
   {
     opcode2 = getBits(instruction,25,22);
     (*Thumb16Opcode010001[opcode2])(instruction);
@@ -196,7 +193,7 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
   {
     LDRLiteralT1(instruction);
   }
-  else if(opcode1 <= 0b100111)                          //Load/store single data item 
+  else if(opcode1 <= 0b100111)                          //Load/store single data item
   {
     opcode2 = getBits(instruction,31,25);
     (*Thumb16LoadStoreSingleData[opcode2])(instruction);
@@ -225,7 +222,7 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
     opcode2 = getBits(instruction,27,24);
     (*Thumb16Opcode1101XX[opcode2])(instruction);
   }
-  else if(opcode1 == 0b111000 || opcode1 == 0b111001)   //Unconditional branch 
+  else if(opcode1 == 0b111000 || opcode1 == 0b111001)   //Unconditional branch
   {
     UnconditionalBranchT1(instruction);
   }
@@ -246,7 +243,6 @@ void ARMSimulator(uint32_t instruction)
   {
     armSimulate32(instruction);
   }
-
 }
 
 
@@ -324,7 +320,7 @@ void printRegister()
 void writeInstructionToMemoryGivenByAddress(uint32_t instruction, uint32_t address)
 {
   int check = is32or16instruction(instruction);
-  
+
   if(check == INSTRUCTION16bits)
   {
     memoryBlock[virtualMemToPhysicalMem(address) ] = getBits(instruction,23,16);
@@ -337,5 +333,5 @@ void writeInstructionToMemoryGivenByAddress(uint32_t instruction, uint32_t addre
     memoryBlock[virtualMemToPhysicalMem(address + 2) ] = getBits(instruction,7,0);
     memoryBlock[virtualMemToPhysicalMem(address + 3) ] = getBits(instruction,15,8);
   }
-  
+
 }
