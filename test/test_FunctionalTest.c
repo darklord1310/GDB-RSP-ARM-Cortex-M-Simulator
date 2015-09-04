@@ -66,10 +66,18 @@
 #include "ShiftOperation.h"
 #include "CustomTypeAssertion.h"
 #include "ANDImmediate.h"
+#include "TSTImmediate.h"
+#include "BICImmediate.h"
+#include "ORRImmediate.h"
+#include "ORNImmediate.h"
+#include "MVNImmediate.h"
+#include "EORImmediate.h"
+#include "TEQImmediate.h"
+#include "CMNImmediate.h"
+#include "ADCImmediate.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
-
 
 /* extern char *targetCortexM4_XML;
 extern char *arm_m_profile;

@@ -146,7 +146,7 @@ char *readSingleRegister(char *data)
     char *packet = NULL;
     int regNum, byteToSent;
     unsigned long long int decodeVal;    //64-bits value
-    char *asciiString;
+    char asciiString[20];
 
     sscanf(data, "$p%x", &regNum);
     // printf("Reg no: %d\n", regNum);
@@ -155,16 +155,19 @@ char *readSingleRegister(char *data)
     {
         byteToSent = 4;
         decodeVal = decodeFourByte(coreReg[regNum]);
+        sprintf(asciiString, "%08x", decodeVal);
     }
     else if(regNum == 0x2a)     //fPSCR
     {
         byteToSent = 4;
         decodeVal = decodeFourByte(coreReg[fPSCR]);
+        sprintf(asciiString, "%x", decodeVal);
     }
     else if(regNum >= 0x1a && regNum <= 0x29)
     {
         byteToSent = 8;
         decodeVal = decodeEightByte(fpuDoublePrecision[regNum - 0x1a]);
+        sprintf(asciiString, "%016llx", decodeVal);
     }
     else
     {
@@ -172,9 +175,9 @@ char *readSingleRegister(char *data)
         Throw(GDB_SIGNAL_0);
     }
 
-    asciiString = createdHexToString(decodeVal, byteToSent);
+    // asciiString = createdHexToString(decodeVal, byteToSent);
     packet = gdbCreateMsgPacket(asciiString);
-    destroyHexToString(asciiString);
+    // destroyHexToString(asciiString);
 
     return packet;
 }
