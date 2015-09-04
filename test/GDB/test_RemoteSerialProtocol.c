@@ -306,13 +306,13 @@ void test_readSingleRegister_given_data_with_p2_packet_should_return_second_core
     decodeFourByte_ExpectAndReturn(0x21430000, 0x4321);
     // createdHexToString_ExpectAndReturn(0x87654321, 4, "87654321");
     // gdbCreateMsgPacket_ExpectAndReturn("87654321", "$87654321#a4");
-    gdbCreateMsgPacket_ExpectAndReturn("4321", "$00004321#a4");
+    gdbCreateMsgPacket_ExpectAndReturn("00004321", "$00004321#8a");
     // destroyHexToString_Expect("87654321");
 
     reply = readSingleRegister(data);
 
     // TEST_ASSERT_EQUAL_STRING("$87654321#a4", reply);
-    TEST_ASSERT_EQUAL_STRING("$00004321#a4", reply);
+    TEST_ASSERT_EQUAL_STRING("$00004321#8a", reply);
 }
 
 void xtest_readSingleRegister_given_data_with_p12_packet_should_throw_GDB_SIGNAL_0(void)

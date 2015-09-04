@@ -31,7 +31,6 @@ void ANDImmediateT1(uint32_t instruction)
     uint32_t imm3 = getBits(instruction, 14, 12);
     uint32_t statusFlag = getBits(instruction, 20, 20);
     uint32_t i = getBits(instruction, 26, 26);
-    uint32_t bit7 = getBits(instruction, 7, 7);
     uint32_t temp = (i << 3 ) | imm3;
     uint32_t modifyControl = (temp << 1) | getBits(imm8,7,7);
 

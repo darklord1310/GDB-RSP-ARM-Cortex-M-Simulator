@@ -72,7 +72,9 @@
 #include "MVNImmediate.h"
 #include "EORImmediate.h"
 #include "TEQImmediate.h"
-
+#include "NOP.h"
+#include "MLA.h"
+#include "MLS.h"
 
 void setUp(void)
 {

@@ -37,6 +37,8 @@ void initializeAllTable()
   initThumb32bitsDataProcessingPlainImmediate();
   initThumb32bitsDataProcessingModifiedImmediate();
   initThumb32bitsDataProcessingShiftedRegister();
+  initThumb32bitsLoadWord();
+  initThumb32bitsMultiplyAccumulate();
   initThumb32Table();
 }
 
@@ -141,11 +143,32 @@ void executeDataProcessingShiftedRegister(uint32_t instruction)
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t Rd = getBits(instruction,11,8);
   uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
-
-
+  
   (*Thumb32DataProcessingShiftedRegister[opcode])(instruction);
-
 }
+
+
+void executeLoadWord(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,24,23);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t op2 = getBits(instruction,11,6);  
+  uint32_t opcode = (((op1 << 6) | op2 ) << 4) | Rn;
+  
+  (*Thumb32LoadWord[opcode])(instruction);
+}
+
+
+void executeMultiplyAccumulate(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,22,20);
+  uint32_t op2 = getBits(instruction,5,4);
+  uint32_t Ra = getBits(instruction,15,12);
+  uint32_t opcode = (((op1 << 2) | op2 ) << 4) | Ra;
+  
+  (*Thumb32MultiplyAccumulate[opcode])(instruction);
+}
+
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {

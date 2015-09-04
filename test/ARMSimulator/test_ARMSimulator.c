@@ -68,6 +68,9 @@
 #include "TEQImmediate.h"
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
+#include "NOP.h"
+#include "MLA.h"
+#include "MLS.h"
 
 
 void setUp(void)

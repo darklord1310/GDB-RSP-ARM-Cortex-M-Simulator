@@ -207,6 +207,33 @@ void initThumb32Table()
   Thumb32Table[0b0101111101] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101111110] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101111111] = executeDataProcessingShiftedRegister;
+  //
+  Thumb32Table[0b1100001010] = executeLoadWord;
+  Thumb32Table[0b1100011010] = executeLoadWord;
+  Thumb32Table[0b1100101010] = executeLoadWord;
+  Thumb32Table[0b1100111010] = executeLoadWord;
+  Thumb32Table[0b1100001011] = executeLoadWord;
+  Thumb32Table[0b1100011011] = executeLoadWord;
+  Thumb32Table[0b1100101011] = executeLoadWord;
+  Thumb32Table[0b1100111011] = executeLoadWord;
+  //       
+  Thumb32Table[0b1101100000] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100001] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100010] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100011] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100100] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100101] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100110] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101100111] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101000] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101001] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101010] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101011] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101100] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101101] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101110] = executeMultiplyAccumulate;
+  Thumb32Table[0b1101101111] = executeMultiplyAccumulate;
+  
 }
 
 
@@ -352,3 +379,123 @@ void initThumb32bitsDataProcessingModifiedImmediate()
   for(i = 0b1010000000000; i < 0b1011000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
 }
+
+
+
+void initThumb32bitsLoadWord()
+{
+  int i,j,k;
+  uint32_t dummy;
+  
+  //LDRLiteral T2
+  dummy = 0b000000001111;
+  for(i = 0b0000000; i <= 0b1111111; i++)
+  {
+    dummy = setBits(dummy,i,10,4);
+    Thumb32LoadWord[dummy] = LDRLiteralT2;
+  }
+  
+  //LDRImmediate T3 
+  for(k = 0b000000; k <= 0b111111; k++)
+  {
+    dummy = setBits(dummy,k,9,4);
+    for(j = 0; j < 0b1111; j ++)
+    {
+      dummy = setBits(dummy,j,3,0);
+      Thumb32LoadWord[dummy] = LDRImmediateT3;
+    }
+  }
+
+  
+  //LDRImmediate T4
+  dummy = 0b001001000000;
+  for(k = 0; k < 4; k++)
+  {
+    dummy = setBits(dummy,k,8,7);
+    for(i = 0; i < 4; i ++)
+    {
+      dummy = setBits(dummy, i, 5, 4);
+      for(j = 0; j < 0b1111; j ++)
+      {
+        dummy = setBits(dummy,j,3,0);
+        Thumb32LoadWord[dummy] = LDRImmediateT4;
+      }
+    }
+  }
+  
+  dummy = 0b001100000000;
+  for(i = 0; i < 4; i ++)
+  {
+    dummy = setBits(dummy, i, 5, 4);
+    for(j = 0; j < 0b1111; j ++)
+    {
+      dummy = setBits(dummy,j,3,0);
+      Thumb32LoadWord[dummy] = LDRImmediateT4;
+    }
+  }
+  
+  //LDR Register T2
+  dummy = 0b000000000000;
+  for(j = 0; j < 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,3,0);
+    Thumb32LoadWord[dummy] = LDRRegisterT2;
+  }
+  
+  //LDRT T1
+  dummy = 0b001110000000;
+  for(i = 0; i < 4; i ++)
+  {
+    dummy = setBits(dummy, i, 5, 4);
+    for(j = 0; j < 0b1111; j ++)
+    {
+      dummy = setBits(dummy,j,3,0);
+      Thumb32LoadWord[dummy] = LDRTT1;
+    }
+  }
+  
+}
+
+
+void initThumb32bitsMultiplyAccumulate()
+{
+  int i,j,k;
+  uint32_t dummy;
+  
+  //MLA T1
+  dummy = 0b000000000;
+  for(j = 0; j < 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,3,0);
+    Thumb32MultiplyAccumulate[dummy] = MLAT1;
+  }
+  
+  //MUL T2
+  Thumb32MultiplyAccumulate[0b000001111] = MULRegisterT2;
+  
+  //MLS
+  dummy = 0b000010000;
+  for(j = 0; j <= 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,3,0);
+    Thumb32MultiplyAccumulate[dummy] = MLST1;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

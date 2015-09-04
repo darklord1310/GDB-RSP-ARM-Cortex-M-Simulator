@@ -122,7 +122,7 @@ void LDRLiteralT2(uint32_t instruction)
 
   if(Rt == PC)                                                    //if the Rt is PC
   {
-    if(inITBlock() && isLastInITBlock())                          //if it is last or inside the IT block, then only execute, else throw error
+    if(isLastInITBlock() || !inITBlock() )                        //if it is last or outside the IT block, then only execute, else throw error
     {
       if( checkCondition(cond) )
       {

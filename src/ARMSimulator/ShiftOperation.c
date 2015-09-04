@@ -106,7 +106,11 @@ uint32_t executeLSL(uint32_t shiftAmount, uint32_t valueToShift, uint32_t S)
     
   if(shiftAmount <= 32)
   {
-    lastBitShifted = getBits(valueToShift, 32-shiftAmount, 32-shiftAmount);
+    if(shiftAmount == 0)
+      lastBitShifted = 0;
+    else
+      lastBitShifted = getBits(valueToShift, 32-shiftAmount, 32-shiftAmount);
+
     if( shiftAmount == 32)
       shiftedValue = 0;
     else

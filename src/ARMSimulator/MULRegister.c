@@ -52,6 +52,25 @@ void MULRegisterT1(uint32_t instruction)
 
 
 
+void MULRegisterT2(uint32_t instruction)
+{
+  uint32_t Rn = getBits(instruction, 21, 19);
+  uint32_t Rdm = getBits(instruction, 18, 16);
+	
+  if( inITBlock() )
+  {  
+    if( checkCondition(cond) )
+      executeMULRegister(Rdm, Rdm, Rn,0);  //status flag is not affected
+    
+    shiftITState();
+  }
+  else
+    executeMULRegister(Rdm, Rdm, Rn, 1);   //status flag is affected
+  
+  
+  coreReg[PC] += 2;
+}
+
 
 
 /*  Bitwise NOT (register) writes the bitwise inverse of a register value to the destination register. It can

@@ -69,6 +69,7 @@ void LDRImmediateT1(uint32_t instruction)
 
 
 
+
 /*Load Register(Immediate) Encoding T2 
  * 
     LDR<c> <Rt>,[SP{,#<imm8>}]
@@ -121,6 +122,264 @@ void LDRImmediateT2(uint32_t instruction)
   coreReg[PC] += 2;
 }
 
+
+/*Load Register(Immediate) Encoding T3 
+ * 
+    LDR<c>.W <Rt>,[<Rn>{,#<imm12>}]
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1  1   1  1| 0  0| 0  1  1  0  1|     Rn    |     Rt    |          imm12          |
+
+  where:
+              <c><q>            See Standard assembler syntax fields on page A6-7.
+              
+              <Rt>              Specifies the destination register. This register is allowed to be the SP. It is also allowed to
+                                be the PC, provided the instruction is either outside an IT block or the last instruction of an
+                                IT block. If it is the PC, it causes a branch to the address (data) loaded into the PC.
+                                
+              <Rn>              Specifies the base register. This register is allowed to be the SP. If this register is the PC, see
+                                LDR (literal) on page A6-90.
+                                
+              +/-               Is + or omitted to indicate that the immediate offset is added to the base register value
+                                (add == TRUE), or – to indicate that the offset is to be subtracted (add == FALSE). Different
+                                instructions are generated for #0 and #-0.
+                                
+              <imm>             Specifies the immediate offset added to or subtracted from the value of <Rn> to form the
+                                address. Allowed values are multiples of 4 in the range 0-124 for encoding T1, multiples of
+                                4 in the range 0-1020 for encoding T2, any value in the range 0-4095 for encoding T3, and
+                                any value in the range 0-255 for encoding T4. For the offset addressing syntax, <imm> can be
+                                omitted, meaning an offset of 0.
+          
+*/
+void LDRImmediateT3(uint32_t instruction)
+{
+  uint32_t address;
+  uint32_t imm12 = getBits(instruction,11,0);  
+  uint32_t Rn   = getBits(instruction,19,16);  
+  uint32_t Rt   = getBits(instruction,15,12);  
+ 
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      address = coreReg[Rn] + imm12;
+      if(Rt == PC)
+      {
+        if( getBits(address,1,0) == 0b00)
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+        else
+        {
+          placePCtoVectorTable(UsageFault);
+          Throw(UsageFault);
+        }
+      }
+      else
+        coreReg[Rt] = loadByteFromMemory(address, 4);                      
+    }
+    
+    shiftITState();
+  }
+  else
+  {
+    address = coreReg[Rn] + imm12; 
+    if(Rt == PC)
+    {
+      if( getBits(address,1,0) == 0b00)
+        coreReg[Rt] = loadByteFromMemory(address, 4);
+      else
+      {
+        placePCtoVectorTable(UsageFault);
+        Throw(UsageFault);
+      }
+    }
+    else
+      coreReg[Rt] = loadByteFromMemory(address, 4);  
+  }
+  
+  if(Rt != PC)
+    coreReg[PC] += 4;
+}
+
+
+
+/*Load Register(Immediate) Encoding T4
+ * 
+    LDR<c> <Rt>,[<Rn>,#-<imm8>]
+    LDR<c> <Rt>,[<Rn>],#+/-<imm8>
+    LDR<c> <Rt>,[<Rn>,#+/-<imm8>]!
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1  1   1  1| 0  0| 0  0  1  0  1|     Rn    |     Rt    | 1| P U W|     imm8      |
+
+  where:
+              <c><q>            See Standard assembler syntax fields on page A6-7.
+              
+              <Rt>              Specifies the destination register. This register is allowed to be the SP. It is also allowed to
+                                be the PC, provided the instruction is either outside an IT block or the last instruction of an
+                                IT block. If it is the PC, it causes a branch to the address (data) loaded into the PC.
+                                
+              <Rn>              Specifies the base register. This register is allowed to be the SP. If this register is the PC, see
+                                LDR (literal) on page A6-90.
+                                
+              +/-               Is + or omitted to indicate that the immediate offset is added to the base register value
+                                (add == TRUE), or – to indicate that the offset is to be subtracted (add == FALSE). Different
+                                instructions are generated for #0 and #-0.
+                                
+              <imm>             Specifies the immediate offset added to or subtracted from the value of <Rn> to form the
+                                address. Allowed values are multiples of 4 in the range 0-124 for encoding T1, multiples of
+                                4 in the range 0-1020 for encoding T2, any value in the range 0-4095 for encoding T3, and
+                                any value in the range 0-255 for encoding T4. For the offset addressing syntax, <imm> can be
+                                omitted, meaning an offset of 0.
+          
+*/
+void LDRImmediateT4(uint32_t instruction)
+{
+  uint32_t address;
+  uint32_t imm8 = getBits(instruction,7,0);  
+  uint32_t Rn   = getBits(instruction,19,16);  
+  uint32_t Rt   = getBits(instruction,15,12);  
+  uint32_t P = getBits(instruction,10,10);
+  uint32_t U = getBits(instruction,9,9);
+  uint32_t W = getBits(instruction,8,8);
+ 
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(U == 1)
+        address = coreReg[Rn] +  imm8;  
+      else
+        address = coreReg[Rn] -  imm8;
+        
+      if(P == 1 && W == 0)
+      {
+        if(Rt == PC)
+        {
+          if( getBits(address,1,0) == 0b00)
+            coreReg[Rt] = loadByteFromMemory(address, 4);
+          else
+          {
+            placePCtoVectorTable(UsageFault);
+            Throw(UsageFault);
+          }
+        }
+        else
+          coreReg[Rt] = loadByteFromMemory(address, 4);    
+      }
+      else if(P == 1 && W == 1)
+      {
+        if(Rt != PC)
+        {
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rn] = address;
+        }
+        else
+        {
+          if( getBits(address,1,0) == 0b00)
+          {
+            coreReg[Rt] = loadByteFromMemory(address, 4);
+            coreReg[Rn] = address;
+          }
+          else
+          {
+            placePCtoVectorTable(UsageFault);
+            Throw(UsageFault);
+          }
+        }
+      }
+      else if(P == 0 && W == 1)
+      {
+        if(Rt != PC)
+        {
+          coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+          coreReg[Rn] = address;
+        }
+        else
+        {
+          if( getBits(coreReg[Rn],1,0) == 0b00)
+          {
+            coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+            coreReg[Rn] = address;
+          }
+          else
+          {
+            placePCtoVectorTable(UsageFault);
+            Throw(UsageFault);
+          }
+        }
+      }
+    }
+    shiftITState();
+  }
+  else
+  {
+      if(U == 1)
+        address = coreReg[Rn] +  imm8;  
+      else
+        address = coreReg[Rn] -  imm8;
+        
+      if(P == 1 && W == 0)
+      {
+        if(Rt == PC)
+        {
+          if( getBits(address,1,0) == 0b00)
+            coreReg[Rt] = loadByteFromMemory(address, 4);
+          else
+          {
+            placePCtoVectorTable(UsageFault);
+            Throw(UsageFault);
+          }
+        }
+        else
+          coreReg[Rt] = loadByteFromMemory(address, 4);    
+      }
+      else if(P == 1 && W == 1)
+      {
+        if(Rt != PC)
+        {
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rn] = address;
+        }
+        else
+        {
+          if( getBits(address,1,0) == 0b00)
+          {
+            coreReg[Rt] = loadByteFromMemory(address, 4);
+            coreReg[Rn] = address;
+          }
+          else
+          {
+            placePCtoVectorTable(UsageFault);
+            Throw(UsageFault);
+          }
+        }
+      }
+      else if(P == 0 && W == 1)
+      {
+        if(Rt != PC)
+        {
+          coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+          coreReg[Rn] = address;
+        }
+        else
+        {
+          if( getBits(coreReg[Rn],1,0) == 0b00)
+          {
+            coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+            coreReg[Rn] = address;
+          }
+          else
+          {
+            placePCtoVectorTable(UsageFault);
+            Throw(UsageFault);
+          }
+        }
+      }
+  }
+  
+  if(Rt != PC)
+    coreReg[PC] += 4;
+}
 
 
 

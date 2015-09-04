@@ -5,6 +5,7 @@
 #include "ARMRegisters.h"
 #include "StatusRegisters.h"
 #include "ConditionalExecution.h"
+#include "NOP.h"
 
 /*If-Then Encoding T1 
     
@@ -58,11 +59,22 @@ void ITandHints(uint32_t instruction)
 {
   uint32_t IT7to2 = getBits(instruction,23,18);               //IT[7:2]
   uint32_t IT1to0 = getBits(instruction,17,16);               //IT[1:0]
-
-  coreReg[xPSR] = setBits(coreReg[xPSR], IT7to2, 15, 10);
-  coreReg[xPSR] = setBits(coreReg[xPSR], IT1to0, 26, 25);
+  uint32_t mask = getBits(instruction,19,16);
+  uint32_t firstcond = getBits(instruction,23,20);
   
-  cond = getITCond();                                         //update the condition
+  if(mask != 0b0000)
+  {
+    coreReg[xPSR] = setBits(coreReg[xPSR], IT7to2, 15, 10);
+    coreReg[xPSR] = setBits(coreReg[xPSR], IT1to0, 26, 25);
   
-  coreReg[PC] += 2;
+    cond = getITCond();                                         //update the condition
+    coreReg[PC] += 2;
+  }
+  else
+  {
+    if(mask == 0b0000 && firstcond == 0b0000)
+      NOPT1();
+  }
+  
+  
 }
