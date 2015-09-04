@@ -88,80 +88,23 @@ void tearDown(void)
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //MVN Register T2
+  //MLA T1
 
-//test mvns.w r0, r2, ASR #31
-//test carry flag not set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xffffffff_xPSR_0x81000000()
+//test MLA  r2,r3,r1,r0
+void xtest_instruction_given_0xfb030201_should_get_R2_is_0xc19999cf()
 {
   //create test fixture
-  setCarryFlag();
-  coreReg[0] = 0x11111111;
+  coreReg[0] = 0x0800004f;
+  coreReg[1] = 0x08000060;
   coreReg[2] = 0x33333333;
-  coreReg[PC] = 0x08000014;
-  writeInstructionToMemoryGivenByAddress(0xEA7F70E2, 0x08000014); //mvns.w r0, r2, ASR #31
-
-  //execute
+  coreReg[3] = 0x44444444;
+  writeInstructionToMemoryGivenByAddress(0xfb030201, 0x0800003e);  // MLA  r2,r3,r1,r0
+  coreReg[PC] = 0x0800003e;
+  
+  //test
   armStep();
-
-  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
-  TEST_ASSERT_EQUAL(0x08000018,coreReg[PC]);
-  TEST_ASSERT_EQUAL(0xffffffff,coreReg[0]);
+  TEST_ASSERT_EQUAL(0xc19999cf, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x08000042, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
 
-
-//test mvns.w r0, r2, ASR #2
-//test carry flag is set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xf3333333_xPSR_0xa1000000()
-{
-  coreReg[0] = 0x11111111;
-  coreReg[2] = 0x33333333;
-  coreReg[PC] = 0x08000014;
-  uint32_t instruction = 0xEA7F00A2;
-  writeInstructionToMemoryGivenByAddress(instruction, 0x08000014); //mvns.w r0, r2, ASR #2
-
-  armStep();
-
-  TEST_ASSERT_EQUAL(0xA1000000,coreReg[xPSR]);
-  TEST_ASSERT_EQUAL(0x08000018,coreReg[PC]);
-  TEST_ASSERT_EQUAL(0xf3333333,coreReg[0]);
-}
-
-
-
-//test mvns.w r0, r2, LSL #30
-//test carry flag is not set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0x3fffffff_xPSR_0x01000000()
-{
-  setCarryFlag();
-  coreReg[0] = 0x11111111;
-  coreReg[2] = 0x33333333;
-  coreReg[PC] = 0x08000040;
-  uint32_t instruction = 0xEA7F7082;
-  writeInstructionToMemoryGivenByAddress(instruction, 0x08000040); //mvns.w r0, r2, LSL #30
-
-  armStep();
-
-  TEST_ASSERT_EQUAL(0x3fffffff,coreReg[0]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
-  TEST_ASSERT_EQUAL(0x08000044,coreReg[PC]);
-}
-
-
-//test mvns.w r0, r2
-//test carry flag is set after execute still set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xcccccccc_xPSR_0xa1000000()
-{
-  setCarryFlag();
-  coreReg[0] = 0x11111111;
-  coreReg[2] = 0x33333333;
-  coreReg[PC] = 0x08000040;
-  uint32_t instruction = 0xEA7F0002;
-  writeInstructionToMemoryGivenByAddress(instruction, coreReg[PC]); //mvns.w r0, r2
-
-  armStep();
-
-  TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
-  TEST_ASSERT_EQUAL(0x08000044,coreReg[PC]);
-  TEST_ASSERT_EQUAL(0xcccccccc,coreReg[0]);
-}
