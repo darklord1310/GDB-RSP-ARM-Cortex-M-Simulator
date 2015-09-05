@@ -286,39 +286,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
 
 void initThumb32bitsDataProcessingModifiedImmediate()
 {
-  /* Thumb32DataProcessingModifiedImmediate[0b0010011110000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110111] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111111] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110111] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2; */
-  // AND and TST Immediate
+  // AND and TST Immediate T1
   int i;
 
   for(i = 0b0000000000000; i < 0b0001000000000; i++)
@@ -331,10 +299,10 @@ void initThumb32bitsDataProcessingModifiedImmediate()
               Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
       }
   }
-  // BIC Immediate
+  // BIC Immediate T1
   for(i = 0b0001000000000; i < 0b0010000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = BICImmediateT1;
-  // ORR and MOV Immediate
+  // ORR Immediate T1 and MOV Immediate T2
   for(i = 0b0010000000000; i < 0b0011000000000; i++)
   {
       if((i & 0b0000011110000) != 0b11110000)
@@ -342,7 +310,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       else
           Thumb32DataProcessingModifiedImmediate[i] = MOVImmediateT2;
   }
-  // ORN and MVN Immediate
+  // ORN and MVN Immediate T1
   for(i = 0b0011000000000; i < 0b0100000000000; i++)
   {
       if((i & 0b0000011110000) != 0b11110000)
@@ -350,7 +318,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       else
           Thumb32DataProcessingModifiedImmediate[i] = MVNImmediateT1;
   }
-  // EOR and TEQ Immediate
+  // EOR and TEQ Immediate T1
   for(i = 0b0100000000000; i < 0b0101000000000; i++)
   {
       if((i & 0b0000000001111) != 0b1111)
@@ -361,7 +329,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
       }
   }
-  // ADD and CMN Immediate
+  // ADD Immediate T3 and CMN Immediate T1
   for(i = 0b1000000000000; i < 0b1001000000000; i++)
   {
       if((i & 0b0000000001111) != 0b1111)
@@ -375,9 +343,26 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = CMNImmediateT1;
       }
   }
-  // ADC Immediate
+  // ADC Immediate T1
   for(i = 0b1010000000000; i < 0b1011000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
+  // SBC Immediate T1
+  for(i = 0b1011000000000; i < 0b1110000000000; i++)
+    Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
+  // SUB Immediate T3 and CMP Immediate T1
+  for(i = 0b1101000000000; i < 0b1110000000000; i++)
+  {
+      if((i & 0b0000000001111) != 0b1111)
+      {
+          if((i & 0b0000011010000) != 0b11010000)    // Rd != 1111 and Rn != 1101
+            Thumb32DataProcessingModifiedImmediate[i] = SUBImmediateT3;
+      }
+      // else
+      // {
+          // if(i >= 0b1101100000000)      // S == 1 and Rd == 1111
+            // Thumb32DataProcessingModifiedImmediate[i] = CMNImmediateT1;
+      // }
+  }
 }
 
 

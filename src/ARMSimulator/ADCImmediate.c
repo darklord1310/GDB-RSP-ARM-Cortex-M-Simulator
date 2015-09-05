@@ -13,7 +13,7 @@ where :
                         does not update the flags.
 
           <c><q>        See Standard assembler syntax fields on page A6-7.
-          
+
           <Rd>          Specifies the destination register. If <Rd> is omitted, this register is the same as <Rn>.
 
           <Rn>          Specifies the register that contains the operand. This register is allowed to be the SP.
