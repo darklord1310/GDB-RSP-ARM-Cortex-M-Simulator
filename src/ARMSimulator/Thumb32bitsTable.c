@@ -262,27 +262,10 @@ void initThumb32bitsDataProcessingShiftedRegister()
 
 void initThumb32bitsDataProcessingPlainImmediate()
 {
-  //00100XXXX
-  Thumb32DataProcessingPlainImmediate[0b001000000] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000001] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000010] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000011] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000100] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000101] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000110] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000111] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001000] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001001] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001010] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001011] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001100] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001101] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001110] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001111] = MOVImmediateT3;
-  // Add Immediate T4 and ADR T3
+  // ADD Immediate T4 and ADR T3
   int i;
 
-  for(i = 0b0000000000; i < 0b000010000; i++)
+  for(i = 0b000000000; i < 0b000010000; i++)
   {
       if((i & 0b000001111) != 0b1111)
       {
@@ -292,8 +275,21 @@ void initThumb32bitsDataProcessingPlainImmediate()
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT3;
   }
+  // MOV Immediate T3
+  for(i = 0b001000000; i < 0b001010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = MOVImmediateT3;
+  // SUB Immediate T4 and ADR T2
+  for(i = 0b010100000; i < 0b010110000; i++)
+  {
+      if((i & 0b000001111) != 0b1111)
+      {
+        if((i & 0b000001101) != 0b1101)
+          Thumb32DataProcessingPlainImmediate[i] = SUBImmediateT4;
+      }
+      else
+        Thumb32DataProcessingPlainImmediate[i] = ADRT2;
+  }
   //
-  
 }
 
 

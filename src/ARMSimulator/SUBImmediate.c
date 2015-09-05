@@ -189,7 +189,26 @@ where :
 */
 void SUBImmediateT4(uint32_t instruction)
 {
+  uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t Rn = getBits(instruction, 19, 16);
+  uint32_t imm3 = getBits(instruction, 14, 12);
 
+  uint32_t i = getBits(instruction, 26, 26);
+  uint32_t temp = (i << 3 ) | imm3;
+
+  uint32_t ModifiedConstant = temp << 8 | imm8;
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeSUBImmediate(Rn, Rd, ModifiedConstant, 0);
+    shiftITState();
+  }
+  else
+    executeSUBImmediate(Rn, Rd, ModifiedConstant, 0);
+
+  coreReg[PC] += 4;
 }
 
 
