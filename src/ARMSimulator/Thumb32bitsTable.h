@@ -57,6 +57,7 @@
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
+#include "ADR.h"
 #include "ARMSimulator.h"
 #include "LDRLiteral.h"
 #include "getMask.h"

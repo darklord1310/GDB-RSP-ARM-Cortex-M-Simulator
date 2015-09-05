@@ -180,7 +180,6 @@ void ADDImmediateT4(uint32_t instruction)
   uint32_t imm3 = getBits(instruction, 14, 12);
 
   uint32_t i = getBits(instruction, 26, 26);
-  uint32_t bit7 = getBits(instruction, 7, 7);
   uint32_t temp = (i << 3 ) | imm3;
 
   uint32_t ModifiedConstant = temp << 8 | imm8;

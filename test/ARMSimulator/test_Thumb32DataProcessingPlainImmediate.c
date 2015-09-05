@@ -241,3 +241,27 @@ void test_ADDImmediateT4_given_0xf6037042_and_r3_is_0xabababab_should_get_0xabab
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ADR Immediate T3
+
+/*
+  ADR.W R5, here (0x8000020)
+*/
+void test_ADRT3_given_0xf20f050c_and_PC_is_0x08000010_should_get_0xabababed_at_r5()
+{
+  coreReg[3] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf20f050c, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x8000020, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+
+

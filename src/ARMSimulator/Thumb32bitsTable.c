@@ -279,16 +279,21 @@ void initThumb32bitsDataProcessingPlainImmediate()
   Thumb32DataProcessingPlainImmediate[0b001001101] = MOVImmediateT3;
   Thumb32DataProcessingPlainImmediate[0b001001110] = MOVImmediateT3;
   Thumb32DataProcessingPlainImmediate[0b001001111] = MOVImmediateT3;
-  // Add Immediate T3
+  // Add Immediate T4 and ADR T3
   int i;
 
   for(i = 0b0000000000; i < 0b000010000; i++)
   {
       if((i & 0b000001111) != 0b1111)
-        Thumb32DataProcessingPlainImmediate[i] = ADDImmediateT4;
-      // else
-        // Thumb32DataProcessingPlainImmediate[i] = ADDImmediateT4;
+      {
+        if((i & 0b000001101) != 0b1101)
+          Thumb32DataProcessingPlainImmediate[i] = ADDImmediateT4;
+      }
+      else
+        Thumb32DataProcessingPlainImmediate[i] = ADRT3;
   }
+  //
+  
 }
 
 
