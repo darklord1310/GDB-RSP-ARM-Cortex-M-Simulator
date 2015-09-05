@@ -290,6 +290,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
         Thumb32DataProcessingPlainImmediate[i] = ADRT2;
   }
   //
+  
 }
 
 
