@@ -74,6 +74,7 @@
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
+#include "MOVT.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"

@@ -2,6 +2,7 @@
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
+#include "MOVT.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"

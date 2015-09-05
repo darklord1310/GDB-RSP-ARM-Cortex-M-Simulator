@@ -2,6 +2,7 @@
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
+#include "MOVT.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"

@@ -64,6 +64,7 @@
 #include "getAndSetBits.h"
 #include "MLA.h"
 #include "MLS.h"
+#include "MOVT.h"
 #include <stdint.h>
 
 

@@ -71,6 +71,7 @@
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
+#include "MOVT.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -367,6 +368,49 @@ void test_ADRT2_given_0xf2af0504_and_PC_is_0x08000010_should_get_0xabababed_at_r
   armStep();
 
   TEST_ASSERT_EQUAL(0x08000010, coreReg[5]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //MOVT Immediate T1
+
+/*
+  MOVT R3, #0xffff
+*/
+void test_MOVTT1_given_0xf6cf73ff_and_r3_is_0xabababab_should_get_0xffffabab_at_r3()
+{
+  coreReg[3] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf6cf73ff, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffabab, coreReg[3]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  MOVT R3, #0x0
+*/
+void test_MOVTT1_given_0x0xf2c00300_and_r3_is_0xabababab_should_get_0xabab_at_r3()
+{
+  coreReg[3] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf2c00300, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabab, coreReg[3]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
 }
