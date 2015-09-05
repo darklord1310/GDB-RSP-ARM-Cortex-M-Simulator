@@ -3,6 +3,7 @@
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
+#include "SSAT.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"

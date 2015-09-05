@@ -289,9 +289,14 @@ void initThumb32bitsDataProcessingPlainImmediate()
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT2;
   }
-  // MOVT Immediate T1
+  // MOVT T1
   for(i = 0b011000000; i < 0b011010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = MOVTT1;
+  // SSAT T1
+  for(i = 0b100000000; i < 0b100010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = SSATT1;
+  for(i = 0b100100000; i < 0b100110000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = SSATT1;
   //
 }
 

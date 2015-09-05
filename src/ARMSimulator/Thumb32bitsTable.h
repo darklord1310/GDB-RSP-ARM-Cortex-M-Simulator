@@ -65,6 +65,7 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "MOVT.h"
+#include "SSAT.h"
 #include <stdint.h>
 
 

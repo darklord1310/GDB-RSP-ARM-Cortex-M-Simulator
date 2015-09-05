@@ -72,6 +72,7 @@
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
+#include "SSAT.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -375,7 +376,7 @@ void test_ADRT2_given_0xf2af0504_and_PC_is_0x08000010_should_get_0xabababed_at_r
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //MOVT Immediate T1
+  //MOVT T1
 
 /*
   MOVT R3, #0xffff
@@ -412,6 +413,87 @@ void test_MOVTT1_given_0x0xf2c00300_and_r3_is_0xabababab_should_get_0xabab_at_r3
 
   TEST_ASSERT_EQUAL(0xabab, coreReg[3]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //SSAT T1
+
+/*
+  SSAT  R0, #16, R1, LSL #2
+*/
+void test_SSATT1_given_0xf301008f_and_r1_is_0xf_should_shift_r1_left_by_2_and_get_0x3c_at_r0()
+{
+  coreReg[1] = 0xf;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf301008f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x3c, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  SSAT  R0, #16, R1, ASR #2
+*/
+void test_SSATT1_given_0xf321100f_and_r1_is_0xf_should_shift_r1_right_by_2_and_get_0_at_r0()
+{
+  coreReg[1] = 0xf;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf321100f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  SSAT  R0, #16, R1
+*/
+void test_SSATT1_given_0xf301000f_and_r1_is_0xfffe0000_should_get_0xffff8000_at_r0()
+{
+  coreReg[1] = 0xfffe0000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf301000f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffff8000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x09000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  SSAT  R0, #16, R1
+*/
+void test_SSATT1_given_0xf301000f_and_r1_is_0x8000_should_get_0x7fff_at_r0()
+{
+  coreReg[1] = 0x8000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf301000f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7fff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x09000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
 }
 

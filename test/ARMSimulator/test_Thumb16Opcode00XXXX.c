@@ -4,6 +4,7 @@
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
+#include "SSAT.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"

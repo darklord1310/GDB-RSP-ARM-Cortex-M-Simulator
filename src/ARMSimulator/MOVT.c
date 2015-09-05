@@ -43,7 +43,7 @@ void MOVTT1(uint32_t instruction)
 /* This instruction writes an immediate value to the top halfword of the destination register.
    It does not affect the contents of the bottom halfword.
 
-   Input: Rn          destination register
+   Input: Rd          destination register
           immediate   immediate value which will be writed to top halfword of Rd
 */
 void executeMOVT(uint32_t Rd, uint32_t immediate)

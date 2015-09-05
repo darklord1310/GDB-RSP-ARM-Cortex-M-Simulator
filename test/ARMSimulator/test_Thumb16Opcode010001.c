@@ -3,6 +3,7 @@
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
+#include "SSAT.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
