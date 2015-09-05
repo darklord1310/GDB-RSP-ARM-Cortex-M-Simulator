@@ -357,11 +357,11 @@ void initThumb32bitsDataProcessingModifiedImmediate()
           if((i & 0b0000011010000) != 0b11010000)    // Rd != 1111 and Rn != 1101
             Thumb32DataProcessingModifiedImmediate[i] = SUBImmediateT3;
       }
-      // else
-      // {
-          // if(i >= 0b1101100000000)      // S == 1 and Rd == 1111
-            // Thumb32DataProcessingModifiedImmediate[i] = CMNImmediateT1;
-      // }
+      else
+      {
+          if(i >= 0b1101100000000)      // S == 1 and Rd == 1111
+            Thumb32DataProcessingModifiedImmediate[i] = CMPImmediateT2;
+      }
   }
 }
 

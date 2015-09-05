@@ -952,8 +952,8 @@ void test_ADDImmediateT3_given_0xf1136200_and_r3_is_0x7fffffff_should_get_0x87ff
   //CMN Immediate T1
 
 //affect status flag (negative)
-//test CMN R0, #0x80000000 given R3 = 0x2fffffff
-void test_CMNImmediateT1_given_0xf1104f00_and_r0_is_0x2fffffff_should_get_set_neg_flag(void)
+//test CMN R0, #0x80000000 given R0 = 0x2fffffff
+void test_CMNImmediateT1_given_0xf1104f00_and_r0_is_0x2fffffff_should_set_neg_flag(void)
 {
   coreReg[0] = 0x2fffffff;
 
@@ -970,7 +970,7 @@ void test_CMNImmediateT1_given_0xf1104f00_and_r0_is_0x2fffffff_should_get_set_ne
 }
 
 //affect status flag (zero and carry)
-//test CMN R0, #0x10000000 given R3 = 0xf0000000
+//test CMN R0, #0x10000000 given R0 = 0xf0000000
 void test_CMNImmediateT1_given_0xf1105f80_and_r0_is_0xf0000000_should_set_zero_and_carry_flag(void)
 {
   coreReg[0] = 0xf0000000;
@@ -988,7 +988,7 @@ void test_CMNImmediateT1_given_0xf1105f80_and_r0_is_0xf0000000_should_set_zero_a
 }
 
 //affect status flag (overflow)
-//test CMN R0, #0x80000000 given R3 = 0x7fffffff
+//test CMN R0, #0x80000000 given R0 = 0x7fffffff
 void test_CMNImmediateT1_given_0xf1106f00_and_r0_is_0x7fffffff_should_set_neg_and_overflow_flag(void)
 {
   coreReg[0] = 0x7fffffff;
@@ -1300,6 +1300,65 @@ void test_SUBImmediateT3_given_0xf1b34200_and_r3_is_0x7fffffff_should_get_0x87ff
   armStep();
 
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //CMP Immediate T2
+
+//affect status flag (negative)
+//test CMP.W R0, #0x30000000 given R0 = 0x2fffffff
+void test_CMPImmediateT2_given_0xf1b05f40_and_r0_is_0x2fffffff_should_set_neg_flag(void)
+{
+  coreReg[0] = 0x2fffffff;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1b05f40, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x2fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (zero and carry)
+//test CMP.W R0, #0xf0000000 given R0 = 0xf0000000
+void test_CMPImmediateT2_given_0xf1b04f70_and_r0_is_0xf0000000_should_set_zero_and_carry_flag(void)
+{
+  coreReg[0] = 0xf0000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1b04f70, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf0000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+//affect status flag (overflow)
+//test CMP.W R0, #0x80000000 given R0 = 0x7fffffff
+void test_CMPImmediateT2_given_0xf1106f00_and_r0_is_0x7fffffff_should_set_neg_and_overflow_flag(void)
+{
+  coreReg[0] = 0x7fffffff;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf1b04f00, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
   TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
