@@ -363,6 +363,9 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = CMPImmediateT2;
       }
   }
+  // RSB Immediate T2
+  for(i = 0b1110000000000; i < 0b1111000000000; i++)
+    Thumb32DataProcessingModifiedImmediate[i] = RSBImmediateT2;
 }
 
 
