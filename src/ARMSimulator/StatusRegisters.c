@@ -304,9 +304,25 @@ void setQFlag()
   coreReg[xPSR] = coreReg[xPSR] | 0x08000000;
 }
 
+/*
+  To update the Q flag based on the result and signed range given
 
-void updateQFlag(int32_t signedRange, int32_t result)
+  Input: signedRange        range of the saturation value
+         result             value after saturated
+         sign
+            0               means unsigned saturation
+            1               means signed saturation
+*/
+void updateQFlag(int32_t signedRange, int32_t result, int32_t sign)
 {
-  if((result > (signedRange -1)) || (result < -signedRange))
-    setQFlag();
+  if(sign)
+  {
+    if((result > (signedRange -1)) || (result < -signedRange))
+        setQFlag();
+  }
+  else
+  {
+    if((result > (signedRange -1)) || (result < 0))
+      setQFlag();
+  }
 }

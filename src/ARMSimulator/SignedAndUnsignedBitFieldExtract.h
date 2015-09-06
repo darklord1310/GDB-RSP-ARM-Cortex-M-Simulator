@@ -9,5 +9,6 @@
 #include <stdio.h>
 
 void SBFXT1(uint32_t instruction);
+void UBFXT1(uint32_t instruction);
 
 #endif // SignedAndUnsignedBitFieldExtract_H

@@ -308,6 +308,14 @@ void initThumb32bitsDataProcessingPlainImmediate()
       else
         Thumb32DataProcessingPlainImmediate[i] = BFCT1;
   }
+  // USAT T1
+  for(i = 0b110000000; i < 0b110010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = USATT1;
+  for(i = 0b110100000; i < 0b110110000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = USATT1;
+  // UBFX T1
+  for(i = 0b111000000; i < 0b111010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = UBFXT1;
 }
 
 
