@@ -6,6 +6,9 @@
 
 void initThumb32Table()
 {
+  int i,j,k;
+  uint32_t dummy;
+  
   Thumb32Table[0b1000000000] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
@@ -250,6 +253,19 @@ void initThumb32Table()
   Thumb32Table[0b1101111101] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101111110] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101111111] = executeLongMultiplyAccumulateDivide;
+  //
+  dummy = 0b0100000000;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy, i, 5, 4);
+    for(j = 0; j <= 0b111; j ++)
+    {
+      dummy = setBits(dummy,j,2,0);
+      Thumb32LoadWord[dummy] = executeLoadStoreMultiple;
+    }
+  }
+  //
+  
 }
 
 
@@ -514,7 +530,30 @@ void initThumb32bitsLongMultiplyAccumulateDivide()
 
 
 
-
+void initThumb32bitsLoadStoreMultiple()
+{
+  uint32_t dummy;
+  int i,j,k;
+  
+  //STM Register T2
+  dummy = 0b01000000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    Thumb32MultiplyAccumulate[dummy] = STMRegisterT2;
+  }
+  
+  //LDM Register T2
+  dummy = 0b01100000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    if(dummy != 0b01111101)
+      Thumb32MultiplyAccumulate[dummy] = LDMRegisterT2;
+  } 
+  
+  
+}
 
 
 
