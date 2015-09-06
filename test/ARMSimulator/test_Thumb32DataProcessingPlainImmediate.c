@@ -500,6 +500,25 @@ void test_SSATT1_given_0xf301000f_and_r1_is_0x8000_should_get_0x7fff_at_r0()
   TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
 }
 
+/*
+  SSAT    R0, #32, R1, ASR #8
+*/
+void test_SSATT1_given_0xf321201f_and_r1_is_0x80000000_should_get_0xff800000_at_r0()
+{
+  coreReg[1] = 0x80000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf321201f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xff800000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -747,6 +766,25 @@ void test_USATT1_given_0xf3810010_and_r1_is_0x10000_should_get_0xffff_at_r0()
   armStep();
 
   TEST_ASSERT_EQUAL(0xffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x09000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  USAT    R0, #32, R1, ASR #8
+*/
+void test_USATT1_given_0xf3a1201f_and_r1_is_0x80000000_should_get_0_at_r0()
+{
+  coreReg[1] = 0x80000000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf3a1201f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0, coreReg[0]);
   TEST_ASSERT_EQUAL(0x09000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
 }

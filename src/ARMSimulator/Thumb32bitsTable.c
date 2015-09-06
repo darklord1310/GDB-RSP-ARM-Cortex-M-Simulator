@@ -273,6 +273,8 @@ void initThumb32bitsDataProcessingShiftedRegister()
   Thumb32DataProcessingShiftedRegister[0b001111111101] = MVNRegisterT2;
   Thumb32DataProcessingShiftedRegister[0b001111111110] = MVNRegisterT2;
   Thumb32DataProcessingShiftedRegister[0b001111111111] = MVNRegisterT2;
+  //
+  
 }
 
 

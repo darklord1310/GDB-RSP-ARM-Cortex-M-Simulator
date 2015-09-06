@@ -1,4 +1,4 @@
-#include "ShiftOperation.h"
+﻿#include "ShiftOperation.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
@@ -51,7 +51,6 @@ uint32_t executeShiftOperation(int shiftType, uint32_t shiftAmount, uint32_t val
   if(shiftType == LSR)
   {
     shiftedValue = executeLSR(shiftAmount, valueToShift, S);
-    return shiftedValue;
   }
   else if(shiftType == OMITTED)
   {
@@ -70,6 +69,7 @@ uint32_t executeShiftOperation(int shiftType, uint32_t shiftAmount, uint32_t val
     shiftedValue = executeROR(shiftAmount, valueToShift, S);
   }
   
+  return shiftedValue;
 }
 
 

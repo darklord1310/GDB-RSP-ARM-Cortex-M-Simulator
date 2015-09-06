@@ -5,6 +5,7 @@
 #include "getAndSetBits.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include "ShiftOperation.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>

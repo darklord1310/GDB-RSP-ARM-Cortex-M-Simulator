@@ -307,22 +307,23 @@ void setQFlag()
 /*
   To update the Q flag based on the result and signed range given
 
-  Input: signedRange        range of the saturation value
-         result             value after saturated
+  Input: max            max range of the saturation value
+         min            min range of the saturation value
+         result         value after saturated
          sign
-            0               means unsigned saturation
-            1               means signed saturation
+            0           means unsigned saturation
+            1           means signed saturation
 */
-void updateQFlag(int32_t signedRange, int32_t result, int32_t sign)
+void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign)
 {
   if(sign)
   {
-    if((result > (signedRange -1)) || (result < -signedRange))
+    if((result > max) || (result < min))
         setQFlag();
   }
   else
   {
-    if((result > (signedRange -1)) || (result < 0))
+    if((result > max) || (result < 0))
       setQFlag();
   }
 }

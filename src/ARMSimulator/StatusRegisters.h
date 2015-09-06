@@ -36,7 +36,7 @@ void updateCarryFlagAddition(uint32_t value1, uint32_t value2);
 void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2);
 void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t result);
 void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t result);
-void updateQFlag(int32_t signedRange, int32_t result, int32_t sign);
+void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign);
 int inITBlock();
 uint32_t getITCond();
 void shiftITState();

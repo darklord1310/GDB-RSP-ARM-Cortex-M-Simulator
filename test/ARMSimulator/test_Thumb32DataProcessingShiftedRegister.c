@@ -170,3 +170,35 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xcccccc
   TEST_ASSERT_EQUAL(0x08000044,coreReg[PC]);
   TEST_ASSERT_EQUAL(0xcccccccc,coreReg[0]);
 }
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //AND Register T2
+
+// test ANDS R0, R1
+void test_ANDRegisterT1_given_r0_0xf0_r1_0xff_should_get_r0_0x0f_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0x40010000;
+  
+  coreReg[0] = 0x0f;
+  coreReg[1] = 0xff;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x0f, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+//testing zero flag changing
+// test ANDS R0, R1
+void test_ANDRegisterT1_given_r0_0x00_r1_0xff_should_get_r0_0x00_xPSR_0x41000000(void)
+{
+  uint32_t instruction = 0x40010000;
+  
+  coreReg[0] = 0x00;
+  coreReg[1] = 0xff;
+  ARMSimulator(instruction);
+  
+  TEST_ASSERT_EQUAL(0x00, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}

@@ -58,19 +58,22 @@ void SSATT1(uint32_t instruction)
 */
 void executeSSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDirection, uint32_t shiftImmediate)
 {
-  int32_t shiftRn, temp, signedRange, sign = 1;
+  int32_t shiftRn, temp, max, min, sign = 1;       // max indicate max range of saturated value
+                                                   // min indicate min range of saturated value
+                                                   // sign indicate sign or unsigned
 
-  signedRange = (int32_t)pow(2, immediate + 1) / 2;
+  max = (int32_t)(pow(2, immediate + 1) / 2) - 1;
+  min = -(max + 1);
 
   if(shiftDirection)
-    shiftRn = coreReg[Rn] >> shiftImmediate;
+    shiftRn = executeASR(shiftImmediate, coreReg[Rn], 0);
   else
     shiftRn = coreReg[Rn] << shiftImmediate;
 
-  temp = (shiftRn < -signedRange) ? -signedRange: (shiftRn > (signedRange - 1) ? (signedRange - 1): shiftRn);
+  temp = (shiftRn < min) ? min: (shiftRn > max ? max: shiftRn);
   coreReg[Rd] = temp;
-  
-  updateQFlag(signedRange, shiftRn, sign);
+
+  updateQFlag(max, min, shiftRn, sign);
 }
 
 
@@ -131,17 +134,20 @@ void USATT1(uint32_t instruction)
 */
 void executeUSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDirection, uint32_t shiftImmediate)
 {
-  int32_t shiftRn, temp, signedRange, sign = 0;
+  int32_t shiftRn, temp, max, min, sign = 1;       // max indicate max range of saturated value
+                                                   // min indicate min range of saturated value
+                                                   // sign indicate sign or unsigned
 
-  signedRange = (int32_t)pow(2, immediate);
+  max = (int32_t)(pow(2, immediate + 1) / 2) - 1;
+  min = 0;
 
   if(shiftDirection)
-    shiftRn = coreReg[Rn] >> shiftImmediate;
+    shiftRn = executeASR(shiftImmediate, coreReg[Rn], 0);
   else
     shiftRn = coreReg[Rn] << shiftImmediate;
 
-  temp = (shiftRn > (signedRange - 1)) ? --signedRange: (shiftRn < 0 ? 0: shiftRn);
+  temp = (shiftRn > max) ? max: (shiftRn < 0 ? 0: shiftRn);
   coreReg[Rd] = temp;
-  
-  updateQFlag(signedRange, shiftRn, sign);
+
+  updateQFlag(max, min, shiftRn, sign);
 }
