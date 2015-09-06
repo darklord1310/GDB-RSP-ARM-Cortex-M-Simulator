@@ -39,6 +39,7 @@ void initializeAllTable()
   initThumb32bitsDataProcessingShiftedRegister();
   initThumb32bitsLoadWord();
   initThumb32bitsMultiplyAccumulate();
+  initThumb32bitsLongMultiplyAccumulateDivide();
   initThumb32Table();
 }
 
@@ -167,6 +168,17 @@ void executeMultiplyAccumulate(uint32_t instruction)
   uint32_t opcode = (((op1 << 2) | op2 ) << 4) | Ra;
   
   (*Thumb32MultiplyAccumulate[opcode])(instruction);
+}
+
+
+
+void executeLongMultiplyAccumulateDivide(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,22,20);
+  uint32_t op2 = getBits(instruction,7,4);
+  uint32_t opcode = (op1 << 4) | op2;
+  
+  (*Thumb32LongMultiplyAccumulateDivide[opcode])(instruction);
 }
 
 

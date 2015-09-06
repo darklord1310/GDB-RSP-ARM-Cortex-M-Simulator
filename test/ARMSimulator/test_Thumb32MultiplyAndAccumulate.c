@@ -78,6 +78,8 @@
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
+#include "SignedUnsignedLongMultiplyDivide.h"
+
 
 void setUp(void)
 {
@@ -91,7 +93,63 @@ void tearDown(void)
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //LDR Literal T2
+  //MLA T1
 
+//test MLA  r2,r3,r1,r0
+void test_instruction_given_0xfb030201_should_get_R2_is_0xc19999cf()
+{
+  //create test fixture
+  coreReg[0] = 0x0800004f;
+  coreReg[1] = 0x08000060;
+  coreReg[2] = 0x33333333;
+  coreReg[3] = 0x44444444;
+  writeInstructionToMemoryGivenByAddress(0xfb030201, 0x0800003e);  // MLA  r2,r3,r1,r0
+  coreReg[PC] = 0x0800003e;
+  
+  //test
+  armStep();
+  TEST_ASSERT_EQUAL(0xc19999cf, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x08000042, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //MUL T2
 
+//test MUL  r3,r1,r0
+void test_instruction_given_0xfb01f300_should_get_R3_is_0x78001da0()
+{
+  //create test fixture
+  coreReg[0] = 0x0800004f;
+  coreReg[1] = 0x08000060;
+  coreReg[3] = 0x44444444;
+  writeInstructionToMemoryGivenByAddress(0xfb01f300, 0x0800003e);  // MUL  r3,r1,r0
+  coreReg[PC] = 0x0800003e;
+  
+  //test
+  armStep();
+  TEST_ASSERT_EQUAL(0x78001da0, coreReg[3]);
+  TEST_ASSERT_EQUAL(0x08000042, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //MLS T1
+
+//test MLS  r2,r3,r1,r0
+void test_instruction_given_0xfb030211_should_get_R2_is_0x4e6666cf()
+{
+  //create test fixture
+  coreReg[0] = 0x0800004f;
+  coreReg[1] = 0x08000060;
+  coreReg[2] = 0x33333333;
+  coreReg[3] = 0x44444444;
+  writeInstructionToMemoryGivenByAddress(0xfb030211, 0x0800003e);  // MLS  r2,r3,r1,r0
+  coreReg[PC] = 0x0800003e;
+  
+  //test
+  armStep();
+  TEST_ASSERT_EQUAL(0x4e6666cf, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x08000042, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}

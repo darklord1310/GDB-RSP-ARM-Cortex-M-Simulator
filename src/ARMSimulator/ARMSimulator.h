@@ -20,6 +20,6 @@ void executeDataProcessingPlainImmediate(uint32_t instruction);
 void executeDataProcessingShiftedRegister(uint32_t instruction);
 void executeLoadWord(uint32_t instruction);
 void executeMultiplyAccumulate(uint32_t instruction);
-
+void executeLongMultiplyAccumulateDivide(uint32_t instruction);
 
 #endif // ARMSimulator_H

@@ -80,6 +80,7 @@
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
+#include "SignedUnsignedLongMultiplyDivide.h"
 
 
 void setUp(void)

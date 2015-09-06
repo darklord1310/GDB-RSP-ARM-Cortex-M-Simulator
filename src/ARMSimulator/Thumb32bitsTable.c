@@ -233,7 +233,23 @@ void initThumb32Table()
   Thumb32Table[0b1101101101] = executeMultiplyAccumulate;
   Thumb32Table[0b1101101110] = executeMultiplyAccumulate;
   Thumb32Table[0b1101101111] = executeMultiplyAccumulate;
-
+  //          
+  Thumb32Table[0b1101110000] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110001] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110010] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110011] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110100] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110101] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110110] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101110111] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111000] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111001] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111010] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111011] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111100] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111101] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111110] = executeLongMultiplyAccumulateDivide;
+  Thumb32Table[0b1101111111] = executeLongMultiplyAccumulateDivide;
 }
 
 
@@ -505,6 +521,18 @@ void initThumb32bitsMultiplyAccumulate()
   }
 }
 
+
+
+void initThumb32bitsLongMultiplyAccumulateDivide()
+{
+  Thumb32LongMultiplyAccumulateDivide[0b0000000] = SMULLT1;
+  Thumb32LongMultiplyAccumulateDivide[0b0011111] = SDIVT1;
+  Thumb32LongMultiplyAccumulateDivide[0b0100000] = UMULLT1;
+  Thumb32LongMultiplyAccumulateDivide[0b0111111] = UDIVT1;
+  Thumb32LongMultiplyAccumulateDivide[0b1000000] = SMLALT1;
+  Thumb32LongMultiplyAccumulateDivide[0b1100000] = UMLALT1;
+  
+}
 
 
 
