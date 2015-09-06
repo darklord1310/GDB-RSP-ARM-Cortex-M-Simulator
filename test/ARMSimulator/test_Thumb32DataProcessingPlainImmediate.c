@@ -72,7 +72,9 @@
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
-#include "SSAT.h"
+#include "SignedAndUnsignedSaturate.h"
+#include "SignedAndUnsignedBitFieldExtract.h"
+#include "BFIandBFC.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -494,6 +496,156 @@ void test_SSATT1_given_0xf301000f_and_r1_is_0x8000_should_get_0x7fff_at_r0()
 
   TEST_ASSERT_EQUAL(0x7fff, coreReg[0]);
   TEST_ASSERT_EQUAL(0x09000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //SBFX T1
+
+/*
+  SBFX  R0, R1, #8, #6
+*/
+void test_SBFXT1_given_0xf3412005_and_r1_is_0x3d00_should_get_0xfffffffd_at_r0()
+{
+  coreReg[1] = 0x3d00;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf3412005, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xfffffffd, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  SBFX  R0, R1, #8, #6
+*/
+void test_SBFXT1_given_0xf3412005_and_r1_is_0x3d00_should_get_0xd_at_r0()
+{
+  coreReg[1] = 0xcd00;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf3412005, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xd, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //BFI T1
+
+/*
+  BFI  R0, R1, #8, #8
+*/
+void test_BFIT1_given_0xf361200f_and_r1_is_0xcd_should_get_0xcd00_at_r0()
+{
+  coreReg[1] = 0xcd;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf361200f, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xcd00, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  BFI  R0, R1, #8, #4
+*/
+void test_BFIT1_given_0xf361200b_and_r1_is_0xcd_r0_is_0xcd_should_get_0xdcd_at_r0()
+{
+  coreReg[1] = 0xcd;
+  coreReg[0] = 0xcd;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf361200b, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xdcd, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  BFI  R0, R1, #4, #4
+*/
+void test_BFIT1_given_0xf3611007_and_r1_is_0xcd_r0_is_0xcd_should_get_0xdd_at_r0()
+{
+  coreReg[1] = 0xcd;
+  coreReg[0] = 0xcd;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf3611007, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xdd, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //BFC T1
+
+/*
+  BFC  R0, #4, #4
+*/
+void test_BFCT1_given_0xf36f1007_and_r0_is_0xcd_should_get_0xd_at_r0()
+{
+  coreReg[0] = 0xcd;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf36f1007, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xd, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
+}
+
+/*
+  BFI  R1, #8, #2
+*/
+void test_BFCT1_given_0xf36f2109_and_r1_is_0xcdcd_should_get_0xcccd_at_r1()
+{
+  coreReg[1] = 0xcdcd;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf36f2109, 0x08000010);
+  coreReg[PC] = 0x08000010;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xcccd, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000014, coreReg[PC]);
 }
 

@@ -65,7 +65,9 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "MOVT.h"
-#include "SSAT.h"
+#include "SignedAndUnsignedSaturate.h"
+#include "SignedAndUnsignedBitFieldExtract.h"
+#include "BFIandBFC.h"
 #include <stdint.h>
 
 

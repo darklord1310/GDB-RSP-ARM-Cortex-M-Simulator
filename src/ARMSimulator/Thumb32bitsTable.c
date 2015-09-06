@@ -297,7 +297,17 @@ void initThumb32bitsDataProcessingPlainImmediate()
     Thumb32DataProcessingPlainImmediate[i] = SSATT1;
   for(i = 0b100100000; i < 0b100110000; i++)
     Thumb32DataProcessingPlainImmediate[i] = SSATT1;
-  //
+  // SBFX T1
+  for(i = 0b101000000; i < 0b101010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = SBFXT1;
+  // BFI and BFC T1
+  for(i = 0b101100000; i < 0b101110000; i++)
+  {
+      if((i & 0b000001111) != 0b1111)
+        Thumb32DataProcessingPlainImmediate[i] = BFIT1;
+      else
+        Thumb32DataProcessingPlainImmediate[i] = BFCT1;
+  }
 }
 
 

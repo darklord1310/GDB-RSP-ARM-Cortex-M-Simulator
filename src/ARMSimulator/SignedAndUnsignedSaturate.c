@@ -1,4 +1,4 @@
-#include "SSAT.h"
+#include "SignedAndUnsignedSaturate.h"
 
 
 /* Signed Saturate Encoding T1
@@ -32,6 +32,7 @@ void SSATT1(uint32_t instruction)
   uint32_t sh = getBits(instruction, 21, 21);      // 0 => LSL, 1 => ASR
 
   uint32_t shiftImm = (imm3 << 2) | imm2;          // Shift immediate (N)
+  assert((sh == 1 && shiftImm > 0) || sh == 0);    // ASR #N N must be in the range 1 to 31
 
   if(inITBlock())
   {
