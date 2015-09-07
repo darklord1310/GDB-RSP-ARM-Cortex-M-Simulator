@@ -13,7 +13,7 @@ where :
                         does not update the flags.
 
           <c><q>        See Standard assembler syntax fields on page A6-7.
-          
+
           <Rd>          Specifies the destination register. If <Rd> is omitted, this register is the same as <Rn>.
 
           <Rn>          Specifies the register that contains the operand. This register is allowed to be the SP.
@@ -32,7 +32,7 @@ void ADCImmediateT1(uint32_t instruction)
   uint32_t i = getBits(instruction, 26, 26);
   uint32_t bit7 = getBits(instruction, 7, 7);
   uint32_t temp = (i << 3 ) | imm3;
-  uint32_t modifyControl = (temp << 1) | getBits(imm8,7,7);
+  uint32_t modifyControl = (temp << 1) | bit7;
 
   uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
 

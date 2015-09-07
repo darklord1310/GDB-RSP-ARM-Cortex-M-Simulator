@@ -2,6 +2,11 @@
 #include <stdint.h>
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
+#include "SBCImmediate.h"
+#include "MOVT.h"
+#include "SignedAndUnsignedSaturate.h"
+#include "SignedAndUnsignedBitFieldExtract.h"
+#include "BFIandBFC.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"

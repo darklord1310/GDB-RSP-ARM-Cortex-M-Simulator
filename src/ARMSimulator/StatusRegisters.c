@@ -31,12 +31,12 @@ int isLastInITBlock()
   uint32_t IT1to0 = getBits(coreReg[xPSR], 26,25);        //get the IT[1:0] from coreReg[xPSR]
   uint32_t IT7to2 = getBits(coreReg[xPSR], 15,10);        //get the IT[7:2] from coreReg[xPSR]
   uint32_t IT = (IT7to2 << 2) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
-  
+
   if( getBits(IT, 3,0) == 0b1000 )
     return 1;
-  else 
+  else
     return 0;
-  
+
 }
 
 
@@ -47,7 +47,7 @@ void shiftITState()
   uint32_t IT = (IT7to2 << 2) | IT1to0;                   //combine the IT[1:0] and IT[7:2]
   uint32_t IT4to0 = getBits(IT,4,0) << 1;                 //get the IT[4:0] and perform the shifting
   cond = setBits(cond , getBits(IT4to0, 4, 4), 0, 0);     //update the condition
-  
+
   IT = setBits(IT, IT4to0, 4, 0);                         //set the IT bit 4 to 0 with the value shifted
   if( getBits(IT, 3,0) == 0)
   {
@@ -70,7 +70,7 @@ void shiftITState()
 uint32_t getITCond()
 {
   return getBits(coreReg[xPSR], 15,12);
-  
+
 }
 
 bool isNegative()
@@ -173,11 +173,11 @@ void updateNegativeFlag(uint32_t value)
 void updateCarryFlagAddition(uint32_t value1, uint32_t value2)
 {
   int bit0 = 0, intermediateCarry = 0, i,adder;
-  
+
   long long int v1 = (long long int)value1;
   long long int v2 = (long long int)value2;
-  
-  if(v1 + v2 >= 0x100000000)  
+
+  if(v1 + v2 >= 0x100000000)
     setCarryFlag();
   else
     resetCarryFlag();
@@ -205,14 +205,14 @@ Overflow Rule for addition
 
     (+A) + (+B) = −C
     (−A) + (−B) = +C
-    
+
 */
 void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t result)
 {
   int signForValue1 = getBits(value1,31,31);
   int signForValue2 = getBits(value2,31,31);
   int signForResult = getBits(result,31,31);
-  
+
   if(   ( signForValue1 == 0 && signForValue2 == 0 && signForResult == 1) || ( signForValue1 == 1 && signForValue2 == 1 && signForResult == 0)   )
     setOverflowFlag();
   else
@@ -232,7 +232,7 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
   int signForValue1 = getBits(value1,31,31);
   int signForValue2 = getBits(value2,31,31);
   int signForResult = getBits(result,31,31);
-  
+
   if(   ( signForValue1 == 0 && signForValue2 == 1 && signForResult == 1) || ( signForValue1 == 1 && signForValue2 == 0 && signForResult == 0)   )
     setOverflowFlag();
   else
@@ -243,15 +243,15 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
 
 void ALUWritePC(uint32_t address)
 {
-  coreReg[PC] = setBits(address, 0b0, 0, 0); 
-    
+  coreReg[PC] = setBits(address, 0b0, 0, 0);
+
 }
 
 
 
 //Utility
 //all the functions below are actually use by many of the other functions, it should be place in other module but due to the troublesome to manually include
-//all the header inside the source file, so it is written in this module instead 
+//all the header inside the source file, so it is written in this module instead
 //____________________________________________________________________________________________________________________________________________________________________
 
 
@@ -270,22 +270,59 @@ void AddWithCarry(uint32_t num1, uint32_t num2, uint32_t carryIn)
 {
   uint32_t unsignedSum = num1 + num2 + carryIn;
   int signedSum = (int)num1 + (int)num2 + carryIn;
-  
+
 }
 
 
 int SInt(uint32_t value, int numberOfBitsOfValue)
 {
   int result = 0, i;
-  
+
   for(i = 0; i < numberOfBitsOfValue-1; i++)
   {
     if(getBits(value, i ,i) == 1)
       result = result + (2^i);
   }
-  
+
   if( getBits(value, numberOfBitsOfValue-1, numberOfBitsOfValue-1) == 1)
     result = result - 2^(numberOfBitsOfValue);
-  
+
   return result;
+}
+
+bool isQSet()
+{
+  if( getBits(coreReg[xPSR], 27, 27) )
+    return true;
+  else
+    return false;
+}
+
+
+void setQFlag()
+{
+  coreReg[xPSR] = coreReg[xPSR] | 0x08000000;
+}
+
+/*
+  To update the Q flag based on the result and signed range given
+
+  Input: signedRange        range of the saturation value
+         result             value after saturated
+         sign
+            0               means unsigned saturation
+            1               means signed saturation
+*/
+void updateQFlag(int32_t signedRange, int32_t result, int32_t sign)
+{
+  if(sign)
+  {
+    if((result > (signedRange -1)) || (result < -signedRange))
+        setQFlag();
+  }
+  else
+  {
+    if((result > (signedRange -1)) || (result < 0))
+      setQFlag();
+  }
 }
