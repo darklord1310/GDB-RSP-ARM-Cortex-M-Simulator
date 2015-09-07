@@ -219,7 +219,7 @@ void initThumb32Table()
   Thumb32Table[0b1100011011] = executeLoadWord;
   Thumb32Table[0b1100101011] = executeLoadWord;
   Thumb32Table[0b1100111011] = executeLoadWord;
-  //       
+  //
   Thumb32Table[0b1101100000] = executeMultiplyAccumulate;
   Thumb32Table[0b1101100001] = executeMultiplyAccumulate;
   Thumb32Table[0b1101100010] = executeMultiplyAccumulate;
@@ -294,63 +294,66 @@ void initThumb32bitsDataProcessingShiftedRegister()
 
 void initThumb32bitsDataProcessingPlainImmediate()
 {
-  //00100XXXX
-  Thumb32DataProcessingPlainImmediate[0b001000000] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000001] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000010] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000011] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000100] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000101] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000110] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001000111] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001000] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001001] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001010] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001011] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001100] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001101] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001110] = MOVImmediateT3;
-  Thumb32DataProcessingPlainImmediate[0b001001111] = MOVImmediateT3;
+  // ADD Immediate T4 and ADR T3
+  int i;
 
-
+  for(i = 0b000000000; i < 0b000010000; i++)
+  {
+      if((i & 0b000001111) != 0b1111)
+      {
+        if((i & 0b000001101) != 0b1101)
+          Thumb32DataProcessingPlainImmediate[i] = ADDImmediateT4;
+      }
+      else
+        Thumb32DataProcessingPlainImmediate[i] = ADRT3;
+  }
+  // MOV Immediate T3
+  for(i = 0b001000000; i < 0b001010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = MOVImmediateT3;
+  // SUB Immediate T4 and ADR T2
+  for(i = 0b010100000; i < 0b010110000; i++)
+  {
+      if((i & 0b000001111) != 0b1111)
+      {
+        if((i & 0b000001101) != 0b1101)
+          Thumb32DataProcessingPlainImmediate[i] = SUBImmediateT4;
+      }
+      else
+        Thumb32DataProcessingPlainImmediate[i] = ADRT2;
+  }
+  // MOVT T1
+  for(i = 0b011000000; i < 0b011010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = MOVTT1;
+  // SSAT T1
+  for(i = 0b100000000; i < 0b100010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = SSATT1;
+  for(i = 0b100100000; i < 0b100110000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = SSATT1;
+  // SBFX T1
+  for(i = 0b101000000; i < 0b101010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = SBFXT1;
+  // BFI and BFC T1
+  for(i = 0b101100000; i < 0b101110000; i++)
+  {
+      if((i & 0b000001111) != 0b1111)
+        Thumb32DataProcessingPlainImmediate[i] = BFIT1;
+      else
+        Thumb32DataProcessingPlainImmediate[i] = BFCT1;
+  }
+  // USAT T1
+  for(i = 0b110000000; i < 0b110010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = USATT1;
+  for(i = 0b110100000; i < 0b110110000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = USATT1;
+  // UBFX T1
+  for(i = 0b111000000; i < 0b111010000; i++)
+    Thumb32DataProcessingPlainImmediate[i] = UBFXT1;
 }
 
 
 void initThumb32bitsDataProcessingModifiedImmediate()
 {
-  /* Thumb32DataProcessingModifiedImmediate[0b0010011110000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011110111] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010011111111] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111110111] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111000] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111001] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111010] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111011] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111100] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111101] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111110] = MOVImmediateT2;
-  Thumb32DataProcessingModifiedImmediate[0b0010111111111] = MOVImmediateT2; */
-  // AND and TST Immediate
+  // AND and TST Immediate T1
   int i;
 
   for(i = 0b0000000000000; i < 0b0001000000000; i++)
@@ -363,10 +366,10 @@ void initThumb32bitsDataProcessingModifiedImmediate()
               Thumb32DataProcessingModifiedImmediate[i] = TSTImmediateT1;
       }
   }
-  // BIC Immediate
+  // BIC Immediate T1
   for(i = 0b0001000000000; i < 0b0010000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = BICImmediateT1;
-  // ORR and MOV Immediate
+  // ORR Immediate T1 and MOV Immediate T2
   for(i = 0b0010000000000; i < 0b0011000000000; i++)
   {
       if((i & 0b0000011110000) != 0b11110000)
@@ -374,7 +377,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       else
           Thumb32DataProcessingModifiedImmediate[i] = MOVImmediateT2;
   }
-  // ORN and MVN Immediate
+  // ORN and MVN Immediate T1
   for(i = 0b0011000000000; i < 0b0100000000000; i++)
   {
       if((i & 0b0000011110000) != 0b11110000)
@@ -382,7 +385,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       else
           Thumb32DataProcessingModifiedImmediate[i] = MVNImmediateT1;
   }
-  // EOR and TEQ Immediate
+  // EOR and TEQ Immediate T1
   for(i = 0b0100000000000; i < 0b0101000000000; i++)
   {
       if((i & 0b0000000001111) != 0b1111)
@@ -393,7 +396,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = TEQImmediateT1;
       }
   }
-  // ADD and CMN Immediate
+  // ADD Immediate T3 and CMN Immediate T1
   for(i = 0b1000000000000; i < 0b1001000000000; i++)
   {
       if((i & 0b0000000001111) != 0b1111)
@@ -407,9 +410,29 @@ void initThumb32bitsDataProcessingModifiedImmediate()
             Thumb32DataProcessingModifiedImmediate[i] = CMNImmediateT1;
       }
   }
-  // ADC Immediate
+  // ADC Immediate T1
   for(i = 0b1010000000000; i < 0b1011000000000; i++)
     Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
+  // SBC Immediate T1
+  for(i = 0b1011000000000; i < 0b1110000000000; i++)
+    Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
+  // SUB Immediate T3 and CMP Immediate T1
+  for(i = 0b1101000000000; i < 0b1110000000000; i++)
+  {
+      if((i & 0b0000000001111) != 0b1111)
+      {
+          if((i & 0b0000011010000) != 0b11010000)    // Rd != 1111 and Rn != 1101
+            Thumb32DataProcessingModifiedImmediate[i] = SUBImmediateT3;
+      }
+      else
+      {
+          if(i >= 0b1101100000000)      // S == 1 and Rd == 1111
+            Thumb32DataProcessingModifiedImmediate[i] = CMPImmediateT2;
+      }
+  }
+  // RSB Immediate T2
+  for(i = 0b1110000000000; i < 0b1111000000000; i++)
+    Thumb32DataProcessingModifiedImmediate[i] = RSBImmediateT2;
 }
 
 
@@ -418,7 +441,7 @@ void initThumb32bitsLoadWord()
 {
   int i,j,k;
   uint32_t dummy;
-  
+
   //LDRLiteral T2
   dummy = 0b000000001111;
   for(i = 0b0000000; i <= 0b1111111; i++)
@@ -426,8 +449,8 @@ void initThumb32bitsLoadWord()
     dummy = setBits(dummy,i,10,4);
     Thumb32LoadWord[dummy] = LDRLiteralT2;
   }
-  
-  //LDRImmediate T3 
+
+  //LDRImmediate T3
   for(k = 0b000000; k <= 0b111111; k++)
   {
     dummy = setBits(dummy,k,9,4);
@@ -438,7 +461,7 @@ void initThumb32bitsLoadWord()
     }
   }
 
-  
+
   //LDRImmediate T4
   dummy = 0b001001000000;
   for(k = 0; k < 4; k++)
@@ -454,7 +477,7 @@ void initThumb32bitsLoadWord()
       }
     }
   }
-  
+
   dummy = 0b001100000000;
   for(i = 0; i < 4; i ++)
   {
@@ -465,7 +488,7 @@ void initThumb32bitsLoadWord()
       Thumb32LoadWord[dummy] = LDRImmediateT4;
     }
   }
-  
+
   //LDR Register T2
   dummy = 0b000000000000;
   for(j = 0; j < 0b1111; j ++)
@@ -473,7 +496,7 @@ void initThumb32bitsLoadWord()
     dummy = setBits(dummy,j,3,0);
     Thumb32LoadWord[dummy] = LDRRegisterT2;
   }
-  
+
   //LDRT T1
   dummy = 0b001110000000;
   for(i = 0; i < 4; i ++)
@@ -485,7 +508,7 @@ void initThumb32bitsLoadWord()
       Thumb32LoadWord[dummy] = LDRTT1;
     }
   }
-  
+
 }
 
 
@@ -493,7 +516,7 @@ void initThumb32bitsMultiplyAccumulate()
 {
   int i,j,k;
   uint32_t dummy;
-  
+
   //MLA T1
   dummy = 0b000000000;
   for(j = 0; j < 0b1111; j ++)
@@ -501,10 +524,10 @@ void initThumb32bitsMultiplyAccumulate()
     dummy = setBits(dummy,j,3,0);
     Thumb32MultiplyAccumulate[dummy] = MLAT1;
   }
-  
+
   //MUL T2
   Thumb32MultiplyAccumulate[0b000001111] = MULRegisterT2;
-  
+
   //MLS
   dummy = 0b000010000;
   for(j = 0; j <= 0b1111; j ++)

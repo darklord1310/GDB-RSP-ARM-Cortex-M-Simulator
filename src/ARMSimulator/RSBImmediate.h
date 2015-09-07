@@ -8,6 +8,7 @@
 #include "ModifiedImmediateConstant.h"
 
 void RSBImmediateT1(uint32_t instruction);
-void executeRSBImmediate(uint32_t Rn, uint32_t Rd, uint32_t S);
+void RSBImmediateT2(uint32_t instruction);
+void executeRSBImmediate(uint32_t immediate, uint32_t Rn, uint32_t Rd, uint32_t S);
 
 #endif // RSBImmediate_H

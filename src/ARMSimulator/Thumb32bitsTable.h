@@ -56,12 +56,18 @@
 #include "TEQImmediate.h"
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
+#include "SBCImmediate.h"
+#include "ADR.h"
 #include "ARMSimulator.h"
 #include "LDRLiteral.h"
 #include "getMask.h"
 #include "getAndSetBits.h"
 #include "MLA.h"
 #include "MLS.h"
+#include "MOVT.h"
+#include "SignedAndUnsignedSaturate.h"
+#include "SignedAndUnsignedBitFieldExtract.h"
+#include "BFIandBFC.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 

@@ -9,6 +9,8 @@
 
 void SUBImmediateT1(uint32_t instruction);
 void SUBImmediateT2(uint32_t instruction);
+void SUBImmediateT3(uint32_t instruction);
+void SUBImmediateT4(uint32_t instruction);
 void executeSUBImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t S);
 
 #endif // SUBImmediate_H
