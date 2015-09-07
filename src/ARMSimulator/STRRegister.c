@@ -192,13 +192,13 @@ void STMRegisterT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {                   
-      writeMultipleRegisterToMemory(coreReg[Rn], registerList, 1, Rn);
+      writeMultipleRegisterToMemory(coreReg[Rn], registerList,8, 1, Rn);
     }
     shiftITState();
   }
   else
   {                 
-    writeMultipleRegisterToMemory(coreReg[Rn], registerList, 1, Rn);
+    writeMultipleRegisterToMemory(coreReg[Rn], registerList,8, 1, Rn);
   }
   
   coreReg[PC] += 2;
@@ -242,23 +242,37 @@ void STMRegisterT2(uint32_t instruction)
   uint32_t registerList = getBits(instruction, 12,0);
   uint32_t W = getBits(instruction, 21,21);
   uint32_t M = getBits(instruction, 14,14);
+  registerList = ( ( ( (0b0 << 1) | M) << 1) << 13) | registerList; 
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {                   
+      writeMultipleRegisterToMemory(coreReg[Rn], registerList,16, W, Rn);
+    }
+    shiftITState();
+  }
+  else
+  {                 
+    writeMultipleRegisterToMemory(coreReg[Rn], registerList,16, W, Rn);
+  }
   
-  
+  coreReg[PC] += 4;
   
 }
 
 
 /* This function will write multiple register to memory based on the register list given
  * 
- * Input:  address          the base address of the memory
- *         registerList     the number of register which the value will be written into memory
- *         writeBack        if 1 then means writeback is true, 0 means false
- *         Rn               the destination register which the value will be updated if writeback is 1
- * 
+ * Input:  address              the base address of the memory
+ *         registerList         the number of register which the value will be written into memory
+ *         writeBack            if 1 then means writeback is true, 0 means false
+ *         Rn                   the destination register which the value will be updated if writeback is 1
+ *         sizeOfRegisterList   the bit size of the registerList
  */
-void writeMultipleRegisterToMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn)
+void writeMultipleRegisterToMemory(uint32_t address, uint32_t registerList, sizeOfRegisterList, uint32_t writeBack, uint32_t Rn)
 {
-  int sizeOfRegisterList = 8, i, bitCount = 0;
+  int i, bitCount = 0;
   
   for(i = 0; i < sizeOfRegisterList; i++)
   {
