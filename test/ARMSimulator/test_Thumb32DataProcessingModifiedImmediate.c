@@ -994,14 +994,12 @@ void test_ADCImmediateT1_given_0xf1534200_and_r3_is_0x0fffffff_should_get_0x9000
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
 
-//failed due to the modify constant
 //test with carry is 0, after addition of r3 and 0x80000000 no carry
 //affect status flag (negative)
 //test ADCS R2, R3, #0x80000000 given R3 = 0x2fffffff
-void xtest_ADCImmediateT1_given_0xf1534200_and_r3_is_0x2fffffff_should_get_0xafffffff_at_r2_and_set_neg_flag(void)
+void test_ADCImmediateT1_given_0xf1534200_and_r3_is_0x2fffffff_should_get_0xafffffff_at_r2_and_set_neg_flag(void)
 {
   coreReg[3] = 0x2fffffff;
-  resetCarryFlag();
 
   //create test fixture
   writeInstructionToMemoryGivenByAddress(0xf1534200, 0x0800000C);
@@ -1055,11 +1053,10 @@ void test_ADCImmediateT1_given_0xf1534200_and_r3_is_0x80000000_should_get_0x1_at
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
 
-//failed due to the modify constant
 //test overflow flag behavior, after R3 + 0x40000000 before adding with c(1) got overflow
 //affect status flag (overflow)
 //test ADCS R2, R3, #0x40000000 given R3 = 0x40000000
-void xtest_ADCImmediateT1_given_0xf1534280_and_r3_is_0x40000000_should_get_0x80000001_at_r2_and_set_overflow_flag(void)
+void test_ADCImmediateT1_given_0xf1534280_and_r3_is_0x40000000_should_get_0x80000001_at_r2_and_set_overflow_flag(void)
 {
   coreReg[3] = 0x40000000;
   setCarryFlag();
@@ -1121,11 +1118,10 @@ void test_SBCImmediateT1_given_0xf1630200_and_r3_is_3000_should_get_3000_at_r2_x
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
 
-//failed due to modify constant
 //test with carry is 0, after subtraction of r3 and 0x80000000 no carry
 //affect status flag (negative)
 //test SBCS R2, R3, #0x80000000 given R3 = 0x20000000;
-void xtest_SBCImmediateT1_given_0xf1734200_and_r3_is_0x20000000_should_get_0x9fffffff_at_r2_and_set_neg_flag(void)
+void test_SBCImmediateT1_given_0xf1734200_and_r3_is_0x20000000_should_get_0x9fffffff_at_r2_and_set_neg_flag(void)
 {
   coreReg[3] = 0x20000000;
 
@@ -1160,11 +1156,10 @@ void test_SBCImmediateT1_given_0xf1735200_and_r3_is_0x80000000_should_get_0x5FFF
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
 
-//failed due to modify constant
 //test with carry is 1, after subtraction of r3 and 0x80000000 no carry
 //affect status flag (negative)
 //test SBCS R2, R3, #0x80000000 given R3 = 0x20000000
-void xtest_SBCImmediateT1_given_0xf1734200_and_r3_is_0x20000000_should_get_0xafffffff_at_r2_set_neg_flag(void)
+void test_SBCImmediateT1_given_0xf1734200_and_r3_is_0x20000000_should_get_0xa0000000_at_r2_set_neg_flag(void)
 {
   coreReg[3] = 0x20000000;
   setCarryFlag();
@@ -1176,7 +1171,7 @@ void xtest_SBCImmediateT1_given_0xf1734200_and_r3_is_0x20000000_should_get_0xaff
   //test
   armStep();
 
-  TEST_ASSERT_EQUAL(0xafffffff, coreReg[2]);
+  TEST_ASSERT_EQUAL(0xa0000000, coreReg[2]);
   TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
