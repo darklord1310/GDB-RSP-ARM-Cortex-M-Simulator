@@ -54,10 +54,10 @@ uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value)
   {
     returnValue = SetFirstBitAndShiftRight(input_value, ModifyControl);
 
-    if(getBits(returnValue,31,31) == 1)
-      setCarryFlag();
-    else
-      resetCarryFlag();
+    // if(getBits(returnValue,31,31) == 1)
+      // setCarryFlag();
+    // else
+      // resetCarryFlag();
 
     return returnValue;
   }
@@ -73,8 +73,9 @@ uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value)
 uint32_t SetFirstBitAndShiftRight(uint32_t input_value, uint32_t timesOfShifting)
 {
   input_value = input_value | 0b10000000;
-  input_value = input_value << 24;
-  input_value = input_value >> ( timesOfShifting - 8);
+  // input_value = input_value << 24;
+  // input_value = input_value >> ( timesOfShifting - 8);
+  input_value = executeROR(timesOfShifting, input_value, 1);
   return input_value;
 }
 

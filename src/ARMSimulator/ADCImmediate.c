@@ -61,14 +61,19 @@ void executeADCImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
 {
   uint32_t carry = getBits(coreReg[xPSR], 29, 29);
   uint32_t backupRn = coreReg[Rn];
-  uint32_t temp = coreReg[Rn] + immediate + carry;
-  coreReg[Rd] = temp;               //get the result of Rn + immediate + carry flag
+  uint32_t temp = coreReg[Rn] + immediate;
+  coreReg[Rd] = temp + carry;               //get the result of Rn + immediate + carry flag
 
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
     updateOverflowFlagAddition(backupRn, immediate, temp);
-    updateCarryFlagAddition(backupRn, immediate + carry);
+    if(isOverflow() == 0)
+      updateOverflowFlagAddition(temp, carry , coreReg[Rd]);
+
+    updateCarryFlagAddition(backupRn, immediate);
+    if(isCarry() == 0)
+      updateCarryFlagAddition(temp, carry);
   }
 }
