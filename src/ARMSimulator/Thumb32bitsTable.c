@@ -280,11 +280,11 @@ void initThumb32bitsDataProcessingShiftedRegister()
   {
       if((i & 0b0000000011110) != 0b11110)
         Thumb32DataProcessingShiftedRegister[i] = ANDRegisterT2;
-      /* else
+      else
       {
-        if((i & 0b0000000000001) != 0b1)
-          Thumb32DataProcessingShiftedRegister[i] = TSTT2;
-      } */
+        if((i & 0b1) == 0b1)
+          Thumb32DataProcessingShiftedRegister[i] = TSTRegisterT2;
+      }
   }
   // Move Register and Immediate Shifts and ORR Register T2
   for(i = 0b0010000000000; i < 0b0011000000000; i++)

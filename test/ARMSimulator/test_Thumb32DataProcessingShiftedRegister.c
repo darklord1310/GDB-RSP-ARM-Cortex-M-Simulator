@@ -178,7 +178,7 @@ void xtest_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xccccc
   //AND Register T2
 
 // without affecting status flag
-// test AND R0, R1, R2
+// test AND.W R0, R1, R2
 void test_ANDRegisterT2_given_r1_0xf0_r2_0xff_should_get_r0_0xf0_xPSR_unchanged(void)
 {
   coreReg[1] = 0xf0;
@@ -194,7 +194,7 @@ void test_ANDRegisterT2_given_r1_0xf0_r2_0xff_should_get_r0_0xf0_xPSR_unchanged(
 }
 
 // without affecting status flag
-// test AND R0, R1
+// test AND.W R0, R1
 void test_ANDRegisterT2_given_r0_0xf0_r1_0xff_should_get_r0_0xf0_xPSR_unchanged(void)
 {
   coreReg[0] = 0xf0;
@@ -210,7 +210,7 @@ void test_ANDRegisterT2_given_r0_0xf0_r1_0xff_should_get_r0_0xf0_xPSR_unchanged(
 }
 
 // without affecting status flag
-// test AND R0, R1, LSL #16
+// test AND.W R0, R1, LSL #16
 void test_ANDRegisterT2_given_r0_0xf0_r1_0xff_should_get_r0_0x0_xPSR_unchanged(void)
 {
   coreReg[0] = 0x0f;
@@ -226,7 +226,7 @@ void test_ANDRegisterT2_given_r0_0xf0_r1_0xff_should_get_r0_0x0_xPSR_unchanged(v
 }
 
 // without affecting status flag
-// test AND R0, R1, LSR #4
+// test AND.W R0, R1, LSR #4
 void test_ANDRegisterT2_given_r0_0x0a_r1_0xff_should_get_r0_0xa_xPSR_unchanged(void)
 {
   coreReg[0] = 0x0a;
@@ -242,7 +242,7 @@ void test_ANDRegisterT2_given_r0_0x0a_r1_0xff_should_get_r0_0xa_xPSR_unchanged(v
 }
 
 // without affecting status flag
-// test AND R0, R1, ASR #4
+// test AND.W R0, R1, ASR #4
 void test_ANDRegisterT2_given_r0_0x08000000_r1_0x8000000f_should_get_r0_0x08000000_xPSR_unchanged(void)
 {
   coreReg[0] = 0x08000000;
@@ -258,7 +258,7 @@ void test_ANDRegisterT2_given_r0_0x08000000_r1_0x8000000f_should_get_r0_0x080000
 }
 
 // without affecting status flag
-// test AND R0, R1, RRX
+// test AND.W R0, R1, RRX
 void test_ANDRegisterT2_given_r0_0xf000000f_r1_0x8000000f_should_get_r0_0xc0000007_xPSR_unchanged(void)
 {
   setCarryFlag();
@@ -275,7 +275,7 @@ void test_ANDRegisterT2_given_r0_0xf000000f_r1_0x8000000f_should_get_r0_0xc00000
 }
 
 // without affecting status flag
-// test AND R0, R1, ROR #16
+// test AND.W R0, R1, ROR #16
 void test_ANDRegisterT2_given_r0_0xffffffff_r1_0x8000000f_should_get_r0_0x000f8000_xPSR_unchanged(void)
 {
   coreReg[0] = 0xffffffff;
@@ -291,7 +291,7 @@ void test_ANDRegisterT2_given_r0_0xffffffff_r1_0x8000000f_should_get_r0_0x000f80
 }
 
 // affecting status flag
-// test ANDS R0, R1
+// test ANDS.W R0, R1
 void test_ANDRegisterT2_given_r0_0xf_r1_0xf0_should_get_r0_0x0_and_set_zero_flag(void)
 {
   coreReg[0] = 0xf;
@@ -307,7 +307,7 @@ void test_ANDRegisterT2_given_r0_0xf_r1_0xf0_should_get_r0_0x0_and_set_zero_flag
 }
 
 // affecting status flag
-// test ANDS R0, R1, RRX
+// test ANDS.W R0, R1, RRX
 void test_ANDRegisterT2_given_r0_0x80000000_r1_0x0_should_get_r0_0x80000000_and_set_neg_flag(void)
 {
   setCarryFlag();
@@ -324,12 +324,66 @@ void test_ANDRegisterT2_given_r0_0x80000000_r1_0x0_should_get_r0_0x80000000_and_
 }
 
 // affecting status flag
-// test ANDS R0, R1, LSL #4
+// test ANDS.W R0, R1, LSL #4
 void test_ANDRegisterT2_given_r0_0x10_r1_0x10000001_should_get_r0_0x10_and_set_carry_flag(void)
 {
   coreReg[0] = 0x10;
   coreReg[1] = 0x10000001;
   writeInstructionToMemoryGivenByAddress(0xea101001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x10, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //TST Register T2
+
+// affecting status flag
+// test TST.W R0, R1
+void test_TSTRegisterT2_given_r0_0xf_r1_0xf0_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[0] = 0xf;
+  coreReg[1] = 0xf0;
+  writeInstructionToMemoryGivenByAddress(0xea100f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test TST.W R0, R1, RRX
+void test_TSTRegisterT2_given_r0_0x80000000_r1_0x0_should_get_r0_0x80000000_and_set_neg_flag(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xea100f31, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test TST.W R0, R1, LSL #4
+void test_TSTRegisterT2_given_r0_0x10_r1_0x10000001_should_get_r0_0x10_and_set_carry_flag(void)
+{
+  coreReg[0] = 0x10;
+  coreReg[1] = 0x10000001;
+  writeInstructionToMemoryGivenByAddress(0xea101f01, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();

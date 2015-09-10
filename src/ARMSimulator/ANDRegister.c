@@ -123,7 +123,7 @@ void ANDRegisterT2(uint32_t instruction)
           Rd                destination register
           Rn                register value which will be perform AND operation with value in Rm
           S                 if set will affect the status register
-          shiftType         determine what type of shifting is needed, -1 if no shifting
+          shiftType         determine what type of shifting is needed
           shiftImmediate    shift range from 0 to 31
 */
 void executeANDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint32_t shiftType, uint32_t shiftImmediate)
