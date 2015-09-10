@@ -396,6 +396,91 @@ void test_TSTRegisterT2_given_r0_0x10_r1_0x10000001_should_get_r0_0x10_and_set_c
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //BIC Register T2
+
+// without affecting status flag
+// test BIC.W R0, R1, R2
+void test_BICRegisterT2_given_r1_0x800_r2_0xff_should_get_r0_0x800_xPSR_unchanged(void)
+{
+  coreReg[1] = 0x800;
+  coreReg[2] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea210002, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x800, coreReg[0]);
+}
+
+// without affecting status flag
+// test BIC.W R0, R1
+void test_BICRegisterT2_given_r0_0xf00_r1_0xff_should_get_r0_0xf00_xPSR_unchanged(void)
+{
+  coreReg[0] = 0xf00;
+  coreReg[1] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea200001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xf00, coreReg[0]);
+}
+
+// affecting status flag
+// test BICS.W R0, R1
+void test_BICRegisterT2_given_r0_0xf0_r1_0xf0_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[0] = 0xf0;
+  coreReg[1] = 0xf0;
+  writeInstructionToMemoryGivenByAddress(0xea300001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test BICS.W R0, R1, RRX
+void test_BICRegisterT2_given_r0_0xf_r1_0xf_should_get_r0_0x8_and_set_carry_flag(void)
+{
+  coreReg[0] = 0xf;
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea300031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x8, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test BICS.W R0, R1, LSL #4
+void test_BICRegisterT2_given_r0_0x80000000_r1_0x07000000_should_get_r0_0x80000000_and_set_neg_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x07000000;
+  writeInstructionToMemoryGivenByAddress(0xea301001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //RRX T1
 
 // without affecting status flag

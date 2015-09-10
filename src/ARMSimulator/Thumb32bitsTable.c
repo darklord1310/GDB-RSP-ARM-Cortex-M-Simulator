@@ -286,6 +286,9 @@ void initThumb32bitsDataProcessingShiftedRegister()
           Thumb32DataProcessingShiftedRegister[i] = TSTRegisterT2;
       }
   }
+  // BIC Register T2
+  for(i = 0b0001000000000; i < 0b0010000000000; i++)
+    Thumb32DataProcessingShiftedRegister[i] = BICRegisterT2;
   // Move Register and Immediate Shifts and ORR Register T2
   for(i = 0b0010000000000; i < 0b0011000000000; i++)
   {
