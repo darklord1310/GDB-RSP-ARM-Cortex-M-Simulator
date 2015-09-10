@@ -112,7 +112,7 @@ void ANDRegisterT2(uint32_t instruction)
  else
     executeANDRegister(Rm, Rd, Rn, statusFlag, shiftType, shiftImm);
 
-  coreReg[PC] += 2;
+  coreReg[PC] += 4;
 }
 
 
@@ -130,6 +130,7 @@ void executeANDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
 {
   uint32_t shiftedRm, temp;
 
+  shiftType = determineShiftOperation(shiftType, shiftImmediate);
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], S);
 
   temp = coreReg[Rn] & shiftedRm;

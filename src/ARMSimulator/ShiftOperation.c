@@ -3,6 +3,7 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include <stdio.h>
 
 
 /*
@@ -32,9 +33,9 @@ int determineShiftOperation(int shiftType, uint32_t shiftAmount)
     return OMITTED;
   else if(shiftType == 0b00 && shiftAmount > 0)
     return LSL;
-  else if(shiftType == 0b01)
+  else if(shiftType == 0b01 && shiftAmount > 0)
     return LSR;
-  else if(shiftType == 0b10)
+  else if(shiftType == 0b10 && shiftAmount > 0)
     return ASR;
   else if(shiftType == 0b11 && shiftAmount > 0)
     return ROR;
@@ -54,7 +55,7 @@ uint32_t executeShiftOperation(int shiftType, uint32_t shiftAmount, uint32_t val
   }
   else if(shiftType == OMITTED)
   {
-    return valueToShift;
+    shiftedValue = valueToShift;
   }
   else if(shiftType == LSL)
   {
@@ -67,6 +68,10 @@ uint32_t executeShiftOperation(int shiftType, uint32_t shiftAmount, uint32_t val
   else if(shiftType == ROR)
   {
     shiftedValue = executeROR(shiftAmount, valueToShift, S);
+  }
+  else if(shiftType == RRX)
+  {
+    shiftedValue = executeRRX(valueToShift, S);
   }
 
   return shiftedValue;
@@ -84,11 +89,11 @@ uint32_t executeLSR(uint32_t shiftAmount, uint32_t valueToShift, uint32_t S)
   }
   else
   {
-    lastBitShifted = getBits(valueToShift, shiftAmount-1, shiftAmount-1) ;       //this is to get the lastBitShifted out, the value will determine the carry flag
+    lastBitShifted = getBits(valueToShift, shiftAmount-1, shiftAmount-1);   //this is to get the lastBitShifted out, the value will determine the carry flag
     shiftedValue = valueToShift >> shiftAmount;
   }
 
-  if(S == 1)                                                              //update status register
+  if(S == 1)                                                                //update status register
   {
     if(lastBitShifted == 1)
       setCarryFlag();
