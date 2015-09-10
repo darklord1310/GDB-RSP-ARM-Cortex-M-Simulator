@@ -75,6 +75,7 @@
 #include "SignedAndUnsignedSaturate.h"
 #include "SignedAndUnsignedBitFieldExtract.h"
 #include "BFIandBFC.h"
+#include "RRX.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -97,7 +98,7 @@ void tearDown(void)
 
 //test mvns.w r0, r2, ASR #31
 //test carry flag not set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xffffffff_xPSR_0x81000000()
+void xtest_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xffffffff_xPSR_0x81000000()
 {
   //create test fixture
   setCarryFlag();
@@ -117,7 +118,7 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xffffff
 
 //test mvns.w r0, r2, ASR #2
 //test carry flag is set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xf3333333_xPSR_0xa1000000()
+void xtest_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xf3333333_xPSR_0xa1000000()
 {
   coreReg[0] = 0x11111111;
   coreReg[2] = 0x33333333;
@@ -136,7 +137,7 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xf33333
 
 //test mvns.w r0, r2, LSL #30
 //test carry flag is not set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0x3fffffff_xPSR_0x01000000()
+void xtest_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0x3fffffff_xPSR_0x01000000()
 {
   setCarryFlag();
   coreReg[0] = 0x11111111;
@@ -155,7 +156,7 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0x3fffff
 
 //test mvns.w r0, r2
 //test carry flag is set after execute still set
-void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xcccccccc_xPSR_0xa1000000()
+void xtest_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xcccccccc_xPSR_0xa1000000()
 {
   setCarryFlag();
   coreReg[0] = 0x11111111;
@@ -177,28 +178,95 @@ void test_MVNRegisterT2_given_r0_0x11111111_r2_0x33333333_should_get_r0_0xcccccc
   //AND Register T2
 
 // test ANDS R0, R1
-void test_ANDRegisterT1_given_r0_0xf0_r1_0xff_should_get_r0_0x0f_xPSR_unchanged(void)
+void test_ANDRegisterT2_given_r0_0xf0_r1_0xff_should_get_r0_0x0f_xPSR_unchanged(void)
 {
   uint32_t instruction = 0x40010000;
-  
+
   coreReg[0] = 0x0f;
   coreReg[1] = 0xff;
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x0f, coreReg[1]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
 //testing zero flag changing
 // test ANDS R0, R1
-void test_ANDRegisterT1_given_r0_0x00_r1_0xff_should_get_r0_0x00_xPSR_0x41000000(void)
+void test_ANDRegisterT2_given_r0_0x00_r1_0xff_should_get_r0_0x00_xPSR_0x41000000(void)
 {
   uint32_t instruction = 0x40010000;
-  
+
   coreReg[0] = 0x00;
   coreReg[1] = 0xff;
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x00, coreReg[1]);
   TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //RRX T1
+
+// without affecting status flag
+// test RRX R0, R1 with carry = 1
+void test_RRXT1_given_0xea4f0031_and_r1_is_0xf_should_get_r0_0x80000007_and_xPSR_unchanged(void)
+{
+  setCarryFlag();
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea4f0031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x21000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x80000007, coreReg[0]);
+}
+
+// without affecting status flag
+// test RRX R0, R1 with carry = 0
+void test_RRXT1_given_0xea4f0031_and_r1_is_0xf_should_get_r0_0x7_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea4f0031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x7, coreReg[0]);
+}
+
+// affecting status flag
+// test RRX R0, R1 with carry = 1
+void test_RRXT1_given_0xea4f0031_and_r1_is_0xf_should_get_r0_0x80000007_and_set_neg_and_carry_flag(void)
+{
+  setCarryFlag();
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea5f0031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x80000007, coreReg[0]);
+}
+
+// affecting status flag
+// test RRX R0, R1 with carry = 0
+void test_RRXT1_given_0xea4f0031_and_r1_is_0x1_should_get_r0_0x0_and_set_zero_and_carry_flag(void)
+{
+  coreReg[1] = 0x1;
+  writeInstructionToMemoryGivenByAddress(0xea5f0031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x61000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
 }

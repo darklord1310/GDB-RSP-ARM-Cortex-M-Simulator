@@ -68,13 +68,15 @@
 #include "SignedAndUnsignedSaturate.h"
 #include "SignedAndUnsignedBitFieldExtract.h"
 #include "BFIandBFC.h"
+#include "RRX.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);
 void (*Thumb32DataProcessingPlainImmediate[512])(uint32_t instruction);
-void (*Thumb32DataProcessingShiftedRegister[4096])(uint32_t instruction);
+void (*Thumb32DataProcessingShiftedRegister[8192])(uint32_t instruction);
+void (*Thumb32MoveRegisterAndImmediateShift[128])(uint32_t instruction);
 void (*Thumb32LoadWord[4096])(uint32_t instruction);
 void (*Thumb32MultiplyAccumulate[512])(uint32_t instruction);
 void (*Thumb32LongMultiplyAccumulateDivide[128])(uint32_t instruction);
@@ -84,10 +86,13 @@ void (*Thumb32Table[1024])(uint32_t instruction);
 void initThumb32bitsDataProcessingModifiedImmediate();
 void initThumb32bitsDataProcessingPlainImmediate();
 void initThumb32bitsDataProcessingShiftedRegister();
+void initThumb32bitsMoveRegisterAndImmediateShift();
 void initThumb32bitsLoadWord();
 void initThumb32bitsMultiplyAccumulate();
 void initThumb32bitsLongMultiplyAccumulateDivide();
 void initThumb32Table();
+
+void determineMoveRegisterAndImmediateShifts(uint32_t instruction);
 
 
 #endif // Thumb32bitsTable_H

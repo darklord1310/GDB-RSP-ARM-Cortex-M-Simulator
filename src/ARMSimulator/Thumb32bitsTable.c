@@ -233,7 +233,7 @@ void initThumb32Table()
   Thumb32Table[0b1101101101] = executeMultiplyAccumulate;
   Thumb32Table[0b1101101110] = executeMultiplyAccumulate;
   Thumb32Table[0b1101101111] = executeMultiplyAccumulate;
-  //          
+  //
   Thumb32Table[0b1101110000] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101110001] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101110010] = executeLongMultiplyAccumulateDivide;
@@ -257,24 +257,67 @@ void initThumb32Table()
 
 void initThumb32bitsDataProcessingShiftedRegister()
 {
-  Thumb32DataProcessingShiftedRegister[0b001111110000] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110001] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110010] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110011] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110100] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110101] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110110] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111110111] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111000] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111001] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111010] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111011] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111100] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111101] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111110] = MVNRegisterT2;
-  Thumb32DataProcessingShiftedRegister[0b001111111111] = MVNRegisterT2;
-  //
-  
+  // Thumb32DataProcessingShiftedRegister[0b001111110000] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110001] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110010] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110011] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110100] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110101] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110110] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111110111] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111000] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111001] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111010] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111011] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111100] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111101] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111110] = MVNRegisterT2;
+  // Thumb32DataProcessingShiftedRegister[0b001111111111] = MVNRegisterT2;
+  // AND Register T2 annd TST T2
+  int i;
+
+  for(i = 0b0000000000000; i < 0b0001000000000; i++)
+  {
+      if((i & 0b0000000011110) != 0b11110)
+        Thumb32DataProcessingShiftedRegister[i] = ANDRegisterT2;
+      /* else
+      {
+        if((i & 0b0000000000001) != 0b1)
+          Thumb32DataProcessingShiftedRegister[i] = TSTT2;
+      } */
+  }
+  // Move Register and Immediate Shifts and ORR Register T2
+  for(i = 0b0010000000000; i < 0b0011000000000; i++)
+  {
+    if((i & 0b0000111100000) != 0b111100000) {}
+      // Thumb32DataProcessingShiftedRegister[0b0010111100000] = ;
+    else
+      Thumb32DataProcessingShiftedRegister[i] = determineMoveRegisterAndImmediateShifts;
+  }
+  // MVN Register T2 and ORN Register T1
+}
+
+
+void initThumb32bitsMoveRegisterAndImmediateShift()
+{
+  int i;
+
+  /* Mov Register T3
+  for(i = 0b0000000; i < 0b0100000; i++)
+  {
+    if(i == 0b0)
+      Thumb32MoveRegisterAndImmediateShift[i] = MOVRegisterToRegisterT3;
+    else
+      Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
+  } */
+  // RRX T1 and ROR T2
+  for(i = 0b1100000; i < 0b10000000; i++)
+  {
+    if(i == 0b1100000)
+      Thumb32MoveRegisterAndImmediateShift[i] = RRXT1;
+    // else
+      // Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
+  }
 }
 
 
@@ -533,7 +576,7 @@ void initThumb32bitsLongMultiplyAccumulateDivide()
   Thumb32LongMultiplyAccumulateDivide[0b0111111] = UDIVT1;
   Thumb32LongMultiplyAccumulateDivide[0b1000000] = SMLALT1;
   Thumb32LongMultiplyAccumulateDivide[0b1100000] = UMLALT1;
-  
+
 }
 
 
