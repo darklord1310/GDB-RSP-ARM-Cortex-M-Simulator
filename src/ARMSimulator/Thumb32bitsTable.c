@@ -320,6 +320,20 @@ void initThumb32bitsDataProcessingShiftedRegister()
   // SBC Register T2
   for(i = 0b1011000000000; i < 0b1100000000000; i++)
     Thumb32DataProcessingShiftedRegister[i] = SBCRegisterT2;
+  // SUB Register T2 and CMP Register T2
+  for(i = 0b1101000000000; i < 0b1110000000000; i++)
+  {
+    if((i & 0b0000000011110) != 0b11110)
+    {
+      if((i & 0b0000110100000) != 0b110100000)    // Rd != 1111 and Rn != 1101
+        Thumb32DataProcessingShiftedRegister[i] = SUBRegisterT2;
+    }
+    // else
+    // {
+      // if((i & 0b1) == 0b1)
+        // Thumb32DataProcessingShiftedRegister[i] = CMNRegisterT2;
+    // }
+  }
 }
 
 
