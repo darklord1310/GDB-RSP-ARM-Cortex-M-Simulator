@@ -3,10 +3,10 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
-#include "ADDSPRegister.h"
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include "ShiftOperation.h"
 #include <stdio.h>
 
 
@@ -146,7 +146,7 @@ void executeADCRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
 
-    updateOverflowFlagAddition(backupRn, coreReg[Rm] , temp);
+    updateOverflowFlagAddition(backupRn, shiftedRm, temp);
     if(isOverflow() == 0)
       updateOverflowFlagAddition(temp, carryFlag , coreReg[Rd]);
 

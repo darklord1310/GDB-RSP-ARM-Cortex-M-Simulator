@@ -1448,6 +1448,42 @@ void test_ADCRegisterT2_given_r0_0x70000000_r1_0x06000000_should_get_r0_0xd00000
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }
 
+// carry = 1
+// affecting status(overflow) flag after add carry
+// test ADCS.W R0, R1, LSL #4
+void test_ADCRegisterT2_given_r0_0x7fffffff_r1_0x0_should_get_r0_0x80000000_and_set_overflow_flag(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0x7fffffff;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xeb501001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 1
+// affecting status(carry) flag after add carry
+// test ADCS.W R0, R1, LSL #4
+void test_ADCRegisterT2_given_r0_0x7fffffff_r1_0x08000000_should_get_r0_0x0_and_set_carry_flag(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0x7fffffff;
+  coreReg[1] = 0x08000000;
+  writeInstructionToMemoryGivenByAddress(0xeb501001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
 // carry = 0
 // affecting status flag (shift will not affect carry flag)
 // test ADCS.W R0, R1, LSL #4
@@ -1467,4 +1503,162 @@ void test_ADCRegisterT2_given_r0_0x10000000_r1_0x80000000_should_get_r0_0x100000
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //SBC Register T2
 
+// carry = 0
+// without affecting status flag
+// test SBC.W R0, R1, R2
+void test_SBCRegisterT2_given_r1_0xfe000000_r2_0xff000000_should_get_r0_0xfeffffff_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xfe000000;
+  coreReg[2] = 0xff000000;
+  writeInstructionToMemoryGivenByAddress(0xeb610002, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xfeffffff, coreReg[0]);
+}
+
+// carry = 1
+// without affecting status flag
+// test SBC.W R0, R1, #LSR #4
+void test_SBCRegisterT2_given_r0_0xf00_r1_0xff_should_get_r0_0xef1_xPSR_unchanged(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0xf00;
+  coreReg[1] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xeb601011, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x21000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xef1, coreReg[0]);
+}
+
+// carry = 1
+// affecting status flag
+// test SBCS.W R0, R1
+void test_SBCRegisterT2_given_r0_0x01000000_r1_0x10000000_should_get_r0_0xf1000000_and_unset_carry_flag(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0x01000000;
+  coreReg[1] = 0x10000000;
+  writeInstructionToMemoryGivenByAddress(0xeb700001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf1000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 1
+// affecting status flag
+// test SBCS.W R0, R1
+void test_SBCRegisterT2_given_r0_0x80000000_r1_0x80000000_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x80000000;
+  writeInstructionToMemoryGivenByAddress(0xeb700001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 0
+// affecting status flag
+// test SBCS.W R0, R1, LSL #4
+void test_SBCRegisterT2_given_r0_0x700000_r1_0x08000000_should_get_r0_0x806fffff_and_set_neg_flag(void)
+{
+  coreReg[0] = 0x700000;
+  coreReg[1] = 0x08000000;
+  writeInstructionToMemoryGivenByAddress(0xeb701001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x806fffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 1
+// affecting status flag
+// test SBCS.W R0, R1, LSL #4
+void test_SBCRegisterT2_given_r0_0x80000000_r1_0x06000000_should_get_r0_0x20000000_and_set_overflow_flag(void)
+{
+  setCarryFlag();
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x06000000;
+  writeInstructionToMemoryGivenByAddress(0xeb701001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x20000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x31000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 0
+// affecting status(overflow) flag after minus carry
+// test SBCS.W R0, R1, LSL #4
+void test_SBCRegisterT2_given_r0_0x80000000_r1_0x0_should_get_r0_0x7fffffff_and_set_overflow_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xeb701001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x31000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 0
+// affecting status(carry) flag after minus carry
+// test SBCS.W R0, R1, LSL #4
+void test_SBCRegisterT2_given_r0_0x80000000_r1_0x08000000_should_get_r0_0xffffffff_and_set_carry_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x08000000;
+  writeInstructionToMemoryGivenByAddress(0xeb701001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// carry = 0
+// affecting status flag (shift will not affect carry flag)
+// test SBCS.W R0, R1, LSL #4
+void test_SBCRegisterT2_given_r0_0x10000000_r1_0x80000000_should_get_r0_0x0fffffff(void)
+{
+  coreReg[0] = 0x10000000;
+  coreReg[1] = 0x80000000;
+  writeInstructionToMemoryGivenByAddress(0xeb700041, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}

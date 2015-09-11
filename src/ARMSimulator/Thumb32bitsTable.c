@@ -317,6 +317,9 @@ void initThumb32bitsDataProcessingShiftedRegister()
   // ADC Register T2
   for(i = 0b1010000000000; i < 0b1011000000000; i++)
     Thumb32DataProcessingShiftedRegister[i] = ADCRegisterT2;
+  // SBC Register T2
+  for(i = 0b1011000000000; i < 0b1100000000000; i++)
+    Thumb32DataProcessingShiftedRegister[i] = SBCRegisterT2;
 }
 
 
