@@ -294,11 +294,11 @@ void initThumb32bitsDataProcessingShiftedRegister()
   {
     if((i & 0b0000000011110) != 0b11110)
       Thumb32DataProcessingShiftedRegister[i] = EORRegisterT2;
-    // else
-    // {
-      // if((i & 0b1) == 0b1)
-        // Thumb32DataProcessingShiftedRegister[i] = TSTRegisterT2;
-    // }
+    else
+    {
+      if((i & 0b1) == 0b1)
+        Thumb32DataProcessingShiftedRegister[i] = TEQRegisterT1;
+    }
   }
 }
 

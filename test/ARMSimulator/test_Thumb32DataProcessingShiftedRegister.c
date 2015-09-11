@@ -78,6 +78,7 @@
 #include "RRX.h"
 #include "RORImmediate.h"
 #include "ORNRegister.h"
+#include "TEQRegister.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -1116,4 +1117,53 @@ void test_EORRegisterT2_given_r0_0x80000000_r1_0x07000000_should_get_r0_0xf00000
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //TEQ Register T1
 
+// affecting status flag
+// test TEQ R0, R1
+void test_TEQRegisterT1_given_r0_0x0_r1_0x0_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[0] = 0x0;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xea900f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test TEQ R0, R1, RRX
+void test_TEQRegisterT1_given_r0_0xf_r1_0x1_should_get_r0_0xf_and_set_carry_flag(void)
+{
+  coreReg[0] = 0xf;
+  coreReg[1] = 0x1;
+  writeInstructionToMemoryGivenByAddress(0xea900f31, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test TEQ R0, R1, LSL #4
+void test_TEQRegisterT1_given_r0_0x80000000_r1_0x07000000_should_get_r0_0xf0000000_and_set_neg_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x07000000;
+  writeInstructionToMemoryGivenByAddress(0xea901f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
