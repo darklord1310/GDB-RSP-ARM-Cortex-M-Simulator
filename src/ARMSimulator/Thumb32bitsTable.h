@@ -46,6 +46,7 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
+#include "ShiftOperation.h"
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
 #include "BICImmediate.h"
@@ -70,6 +71,7 @@
 #include "BFIandBFC.h"
 #include "RRX.h"
 #include "RORImmediate.h"
+#include "ORNRegister.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 

@@ -257,34 +257,18 @@ void initThumb32Table()
 
 void initThumb32bitsDataProcessingShiftedRegister()
 {
-  // Thumb32DataProcessingShiftedRegister[0b001111110000] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110001] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110010] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110011] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110100] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110101] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110110] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111110111] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111000] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111001] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111010] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111011] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111100] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111101] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111110] = MVNRegisterT2;
-  // Thumb32DataProcessingShiftedRegister[0b001111111111] = MVNRegisterT2;
   // AND Register T2 annd TST T2
   int i;
 
   for(i = 0b0000000000000; i < 0b0001000000000; i++)
   {
-      if((i & 0b0000000011110) != 0b11110)
-        Thumb32DataProcessingShiftedRegister[i] = ANDRegisterT2;
-      else
-      {
-        if((i & 0b1) == 0b1)
-          Thumb32DataProcessingShiftedRegister[i] = TSTRegisterT2;
-      }
+    if((i & 0b0000000011110) != 0b11110)
+      Thumb32DataProcessingShiftedRegister[i] = ANDRegisterT2;
+    else
+    {
+      if((i & 0b1) == 0b1)
+        Thumb32DataProcessingShiftedRegister[i] = TSTRegisterT2;
+    }
   }
   // BIC Register T2
   for(i = 0b0001000000000; i < 0b0010000000000; i++)
@@ -298,6 +282,24 @@ void initThumb32bitsDataProcessingShiftedRegister()
       Thumb32DataProcessingShiftedRegister[i] = determineMoveRegisterAndImmediateShifts;
   }
   // MVN Register T2 and ORN Register T1
+  for(i = 0b0011000000000; i < 0b0100000000000; i++)
+  {
+    if((i & 0b0000111100000) != 0b111100000)
+      Thumb32DataProcessingShiftedRegister[i] = ORNRegisterT1;
+    else
+      Thumb32DataProcessingShiftedRegister[i] = MVNRegisterT2;
+  }
+  // EOR Register T2 and TEQ Register T1
+  for(i = 0b0100000000000; i < 0b0101000000000; i++)
+  {
+    if((i & 0b0000000011110) != 0b11110)
+      Thumb32DataProcessingShiftedRegister[i] = EORRegisterT2;
+    // else
+    // {
+      // if((i & 0b1) == 0b1)
+        // Thumb32DataProcessingShiftedRegister[i] = TSTRegisterT2;
+    // }
+  }
 }
 
 

@@ -6,9 +6,8 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-#include "ModifiedImmediateConstant.h"
-#include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
+#include "ShiftOperation.h"
 
 
 /*And Register Encoding T1

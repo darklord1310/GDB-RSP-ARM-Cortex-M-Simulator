@@ -4,9 +4,8 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-#include "ModifiedImmediateConstant.h"
-#include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
+#include "ShiftOperation.h"
 
 
 /*Logical OR Register To Register Encoding T1
@@ -104,20 +103,20 @@ void ORRRegisterT2(uint32_t instruction)
 
   uint32_t shiftImm = (imm3 << 2 ) | imm2;
 
- if(inITBlock())
- {
+  if(inITBlock())
+  {
     if( checkCondition(cond) )
       executeORRRegister(Rm, Rd, Rn, statusFlag, shiftType, shiftImm);
     shiftITState();
- }
- else
+  }
+  else
     executeORRRegister(Rm, Rd, Rn, statusFlag, shiftType, shiftImm);
 
   coreReg[PC] += 4;
 }
 
 
-/*  This instruction  performs a bitwise (inclusive) OR of a register value and an optionally-shifted register
+/*  This instruction performs a bitwise (inclusive) OR of a register value and an optionally-shifted register
     value, and writes the result to the destination register. It can optionally update the condition flags based on
     the result.
   

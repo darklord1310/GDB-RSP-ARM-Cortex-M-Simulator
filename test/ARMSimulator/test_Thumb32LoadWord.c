@@ -6,6 +6,7 @@
 #include "BFIandBFC.h"
 #include "RRX.h"
 #include "RORImmediate.h"
+#include "ORNRegister.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"
