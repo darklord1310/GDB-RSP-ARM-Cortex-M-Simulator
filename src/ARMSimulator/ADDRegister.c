@@ -211,7 +211,7 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   uint32_t shiftedRm, temp;
 
   shiftType = determineShiftOperation(shiftType, shiftImmediate);
-  shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], S);
+  shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
   temp = coreReg[Rn] + shiftedRm;
   coreReg[Rd] = temp;

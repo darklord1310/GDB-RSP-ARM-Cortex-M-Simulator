@@ -111,7 +111,7 @@ void executeCMNRegister(uint32_t Rm, uint32_t Rn, uint32_t shiftType, uint32_t s
   uint32_t shiftedRm, result;
 
   shiftType = determineShiftOperation(shiftType, shiftImmediate);
-  shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 1);
+  shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
   result = coreReg[Rn] + shiftedRm;
 
