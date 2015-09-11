@@ -481,6 +481,143 @@ void test_BICRegisterT2_given_r0_0x80000000_r1_0x07000000_should_get_r0_0x800000
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ORR Register T2
+
+// without affecting status flag
+// test ORR.W R0, R1, R2
+void test_ORRRegisterT2_given_r1_0x800_r2_0xff_should_get_r0_0x8ff_xPSR_unchanged(void)
+{
+  coreReg[1] = 0x800;
+  coreReg[2] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea410002, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x8ff, coreReg[0]);
+}
+
+// without affecting status flag
+// test ORR.W R0, R1
+void test_ORRRegisterT2_given_r0_0xf00_r1_0xff_should_get_r0_0xfff_xPSR_unchanged(void)
+{
+  coreReg[0] = 0xf00;
+  coreReg[1] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea400001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xfff, coreReg[0]);
+}
+
+// affecting status flag
+// test ORRS.W R0, R1
+void test_ORRRegisterT2_given_r0_0x0_r1_0x0_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[0] = 0x0;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xea500001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test ORRS.W R0, R1, RRX
+void test_ORRRegisterT2_given_r0_0xf_r1_0xf_should_get_r0_0xf_and_set_carry_flag(void)
+{
+  coreReg[0] = 0xf;
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea500031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test ORRS.W R0, R1, LSL #4
+void test_ORRRegisterT2_given_r0_0x80000000_r1_0x07000000_should_get_r0_0xf0000000_and_set_neg_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x07000000;
+  writeInstructionToMemoryGivenByAddress(0xea501001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xf0000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //MOV Register T3
+
+// without affecting status flag
+// test MOV.W R0, R1
+void test_MOVRegisterT3_given_r1_0x800_r2_0xff_should_get_r0_0xff_xPSR_unchanged(void)
+{
+  coreReg[0] = 0x800;
+  coreReg[1] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea4f0001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xff, coreReg[0]);
+}
+
+// affecting status flag
+// test MOVS.W R0, R1
+void test_MOVRegisterT3_given_r0_0x1_r1_0x0_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[0] = 0x01;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xea5f0001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test MOVS.W R0, R1
+void test_MOVRegisterT3_given_r1_0x08000000_should_get_r0_0x80000000_and_set_neg_flag(void)
+{
+  coreReg[1] = 0x80000000;
+  writeInstructionToMemoryGivenByAddress(0xea5f0001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //RRX T1
 
 // without affecting status flag

@@ -292,8 +292,8 @@ void initThumb32bitsDataProcessingShiftedRegister()
   // Move Register and Immediate Shifts and ORR Register T2
   for(i = 0b0010000000000; i < 0b0011000000000; i++)
   {
-    if((i & 0b0000111100000) != 0b111100000) {}
-      // Thumb32DataProcessingShiftedRegister[0b0010111100000] = ;
+    if((i & 0b0000111100000) != 0b111100000)
+      Thumb32DataProcessingShiftedRegister[i] = ORRRegisterT2;
     else
       Thumb32DataProcessingShiftedRegister[i] = determineMoveRegisterAndImmediateShifts;
   }
@@ -305,14 +305,14 @@ void initThumb32bitsMoveRegisterAndImmediateShift()
 {
   int i;
 
-  /* Mov Register T3
+  // Mov Register T3
   for(i = 0b0000000; i < 0b0100000; i++)
   {
     if(i == 0b0)
-      Thumb32MoveRegisterAndImmediateShift[i] = MOVRegisterToRegisterT3;
-    else
-      Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
-  } */
+      Thumb32MoveRegisterAndImmediateShift[i] = MOVRegisterT3;
+    // else
+      // Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
+  }
   // RRX T1 and ROR T2
   for(i = 0b1100000; i < 0b10000000; i++)
   {
