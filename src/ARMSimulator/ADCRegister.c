@@ -84,7 +84,7 @@ where:
           <Rm>        Specifies the register that is optionally shifted and used as the second operand.
 
           <shift>     Specifies the shift to apply to the value read from <Rm>. If <shift> is omitted, no shift is
-                      applied and all encodings are permitted. If <shift> is specified, only encoding T3 is
+                      applied and both encodings are permitted. If <shift> is specified, only encoding T2 is
                       permitted. The possible shifts and how they are encoded are described in Shifts applied to a
                       register on page A6-12.
 

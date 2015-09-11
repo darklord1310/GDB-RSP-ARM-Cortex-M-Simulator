@@ -1276,7 +1276,7 @@ void test_ADDRegisterT3_given_r0_0x10000000_r1_0x80000000_should_get_r0_0x100000
 
 // affecting status flag
 // test CMN.W R0, R1
-void test_CMNRegisterT2_given_r0_0x80000000_r1_0x80000000_should_get_r0_0x0_and_set_zero_and_carry_flag(void)
+void test_CMNRegisterT2_given_r0_0x80000000_r1_0x80000000_should_set_zero_and_carry_flag(void)
 {
   coreReg[0] = 0x80000000;
   coreReg[1] = 0x80000000;
@@ -1292,7 +1292,7 @@ void test_CMNRegisterT2_given_r0_0x80000000_r1_0x80000000_should_get_r0_0x0_and_
 
 // affecting status flag
 // test CMN.W R0, R1, LSL #4
-void test_CMNRegisterT2_given_r0_0x80000000_r1_0x700000_should_get_r0_0x87000000_and_set_neg_flag(void)
+void test_CMNRegisterT2_given_r0_0x80000000_r1_0x700000_should_set_neg_flag(void)
 {
   coreReg[0] = 0x80000000;
   coreReg[1] = 0x700000;
@@ -1308,7 +1308,7 @@ void test_CMNRegisterT2_given_r0_0x80000000_r1_0x700000_should_get_r0_0x87000000
 
 // affecting status flag
 // test CMN.W R0, R1, LSL #4
-void test_CMNRegisterT2_given_r0_0x70000000_r1_0x06000000_should_get_r0_0xd0000000_and_set_overflow_flag(void)
+void test_CMNRegisterT2_given_r0_0x70000000_r1_0x06000000_should_set_overflow_flag(void)
 {
   coreReg[0] = 0x70000000;
   coreReg[1] = 0x06000000;
@@ -1324,7 +1324,7 @@ void test_CMNRegisterT2_given_r0_0x70000000_r1_0x06000000_should_get_r0_0xd00000
 
 // affecting status flag (shift will not affect carry flag)
 // test CMN.W R0, R1, LSL #1
-void test_CMNRegisterT2_given_r0_0x10000000_r1_0x80000000_should_get_r0_0x10000000(void)
+void test_CMNRegisterT2_given_r0_0x10000000_r1_0x80000000_should_not_set_carry_flag(void)
 {
   coreReg[0] = 0x10000000;
   coreReg[1] = 0x80000000;
@@ -1649,17 +1649,17 @@ void test_SBCRegisterT2_given_r0_0x80000000_r1_0x08000000_should_get_r0_0xffffff
 // carry = 0
 // affecting status flag (shift will not affect carry flag)
 // test SBCS.W R0, R1, LSL #4
-void test_SBCRegisterT2_given_r0_0x10000000_r1_0x80000000_should_get_r0_0x0fffffff(void)
+void test_SBCRegisterT2_given_r0_0x10000000_r1_0x90000000_should_get_r0_0xefffffff(void)
 {
   coreReg[0] = 0x10000000;
-  coreReg[1] = 0x80000000;
+  coreReg[1] = 0x90000000;
   writeInstructionToMemoryGivenByAddress(0xeb700041, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
-  TEST_ASSERT_EQUAL(0x0fffffff, coreReg[0]);
-  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0xefffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }
 
@@ -1750,20 +1750,85 @@ void xtest_SUBRegisterT2_given_r0_0xf0000000_r1_0x02000000_should_get_r0_0xd0000
 
 // affecting status flag (shift will not affect carry flag)
 // test SUBS.W R0, R1, LSL #4
-void xtest_SUBRegisterT2_given_r0_0x10000000_r1_0x80000000_should_get_r0_0x10000000(void)
+void xtest_SUBRegisterT2_given_r0_0x10000000_r1_0x90000000_should_get_r0_0xf0000000(void)
 {
   coreReg[0] = 0x10000000;
-  coreReg[1] = 0x80000000;
+  coreReg[1] = 0x90000000;
   writeInstructionToMemoryGivenByAddress(0xebb00041, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
-  TEST_ASSERT_EQUAL(0x10000000, coreReg[0]);
-  TEST_ASSERT_EQUAL(0x11000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0xf0000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //CMP Register T3
 
+// affecting status flag
+// test CMP.W R0, R1
+void test_CMPRegisterT3_given_r0_0x80000000_r1_0x80000000_should_set_zero_and_carry_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x80000000;
+  writeInstructionToMemoryGivenByAddress(0xebb00f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x61000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test CMP.W R0, R1, LSL #4
+void test_CMPRegisterT3_given_r0_0x700000_r1_0x08000000_should_set_neg_flag(void)
+{
+  coreReg[0] = 0x700000;
+  coreReg[1] = 0x08000000;
+  writeInstructionToMemoryGivenByAddress(0xebb01f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x700000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test CMP.W R0, R1, LSL #4
+void test_CMPRegisterT3_given_r0_0x70000000_r1_0x08000000_should_set_overflow_flag(void)
+{
+  coreReg[0] = 0x70000000;
+  coreReg[1] = 0x08000000;
+  writeInstructionToMemoryGivenByAddress(0xebb01f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x70000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag (shift will not affect carry flag)
+// test CMP.W R0, R1, LSL #1
+void test_CMPRegisterT3_given_r0_0x10000000_r1_0x90000000_should_set_carry_flag(void)
+{
+  coreReg[0] = 0x10000000;
+  coreReg[1] = 0x90000000;
+  writeInstructionToMemoryGivenByAddress(0xebb00f41, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x10000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}

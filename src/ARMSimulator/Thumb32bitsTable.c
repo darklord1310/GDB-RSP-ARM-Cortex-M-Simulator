@@ -328,11 +328,11 @@ void initThumb32bitsDataProcessingShiftedRegister()
       if((i & 0b0000110100000) != 0b110100000)    // Rd != 1111 and Rn != 1101
         Thumb32DataProcessingShiftedRegister[i] = SUBRegisterT2;
     }
-    // else
-    // {
-      // if((i & 0b1) == 0b1)
-        // Thumb32DataProcessingShiftedRegister[i] = CMNRegisterT2;
-    // }
+    else
+    {
+      if((i & 0b1) == 0b1)
+        Thumb32DataProcessingShiftedRegister[i] = CMPRegisterT3;
+    }
   }
 }
 
