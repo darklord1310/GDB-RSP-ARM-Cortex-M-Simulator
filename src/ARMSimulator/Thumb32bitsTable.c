@@ -310,8 +310,8 @@ void initThumb32bitsMoveRegisterAndImmediateShift()
   {
     if(i == 0b0)
       Thumb32MoveRegisterAndImmediateShift[i] = MOVRegisterT3;
-    // else
-      // Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
+    else
+      Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
   }
   // RRX T1 and ROR T2
   for(i = 0b1100000; i < 0b10000000; i++)

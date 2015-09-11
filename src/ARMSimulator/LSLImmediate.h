@@ -11,6 +11,7 @@
 #include "ConditionalExecution.h"
 
 void LSLImmediateT1(uint32_t instruction);
+void LSLImmediateT2(uint32_t instruction);
 void executeLSLImmediate(uint32_t immediate, uint32_t Rm, uint32_t Rd, uint32_t S);
 
 #endif // LSLImmediate_H
