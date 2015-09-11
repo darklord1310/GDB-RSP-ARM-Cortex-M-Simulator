@@ -300,6 +300,20 @@ void initThumb32bitsDataProcessingShiftedRegister()
         Thumb32DataProcessingShiftedRegister[i] = TEQRegisterT1;
     }
   }
+  // ADD Register T3 and CMN Register T2
+  for(i = 0b1000000000000; i < 0b1001000000000; i++)
+  {
+    if((i & 0b0000000011110) != 0b11110)
+    {
+      if((i & 0b0000110100000) != 0b110100000)    // Rd != 1111 and Rn != 1101
+        Thumb32DataProcessingShiftedRegister[i] = ADDRegisterT3;
+    }
+    // else
+    // {
+      // if((i & 0b1) == 0b1)
+        // Thumb32DataProcessingShiftedRegister[i] = TEQRegisterT1;
+    // }
+  }
 }
 
 
