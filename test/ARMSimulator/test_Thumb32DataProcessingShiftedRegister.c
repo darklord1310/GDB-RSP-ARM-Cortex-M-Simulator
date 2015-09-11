@@ -683,6 +683,56 @@ void test_LSLImmediateT2_given_r1_0x3_should_get_r0_0x80000000_and_set_carry_fla
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //LSR Immediate T2
+
+// without affecting status flag
+// test LSR.W R0, R1, #4
+void test_LSRImmediateT2_given_r1_0xff_should_get_r0_0xf_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea4f1011, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xf, coreReg[0]);
+}
+
+// affecting status flag
+// test LSRS.W R0, R1, #2
+void test_LSRImmediateT2_given_r1_0x1_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[1] = 0x1;
+  writeInstructionToMemoryGivenByAddress(0xea5f1091, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test LSRS.W R0, R1, #31
+void test_LSLImmediateT2_given_r1_0xc0000000_should_get_r0_0x1_and_set_carry_flag(void)
+{
+  coreReg[1] = 0xc0000000;
+  writeInstructionToMemoryGivenByAddress(0xea5f70d1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x1, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //RRX T1
 
 // without affecting status flag

@@ -50,7 +50,7 @@ void LSLImmediateT1(uint32_t instruction)
 }
 
 
-/* Logical Shift Left Immediate Encoding T3
+/* Logical Shift Left Immediate Encoding T2
 
 LSL{S}<c>.W <Rd>,<Rm>,#<imm5>
 
