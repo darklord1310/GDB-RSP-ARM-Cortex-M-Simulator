@@ -1252,3 +1252,60 @@ void test_ADDRegisterT3_given_r0_0x70000000_r1_0x06000000_should_get_r0_0xd00000
   TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //CMN Register T2
+
+// affecting status flag
+// test CMN.W R0, R1
+void test_CMNRegisterT2_given_r0_0x80000000_r1_0x80000000_should_get_r0_0x0_and_set_zero_and_carry_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x80000000;
+  writeInstructionToMemoryGivenByAddress(0xeb100f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x71000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test CMN.W R0, R1, LSL #4
+void test_CMNRegisterT2_given_r0_0x80000000_r1_0x700000_should_get_r0_0x87000000_and_set_neg_flag(void)
+{
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x700000;
+  writeInstructionToMemoryGivenByAddress(0xeb101f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test CMN.W R0, R1, LSL #4
+void test_CMNRegisterT2_given_r0_0x70000000_r1_0x06000000_should_get_r0_0xd0000000_and_set_overflow_flag(void)
+{
+  coreReg[0] = 0x70000000;
+  coreReg[1] = 0x06000000;
+  writeInstructionToMemoryGivenByAddress(0xeb101f01, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x70000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x91000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+
