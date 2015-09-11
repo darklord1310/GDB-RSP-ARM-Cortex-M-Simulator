@@ -10,6 +10,7 @@
 #include "RORImmediate.h"
 #include "ORNRegister.h"
 #include "TEQRegister.h"
+#include "RSBRegister.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"

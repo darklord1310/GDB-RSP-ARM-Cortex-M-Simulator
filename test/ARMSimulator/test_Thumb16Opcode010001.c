@@ -10,6 +10,7 @@
 #include "RORImmediate.h"
 #include "ORNRegister.h"
 #include "TEQRegister.h"
+#include "RSBRegister.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"

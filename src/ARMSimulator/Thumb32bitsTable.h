@@ -73,6 +73,7 @@
 #include "RORImmediate.h"
 #include "ORNRegister.h"
 #include "TEQRegister.h"
+#include "RSBRegister.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 

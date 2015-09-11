@@ -334,6 +334,9 @@ void initThumb32bitsDataProcessingShiftedRegister()
         Thumb32DataProcessingShiftedRegister[i] = CMPRegisterT3;
     }
   }
+  // RSB Register T1
+  for(i = 0b1110000000000; i < 0b1111000000000; i++)
+    Thumb32DataProcessingShiftedRegister[i] = RSBRegisterT1;
 }
 
 

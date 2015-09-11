@@ -8,6 +8,7 @@
 #include "RORImmediate.h"
 #include "ORNRegister.h"
 #include "TEQRegister.h"
+#include "RSBRegister.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"

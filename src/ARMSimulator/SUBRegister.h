@@ -5,7 +5,6 @@
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include <stdint.h>
-#include "ModifiedImmediateConstant.h"
 
 void SUBRegisterToRegisterT1(uint32_t instruction);
 void SUBRegisterT2(uint32_t instruction);

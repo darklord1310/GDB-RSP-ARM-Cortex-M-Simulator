@@ -77,6 +77,7 @@
 #include "RORImmediate.h"
 #include "ORNRegister.h"
 #include "TEQRegister.h"
+#include "RSBRegister.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
