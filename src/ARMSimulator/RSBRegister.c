@@ -5,7 +5,7 @@
 #include <assert.h>
 
 
-/* Reverse Subtract Register Encoding T2
+/* Reverse Subtract Register Encoding T1
 
    RSB{S}<c> <Rd>,<Rn>,<Rm>{,<shift>}
 

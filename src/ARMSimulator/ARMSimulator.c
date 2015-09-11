@@ -38,6 +38,7 @@ void initializeAllTable()
   initThumb32bitsDataProcessingModifiedImmediate();
   initThumb32bitsDataProcessingShiftedRegister();
   initThumb32bitsMoveRegisterAndImmediateShift();
+  initThumb32bitsDataProcessingRegister();
   initThumb32bitsLoadWord();
   initThumb32bitsMultiplyAccumulate();
   initThumb32bitsLongMultiplyAccumulateDivide();
@@ -151,7 +152,7 @@ void executeDataProcessingShiftedRegister(uint32_t instruction)
 }
 
 
-void determineMoveRegisterAndImmediateShifts(uint32_t instruction)
+void executeMoveRegisterAndImmediateShifts(uint32_t instruction)
 {
   uint32_t type = getBits(instruction, 5, 4);
   uint32_t imm2 = getBits(instruction, 7, 6);
@@ -160,6 +161,16 @@ void determineMoveRegisterAndImmediateShifts(uint32_t instruction)
   uint32_t opcode = type << 5 | shiftImm;
 
   (*Thumb32MoveRegisterAndImmediateShift[opcode])(instruction);
+}
+
+
+void executeDataProcessingRegister(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,23,20);
+  uint32_t op2 = getBits(instruction,7,4);
+  uint32_t opcode = (op1 << 4) | op2;
+
+  (*Thumb32DataProcessingRegister[opcode])(instruction);
 }
 
 
