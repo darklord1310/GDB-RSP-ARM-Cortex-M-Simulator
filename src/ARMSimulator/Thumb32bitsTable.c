@@ -316,7 +316,9 @@ void initThumb32bitsMoveRegisterAndImmediateShift()
   // LSR Immediate T2
   for(i = 0b0100000; i < 0b1000000; i++)
     Thumb32MoveRegisterAndImmediateShift[i] = LSRImmediateT2;
-  // 
+  // ASR Immediate T2
+  for(i = 0b1000000; i < 0b1100000; i++)
+    Thumb32MoveRegisterAndImmediateShift[i] = ASRImmediateT2;
   // RRX T1 and ROR Immediate T2
   for(i = 0b1100000; i < 0b10000000; i++)
   {

@@ -733,6 +733,86 @@ void test_LSLImmediateT2_given_r1_0xc0000000_should_get_r0_0x1_and_set_carry_fla
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ASR Immediate T2
+
+// without affecting status flag
+// test ASR.W R0, R1, #4
+void xtest_ASRImmediateT2_given_r1_0xff_should_get_r0_0xf_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xff;
+  writeInstructionToMemoryGivenByAddress(0xea4f1021, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xf, coreReg[0]);
+}
+
+// without affecting status flag
+// test ASR.W R0, R1, #1
+void test_ASRImmediateT2_given_r1_0x80000000_should_get_r0_0xc0000000_xPSR_unchanged(void)
+{
+  coreReg[1] = 0x80000000;
+  writeInstructionToMemoryGivenByAddress(0xea4f0061, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xc0000000, coreReg[0]);
+}
+ 
+// affecting status flag
+// test ASRS.W R0, R1, #2
+void test_ASRImmediateT2_given_r1_0x1_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[1] = 0x1;
+  writeInstructionToMemoryGivenByAddress(0xea5f10a1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x41000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test ASRS.W R0, R1, #3
+void test_ASRImmediateT2_given_r1_0xf0000000_should_get_r0_0xfe000000_and_set_neg_flag(void)
+{
+  coreReg[1] = 0xf0000000;
+  writeInstructionToMemoryGivenByAddress(0xea5f00e1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xfe000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test ASRS.W R0, R1, #31
+void test_ASRImmediateT2_given_r1_0xc0000000_should_get_r0_0xffffffff_and_set_carry_flag(void)
+{
+  coreReg[1] = 0xc0000000;
+  writeInstructionToMemoryGivenByAddress(0xea5f70e1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(-1, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //RRX T1
 
 // without affecting status flag
