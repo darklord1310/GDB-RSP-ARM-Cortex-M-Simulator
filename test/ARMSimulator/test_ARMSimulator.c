@@ -74,6 +74,7 @@
 #include "SignedAndUnsignedBitFieldExtract.h"
 #include "BFIandBFC.h"
 #include "RRX.h"
+#include "RORImmediate.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"

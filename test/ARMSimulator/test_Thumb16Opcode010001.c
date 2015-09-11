@@ -7,6 +7,7 @@
 #include "SignedAndUnsignedBitFieldExtract.h"
 #include "BFIandBFC.h"
 #include "RRX.h"
+#include "RORImmediate.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"

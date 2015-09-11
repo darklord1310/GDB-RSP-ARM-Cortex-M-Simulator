@@ -97,8 +97,6 @@ void ASRImmediateT2(uint32_t instruction)
             Rm          source register
             Rd          destination register
             StatusBit   indicator for affecting the flag or not
-            MSBofRm     MSB of source register
-
 */
 void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t S)
 {

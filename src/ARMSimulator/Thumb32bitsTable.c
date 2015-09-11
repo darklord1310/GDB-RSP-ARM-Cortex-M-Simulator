@@ -319,13 +319,13 @@ void initThumb32bitsMoveRegisterAndImmediateShift()
   // ASR Immediate T2
   for(i = 0b1000000; i < 0b1100000; i++)
     Thumb32MoveRegisterAndImmediateShift[i] = ASRImmediateT2;
-  // RRX T1 and ROR Immediate T2
+  // RRX T1 and ROR Immediate T1
   for(i = 0b1100000; i < 0b10000000; i++)
   {
     if(i == 0b1100000)
       Thumb32MoveRegisterAndImmediateShift[i] = RRXT1;
-    // else
-      // Thumb32MoveRegisterAndImmediateShift[i] = LSLImmediateT2;
+    else
+      Thumb32MoveRegisterAndImmediateShift[i] = RORImmediateT1;
   }
 }
 

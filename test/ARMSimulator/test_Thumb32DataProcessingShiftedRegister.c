@@ -76,6 +76,7 @@
 #include "SignedAndUnsignedBitFieldExtract.h"
 #include "BFIandBFC.h"
 #include "RRX.h"
+#include "RORImmediate.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -876,3 +877,72 @@ void test_RRXT1_given_0xea4f0031_and_r1_is_0x1_should_get_r0_0x0_and_set_zero_an
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
   TEST_ASSERT_EQUAL(0x0, coreReg[0]);
 }
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //ROR Immediate T1
+
+// without affecting status flag
+// test ROR.W R0, R1, #2
+void test_RORImmediateT1_given_r1_is_0xf_should_get_r0_0xc0000003_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea4f00b1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xc0000003, coreReg[0]);
+}
+
+// without affecting status flag
+// test ROR.W R0, R1, #4
+void test_RORImmediateT1_given_and_r1_is_0xf_should_get_r0_0xf0000000_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xf;
+  writeInstructionToMemoryGivenByAddress(0xea4f1031, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xf0000000, coreReg[0]);
+}
+
+// affecting status flag
+// test RORS.W R0, R1, #1
+void test_RORImmediateT1_given_and_r1_is_0x1_should_get_r0_0x80000000_and_set_neg_and_carry_flag(void)
+{
+  coreReg[1] = 0x1;
+  writeInstructionToMemoryGivenByAddress(0xea5f0071, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xa1000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+}
+
+// affecting status flag
+// test RORS.W R0, R1, #32
+void test_RORImmediateT1_given_and_r1_is_0x0_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xea5f70f1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x41000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+}
+
+
+
+
