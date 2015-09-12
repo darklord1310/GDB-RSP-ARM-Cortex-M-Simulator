@@ -408,6 +408,10 @@ void initThumb32bitsDataProcessingRegister()
   Thumb32DataProcessingRegister[0b00010000] = LSLRegisterT2;
   Thumb32DataProcessingRegister[0b00100000] = LSRRegisterT2;
   Thumb32DataProcessingRegister[0b00110000] = LSRRegisterT2;
+  Thumb32DataProcessingRegister[0b01000000] = ASRRegisterT2;
+  Thumb32DataProcessingRegister[0b01010000] = ASRRegisterT2;
+  Thumb32DataProcessingRegister[0b01100000] = RORRegisterT2;
+  Thumb32DataProcessingRegister[0b01110000] = RORRegisterT2;
 }
 
 

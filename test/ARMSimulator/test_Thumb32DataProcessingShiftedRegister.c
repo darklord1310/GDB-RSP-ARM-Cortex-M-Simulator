@@ -903,7 +903,7 @@ void test_RORImmediateT1_given_r1_is_0xf_should_get_r0_0xc0000003_and_xPSR_uncha
 
 // without affecting status flag
 // test ROR.W R0, R1, #4
-void test_RORImmediateT1_given_and_r1_is_0xf_should_get_r0_0xf0000000_and_xPSR_unchanged(void)
+void test_RORImmediateT1_given_r1_is_0xf_should_get_r0_0xf0000000_and_xPSR_unchanged(void)
 {
   coreReg[1] = 0xf;
   writeInstructionToMemoryGivenByAddress(0xea4f1031, 0x08000040);
@@ -918,7 +918,7 @@ void test_RORImmediateT1_given_and_r1_is_0xf_should_get_r0_0xf0000000_and_xPSR_u
 
 // affecting status flag
 // test RORS.W R0, R1, #1
-void test_RORImmediateT1_given_and_r1_is_0x1_should_get_r0_0x80000000_and_set_neg_and_carry_flag(void)
+void test_RORImmediateT1_given_r1_is_0x1_should_get_r0_0x80000000_and_set_neg_and_carry_flag(void)
 {
   coreReg[1] = 0x1;
   writeInstructionToMemoryGivenByAddress(0xea5f0071, 0x08000040);
@@ -933,7 +933,7 @@ void test_RORImmediateT1_given_and_r1_is_0x1_should_get_r0_0x80000000_and_set_ne
 
 // affecting status flag
 // test RORS.W R0, R1, #32
-void test_RORImmediateT1_given_and_r1_is_0x0_should_get_r0_0x0_and_set_zero_flag(void)
+void test_RORImmediateT1_given_r1_is_0x0_should_get_r0_0x0_and_set_zero_flag(void)
 {
   coreReg[1] = 0x0;
   writeInstructionToMemoryGivenByAddress(0xea5f70f1, 0x08000040);

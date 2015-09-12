@@ -252,44 +252,47 @@ void test_LSRRegisterT2_given_r0_0xc0000000_r1_0xc0000000_should_get_r0_0x1_and_
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //ASR Immediate T2
+  //ASR Register T2
 
 // without affecting status flag
-// test ASR.W R0, R1, #4
-void xtest_ASRImmediateT2_given_r1_0xff_should_get_r0_0xf_xPSR_unchanged(void)
+// test ASR.W R0, R1, R2
+void test_ASRRegisterT2_given_r1_0x88000000_r2_0x8_should_get_r0_0xff880000_xPSR_unchanged(void)
 {
-  coreReg[1] = 0xff;
-  writeInstructionToMemoryGivenByAddress(0xea4f1021, 0x08000040);
+  coreReg[1] = 0x88000000;
+  coreReg[2] = 0x8;
+  writeInstructionToMemoryGivenByAddress(0xfa41f002, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
-  TEST_ASSERT_EQUAL(0xf, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xff880000, coreReg[0]);
 }
 
 // without affecting status flag
-// test ASR.W R0, R1, #1
-void xtest_ASRImmediateT2_given_r1_0x80000000_should_get_r0_0xc0000000_xPSR_unchanged(void)
+// test ASR.W R0, R1, R2
+void test_ASRRegisterT2_given_r1_0xff000000_r2_0xa00000ff_should_get_r0_0xffffffff_xPSR_unchanged(void)
 {
-  coreReg[1] = 0x80000000;
-  writeInstructionToMemoryGivenByAddress(0xea4f0061, 0x08000040);
+  coreReg[1] = 0xff000000;
+  coreReg[2] = 0xa00000ff;
+  writeInstructionToMemoryGivenByAddress(0xfa41f002, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
-  TEST_ASSERT_EQUAL(0xc0000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[0]);
 }
  
 // affecting status flag
-// test ASRS.W R0, R1, #2
-void xtest_ASRImmediateT2_given_r1_0x1_should_get_r0_0x0_and_set_zero_flag(void)
+// test ASRS.W R0, R1
+void test_ASRRegisterT2_given_r0_0x1_r1_0x2_should_get_r0_0x0_and_set_zero_flag(void)
 {
-  coreReg[1] = 0x1;
-  writeInstructionToMemoryGivenByAddress(0xea5f10a1, 0x08000040);
+  coreReg[0] = 0x1;
+  coreReg[1] = 0x2;
+  writeInstructionToMemoryGivenByAddress(0xfa50f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
@@ -300,61 +303,65 @@ void xtest_ASRImmediateT2_given_r1_0x1_should_get_r0_0x0_and_set_zero_flag(void)
 }
 
 // affecting status flag
-// test ASRS.W R0, R1, #3
-void xtest_ASRImmediateT2_given_r1_0xf0000000_should_get_r0_0xfe000000_and_set_neg_flag(void)
+// test ASRS.W R0, R1
+void test_ASRRegisterT2_given_r0_0x80000000_r1_0xf0000018_should_get_r0_0xfffffff8_and_set_neg_flag(void)
 {
-  coreReg[1] = 0xf0000000;
-  writeInstructionToMemoryGivenByAddress(0xea5f00e1, 0x08000040);
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0xf000001c;
+  writeInstructionToMemoryGivenByAddress(0xfa50f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
-  TEST_ASSERT_EQUAL(0xfe000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xfffffff8, coreReg[0]);
   TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }
 
 // affecting status flag
-// test ASRS.W R0, R1, #31
-void xtest_ASRImmediateT2_given_r1_0xc0000000_should_get_r0_0xffffffff_and_set_carry_flag(void)
+// test ASRS.W R0, R1
+void test_ASRRegisterT2_given_r0_0x3_r1_0xc0000001_should_get_r0_0x1_and_set_carry_flag(void)
 {
-  coreReg[1] = 0xc0000000;
-  writeInstructionToMemoryGivenByAddress(0xea5f70e1, 0x08000040);
+  coreReg[0] = 0x3;
+  coreReg[1] = 0xc0000001;
+  writeInstructionToMemoryGivenByAddress(0xfa50f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
-  TEST_ASSERT_EQUAL(-1, coreReg[0]);
-  TEST_ASSERT_EQUAL(0xa1000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x1, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }
 
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //ROR Immediate T1
+  //ROR Register T2
 
 // without affecting status flag
-// test ROR.W R0, R1, #2
-void xtest_RORImmediateT1_given_r1_is_0xf_should_get_r0_0xc0000003_and_xPSR_unchanged(void)
+// test ROR.W R0, R1, R2
+void test_RORRegisterT2_given_r1_is_0xf_r2_0x10_should_get_r0_0xf0000_and_xPSR_unchanged(void)
 {
   coreReg[1] = 0xf;
-  writeInstructionToMemoryGivenByAddress(0xea4f00b1, 0x08000040);
+  coreReg[2] = 0x10;
+  writeInstructionToMemoryGivenByAddress(0xfa61f002, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
-  TEST_ASSERT_EQUAL(0xc0000003, coreReg[0]);
+  TEST_ASSERT_EQUAL(0xf0000, coreReg[0]);
 }
 
 // without affecting status flag
-// test ROR.W R0, R1, #4
-void xtest_RORImmediateT1_given_and_r1_is_0xf_should_get_r0_0xf0000000_and_xPSR_unchanged(void)
+// test ROR.W R0, R1, R2
+void test_RORRegisterT2_given_and_r1_is_0xf_r2_0xababab24_should_get_r0_0xf0000000_and_xPSR_unchanged(void)
 {
   coreReg[1] = 0xf;
-  writeInstructionToMemoryGivenByAddress(0xea4f1031, 0x08000040);
+  coreReg[2] = 0xababab24;
+  writeInstructionToMemoryGivenByAddress(0xfa61f002, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
@@ -366,10 +373,11 @@ void xtest_RORImmediateT1_given_and_r1_is_0xf_should_get_r0_0xf0000000_and_xPSR_
 
 // affecting status flag
 // test RORS.W R0, R1, #1
-void xtest_RORImmediateT1_given_and_r1_is_0x1_should_get_r0_0x80000000_and_set_neg_and_carry_flag(void)
+void test_RORRegisterT2_given_r0_0x3_r1_is_0x1_should_get_r0_0x80000000_and_set_neg_and_carry_flag(void)
 {
+  coreReg[0] = 0x1;
   coreReg[1] = 0x1;
-  writeInstructionToMemoryGivenByAddress(0xea5f0071, 0x08000040);
+  writeInstructionToMemoryGivenByAddress(0xfa70f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
@@ -381,10 +389,11 @@ void xtest_RORImmediateT1_given_and_r1_is_0x1_should_get_r0_0x80000000_and_set_n
 
 // affecting status flag
 // test RORS.W R0, R1, #32
-void xtest_RORImmediateT1_given_and_r1_is_0x0_should_get_r0_0x0_and_set_zero_flag(void)
+void test_RORRegisterT2_given_r0_0x3__r1_is_0x0_should_get_r0_0x0_and_set_zero_flag(void)
 {
+  coreReg[0] = 0x0;
   coreReg[1] = 0x0;
-  writeInstructionToMemoryGivenByAddress(0xea5f70f1, 0x08000040);
+  writeInstructionToMemoryGivenByAddress(0xfa70f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
