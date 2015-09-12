@@ -464,6 +464,8 @@ void initThumb32bitsDataProcessingPlainImmediate()
       {
         if((i & 0b000001101) != 0b1101)
           Thumb32DataProcessingPlainImmediate[i] = ADDImmediateT4;
+        else
+          Thumb32DataProcessingPlainImmediate[i] = ADDSPImmediateT4;
       }
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT3;
@@ -478,6 +480,8 @@ void initThumb32bitsDataProcessingPlainImmediate()
       {
         if((i & 0b000001101) != 0b1101)
           Thumb32DataProcessingPlainImmediate[i] = SUBImmediateT4;
+        else
+          Thumb32DataProcessingPlainImmediate[i] = SUBSPImmediateT3;
       }
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT2;
@@ -564,6 +568,8 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       {
           if((i & 0b0000011010000) != 0b11010000)    // Rd != 1111 and Rn != 1101
             Thumb32DataProcessingModifiedImmediate[i] = ADDImmediateT3;
+          else
+            Thumb32DataProcessingModifiedImmediate[i] = ADDSPImmediateT3;
       }
       else
       {
@@ -584,6 +590,8 @@ void initThumb32bitsDataProcessingModifiedImmediate()
       {
           if((i & 0b0000011010000) != 0b11010000)    // Rd != 1111 and Rn != 1101
             Thumb32DataProcessingModifiedImmediate[i] = SUBImmediateT3;
+          else
+            Thumb32DataProcessingModifiedImmediate[i] = SUBSPImmediateT2;
       }
       else
       {
