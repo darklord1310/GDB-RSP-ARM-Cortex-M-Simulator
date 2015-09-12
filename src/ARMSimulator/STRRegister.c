@@ -262,6 +262,69 @@ void STMRegisterT2(uint32_t instruction)
 }
 
 
+
+
+/*Store Multiple Decrement Before (Store Multiple Empty Ascending) 
+ * 
+    STMDB<c> <Rn>{!},<registers>
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1  1   0  1| 0  0| 1  0  0|W | 0|     Rn    |0 |M | 0|         Register List      |   
+
+  where:
+            <c><q>            See Standard assembler syntax fields on page A6-7.
+            
+            <Rn>              The base register. If it is the SP and ! is specified, the instruction is treated as described in
+                              PUSH on page A6-188.
+                              
+            !                 Causes the instruction to write a modified value back to <Rn>. Encoded as W = 1.
+                              If ! is omitted, the instruction does not change <Rn>. Encoded as W = 0.
+                              
+            <registers>       Is a list of one or more registers to be stored, separated by commas and surrounded by { and
+                              }. The lowest-numbered register is stored to the lowest memory address, through to the
+                              highest-numbered register to the highest memory address.
+                              Encoding T1 does not support a list containing only one register. If an STMDB instruction with
+                              just one register <Rt> in the list is assembled to Thumb, it is assembled to the equivalent
+                              STR<c><q> <Rt>,[<Rn>,#-4]{!} instruction.
+                              The SP and PC cannot be in the list.
+          
+*/
+void STMDB(uint32_t instruction)
+{
+  uint32_t Rn = getBits(instruction, 19,16);
+  uint32_t registerList = getBits(instruction, 12,0);
+  uint32_t W = getBits(instruction, 21,21);
+  uint32_t M = getBits(instruction, 14,14);
+  registerList = ( ( ( (0b0 << 1) | M) << 1) << 13) | registerList; 
+  uint32_t address = coreReg[Rn] - 4*getBitCount(registerList, 15);
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {                   
+      writeMultipleRegisterToMemory(address, registerList,16, 0, Rn);
+      if(W == 1)                                //if writeback is 1 then update the Rn register
+      {
+        coreReg[Rn] = address;
+      }
+    }
+    shiftITState();
+  }
+  else
+  {                 
+    writeMultipleRegisterToMemory(address, registerList,16, 0, Rn);
+    if(W == 1)                                //if writeback is 1 then update the Rn register
+    {
+      coreReg[Rn] = address;
+    }
+  }
+  
+  coreReg[PC] += 4;
+  
+}
+
+
+
 /* This function will write multiple register to memory based on the register list given
  * 
  * Input:  address              the base address of the memory
@@ -270,7 +333,7 @@ void STMRegisterT2(uint32_t instruction)
  *         Rn                   the destination register which the value will be updated if writeback is 1
  *         sizeOfRegisterList   the bit size of the registerList
  */
-void writeMultipleRegisterToMemory(uint32_t address, uint32_t registerList, sizeOfRegisterList, uint32_t writeBack, uint32_t Rn)
+void writeMultipleRegisterToMemory(uint32_t address, uint32_t registerList, uint32_t sizeOfRegisterList, uint32_t writeBack, uint32_t Rn)
 {
   int i, bitCount = 0;
   
@@ -291,6 +354,8 @@ void writeMultipleRegisterToMemory(uint32_t address, uint32_t registerList, size
   
 }
 
+
+
 /*
  * LowestSetBit(x) is the minimum bit number of any of its bits that are ones. If all of its bits are zeros,
  * LowestSetBit(x) = N.
@@ -308,4 +373,19 @@ int lowestSetBit(uint32_t value)
   
   return counter;
   
+}
+
+
+int getBitCount(uint32_t value, int bitSize)
+{
+  int i,bitCount = 0;
+  
+  for(i = 0; i < bitSize; i++)
+  {
+    if( getBits(value, i ,i) == 1)           
+    {
+      bitCount++;
+    }
+  }
+  return bitCount;
 }

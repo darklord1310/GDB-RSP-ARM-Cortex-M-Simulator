@@ -116,7 +116,7 @@ void executeADDSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, int shiftOrNoShi
     if(Rd == PC)
     {
       uint32_t address = coreReg[Rm] + coreReg[SP] + 4;
-      ALUWritePC(address);
+      coreReg[PC] = maskOffBit(address, 0);
     }
     else if(Rm == PC)
     {

@@ -46,12 +46,12 @@ void initCoreRegister()
   int i;
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
-    if(i != 16)
-    {
-      coreReg[i] = 0;    
-    }
-    else
+    if(i == SP)
+      coreReg[i] = 0x20001000;    
+    else if(i == 16)
       coreReg[i] = 0x01000000;
+    else
+      coreReg[i] = 0x0;
   }
 
   for(i = 0; i < NUM_OF_FPUD_Register; i++)

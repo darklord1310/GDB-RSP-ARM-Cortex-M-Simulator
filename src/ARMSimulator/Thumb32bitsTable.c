@@ -261,7 +261,7 @@ void initThumb32Table()
     for(j = 0; j <= 0b111; j ++)
     {
       dummy = setBits(dummy,j,2,0);
-      Thumb32LoadWord[dummy] = executeLoadStoreMultiple;
+      Thumb32Table[dummy] = executeLoadStoreMultiple;
     }
   }
   //
@@ -321,6 +321,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT2;
   }
+  /*
   // MOVT T1
   for(i = 0b011000000; i < 0b011010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = MOVTT1;
@@ -348,6 +349,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
   // UBFX T1
   for(i = 0b111000000; i < 0b111010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = UBFXT1;
+  */
 }
 
 
@@ -415,7 +417,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
     Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
   // SBC Immediate T1
   for(i = 0b1011000000000; i < 0b1110000000000; i++)
-    Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
+    //Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
   // SUB Immediate T3 and CMP Immediate T1
   for(i = 0b1101000000000; i < 0b1110000000000; i++)
   {
@@ -563,7 +565,7 @@ void initThumb32bitsLoadStoreMultiple()
   for(j = 0; j <= 0b11111; j ++)
   {
     dummy = setBits(dummy,j,4,0);
-    Thumb32MultiplyAccumulate[dummy] = STMRegisterT2;
+    Thumb32LoadStoreMultiple[dummy] = STMRegisterT2;
   }
   
   //LDM Register T2
@@ -572,10 +574,31 @@ void initThumb32bitsLoadStoreMultiple()
   {
     dummy = setBits(dummy,j,4,0);
     if(dummy != 0b01111101)
-      Thumb32MultiplyAccumulate[dummy] = LDMRegisterT2;
+      Thumb32LoadStoreMultiple[dummy] = LDMRegisterT2;
   } 
   
+  //STMDB
+  dummy = 0b10000000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    if(dummy != 0b10011101)
+      Thumb32LoadStoreMultiple[dummy] = STMDB;
+  } 
   
+  //LDMDB
+  dummy = 0b10100000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    Thumb32LoadStoreMultiple[dummy] = LDMDB;
+  } 
+  
+  //POP T2
+  Thumb32LoadStoreMultiple[0b01111101] = POPT2;
+  
+  //PUSH T2
+  Thumb32LoadStoreMultiple[0b10011101] = PUSHT2;
 }
 
 

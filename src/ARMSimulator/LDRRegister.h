@@ -12,7 +12,8 @@ void LDRSBRegisterT1(uint32_t instruction);
 void LDRSHRegisterT1(uint32_t instruction);
 void LDMRegisterT1(uint32_t instruction);
 void LDMRegisterT2(uint32_t instruction);
+void LDMDB(uint32_t instruction);
 void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uint32_t writeBack, uint32_t Rn, int sizeOfRegisterList);
-int determineWriteBack(uint32_t Rn, uint32_t registerList);
+int determineWriteBack(uint32_t Rn, uint32_t registerList, uint32_t W);
 
 #endif // LDRRegister_H

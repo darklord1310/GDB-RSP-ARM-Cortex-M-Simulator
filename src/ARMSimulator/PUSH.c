@@ -59,9 +59,51 @@ void PUSHT1(uint32_t instruction)
     pushMultipleRegisterToMemory(address, register_list, 16);
     coreReg[PC] += 2;
   }
-
 }
 
+
+
+/*Push Multiple Registers Encoding T2
+    PUSH<c> <registers>
+      
+  31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1  1  0  1| 0  0| 1  0  0| 1| 0| 1  1  0  1| 0| M|0 |         register_list      |               
+  
+where:
+          <c><q>            See Standard assembler syntax fields on page A6-7.
+          
+          <registers>       Is a list of one or more registers, separated by commas and surrounded by 
+                            { and }. It specifies the set of registers to be stored. The registers
+                            are stored in sequence, the lowest-numbered register to the lowest memory
+                            address, through to the highest-numbered register to the highest memory address.
+          
+          The SP cannot be in the list.
+          If the PC is in the list, the LR must not be in the list.
+*/
+void PUSHT2(uint32_t instruction)
+{
+  uint8_t M = getBits(instruction, 14,14);
+  uint16_t register_list = ( ( ( ( 0b0 << 1) | M) << 1) << 13) | getBits(instruction, 12,0);
+  uint32_t address = coreReg[SP] - 4*bitCount(register_list);
+  
+  if(bitCount(register_list) < 2)
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      pushMultipleRegisterToMemory(address, register_list, 16);
+    
+    shiftITState();
+  }
+  else     
+    pushMultipleRegisterToMemory(address, register_list, 16);
+  
+  coreReg[PC] += 4;
+}
 
 
 
@@ -73,7 +115,6 @@ int bitCount(uint32_t value)
   {
     if(getBits(value,i,i) == 1)  
       count++;
-    
   }
   
   return count;
@@ -87,6 +128,10 @@ void pushMultipleRegisterToMemory(uint32_t address, uint32_t registerList, int s
   
   for(i = 0; i < sizeOfRegisterList; i++)
   {
+    if(i == 14)
+    {
+      printf("%x\n", getBits(registerList, i ,i));
+    }
     if( getBits(registerList, i ,i) == 1)           //if the bit[i] of the registerList is 1, then write the value of r[i] into the address
     {
       writeByteToMemory(address, coreReg[i], 4);

@@ -190,7 +190,7 @@ void executeLoadStoreMultiple(uint32_t instruction)
   uint32_t L = getBits(instruction,20,20);
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t W = getBits(instruction,21,21);
-  uint32_t WRn = (W >> 4) | Rn;
+  uint32_t WRn = (W << 4) | Rn;
   uint32_t opcode = ( ( (op << 1) | L) << 5) | WRn;
   
   (*Thumb32LoadStoreMultiple[opcode])(instruction);

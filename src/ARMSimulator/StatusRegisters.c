@@ -240,56 +240,6 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
 }
 
 
-
-void ALUWritePC(uint32_t address)
-{
-  coreReg[PC] = setBits(address, 0b0, 0, 0);
-
-}
-
-
-
-//Utility
-//all the functions below are actually use by many of the other functions, it should be place in other module but due to the troublesome to manually include
-//all the header inside the source file, so it is written in this module instead
-//____________________________________________________________________________________________________________________________________________________________________
-
-
-// AddWithCarry()
-// ==============
-/*
-(bits(N), bit, bit) AddWithCarry(bits(N) x, bits(N) y, bit carry_in)
-unsigned_sum = UInt(x) + UInt(y) + UInt(carry_in);
-signed_sum = SInt(x) + SInt(y) + UInt(carry_in);
-result = unsigned_sum<N-1:0>; // == signed_sum<N-1:0>
-carry_out = if UInt(result) == unsigned_sum then ’0’ else ’1’;
-overflow = if SInt(result) == signed_sum then ’0’ else ’1’;
-return (result, carry_out, overflow);
-*/
-void AddWithCarry(uint32_t num1, uint32_t num2, uint32_t carryIn)
-{
-  uint32_t unsignedSum = num1 + num2 + carryIn;
-  int signedSum = (int)num1 + (int)num2 + carryIn;
-
-}
-
-
-int SInt(uint32_t value, int numberOfBitsOfValue)
-{
-  int result = 0, i;
-
-  for(i = 0; i < numberOfBitsOfValue-1; i++)
-  {
-    if(getBits(value, i ,i) == 1)
-      result = result + (2^i);
-  }
-
-  if( getBits(value, numberOfBitsOfValue-1, numberOfBitsOfValue-1) == 1)
-    result = result - 2^(numberOfBitsOfValue);
-
-  return result;
-}
-
 bool isQSet()
 {
   if( getBits(coreReg[xPSR], 27, 27) )
