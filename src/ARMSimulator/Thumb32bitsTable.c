@@ -444,6 +444,12 @@ void initThumb32bitsDataProcessingRegister()
   Thumb32DataProcessingRegister[0b01011101] = UXTBT2;
   Thumb32DataProcessingRegister[0b01011110] = UXTBT2;
   Thumb32DataProcessingRegister[0b01011111] = UXTBT2;
+  // Miscellaneous operations
+  Thumb32DataProcessingRegister[0b10011000] = REVT2;
+  Thumb32DataProcessingRegister[0b10011001] = REV16T2;
+  Thumb32DataProcessingRegister[0b10011010] = RBITT1;
+  Thumb32DataProcessingRegister[0b10011011] = REVSHT2;
+  Thumb32DataProcessingRegister[0b10111000] = CLZT1;
 }
 
 

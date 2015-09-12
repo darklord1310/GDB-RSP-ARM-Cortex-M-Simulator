@@ -11,6 +11,7 @@
 #include "ORNRegister.h"
 #include "TEQRegister.h"
 #include "RSBRegister.h"
+#include "CLZ.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"

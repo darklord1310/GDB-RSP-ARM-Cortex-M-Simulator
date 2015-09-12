@@ -80,6 +80,7 @@
 #include "ORNRegister.h"
 #include "TEQRegister.h"
 #include "RSBRegister.h"
+#include "CLZ.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -649,4 +650,123 @@ void test_UXTBT2_given_r1_is_0x80000000_should_get_r0_0x80_and_xPSR_unchanged(vo
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //REV T2
 
+// test REV  R0, R1
+void test_REVT2_given_r1_is_0xabcd1234_should_get_r0_0x3412cdab_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xabcd1234;
+  writeInstructionToMemoryGivenByAddress(0xfa91f081, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x3412cdab, coreReg[0]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //REV16 T2
+
+// test REV16  R0, R1
+void test_REV16T2_given_r1_is_0xabcd1234_should_get_r0_0xcdab3412_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xabcd1234;
+  writeInstructionToMemoryGivenByAddress(0xfa91f091, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xcdab3412, coreReg[0]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //RBIT T1
+
+// test RBIT  R0, R1
+void test_RBITT1_given_r1_is_0xabcd1234_should_get_r0_0x2c48b3d5_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xabcd1234;
+  writeInstructionToMemoryGivenByAddress(0xfa91f0a1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x2c48b3d5, coreReg[0]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //REVSH T2
+
+// test REVSH  R0, R1
+void test_REVSHT2_given_r1_is_0xabcd1284_should_get_r0_0xffff8412_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xabcd1284;
+  writeInstructionToMemoryGivenByAddress(0xfa91f0b1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xffff8412, coreReg[0]);
+}
+
+// test REVSH  R0, R1
+void test_REVSHT2_given_r1_is_0x1234_should_get_r0_0x3412_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0x1234;
+  writeInstructionToMemoryGivenByAddress(0xfa91f0b1, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x3412, coreReg[0]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //CLZ T1
+
+// test CLZ  R0, R1
+void test_CLZT1_given_r1_is_0xabcd1284_should_get_r0_0x11_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0xabcd1284;
+  writeInstructionToMemoryGivenByAddress(0xfab1f081, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x11, coreReg[0]);
+}
+
+// test CLZ  R0, R1
+void test_CLZT1_given_r1_is_0x0_should_get_r0_0x20_and_xPSR_unchanged(void)
+{
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xfab1f081, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x20, coreReg[0]);
+}

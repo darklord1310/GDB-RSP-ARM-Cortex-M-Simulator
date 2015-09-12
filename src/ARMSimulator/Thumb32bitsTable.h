@@ -74,6 +74,7 @@
 #include "ORNRegister.h"
 #include "TEQRegister.h"
 #include "RSBRegister.h"
+#include "CLZ.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 

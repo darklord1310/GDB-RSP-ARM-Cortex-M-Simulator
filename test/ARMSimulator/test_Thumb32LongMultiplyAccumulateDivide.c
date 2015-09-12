@@ -80,6 +80,7 @@
 #include "ORNRegister.h"
 #include "TEQRegister.h"
 #include "RSBRegister.h"
+#include "CLZ.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"

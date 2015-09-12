@@ -11,6 +11,7 @@
 #include "ORNRegister.h"
 #include "TEQRegister.h"
 #include "RSBRegister.h"
+#include "CLZ.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
