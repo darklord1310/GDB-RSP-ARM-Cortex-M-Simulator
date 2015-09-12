@@ -134,7 +134,7 @@ void test_LSLRegisterT2_given_r1_0xff_r2_0x800000ff_should_get_r0_0x0_xPSR_uncha
 
 // affecting status flag
 // test LSLS.W R0, R1
-void test_LSLRegisterT2_given_r1_0x80000000_r1_0x1_should_get_r0_0x0_and_set_zero_and_carry_flag(void)
+void test_LSLRegisterT2_given_r0_0x80000000_r1_0x1_should_get_r0_0x0_and_set_zero_and_carry_flag(void)
 {
   coreReg[0] = 0x80000000;
   coreReg[1] = 0x1;
@@ -150,7 +150,7 @@ void test_LSLRegisterT2_given_r1_0x80000000_r1_0x1_should_get_r0_0x0_and_set_zer
 
 // affecting status flag
 // test LSLS.W R0, R1, #3
-void test_LSLRegisterT2_given_r1_0x08_r1_28_should_get_r0_0x80000000_and_set_neg_flag(void)
+void test_LSLRegisterT2_given_r0_0x08_r1_28_should_get_r0_0x80000000_and_set_neg_flag(void)
 {
   coreReg[0] = 0x8;
   coreReg[1] = 28;
@@ -167,14 +167,15 @@ void test_LSLRegisterT2_given_r1_0x08_r1_28_should_get_r0_0x80000000_and_set_neg
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //LSR Immediate T2
+  //LSR Register T2
 
 // without affecting status flag
-// test LSR.W R0, R1, #4
-void xtest_LSRImmediateT2_given_r1_0xff_should_get_r0_0xf_xPSR_unchanged(void)
+// test LSR.W R0, R1, R2
+void test_LSRRegisterT2_given_r1_0xff_r2_0x4_should_get_r0_0xf_xPSR_unchanged(void)
 {
   coreReg[1] = 0xff;
-  writeInstructionToMemoryGivenByAddress(0xea4f1011, 0x08000040);
+  coreReg[2] = 0x4;
+  writeInstructionToMemoryGivenByAddress(0xfa21f002, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
@@ -184,12 +185,29 @@ void xtest_LSRImmediateT2_given_r1_0xff_should_get_r0_0xf_xPSR_unchanged(void)
   TEST_ASSERT_EQUAL(0xf, coreReg[0]);
 }
 
-// affecting status flag
-// test LSRS.W R0, R1, #2
-void xtest_LSRImmediateT2_given_r1_0x1_should_get_r0_0x0_and_set_zero_flag(void)
+// without affecting status flag
+// test LSR.W R0, R1, R2
+void test_LSRRegisterT2_given_r1_0xff_r2_0x800000ff_should_get_r0_0x0_xPSR_unchanged(void)
 {
-  coreReg[1] = 0x1;
-  writeInstructionToMemoryGivenByAddress(0xea5f1091, 0x08000040);
+  coreReg[1] = 0xff;
+  coreReg[2] = 0x800000ff;
+  writeInstructionToMemoryGivenByAddress(0xfa21f002, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0, coreReg[0]);
+}
+
+// affecting status flag
+// test LSRS.W R0, R1
+void test_LSRRegisterT2_given_r0_0xf0_r1_0x0fffffff_should_get_r0_0x0_and_set_zero_flag(void)
+{
+  coreReg[0] = 0x0fffffff;
+  coreReg[1] = 0xf0;
+  writeInstructionToMemoryGivenByAddress(0xfa30f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();
@@ -200,11 +218,28 @@ void xtest_LSRImmediateT2_given_r1_0x1_should_get_r0_0x0_and_set_zero_flag(void)
 }
 
 // affecting status flag
-// test LSRS.W R0, R1, #31
-void xtest_LSLImmediateT2_given_r1_0xc0000000_should_get_r0_0x1_and_set_carry_flag(void)
+// test LSRS.W R0, R1
+void test_LSRRegisterT2_given_r0_0x80000000_r1_0x0_should_get_r0_0x80000000_and_set_neg_flag(void)
 {
-  coreReg[1] = 0xc0000000;
-  writeInstructionToMemoryGivenByAddress(0xea5f70d1, 0x08000040);
+  coreReg[0] = 0x80000000;
+  coreReg[1] = 0x0;
+  writeInstructionToMemoryGivenByAddress(0xfa30f001, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+}
+
+// affecting status flag
+// test LSRS.W R0, R1
+void test_LSRRegisterT2_given_r0_0xc0000000_r1_0xc0000000_should_get_r0_0x1_and_set_carry_flag(void)
+{
+  coreReg[0] = 0xc0000000;
+  coreReg[1] = 0xc000001f;
+  writeInstructionToMemoryGivenByAddress(0xfa30f001, 0x08000040);
   coreReg[PC] = 0x08000040;
 
   armStep();

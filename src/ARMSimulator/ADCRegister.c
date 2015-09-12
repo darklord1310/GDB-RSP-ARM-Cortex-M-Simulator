@@ -123,7 +123,7 @@ void ADCRegisterT2(uint32_t instruction)
 
    Input: Rn          register value which will be added with Rm
           Rd          destination register
-          Rm          register value which will be added with Rn
+          Rm          register value which will be added with Rn after shifted
           S           if set will affect the status register
           shiftType       determine what type of shifting is needed
           shiftImmediate  shift range from 0 to 31

@@ -200,7 +200,7 @@ void ADDRegisterT3(uint32_t instruction)
 
    Input: Rn          register value which will be added with Rm
           Rd          destination register
-          Rm          register value which will be added with Rn
+          Rm          register value which will be added with Rn after shifted
           S               indicator for affecting the flag or not
           shiftType       determine what type of shifting is needed
           shiftImmediate  shift range from 0 to 31

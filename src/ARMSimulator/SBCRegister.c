@@ -113,9 +113,9 @@ void SBCRegisterT2(uint32_t instruction)
    from a register value, and writes the result to the destination register. It can optionally update the condition
    flags based on the result.
 
-   Input: Rn          register value which will be added with Rm
+   Input: Rn          register value which will be subtracted with Rm
           Rd          destination register
-          Rm          register value which will be added with Rn
+          Rm          register value which will be subtracted with Rn after shifted
           S           if set will affect the status register
           shiftType       determine what type of shifting is needed
           shiftImmediate  shift range from 0 to 31

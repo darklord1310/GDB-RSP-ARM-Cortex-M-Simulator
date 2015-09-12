@@ -97,9 +97,9 @@ void LSLRegisterT2(uint32_t instruction)
    writes the result to the destination register. The variable number of bits is read from the bottom byte of a
    register. It can optionally update the condition flags based on the result.
 
-   Input: Rn          register value which will be subtract with Rm
+   Input: Rn          register value which will be shifted
           Rd          destination register
-          Rm          register value which will be subtract with Rn
+          Rm          register value which contain shifted value at bottom byte
           S           if set will affect the status register
 */
 void executeLSLRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S)

@@ -114,7 +114,7 @@ void SUBRegisterT2(uint32_t instruction)
 
    Input: Rn          register value which will be subtract with Rm
           Rd          destination register
-          Rm          register value which will be subtract with Rn
+          Rm          register value which will be subtract with Rn after shifted
           S           if set will affect the status register
           shiftType       determine what type of shifting is needed
           shiftImmediate  shift range from 0 to 31

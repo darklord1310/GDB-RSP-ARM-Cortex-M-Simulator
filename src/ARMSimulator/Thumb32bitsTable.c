@@ -404,9 +404,10 @@ void initThumb32bitsMoveRegisterAndImmediateShift()
 
 void initThumb32bitsDataProcessingRegister()
 {
-  // LSL Register T2
   Thumb32DataProcessingRegister[0b00000000] = LSLRegisterT2;
   Thumb32DataProcessingRegister[0b00010000] = LSLRegisterT2;
+  Thumb32DataProcessingRegister[0b00100000] = LSRRegisterT2;
+  Thumb32DataProcessingRegister[0b00110000] = LSRRegisterT2;
 }
 
 
