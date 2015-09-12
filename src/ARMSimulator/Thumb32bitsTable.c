@@ -428,6 +428,22 @@ void initThumb32bitsDataProcessingRegister()
   Thumb32DataProcessingRegister[0b00011101] = UXTHT2;
   Thumb32DataProcessingRegister[0b00011110] = UXTHT2;
   Thumb32DataProcessingRegister[0b00011111] = UXTHT2;
+  Thumb32DataProcessingRegister[0b01001000] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001001] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001010] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001011] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001100] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001101] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001110] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01001111] = SXTBT2;
+  Thumb32DataProcessingRegister[0b01011000] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011001] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011010] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011011] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011100] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011101] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011110] = UXTBT2;
+  Thumb32DataProcessingRegister[0b01011111] = UXTBT2;
 }
 
 

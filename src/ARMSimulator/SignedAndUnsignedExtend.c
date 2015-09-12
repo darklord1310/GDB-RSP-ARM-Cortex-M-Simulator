@@ -280,3 +280,110 @@ void UXTHT2(uint32_t instruction)
 
   coreReg[PC] += 4;
 }
+
+
+/*Signed Extend Byte Encoding T2
+
+  SXTB<c>.W <Rd>,<Rm>{,<rotation>}
+
+  31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+ |1  1  1  1  1 |0  1  0 |0| 1  0  0 |1  1  1  1 |1  1  1  1 |    Rd   |1|0| R |   Rm  |
+ 
+  R => rotation
+
+where:
+            <c><q>                See Standard assembler syntax fields on page A6-7.
+
+            <Rd>                  Specifies the destination register.
+
+            <Rm>                  Specifies the register that contains the operand.
+
+            <rotation>            This can be any one of:
+                                  • ROR #8.
+                                  • ROR #16.
+                                  • ROR #24.
+                                  • Omitted.
+
+                                  If your assembler accepts shifts by #0 and treats them as equivalent to no shift or LSL
+                                  #0, then it must accept ROR #0 here. It is equivalent to omitting <rotation>.
+*/
+void SXTBT2(uint32_t instruction)
+{
+  uint32_t rotated;
+  uint32_t Rm = getBits(instruction, 3, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t r = getBits(instruction, 5, 4);
+  uint32_t rotation = r << 3;
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      rotated = executeROR(rotation, coreReg[Rm], 0);
+      coreReg[Rd] = signExtend(rotated, 8);
+    }
+
+    shiftITState();
+  }
+  else
+  {
+    rotated = executeROR(rotation, coreReg[Rm], 0);
+    coreReg[Rd] = signExtend(rotated, 8);
+  }
+
+  coreReg[PC] += 4;
+}
+
+
+/*Unsigned Extend Byte Encoding T2
+
+  UXTB<c>.W <Rd>,<Rm>{,<rotation>}
+
+  31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+ |1  1  1  1  1 |0  1  0 |0| 1  0  1 |1  1  1  1 |1  1  1  1 |    Rd   |1|0| R |   Rm  |
+ 
+  R => rotation
+
+where:
+            <c><q>                See Standard assembler syntax fields on page A6-7.
+
+            <Rd>                  Specifies the destination register.
+
+            <Rm>                  Specifies the register that contains the operand.
+
+            <rotation>            This can be any one of:
+                                  • ROR #8.
+                                  • ROR #16.
+                                  • ROR #24.
+                                  • Omitted.
+
+                                  If your assembler accepts shifts by #0 and treats them as equivalent to no shift or LSL
+                                  #0, then it must accept ROR #0 here. It is equivalent to omitting <rotation>.
+*/
+void UXTBT2(uint32_t instruction)
+{
+  uint32_t rotated;
+  uint32_t Rm = getBits(instruction, 3, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t r = getBits(instruction, 5, 4);
+  uint32_t rotation = r << 3;
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      rotated = executeROR(rotation, coreReg[Rm], 0);
+      coreReg[Rd] = getBits(rotated, 7, 0);
+    }
+
+    shiftITState();
+  }
+  else
+  {
+    rotated = executeROR(rotation, coreReg[Rm], 0);
+    coreReg[Rd] = getBits(rotated, 7, 0);
+  }
+
+  coreReg[PC] += 4;
+}
+
