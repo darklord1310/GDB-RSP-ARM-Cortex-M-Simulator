@@ -170,8 +170,28 @@ void STRBImmediateT1(uint32_t instruction)
 */
 void STRBImmediateT2(uint32_t instruction)
 {
-  
-  
+  uint32_t imm12 = getBits(instruction, 11, 0);
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t address = coreReg[Rn] +  imm12; 
+
+  if(Rn == 0b1111 || Rt == 0b1111)
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )        
+      writeByteToMemory(address, coreReg[Rt],1);               //store a byte to the address and store it into the memory
+    
+    shiftITState();
+  }
+  else               
+    writeByteToMemory(address, coreReg[Rt],1);               //store a byte to the address and store it into the memory
+    
+  coreReg[PC] += 4;
 }
 
 
@@ -204,8 +224,67 @@ void STRBImmediateT2(uint32_t instruction)
 */
 void STRBImmediateT3(uint32_t instruction)
 {
+  uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t W = getBits(instruction,8,8);
+  uint32_t U = getBits(instruction,9,9);
+  uint32_t P = getBits(instruction,10,10);
+  uint32_t address;
+
+  if(U == 1)
+    address = coreReg[Rn] + imm8;
+  else
+    address = coreReg[Rn] - imm8;
+
+  if(P == 1 && W == 0 && U == 1)                    //if this condition meet, this is actually a STRBT instruction
+    STRBT(instruction);
+    
+  int check = isOffPostOrPreIndex(P,W);
   
+  if(check == UNDEFINED || Rn == 0b1111)
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
   
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(check == OFFINDEX)
+        writeByteToMemory(address, coreReg[Rt],1);
+      else if(check == PREINDEX)
+      {
+        writeByteToMemory(address, coreReg[Rt],1);
+        coreReg[Rn] = address;
+      }
+      else 
+      {
+        writeByteToMemory(coreReg[Rn], coreReg[Rt],1);
+        coreReg[Rn] = address;
+      }
+    }      
+                   
+    shiftITState();
+  }
+  else
+  {
+    if(check == OFFINDEX)
+      writeByteToMemory(address, coreReg[Rt],1);
+    else if(check == PREINDEX)
+    {
+      writeByteToMemory(address, coreReg[Rt],1);
+      coreReg[Rn] = address;
+    }
+    else 
+    {
+      writeByteToMemory(coreReg[Rn], coreReg[Rt],1);
+      coreReg[Rn] = address;
+    }
+  }         
+    
+  coreReg[PC] += 4;
 }
 
 
@@ -312,4 +391,10 @@ void STRImmediateT2(uint32_t instruction)
 }
 
 
+
+void STRBT(uint32_t instruction)
+{
+  
+  
+}
 

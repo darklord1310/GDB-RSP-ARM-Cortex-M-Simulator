@@ -31,6 +31,6 @@ void STRBImmediateT2(uint32_t instruction);
 void STRBImmediateT3(uint32_t instruction);
 void STRHImmediateT1(uint32_t instruction);
 void STRImmediateT2(uint32_t instruction);
-
+void STRBT(uint32_t instruction);
 
 #endif // STRImmediate_H

@@ -444,3 +444,57 @@ void test_writeByteToMemory_given_size_condition_is_not_meet_should_not_throw()
     TEST_FAIL_MESSAGE("Not expect throw\n");
   }
 }
+
+
+
+void test_isOffPostOrPreIndex_given_index_1_writeback_0_should_return_OFFINDEX()
+{
+  uint32_t index = 1;
+  uint32_t writeback = 0;
+  
+  int answer = isOffPostOrPreIndex(index,writeback);
+  
+  TEST_ASSERT_EQUAL(OFFINDEX,answer);
+}
+
+
+void test_isOffPostOrPreIndex_given_index_1_writeback_1_should_return_PREINDEX()
+{
+  uint32_t index = 1;
+  uint32_t writeback = 1;
+  
+  int answer = isOffPostOrPreIndex(index,writeback);
+  
+  TEST_ASSERT_EQUAL(PREINDEX,answer);
+}
+
+
+
+void test_isOffPostOrPreIndex_given_index_0_writeback_1_should_return_POSTINDEX()
+{
+  uint32_t index = 0;
+  uint32_t writeback = 1;
+  
+  int answer = isOffPostOrPreIndex(index,writeback);
+  
+  TEST_ASSERT_EQUAL(POSTINDEX,answer);
+}
+
+
+void test_isOffPostOrPreIndex_given_index_0_writeback_0_should_return_UNDEFINED()
+{
+  uint32_t index = 0;
+  uint32_t writeback = 0;
+  
+  int answer = isOffPostOrPreIndex(index,writeback);
+  
+  TEST_ASSERT_EQUAL(UNDEFINED,answer);
+}
+
+
+
+
+
+
+
+

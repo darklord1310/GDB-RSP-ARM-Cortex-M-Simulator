@@ -97,3 +97,28 @@ void isWatchPointReachedForWrite(uint32_t address, int size)
   }
 
 }
+
+
+int isOffPostOrPreIndex(uint32_t index,uint32_t writeback)
+{
+  if(index == 1 && writeback == 0)
+    return OFFINDEX;
+  else if(index == 1 && writeback == 1)
+    return PREINDEX;
+  else if(index == 0 && writeback == 1)
+    return POSTINDEX;
+  else
+    return UNDEFINED;
+}
+
+
+
+
+
+
+
+
+
+
+
+
