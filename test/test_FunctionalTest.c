@@ -1,5 +1,6 @@
 #include <malloc.h>
 #include <string.h>
+#include <math.h>
 #include "unity.h"
 #include "FunctionalTest.h"
 #include "ServeRSP.h"

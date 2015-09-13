@@ -25,9 +25,13 @@
 :paths:
   :test:
     - +:test/**
+    - +:test/ARMSimulator/**
+    - +:test/GDB/**
     - -:test/support
   :source:
     - src/**
+    - src/ARMSimulator/**
+    - src/GDB/**
   :support:
     - test/support
 
