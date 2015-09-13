@@ -213,14 +213,26 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   shiftType = determineShiftOperation(shiftType, shiftImmediate);
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
-  temp = coreReg[Rn] + shiftedRm;
-  coreReg[Rd] = temp;
-
-  if(S == 1)
+  /* if(Rd == PC)
   {
-    updateZeroFlag(coreReg[Rd]);
-    updateNegativeFlag(coreReg[Rd]);
-    updateOverflowFlagAddition(backupRn, shiftedRm, coreReg[Rd]);
-    updateCarryFlagAddition(backupRn, shiftedRm);
+    uint32_t address = shiftedRm + coreReg[Rn] + 4;
+    ALUWritePC(address);
   }
+  else if(Rm == PC)
+  {
+    coreReg[Rd] = alignPC(shiftedRm + 2, 4) + coreReg[Rn];
+  }
+  else
+  { */
+    temp = coreReg[Rn] + shiftedRm;
+    coreReg[Rd] = temp;
+
+    if(S == 1)
+    {
+      updateZeroFlag(coreReg[Rd]);
+      updateNegativeFlag(coreReg[Rd]);
+      updateOverflowFlagAddition(backupRn, shiftedRm, coreReg[Rd]);
+      updateCarryFlagAddition(backupRn, shiftedRm);
+    }
+  // }
 }

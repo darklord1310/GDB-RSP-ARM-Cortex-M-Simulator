@@ -1,4 +1,4 @@
-#include "StatusRegisters.h"
+﻿#include "StatusRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdio.h>
@@ -245,6 +245,8 @@ void ALUWritePC(uint32_t address)
 {
   coreReg[PC] = setBits(address, 0b0, 0, 0);
 
+  if(getBits(address, 31, 28) >= 0xa)
+    coreReg[PC] = 0x00fff05e;
 }
 
 

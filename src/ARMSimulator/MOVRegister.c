@@ -2,10 +2,9 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
-#include "ADDSPRegister.h"
-#include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include <assert.h>
 
 
 /*
@@ -42,21 +41,18 @@ void MOVRegisterToRegisterT1(uint32_t instruction)
   Rd = ( D << 3 ) | Rd;     // this is to merge the D with Rd to make Rd becomes 4 bits
                             // Eg. new Rd = D Rd2 Rd1 Rd0
 
-
-
   if( inITBlock() )
   {
     if( checkCondition(cond) )
       executeMOVRegister(Rm, Rd, 0);
 
     shiftITState();
-    coreReg[PC] += 2;
   }
   else
-  {
     executeMOVRegister(Rm, Rd, 0);
+
+  if(Rd != PC)
     coreReg[PC] += 2;
-  }
 }
 
 
@@ -91,6 +87,9 @@ void MOVRegisterToRegisterT2(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction, 21, 19);
   uint32_t Rd = getBits(instruction, 18, 16);
+
+  assert(Rm != SP || Rm != PC);
+  assert(Rd != SP || Rd != PC);
 
   if( inITBlock() )
   {
@@ -147,6 +146,9 @@ void MOVRegisterT3(uint32_t instruction)
   uint32_t Rd = getBits(instruction, 11, 8);
   uint32_t statusFlag = getBits(instruction, 20, 20);
 
+  assert(Rd != PC || Rm != PC);
+  assert(Rd != SP && Rm != SP);
+
   if(inITBlock())
  {
     if( checkCondition(cond) )
@@ -169,11 +171,16 @@ void MOVRegisterT3(uint32_t instruction)
 */
 void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = coreReg[Rm];
-
-  if(S == 1)
+  if(Rd == PC)
+    ALUWritePC(coreReg[Rm]);
+  else
   {
-    updateZeroFlag(coreReg[Rd]);
-    updateNegativeFlag(coreReg[Rd]);
+    coreReg[Rd] = coreReg[Rm];
+
+    if(S == 1)
+    {
+      updateZeroFlag(coreReg[Rd]);
+      updateNegativeFlag(coreReg[Rd]);
+    }
   }
 }

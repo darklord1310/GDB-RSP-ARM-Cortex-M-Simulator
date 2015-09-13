@@ -5,7 +5,6 @@
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
 #include <stdint.h>
-#include "ModifiedImmediateConstant.h"
 
 void MOVRegisterToRegisterT1(uint32_t instruction);
 void MOVRegisterToRegisterT2(uint32_t instruction);
