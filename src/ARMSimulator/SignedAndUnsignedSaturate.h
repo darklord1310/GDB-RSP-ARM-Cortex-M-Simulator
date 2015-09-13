@@ -29,9 +29,9 @@
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include "ShiftOperation.h"
+#include "math.h"
 #include <stdint.h>
 #include <stdio.h>
-#include <math.h>
 #include <assert.h>
 
 void SSATT1(uint32_t instruction);
