@@ -1,7 +1,8 @@
 #include <malloc.h>
 #include <string.h>
+#include <math.h>
 #include "unity.h"
-#include "FunctionalTest.h"
+/* #include "FunctionalTest.h"
 #include "ServeRSP.h"
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"
@@ -89,7 +90,7 @@
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
-#include "SignedUnsignedLongMultiplyDivide.h"
+#include "SignedUnsignedLongMultiplyDivide.h" */
 
 
 /* extern char *targetCortexM4_XML;
@@ -99,8 +100,8 @@ extern int watchpointIndex; */
 
 void setUp(void)
 {
-    initializeSimulator();
-    initializeWatchpoint();
+    // initializeSimulator();
+    // initializeWatchpoint();
 }
 
 void tearDown(void)
@@ -125,7 +126,7 @@ Simple assembly
 080001c0 <ADC_IRQHandler>:
  80001c0:       e7fe            b.n     80001c0 <ADC_IRQHandler>
 */
-void test_simple_assembly_code(void)
+void xtest_simple_assembly_code(void)
 {
     /* char *packet = NULL;
 
@@ -136,7 +137,7 @@ void test_simple_assembly_code(void)
     free(reply); */
 
     // tarRemoteCommand();
-    loadSimpleAssembly();
+    /* loadSimpleAssembly();
 
     singleStep();                           //ldr     r0, [pc, #12]
     storeAffectedReg(R0, 0x20000000);
@@ -185,7 +186,7 @@ void test_simple_assembly_code(void)
     coreReg[PC] = 0x80001c0;
     singleStep();                           //b.n     80001c0
     storeAffectedReg(PC_REG, 0x80001c0);
-    TEST_ASSERT_EQUAL_Register(&reg);
+    TEST_ASSERT_EQUAL_Register(&reg); */
 }
 
 /*
@@ -205,9 +206,9 @@ IT block
 080001c0 <ADC_IRQHandler>:
  80001c0:       e7fe            b.n     80001c0 <ADC_IRQHandler>
 */
-void test_IT_block_assmbly_code()
+void xtest_IT_block_assmbly_code()
 {
-    loadITBlock();
+    /* loadITBlock();
 
     singleStep();                           //it      cc
     storeAffectedReg(XPSR, 0x01003800);
@@ -261,7 +262,7 @@ void test_IT_block_assmbly_code()
     storeAffectedReg(XPSR, 0x61000000);
     TEST_ASSERT_EQUAL_Register(&reg);
     storeAffectedReg(PC_REG, 0x080001be);
-    TEST_ASSERT_EQUAL_Register(&reg);
+    TEST_ASSERT_EQUAL_Register(&reg); */
 }
 
 

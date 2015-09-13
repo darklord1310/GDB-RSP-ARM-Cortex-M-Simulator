@@ -534,7 +534,6 @@ void initThumb32bitsDataProcessingPlainImmediate()
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT2;
   }
-  /*
   // MOVT T1
   for(i = 0b011000000; i < 0b011010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = MOVTT1;
@@ -562,7 +561,6 @@ void initThumb32bitsDataProcessingPlainImmediate()
   // UBFX T1
   for(i = 0b111000000; i < 0b111010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = UBFXT1;
-  */
 }
 
 
@@ -632,7 +630,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
     Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
   // SBC Immediate T1
   for(i = 0b1011000000000; i < 0b1110000000000; i++)
-    //Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
+    Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
   // SUB Immediate T3 and CMP Immediate T1
   for(i = 0b1101000000000; i < 0b1110000000000; i++)
   {

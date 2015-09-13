@@ -23,12 +23,29 @@
 #ifndef gdbserver_H
 #define gdbserver_H
 
-#include <winsock2.h>
-#pragma comment(lib,<ws2_32.lib>)       //Winsock Library
-
 #define LOCAL_HOST_ADD  "127.0.0.1"
 #define DEFAULT_PORT    2010
 #define PACKET_SIZE     0x3fff
+
+#ifdef  __MINGW32__
+
+#include <winsock2.h>
+#pragma comment(lib,<ws2_32.lib>)       //Winsock Library
+
+#elif  __linux__
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h> 
+#include <unistd.h>
+
+typedef unsigned int    u_int;
+typedef u_int           SOCKET;
+
+#define INVALID_SOCKET  (SOCKET)(~0)
+#define SOCKET_ERROR            (-1)
+
+#endif
 
 // void main();
 void winsockInit();
@@ -38,6 +55,6 @@ void listenSocket(SOCKET *sock);
 void waitingForConnection(SOCKET *sock);
 int sendBuffer(SOCKET *sock, char *sendbuf);
 int receiveBuffer(SOCKET *sock, char *recvbuf);
-// void sendReply(SOCKET *sock, char *reply);
+void displayErrorMsg(char *errorMsg);
 
 #endif // gdbserver_H

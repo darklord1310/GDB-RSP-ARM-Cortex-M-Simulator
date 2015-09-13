@@ -547,10 +547,10 @@ void test_ORNImmediateT1_given_instruction_0xf0704000_should_OR_0x7fffffff_with_
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //MVN Immediate T2
+  //MVN Immediate T1
 
 // MVN r7, #0xabababab
-void test_MVNImmediateT2_given_instruction_0xf06f07ab_should_move_0xffffff54_into_R7()
+void test_MVNImmediateT1_given_instruction_0xf06f07ab_should_move_0xffffff54_into_R7()
 {
   coreReg[7] = 0xcdcdcdcd;
 
@@ -568,7 +568,7 @@ void test_MVNImmediateT2_given_instruction_0xf06f07ab_should_move_0xffffff54_int
 
 
 // MVNS r5, #-1 and not affecting the flag register
-void test_MVNImmediateT2_given_instruction_0xf07f35ff_should_move_0x0_into_R5_and_update_zero_flag()
+void test_MVNImmediateT1_given_instruction_0xf07f35ff_should_move_0x0_into_R5_and_update_zero_flag()
 {
   coreReg[5] = 0xabababab;
 
@@ -586,7 +586,7 @@ void test_MVNImmediateT2_given_instruction_0xf07f35ff_should_move_0x0_into_R5_an
 
 //test case modify control smaller than 0b00111
 // MVNS r5, #0x0 and affect flag register
-void test_MVNImmediateT2_given_instruction_0xf07f0500_should_move_0xffffffff_into_R5_and_set_negative_flag()
+void test_MVNImmediateT1_given_instruction_0xf07f0500_should_move_0xffffffff_into_R5_and_set_negative_flag()
 {
   coreReg[5] = 0xabababab;
 
@@ -606,7 +606,7 @@ void test_MVNImmediateT2_given_instruction_0xf07f0500_should_move_0xffffffff_int
 //test case modify control larger than 0b00111
 //modifyControl = 0b01000
 // MVNS  r0, #0x80000000
-void test_MVNImmediateT2_given_instruction_0xf07f4000_should_move_0x7ffffff_into_R0_and_set_carry_flag()
+void test_MVNImmediateT1_given_instruction_0xf07f4000_should_move_0x7ffffff_into_R0_and_set_carry_flag()
 {
   //create test fixture
   writeInstructionToMemoryGivenByAddress(0xf07f4000, 0x0800000C);
