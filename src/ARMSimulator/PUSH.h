@@ -25,6 +25,7 @@
 #define PUSH_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 void PUSHT1(uint32_t instruction);
 void PUSHT2(uint32_t instruction);

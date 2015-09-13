@@ -24,15 +24,30 @@
 #define stateRSP_H
 
 #include "State.h"
+
+#ifdef  __MINGW32__
+
 #include <winsock2.h>
 #pragma comment(lib,<ws2_32.lib>)       //Winsock Library
+
+#elif  __linux__
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h> 
+#include <unistd.h>
+
+typedef unsigned int    u_int;
+typedef u_int           SOCKET;
+
+#endif
 
 typedef struct RspData RspData;
 
 struct RspData
 {
-  State state;
-  SOCKET sock;
+    State state;
+    SOCKET sock;
 };
 
 // char *rspState(RspData *rspData, char *data);

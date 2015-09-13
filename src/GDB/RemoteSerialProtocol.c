@@ -608,7 +608,7 @@ char *insertBreakpointOrWatchpoint(char *data)
 {
     BP_Type type;           //Sort of breakpoint
     unsigned int addr;      //Address specified
-	int kind;                //Breakpoint kinds
+    int kind;                //Breakpoint kinds
 
     sscanf(data, "$Z%1d,%x,%1d", (int *)&type, &addr, &kind);
     // printf("type: %d\n", type);
@@ -674,7 +674,7 @@ char *removeBreakpointOrWatchpoint(char *data)
 {
     BP_Type type;           //Sort of breakpoint
     unsigned int addr;      //Address specified
-	int kind;                //Breakpoint kinds
+    int kind;                //Breakpoint kinds
 
     sscanf(data, "$z%1d,%x,%1d", (int *)&type, &addr, &kind);
     // printf("type: %d\n", type);

@@ -1,6 +1,6 @@
-/*  
+/*
     Program Name       : GDB RSP and ARM Simulator
-    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
+    Author             : Wong Yan Yin, Jackson Teh Ka Sing
     Copyright (C) 2015 TARUC
 
     This file is part of GDB RSP and ARM Simulator.
@@ -22,7 +22,6 @@
 
 #include <stdio.h>
 #include <malloc.h>
-#include <stdint.h>
 #include <string.h>
 #include "ServeRSP.h"
 #include "ARMRegisters.h"
@@ -33,6 +32,7 @@
 #include "State.h"
 #include "stateRSP.h"
 
+#ifdef  __MINGW32__
 /****************Initialize Winsock.****************/
 void winsockInit()
 {
@@ -41,13 +41,15 @@ void winsockInit()
     int iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
     if ( iResult != NO_ERROR )
     {
-        printf( "\n>>>Error at WSAStartup()\n" );
+        displayErrorMsg("WSAStartup()");
         WSACleanup();
         return;
     }
     else
         printf( "Initialised\n" );
 }
+
+#endif
 
 /****************Create a socket.****************/
 void createSocket(SOCKET *sock)
@@ -56,8 +58,10 @@ void createSocket(SOCKET *sock)
     *sock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
     if ( *sock == INVALID_SOCKET )
     {
-        printf( ">>>Error at socket(): %ld\n", WSAGetLastError() );
+        displayErrorMsg("socket()");
+#ifdef  __MINGW32__
         WSACleanup();
+#endif
         return;
     }
     else
@@ -74,8 +78,12 @@ void bindSocket(SOCKET *sock)
     service.sin_port = htons( DEFAULT_PORT );
     if ( bind( *sock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
     {
-        printf( ">>>Error at bind(): %ld\n", WSAGetLastError() );
+        displayErrorMsg("bind()");
+#ifdef  __MINGW32__
         closesocket(*sock);
+#elif  __linux__
+        close(*sock);
+#endif
         return;
     }
     else
@@ -104,7 +112,7 @@ void waitingForConnection(SOCKET *sock)
             acceptSocket = accept( *sock, NULL, NULL );
 
         if ( acceptSocket == INVALID_SOCKET )
-            printf( ">>>Error at accept(): %ld\n" , WSAGetLastError() );
+            displayErrorMsg("accept()");
         else
             printf( "Connection accepted\n" );
         *sock = acceptSocket;
@@ -135,10 +143,16 @@ int receiveBuffer(SOCKET *sock, char *recvbuf)
     return bytesRecv;
 }
 
-void sendReply(SOCKET *sock, char *reply)
+void displayErrorMsg(char *errorMsg)
 {
-    // sendBuffer(*sock, reply);
+#ifdef  __MINGW32__
+    printf( ">>>Error at %s: %ld\n" , errorMsg, WSAGetLastError() );
+#elif  __linux__
+    printf( ">>>%s\n" , errorMsg );
+#endif
 }
+
+#endif
 
 void main()
 {
@@ -148,14 +162,16 @@ void main()
     initializeSimulator();
     initializeWatchpoint();
 
+#ifdef  __MINGW32__
     winsockInit();
+#endif
     createSocket(&rspData.sock);
     bindSocket(&rspData.sock);
     listenSocket(&rspData.sock);
     waitingForConnection(&rspData.sock);
 
     int bytesSent;
-    int bytesRecv = SOCKET_ERROR;
+    int bytesRecv;
     char *reply = NULL;
     char recvbuf[PACKET_SIZE] = "";
     rspData.state = INITIAL;
@@ -192,9 +208,13 @@ void main()
 
     // deleteAllBreakpoint(&bp);
 
+#ifdef  __MINGW32__
     /****************Close our socket entirely****************/
-	closesocket(rspData.sock);
+    closesocket(rspData.sock);
 
-	/****************Cleanup Winsock****************/
-	WSACleanup();
+    /****************Cleanup Winsock****************/
+    WSACleanup();
+#elif  __linux__
+    close(rspData.sock);
+#endif
 }
