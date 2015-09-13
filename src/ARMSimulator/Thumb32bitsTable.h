@@ -111,6 +111,7 @@ void (*Thumb32LoadWord[4096])(uint32_t instruction);
 void (*Thumb32MultiplyAccumulate[512])(uint32_t instruction);
 void (*Thumb32LongMultiplyAccumulateDivide[128])(uint32_t instruction);
 void (*Thumb32LoadStoreMultiple[256])(uint32_t instruction);
+void (*Thumb32StoreSingleDataItem[512])(uint32_t instruction);
 void (*Thumb32Table[1024])(uint32_t instruction);
 
 
@@ -123,6 +124,7 @@ void initThumb32bitsDataProcessingRegister();
 void initThumb32bitsLoadWord();
 void initThumb32bitsMultiplyAccumulate();
 void initThumb32bitsLongMultiplyAccumulateDivide();
+void initThumb32StoreSingleDataItem();
 void initThumb32Table();
 
 void determineMoveRegisterAndImmediateShifts(uint32_t instruction);

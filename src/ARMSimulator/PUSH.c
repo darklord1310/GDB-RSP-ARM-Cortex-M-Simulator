@@ -151,10 +151,6 @@ void pushMultipleRegisterToMemory(uint32_t address, uint32_t registerList, int s
   
   for(i = 0; i < sizeOfRegisterList; i++)
   {
-    if(i == 14)
-    {
-      printf("%x\n", getBits(registerList, i ,i));
-    }
     if( getBits(registerList, i ,i) == 1)           //if the bit[i] of the registerList is 1, then write the value of r[i] into the address
     {
       writeByteToMemory(address, coreReg[i], 4);

@@ -67,6 +67,7 @@ void initializeAllTable()
   initThumb32bitsMultiplyAccumulate();
   initThumb32bitsLongMultiplyAccumulateDivide();
   initThumb32bitsLoadStoreMultiple();
+  initThumb32StoreSingleDataItem();
   initThumb32Table();
 }
 
@@ -247,7 +248,14 @@ void executeLoadStoreMultiple(uint32_t instruction)
 }
 
 
-
+void executeStoreSingleDataItem(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,23,21);
+  uint32_t op2 = getBits(instruction,11,6);
+  uint32_t opcode = (op1 << 6) | op2;
+  
+  (*Thumb32StoreSingleDataItem[opcode])(instruction);
+}
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {

@@ -143,6 +143,20 @@ void STRBImmediateT1(uint32_t instruction)
 
 
 
+void STRBImmediateT2(uint32_t instruction)
+{
+  
+  
+}
+
+
+void STRBImmediateT3(uint32_t instruction)
+{
+  
+  
+}
+
+
 /*Store Register Halfword (immediate) Encoding T1
  * 
     STRH<c> <Rt>,[<Rn>{,#<imm5>}]
@@ -196,7 +210,7 @@ void STRHImmediateT1(uint32_t instruction)
 
 
 
-/*Store Register (immediate) Encoding T1
+/*Store Register (immediate) Encoding T2
  * 
     STR<c> <Rt>,[SP,#<imm8>]
       
