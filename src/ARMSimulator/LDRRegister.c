@@ -1,3 +1,27 @@
+/*  
+    Program Name       : GDB RSP and ARM Simulator
+    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
+    Copyright (C) 2015 TARUC
+
+    This file is part of GDB RSP and ARM Simulator.
+
+    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY, without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+
+
 #include "LDRRegister.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
@@ -11,7 +35,7 @@
 #include "ErrorSignal.h"
 #include "LoadAndWriteMemory.h"
 #include "ShiftOperation.h"
-
+#include "STRRegister.h"
 
 /*Load Register (register) Encoding T1 
  * 
@@ -442,18 +466,148 @@ void LDMRegisterT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      int writeBack = determineWriteBack(Rn, registerList);
+      int writeBack = determineWriteBack(Rn, registerList,1);
       loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 8);
     }
     shiftITState();
   }
   else
   {
-    int writeBack = determineWriteBack( Rn, registerList);              
+    int writeBack = determineWriteBack( Rn, registerList,1);              
     loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 8);
   }  
 
   coreReg[PC] += 2;
+}
+
+
+
+
+
+/*Load Multiple Increment After Encoding T2
+ * 
+    LDM<c>.W <Rn>{!},<registers>
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1   1  0  1| 0  0| 0  1  0|W | 1|      Rn   |P | M| 0|       register_list        |      
+
+  where:
+            <c><q>          See Standard assembler syntax fields on page A6-7.
+            
+            <Rn>            The base register. If it is the SP and ! is specified, the instruction is treated as
+                            described in POP on page A6-186.
+                            
+            !               Causes the instruction to write a modified value back to <Rn>. If ! is omitted, the
+                            instruction does not change <Rn> in this way.
+                            
+            <registers>     Is a list of one or more registers to be loaded, separated by commas and surrounded
+                            by { and }. The lowest-numbered register is loaded from the lowest memory
+                            address, through to the highest-numbered register from the highest memory address.
+                            If the PC is specified in the register list, the instruction causes a branch to the
+                            address (data) loaded into the PC.
+                            Encoding T2 does not support a list containing only one register. If an LDMIA
+                            instruction with just one register <Rt> in the list is assembled to Thumb and encoding
+                            T1 is not available, it is assembled to the equivalent LDR<c><q> <Rt>,[<Rn>]{,#4}
+                            instruction.
+                            The SP cannot be in the list.
+                            If the PC is in the list, the LR must not be in the list and the instruction must either
+                            be outside an IT block or the last instruction in an IT block.
+                            
+            LDMIA and LDMFD are pseudo-instructions for LDM. LDMFD refers to its use for popping data from Full
+            Descending stacks.
+          
+*/
+void LDMRegisterT2(uint32_t instruction)
+{
+  uint32_t Rn = getBits(instruction, 19,16);
+  uint32_t registerList = getBits(instruction, 12,0);
+  uint32_t W = getBits(instruction, 21,21);
+  uint32_t P = getBits(instruction, 15,15);
+  uint32_t M = getBits(instruction, 14,14);
+  registerList = ( ( ( (P << 1) | M) << 1) << 13) | registerList; 
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      int writeBack = determineWriteBack(Rn, registerList,W);
+      loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 16);
+    }
+    shiftITState();
+  }
+  else
+  {
+    int writeBack = determineWriteBack( Rn, registerList,W);  
+    loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 16);
+  }  
+
+  if(P != 1)
+    coreReg[PC] += 4;
+  
+}
+
+
+
+
+/*Load Multiple Decrement Before
+ * 
+    LDMDB<c> <Rn>{!},<registers>
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1   1  0  1| 0  0| 1  0  0|W | 1|      Rn   |P | M| 0|       register_list        |      
+
+  where:
+            <c><q>          See Standard assembler syntax fields on page A6-7.
+            
+            <Rn>            The base register. The SP can be used.
+            
+            !               Causes the instruction to write a modified value back to <Rn>. Encoded as W = 1.
+                            If ! is omitted, the instruction does not change <Rn> in this way. Encoded as W = 0.
+                            
+            <registers>     Is a list of one or more registers, separated by commas and surrounded by { and }. It specifies
+                            the set of registers to be loaded. The registers are loaded with the lowest-numbered register
+                            from the lowest memory address, through to the highest-numbered register from the highest
+                            memory address. If the PC is specified in the register list, the instruction causes a branch to
+                            the address (data) loaded into the PC.
+                            
+            Encoding T1 does not support a list containing only one register. If an LDMDB instruction with
+            just one register <Rt> in the list is assembled to Thumb, it is assembled to the equivalent
+            LDR<c><q> <Rt>,[<Rn>,#-4]{!} instruction.
+            The SP cannot be in the list.
+            If the PC is in the list, the LR must not be in the list and the instruction must either be outside
+            an IT block or the last instruction in an IT block.
+          
+*/
+void LDMDB(uint32_t instruction)
+{
+  uint32_t Rn = getBits(instruction, 19,16);
+  uint32_t registerList = getBits(instruction, 12,0);
+  uint32_t W = getBits(instruction, 21,21);
+  uint32_t P = getBits(instruction, 15,15);
+  uint32_t M = getBits(instruction, 14,14);
+  registerList = ( ( ( (P << 1) | M) << 1) << 13) | registerList; 
+  uint32_t address = coreReg[Rn] - 4*getBitCount(registerList, 16);
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      int writeBack = determineWriteBack(Rn, registerList, W);
+      loadMultipleRegisterFromMemory(address, registerList, 0, Rn, 16);
+      if(writeBack == 1)
+        coreReg[Rn] = coreReg[Rn] - 4*getBitCount(registerList, 16);
+    }
+    shiftITState();
+  }
+  else
+  {
+    int writeBack = determineWriteBack( Rn, registerList, W);              
+    loadMultipleRegisterFromMemory(address, registerList, 0, Rn, 16);
+    if(writeBack == 1)
+      coreReg[Rn] = coreReg[Rn] - 4*getBitCount(registerList, 16);
+  }  
+
+  if(P != 1)
+    coreReg[PC] += 4;
 }
 
 
@@ -475,7 +629,10 @@ void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uin
   {
     if( getBits(registerList, i ,i) == 1)           //if the bit[i] of the registerList is 1, then load the value of the address into r[i]
     {
-      coreReg[i] = loadByteFromMemory(address, 4);
+      if(i != PC)
+        coreReg[i] = loadByteFromMemory(address, 4);
+      else
+        coreReg[i] = maskOffBit( loadByteFromMemory(address, 4), 0);
       bitCount++;
       address+=4;
     }
@@ -489,9 +646,9 @@ void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uin
 }
 
 
-int determineWriteBack(uint32_t Rn, uint32_t registerList)
+int determineWriteBack(uint32_t Rn, uint32_t registerList, uint32_t W)
 {
-  if( getBits(registerList, Rn, Rn) == 0)    //if Rn is not included , then writeBack is 1, else writeBack is 0
+  if( W == 1 && getBits(registerList, Rn, Rn) == 0)    //if Rn is not included , then writeBack is 1, else writeBack is 0
     return 1;
   else 
     return 0;

@@ -360,37 +360,6 @@ void test_shiftITState_given_xPSR_0x03001000_shift_4_times_should_get_0x01000000
 }
 
 
-void test_ALUWritePC_given_PC_0x0800000f_should_get_PC_0x0800000e()
-{
-  coreReg[PC] = 0x0800000f;
-
-  ALUWritePC(coreReg[PC]);
-
-  TEST_ASSERT_EQUAL(0x0800000e, coreReg[PC]);
-}
-
-
-
-void test_ALUWritePC_given_PC_0x08000001_should_get_PC_0x08000000()
-{
-  coreReg[PC] = 0x08000001;
-
-  ALUWritePC(coreReg[PC]);
-
-  TEST_ASSERT_EQUAL(0x08000000, coreReg[PC]);
-}
-
-
-
-void test_SInt_given()
-{               //0010000
-  int value = 0b1110000;
-  printf("value : %i\n", value);
-  value = SInt(value, 7);
-
-  printf("%i\n", value);
-}
-
 void test_updateQFlag_given_signedRange_is_0x8000_sign_is_1_and_value_is_0x8000_should_set_Q_flag()
 {
   int value = 0x8000;

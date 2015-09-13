@@ -1,11 +1,35 @@
+/*  
+    Program Name       : GDB RSP and ARM Simulator
+    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
+    Copyright (C) 2015 TARUC
+
+    This file is part of GDB RSP and ARM Simulator.
+
+    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY, without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+
 #include "Thumb32bitsTable.h"
 #include <stdio.h>
 
 
-
-
 void initThumb32Table()
 {
+  int i,j,k;
+  uint32_t dummy;
+  
   Thumb32Table[0b1000000000] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
@@ -283,6 +307,19 @@ void initThumb32Table()
   Thumb32Table[0b1101111101] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101111110] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101111111] = executeLongMultiplyAccumulateDivide;
+  //
+  dummy = 0b0100000000;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy, i, 5, 4);
+    for(j = 0; j <= 0b111; j ++)
+    {
+      dummy = setBits(dummy,j,2,0);
+      Thumb32Table[dummy] = executeLoadStoreMultiple;
+    }
+  }
+  //
+  
 }
 
 
@@ -488,6 +525,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
       else
         Thumb32DataProcessingPlainImmediate[i] = ADRT2;
   }
+  /*
   // MOVT T1
   for(i = 0b011000000; i < 0b011010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = MOVTT1;
@@ -515,6 +553,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
   // UBFX T1
   for(i = 0b111000000; i < 0b111010000; i++)
     Thumb32DataProcessingPlainImmediate[i] = UBFXT1;
+  */
 }
 
 
@@ -584,7 +623,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
     Thumb32DataProcessingModifiedImmediate[i] = ADCImmediateT1;
   // SBC Immediate T1
   for(i = 0b1011000000000; i < 0b1110000000000; i++)
-    Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
+    //Thumb32DataProcessingModifiedImmediate[i] = SBCImmediateT1;
   // SUB Immediate T3 and CMP Immediate T1
   for(i = 0b1101000000000; i < 0b1110000000000; i++)
   {
@@ -724,7 +763,51 @@ void initThumb32bitsLongMultiplyAccumulateDivide()
 
 
 
-
+void initThumb32bitsLoadStoreMultiple()
+{
+  uint32_t dummy;
+  int i,j,k;
+  
+  //STM Register T2
+  dummy = 0b01000000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    Thumb32LoadStoreMultiple[dummy] = STMRegisterT2;
+  }
+  
+  //LDM Register T2
+  dummy = 0b01100000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    if(dummy != 0b01111101)
+      Thumb32LoadStoreMultiple[dummy] = LDMRegisterT2;
+  } 
+  
+  //STMDB
+  dummy = 0b10000000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    if(dummy != 0b10011101)
+      Thumb32LoadStoreMultiple[dummy] = STMDB;
+  } 
+  
+  //LDMDB
+  dummy = 0b10100000;
+  for(j = 0; j <= 0b11111; j ++)
+  {
+    dummy = setBits(dummy,j,4,0);
+    Thumb32LoadStoreMultiple[dummy] = LDMDB;
+  } 
+  
+  //POP T2
+  Thumb32LoadStoreMultiple[0b01111101] = POPT2;
+  
+  //PUSH T2
+  Thumb32LoadStoreMultiple[0b10011101] = PUSHT2;
+}
 
 
 

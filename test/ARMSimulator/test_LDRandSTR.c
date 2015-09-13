@@ -1040,7 +1040,7 @@ void test_LDRSHRegisterT1_given_ROM_value_as_above_should_load_r3_wth_0x0000000d
  *  r7 = 0xabcdef00
  * 
  * Expected:
- *  Memory address 0x20000000 = 0xef
+ *  Memory address 0x20000000 = 0xce
  *  Memory address 0x20000001 = 0xfa
  *  Memory address 0x20000002 = 0x19
  *  Memory address 0x20000003 = 0x0b

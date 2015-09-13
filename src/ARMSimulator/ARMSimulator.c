@@ -1,3 +1,27 @@
+/*  
+    Program Name       : GDB RSP and ARM Simulator
+    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
+    Copyright (C) 2015 TARUC
+
+    This file is part of GDB RSP and ARM Simulator.
+
+    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY, without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+
+
 #include "ARMSimulator.h"
 #include <stdio.h>
 #include <assert.h>
@@ -42,6 +66,7 @@ void initializeAllTable()
   initThumb32bitsLoadWord();
   initThumb32bitsMultiplyAccumulate();
   initThumb32bitsLongMultiplyAccumulateDivide();
+  initThumb32bitsLoadStoreMultiple();
   initThumb32Table();
 }
 
@@ -205,6 +230,23 @@ void executeLongMultiplyAccumulateDivide(uint32_t instruction)
 
   (*Thumb32LongMultiplyAccumulateDivide[opcode])(instruction);
 }
+
+
+
+void executeLoadStoreMultiple(uint32_t instruction)
+{
+  uint32_t op = getBits(instruction,24,23);
+  uint32_t L = getBits(instruction,20,20);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t W = getBits(instruction,21,21);
+  uint32_t WRn = (W << 4) | Rn;
+  uint32_t opcode = ( ( (op << 1) | L) << 5) | WRn;
+  
+  (*Thumb32LoadStoreMultiple[opcode])(instruction);
+  
+}
+
+
 
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
