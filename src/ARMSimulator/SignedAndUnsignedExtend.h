@@ -30,5 +30,9 @@ void UXTBT1(uint32_t instruction);
 void SXTHT1(uint32_t instruction);
 void SXTBT1(uint32_t instruction);
 
+void SXTHT2(uint32_t instruction);
+void UXTHT2(uint32_t instruction);
+void SXTBT2(uint32_t instruction);
+void UXTBT2(uint32_t instruction);
 
 #endif // SignedAndUnsignedExtend_H

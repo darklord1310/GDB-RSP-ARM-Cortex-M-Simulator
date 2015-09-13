@@ -363,87 +363,79 @@ void test_shiftITState_given_xPSR_0x03001000_shift_4_times_should_get_0x01000000
 void test_updateQFlag_given_signedRange_is_0x8000_sign_is_1_and_value_is_0x8000_should_set_Q_flag()
 {
   int value = 0x8000;
-  int signedRange = 0x8000;
   int sign = 1;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x09000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_1_and_value_is_0xfffe0000_should_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_1_and_value_is_0xfffe0000_should_set_Q_flag()
 {
   int value = 0xfffe0000;
-  int signedRange = 0x8000;
   int sign = 1;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x09000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_1_and_value_is_0x7fff_should_not_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_1_and_value_is_0x7fff_should_not_set_Q_flag()
 {
   int value = 0x7fff;
-  int signedRange = 0x8000;
   int sign = 1;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_1_and_value_is_0xffff8000_should_not_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_1_and_value_is_0xffff8000_should_not_set_Q_flag()
 {
   int value = 0xffff8000;
-  int signedRange = 0x8000;
   int sign = 1;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_0_and_value_is_0x8000_should_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_0_and_value_is_0x8000_should_set_Q_flag()
 {
   int value = 0x8000;
-  int signedRange = 0x8000;
   int sign = 0;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x09000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_0_and_value_is_0xfffe0000_should_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_0_and_value_is_0xfffe0000_should_set_Q_flag()
 {
   int value = 0xfffe0000;
-  int signedRange = 0x8000;
   int sign = 0;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x09000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_0_and_value_is_0x7fff_should_not_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_0_and_value_is_0x7fff_should_not_set_Q_flag()
 {
   int value = 0x7fff;
-  int signedRange = 0x8000;
   int sign = 0;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
 
-void test_updateQFlag_given_signedRange_is_0x8000_sign_is_0_and_value_is_0xffff8000_should_not_set_Q_flag()
+void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_0_and_value_is_0xffff8000_should_not_set_Q_flag()
 {
   int value = 0;
-  int signedRange = 0x8000;
   int sign = 0;
 
-  updateQFlag(signedRange, value, sign);
+  updateQFlag(0x7fff, 0xffff8000, value, sign);     // 2^16
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }

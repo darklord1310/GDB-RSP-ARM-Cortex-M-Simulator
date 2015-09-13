@@ -57,7 +57,7 @@ void SBCImmediateT1(uint32_t instruction)
   uint32_t temp = (i << 3 ) | imm3;
   uint32_t modifyControl = (temp << 1) | bit7;
 
-  uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8);
+  uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8, 0);
 
   if(inITBlock())
   {
@@ -84,14 +84,19 @@ void executeSBCImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
 {
   uint32_t carry = ~getBits(coreReg[xPSR], 29, 29) & 0x1;
   uint32_t backupRn = coreReg[Rn];
-  uint32_t temp = coreReg[Rn] - immediate - carry;
-  coreReg[Rd] = temp;               //get the result of Rn - immediate - NOT carry flag
+  uint32_t temp = coreReg[Rn] - immediate;
+  coreReg[Rd] = temp - carry;               //get the result of Rn - immediate - NOT carry flag
 
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
     updateOverflowFlagSubtraction(backupRn, immediate, temp);
-    updateCarryFlagSubtraction(backupRn, immediate - carry);
+    if(isOverflow() == 0)
+      updateOverflowFlagSubtraction(temp, carry , coreReg[Rd]);
+
+    updateCarryFlagSubtraction(backupRn, immediate);
+    if(isCarry() == 1)
+      updateCarryFlagSubtraction(temp, carry);
   }
 }

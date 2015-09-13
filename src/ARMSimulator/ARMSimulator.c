@@ -61,6 +61,8 @@ void initializeAllTable()
   initThumb32bitsDataProcessingPlainImmediate();
   initThumb32bitsDataProcessingModifiedImmediate();
   initThumb32bitsDataProcessingShiftedRegister();
+  initThumb32bitsMoveRegisterAndImmediateShift();
+  initThumb32bitsDataProcessingRegister();
   initThumb32bitsLoadWord();
   initThumb32bitsMultiplyAccumulate();
   initThumb32bitsLongMultiplyAccumulateDivide();
@@ -168,9 +170,32 @@ void executeDataProcessingShiftedRegister(uint32_t instruction)
   uint32_t op = getBits(instruction,24,21);
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t Rd = getBits(instruction,11,8);
-  uint32_t opcode = (((op << 4) | Rn ) << 4) | Rd;
-  
+  uint32_t S = getBits(instruction,20,20);
+  uint32_t opcode = ((((op << 4) | Rn ) << 4) | Rd) << 1 | S;
+
   (*Thumb32DataProcessingShiftedRegister[opcode])(instruction);
+}
+
+
+void executeMoveRegisterAndImmediateShifts(uint32_t instruction)
+{
+  uint32_t type = getBits(instruction, 5, 4);
+  uint32_t imm2 = getBits(instruction, 7, 6);
+  uint32_t imm3 = getBits(instruction, 14, 12);
+  uint32_t shiftImm = imm3 << 2 | imm2;
+  uint32_t opcode = type << 5 | shiftImm;
+
+  (*Thumb32MoveRegisterAndImmediateShift[opcode])(instruction);
+}
+
+
+void executeDataProcessingRegister(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,23,20);
+  uint32_t op2 = getBits(instruction,7,4);
+  uint32_t opcode = (op1 << 4) | op2;
+
+  (*Thumb32DataProcessingRegister[opcode])(instruction);
 }
 
 
@@ -178,9 +203,9 @@ void executeLoadWord(uint32_t instruction)
 {
   uint32_t op1 = getBits(instruction,24,23);
   uint32_t Rn = getBits(instruction,19,16);
-  uint32_t op2 = getBits(instruction,11,6);  
+  uint32_t op2 = getBits(instruction,11,6);
   uint32_t opcode = (((op1 << 6) | op2 ) << 4) | Rn;
-  
+
   (*Thumb32LoadWord[opcode])(instruction);
 }
 
@@ -191,7 +216,7 @@ void executeMultiplyAccumulate(uint32_t instruction)
   uint32_t op2 = getBits(instruction,5,4);
   uint32_t Ra = getBits(instruction,15,12);
   uint32_t opcode = (((op1 << 2) | op2 ) << 4) | Ra;
-  
+
   (*Thumb32MultiplyAccumulate[opcode])(instruction);
 }
 
@@ -202,7 +227,7 @@ void executeLongMultiplyAccumulateDivide(uint32_t instruction)
   uint32_t op1 = getBits(instruction,22,20);
   uint32_t op2 = getBits(instruction,7,4);
   uint32_t opcode = (op1 << 4) | op2;
-  
+
   (*Thumb32LongMultiplyAccumulateDivide[opcode])(instruction);
 }
 

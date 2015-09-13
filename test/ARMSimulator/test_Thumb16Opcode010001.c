@@ -6,6 +6,12 @@
 #include "SignedAndUnsignedSaturate.h"
 #include "SignedAndUnsignedBitFieldExtract.h"
 #include "BFIandBFC.h"
+#include "RRX.h"
+#include "RORImmediate.h"
+#include "ORNRegister.h"
+#include "TEQRegister.h"
+#include "RSBRegister.h"
+#include "CLZ.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
@@ -275,6 +281,33 @@ void test_MOVRegisterToRegisterT1_given_instruction_0x461c0000_should_move_R3_to
   TEST_ASSERT_EQUAL(0xff101c00, coreReg[3]);
 }
 
+//test MOV PC, R3
+void test_MOVRegisterToRegisterT1_given_instruction_0x461c0000_and_r3_0x0800000d_should_branch_to_new_pc(void)
+{ 
+  coreReg[3] = 0x0800000d;                        //set R3 to be 0xff101c00
+  writeInstructionToMemoryGivenByAddress(0x469f0000, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x0800000c, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0800000d, coreReg[3]);
+}
+
+//test MOV PC, R3
+void test_MOVRegisterToRegisterT1_given_instruction_0x461c0000_and_r3_0xa0000000_should_branch_to_new_pc(void)
+{ 
+  coreReg[3] = 0xa0000000;                        //set R3 to be 0xff101c00
+  writeInstructionToMemoryGivenByAddress(0x469f0000, 0x08000040);
+  coreReg[PC] = 0x08000040;
+
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x00fff05e, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0xa0000000, coreReg[3]);
+}
 
 //testing status flag should not change
 //test MOV R4, R3, move negative number

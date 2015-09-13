@@ -49,8 +49,9 @@ case 11111        00000000 00000000 00000001 bcdefgh0
 
 Return :  the modified constant
 
+Inputs : carryStatus        to indicate whether it will affect carry status flag, 0 means not affected
 */
-uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value)
+uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value, uint32_t carryStatus)
 {
   uint32_t returnValue;
 
@@ -77,10 +78,13 @@ uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value)
   {
     returnValue = SetFirstBitAndShiftRight(input_value, ModifyControl);
 
-    if(getBits(returnValue,31,31) == 1)
-      setCarryFlag();
-    else
-      resetCarryFlag();
+    if(carryStatus)
+    {
+      if(getBits(returnValue,31,31) == 1)
+        setCarryFlag();
+      else
+        resetCarryFlag();
+    }
 
     return returnValue;
   }

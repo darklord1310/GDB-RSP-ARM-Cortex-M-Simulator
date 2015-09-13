@@ -28,9 +28,8 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
-#include "ModifiedImmediateConstant.h"
-#include "Thumb16bitsTable.h"
 #include "ConditionalExecution.h"
+#include "ShiftOperation.h"
 
 
 /*Rotate Right Register To Register Encoding T1
@@ -71,6 +70,57 @@ void RORRegisterT1(uint32_t instruction)
 }
 
 
+/* Rotate Right Register Encoding T2
+
+   ROR{S}<c>.W <Rd>,<Rn>,<Rm>
+
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1  1  1  1 |0  1  0 |0| 1  1 |S|     Rn     |1  1  1  1 |   Rd    |0|0 0 0|   Rm  |
+
+where:
+          S           If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
+                      update the flags.
+
+          <c><q>      See Standard assembler syntax fields on page A6-7.
+
+          <Rd>        Specifies the destination register.
+          
+          <Rn>        Specifies the register that contains the first operand.
+
+          <Rm>        Specifies the register whose bottom byte contains the amount to shift by.
+*/
+void RORRegisterT2(uint32_t instruction)
+{
+  uint32_t Rm =  getBits(instruction, 3, 0);
+  uint32_t Rd = getBits(instruction, 11, 8);
+  uint32_t Rn = getBits(instruction, 19, 16);
+  uint32_t statusFlag = getBits(instruction, 20, 20);
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      executeRORRegister(Rd, Rn, Rm, statusFlag);
+    shiftITState();
+  }
+  else
+    executeRORRegister(Rd, Rn, Rm, statusFlag);
+
+  coreReg[PC] += 4;
+}
+
+
+/* This instruction provides the value of the contents of a register rotated by a variable number of bits.
+   The bits that are rotated off the right end are inserted into the vacated bit positions on the left. The variable
+   number of bits is read from the bottom byte of a register. It can optionally update the condition flags based
+   on the result.
+
+   Inputs: 
+            S              If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
+                           update the flags.
+            Rd             Specifies the destination register.
+            Rn             Specifies the register that contains the first operand.
+            Rm             Specifies the register whose bottom byte contains the amount to shift by
+*/
 void executeRORRegister(uint32_t Rd, uint32_t Rn, uint32_t Rm, uint32_t S)
 {
   uint32_t timesToRotate = getBits(coreReg[Rm], 7 ,0);
