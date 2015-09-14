@@ -30,7 +30,14 @@ void STRBImmediateT1(uint32_t instruction);
 void STRBImmediateT2(uint32_t instruction);
 void STRBImmediateT3(uint32_t instruction);
 void STRHImmediateT1(uint32_t instruction);
+void STRHImmediateT2(uint32_t instruction);
+void STRHImmediateT3(uint32_t instruction);
 void STRImmediateT2(uint32_t instruction);
+void STRImmediateT3(uint32_t instruction);
+void STRImmediateT4(uint32_t instruction);
 void STRBT(uint32_t instruction);
+void STRHT(uint32_t instruction);
+void STRT(uint32_t instruction);
+
 
 #endif // STRImmediate_H
