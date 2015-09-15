@@ -31,7 +31,7 @@
 void ADDSPRegisterT1(uint32_t instruction);
 void ADDSPRegisterT2(uint32_t instruction);
 void ADDSPRegisterT3(uint32_t instruction);
-void executeADDSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, int shiftOrNoShift);
+void executeADDSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, uint32_t shiftType, uint32_t shiftImmediate);
 
 
 #endif // ADDSPRegister_H

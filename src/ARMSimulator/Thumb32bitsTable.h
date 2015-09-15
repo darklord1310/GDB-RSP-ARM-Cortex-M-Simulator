@@ -98,6 +98,7 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
+#include "SUBSPRegister.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 

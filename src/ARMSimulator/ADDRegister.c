@@ -236,17 +236,13 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   shiftType = determineShiftOperation(shiftType, shiftImmediate);
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
-  /* if(Rd == PC)
+  if(Rd == PC)                                              // only for encoding T2
   {
     uint32_t address = shiftedRm + coreReg[Rn] + 4;
     ALUWritePC(address);
   }
-  else if(Rm == PC)
-  {
-    coreReg[Rd] = alignPC(shiftedRm + 2, 4) + coreReg[Rn];
-  }
   else
-  { */
+  {
     temp = coreReg[Rn] + shiftedRm;
     coreReg[Rd] = temp;
 
@@ -257,5 +253,5 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
       updateOverflowFlagAddition(backupRn, shiftedRm, coreReg[Rd]);
       updateCarryFlagAddition(backupRn, shiftedRm);
     }
-  // }
+  }
 }

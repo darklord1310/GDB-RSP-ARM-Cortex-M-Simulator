@@ -194,7 +194,7 @@ void MOVRegisterT3(uint32_t instruction)
 */
 void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  if(Rd == PC)
+  if(Rd == PC)                    // only for encoding T1
     ALUWritePC(coreReg[Rm]);
   else
   {

@@ -29,7 +29,7 @@
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include "ShiftOperation.h"
-#include "math.h"
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>

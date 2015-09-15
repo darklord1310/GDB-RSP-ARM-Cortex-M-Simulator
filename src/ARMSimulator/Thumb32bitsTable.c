@@ -399,6 +399,8 @@ void initThumb32bitsDataProcessingShiftedRegister()
     {
       if((i & 0b0000110100000) != 0b110100000)    // Rd != 1111 and Rn != 1101
         Thumb32DataProcessingShiftedRegister[i] = SUBRegisterT2;
+      else
+        Thumb32DataProcessingShiftedRegister[i] = SUBSPRegisterT1;
     }
     else
     {

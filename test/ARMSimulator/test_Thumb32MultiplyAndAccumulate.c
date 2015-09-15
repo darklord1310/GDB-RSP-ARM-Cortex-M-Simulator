@@ -10,6 +10,7 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
+#include "SUBSPRegister.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"
