@@ -786,14 +786,18 @@ void initThumb32bitsBranchesAndMiscellaneousControl()
     if((i & 0b111000) != 0b111000)
       Thumb32BranchesAndMiscellaneousControl[i] = ConditionalBranchT2;
   }
-  //Unconditional Branch T2
+  // Unconditional Branch T2
   for(i = 0b0010000000; i < 0b1000000000; i++)
   {
     if((i & 0b10000000) == 0b10000000)
       Thumb32BranchesAndMiscellaneousControl[i] = UnconditionalBranchT2;
   }
-  //
-  
+  // BL T1
+  for(i = 0b1010000000; i < 0b10000000000; i++)
+  {
+    if(((i & 0b1010000000) == 0b1010000000) || ((i & 0b1110000000) == 0b1110000000))
+      Thumb32BranchesAndMiscellaneousControl[i] = BLT1;
+  }
 }
 
 

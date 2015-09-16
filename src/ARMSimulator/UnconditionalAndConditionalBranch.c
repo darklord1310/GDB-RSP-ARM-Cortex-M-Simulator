@@ -26,7 +26,6 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "StatusRegisters.h"
-#include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include "ErrorSignal.h"

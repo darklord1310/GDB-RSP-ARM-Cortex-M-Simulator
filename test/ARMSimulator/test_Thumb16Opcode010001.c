@@ -13,6 +13,7 @@
 #include "RSBRegister.h"
 #include "CLZ.h"
 #include "SUBSPRegister.h"
+#include "BL.h"
 #include "CException.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"

@@ -86,6 +86,7 @@
 #include "RSBRegister.h"
 #include "CLZ.h"
 #include "SUBSPRegister.h"
+#include "BL.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"

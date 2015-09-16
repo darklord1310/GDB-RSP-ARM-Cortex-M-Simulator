@@ -82,6 +82,7 @@
 #include "RSBRegister.h"
 #include "SUBSPRegister.h"
 #include "CLZ.h"
+#include "BL.h"
 #include "NOP.h"
 #include "MLA.h"
 #include "MLS.h"
@@ -186,4 +187,37 @@ void test_UnconditionalBranchT2_given_PC_0x08000018_should_get_PC_0x0800000c()
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //BL T1
 
+//test BL	Here
+//test branch forward
+void test_BLT1_given_PC_0x08000018_should_get_PC_0x08000022_and_LR_0x0800001d()
+{
+  //create test fixture
+  coreReg[PC] = 0x08000018;
+  writeInstructionToMemoryGivenByAddress(0xf000f803, 0x08000018);
+
+  //execute
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000022,coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0800001d,coreReg[LR]);
+}
+
+//test BL	Here
+//test branch backward
+void test_BLT1_given_PC_0x08000018_should_get_PC_0x0800000c_and_LR_0x0800001d()
+{
+  //create test fixture
+  coreReg[PC] = 0x08000018;
+  writeInstructionToMemoryGivenByAddress(0xf7fffff8, 0x08000018);
+
+  //execute
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x0800000c,coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x0800001d,coreReg[LR]);
+}
