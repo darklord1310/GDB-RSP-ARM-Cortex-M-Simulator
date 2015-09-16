@@ -44,6 +44,7 @@ void executeDataProcessingPlainImmediate(uint32_t instruction);
 void executeDataProcessingShiftedRegister(uint32_t instruction);
 void executeMoveRegisterAndImmediateShifts(uint32_t instruction);
 void executeDataProcessingRegister(uint32_t instruction);
+void executeBranchesAndMiscellaneousControl(uint32_t instruction);
 void executeLoadWord(uint32_t instruction);
 void executeMultiplyAccumulate(uint32_t instruction);
 void executeLongMultiplyAccumulateDivide(uint32_t instruction);

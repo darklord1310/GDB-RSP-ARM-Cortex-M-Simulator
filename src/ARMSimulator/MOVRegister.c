@@ -196,6 +196,8 @@ void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
   if(Rd == PC)                    // only for encoding T1
     ALUWritePC(coreReg[Rm]);
+  else if(Rm == PC)
+    coreReg[Rd] = coreReg[Rm] + 4;
   else
   {
     coreReg[Rd] = coreReg[Rm];

@@ -24,7 +24,7 @@
 #ifndef ShiftOperation_H
 #define ShiftOperation_H
 
-typedef enum {OMITTED,LSL,LSR,ASR,RRX,ROR}SRType;
+typedef enum {OMITTED,LSL,LSR,ASR,RRX,ROR} SRType;
 
 
 #include <stdint.h>

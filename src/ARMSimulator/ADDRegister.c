@@ -22,6 +22,7 @@
 
 
 #include "ADDRegister.h"
+// #include "ADR.h"
 #include <assert.h>
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
@@ -240,6 +241,11 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   {
     uint32_t address = shiftedRm + coreReg[Rn] + 4;
     ALUWritePC(address);
+  }
+  else if(Rm == PC)
+  {
+    // coreReg[Rd] = alignPC(coreReg[Rm] + 2, 4) + coreReg[SP];
+    coreReg[Rd] = shiftedRm + coreReg[Rn] + 4;
   }
   else
   {

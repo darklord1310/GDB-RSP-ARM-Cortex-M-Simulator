@@ -63,6 +63,7 @@ void initializeAllTable()
   initThumb32bitsDataProcessingShiftedRegister();
   initThumb32bitsMoveRegisterAndImmediateShift();
   initThumb32bitsDataProcessingRegister();
+  initThumb32bitsBranchesAndMiscellaneousControl();
   initThumb32bitsLoadWord();
   initThumb32bitsMultiplyAccumulate();
   initThumb32bitsLongMultiplyAccumulateDivide();
@@ -196,6 +197,15 @@ void executeDataProcessingRegister(uint32_t instruction)
   uint32_t opcode = (op1 << 4) | op2;
 
   (*Thumb32DataProcessingRegister[opcode])(instruction);
+}
+
+void executeBranchesAndMiscellaneousControl(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction, 26, 20);
+  uint32_t op2 = getBits(instruction, 14, 12);
+  uint32_t opcode = (op2 << 7) | op1;
+
+  (*Thumb32BranchesAndMiscellaneousControl[opcode])(instruction);
 }
 
 

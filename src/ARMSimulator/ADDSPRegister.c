@@ -23,6 +23,7 @@
 
 
 #include "ADDSPRegister.h"
+// #include "ADR.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -205,10 +206,11 @@ void executeADDSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, uint32_t shiftTy
     uint32_t address = shiftedRm + coreReg[SP] + 4;
     ALUWritePC(address);
   }
-  /* else if(Rm == PC)
+  else if(Rm == PC)
   {
-    coreReg[Rd] = alignPC(coreReg[Rm] + 2, 4) + coreReg[SP];
-  } */
+    // coreReg[Rd] = alignPC(coreReg[Rm] + 2, 4) + coreReg[SP];
+    coreReg[Rd] = shiftedRm + coreReg[SP] + 4;
+  }
   else
   {
     temp = coreReg[SP] + shiftedRm;

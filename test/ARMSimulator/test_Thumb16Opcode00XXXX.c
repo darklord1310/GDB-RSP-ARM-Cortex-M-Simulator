@@ -1544,7 +1544,7 @@ void test_ADDSPRegisterT2_given_r15_is_0x0800003e_SP_is_0x20010000_should_get_0x
   ARMSimulator(instruction);
   printf("%x\n", coreReg[SP]);
   printf("end\n");
-  TEST_ASSERT_EQUAL(0x2800103e, coreReg[SP]);   // 0x28001040
+  TEST_ASSERT_EQUAL(0x28001042, coreReg[SP]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
 
@@ -1576,6 +1576,6 @@ void test_ADDSPRegisterT2_conditonal_cases_should_get_the_expected_result()
   ARMSimulator(0x40880000);   //LSLCC   r0,r1
 
   TEST_ASSERT_EQUAL(0x00,coreReg[0]);
-  TEST_ASSERT_EQUAL(0x28001026,coreReg[SP]);    // 0x28001028
+  TEST_ASSERT_EQUAL(0x2800102a,coreReg[SP]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }
