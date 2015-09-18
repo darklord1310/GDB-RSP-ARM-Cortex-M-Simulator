@@ -798,6 +798,8 @@ void initThumb32bitsBranchesAndMiscellaneousControl()
     if(((i & 0b1010000000) == 0b1010000000) || ((i & 0b1110000000) == 0b1110000000))
       Thumb32BranchesAndMiscellaneousControl[i] = BLT1;
   }
+  // NOP T2
+  
 }
 
 
