@@ -654,9 +654,9 @@ void test_STRImmediateT1_given_offset_0_r3_0x0b19face_and_r4_0x20000000_should_g
  *  r4 = 0x20000000
  *  Expected:
  *              Memory address 0x20000008 = 0xce
- *              Memory address 0x20000009 = 0xfa
- *              Memory address 0x2000000a = 0x19
- *              Memory address 0x2000000b = 0x0b
+ *              Memory address 0x20000009 = 0x00
+ *              Memory address 0x2000000a = 0x00
+ *              Memory address 0x2000000b = 0x00
  */
 void test_STRBImmediateT1_given_offset_8_r3_0x0b19face_and_r4_0x20000000_should_get_expected_result(void)
 {
