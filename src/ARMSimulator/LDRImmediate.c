@@ -461,6 +461,150 @@ void LDRBImmediateT1(uint32_t instruction)
 
 
 
+/*Load Register Byte (immediate) Encoding T2
+ * 
+    LDRB<c>.W <Rt>,[<Rn>{,#<imm12>}]
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  | 1  1  1  1  1| 0  0| 0  1  0  0  1|     Rn    |     Rt    |         imm12           |
+
+  where:
+            <c><q>            See Standard assembler syntax fields on page A6-7.
+            
+            <Rt>              Specifies the destination register.
+            
+            <Rn>              Specifies the base register. This register is allowed to be the SP. If this register is the PC, see
+                              LDRB (literal) on page A6-96.
+                              
+            +/-               Is + or omitted to indicate that the immediate offset is added to the base register value
+                              (add == TRUE), or – to indicate that the offset is to be subtracted (add == FALSE). Different
+                              instructions are generated for #0 and #-0.
+                              
+            <imm>             Specifies the immediate offset added to or subtracted from the value of <Rn> to form the
+                              address. The range of allowed values is 0-31 for encoding T1, 0-4095 for encoding T2, and
+                              0-255 for encoding T3. For the offset addressing syntax, <imm> can be omitted, meaning an
+                              offset of 0.
+                              
+                              The pre-UAL syntax LDR<c>B is equivalent to LDRB<c>.
+ 
+*/
+void LDRBImmediateT2(uint32_t instruction)
+{
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t imm12 = getBits(instruction,11,0);
+  uint32_t address = coreReg[Rn] + imm12;
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[Rt] = loadByteFromMemory(address, 1);                       
+    
+    shiftITState();
+  }
+  else                   
+    coreReg[Rt] = loadByteFromMemory(address, 1);     
+  
+  coreReg[PC] += 4;
+
+}
+
+
+
+/*Load Register Byte (immediate) Encoding T3
+ * 
+    LDRB<c> <Rt>,[<Rn>,#-<imm8>]
+    LDRB<c> <Rt>,[<Rn>],#+/-<imm8>
+    LDRB<c> <Rt>,[<Rn>,#+/-<imm8>]!
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  | 1  1  1  1  1| 0  0| 0  0  0  0  1|     Rn    |     Rt    | 1| P|U|W|     imm8      |
+
+  where:
+            <c><q>            See Standard assembler syntax fields on page A6-7.
+            
+            <Rt>              Specifies the destination register.
+            
+            <Rn>              Specifies the base register. This register is allowed to be the SP. If this register is the PC, see
+                              LDRB (literal) on page A6-96.
+                              
+            +/-               Is + or omitted to indicate that the immediate offset is added to the base register value
+                              (add == TRUE), or – to indicate that the offset is to be subtracted (add == FALSE). Different
+                              instructions are generated for #0 and #-0.
+                              
+            <imm>             Specifies the immediate offset added to or subtracted from the value of <Rn> to form the
+                              address. The range of allowed values is 0-31 for encoding T1, 0-4095 for encoding T2, and
+                              0-255 for encoding T3. For the offset addressing syntax, <imm> can be omitted, meaning an
+                              offset of 0.
+                              
+                              The pre-UAL syntax LDR<c>B is equivalent to LDRB<c>.
+ 
+*/
+void LDRBImmediateT3(uint32_t instruction)
+{ 
+  uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t W = getBits(instruction,8,8);
+  uint32_t U = getBits(instruction,9,9);
+  uint32_t P = getBits(instruction,10,10);
+  uint32_t address;
+
+  if(U == 1)
+    address = coreReg[Rn] + imm8;
+  else
+    address = coreReg[Rn] - imm8;
+
+  if(P == 1 && W == 0 && U == 1)                    //if this condition meet, this is actually a LDRBT instruction
+    LDRBT(instruction);
+    
+  int check = isOffPostOrPreIndex(P,W);
+  
+  if(check == UNDEFINED)
+  {
+    placePCtoVectorTable(UsageFault);
+    Throw(UsageFault);
+  }
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(check == OFFINDEX)
+        coreReg[Rt] = loadByteFromMemory(address,1);
+      else if(check == PREINDEX)
+      {
+        coreReg[Rt] = loadByteFromMemory(address,1);
+        coreReg[Rn] = address;
+      }
+      else 
+      {
+        coreReg[Rt] = loadByteFromMemory(coreReg[Rn],1);
+        coreReg[Rn] = address;
+      }
+    }      
+                   
+    shiftITState();
+  }
+  else
+  {
+    if(check == OFFINDEX)
+      coreReg[Rt] = loadByteFromMemory(address,1);
+    else if(check == PREINDEX)
+    {
+      coreReg[Rt] = loadByteFromMemory(address,1);
+      coreReg[Rn] = address;
+    }
+    else 
+    {
+      coreReg[Rt] = loadByteFromMemory(coreReg[Rn],1);
+      coreReg[Rn] = address;
+    }
+  }         
+    
+  coreReg[PC] += 4;
+}
+
 
 /*Load Register Halfword (immediate) Encoding T1 
  * 
@@ -515,3 +659,8 @@ void LDRHImmediateT1(uint32_t instruction)
 }
 
 
+void LDRBT(uint32_t instruction)
+{
+  
+  
+}
