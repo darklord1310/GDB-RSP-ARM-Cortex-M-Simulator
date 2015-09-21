@@ -30,7 +30,7 @@
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include "State.h"
-#include "stateRSP.h"
+#include "StateRSP.h"
 
 #ifdef  __MINGW32__
 /****************Initialize Winsock.****************/
