@@ -31,7 +31,10 @@ void LDRImmediateT2(uint32_t instruction);
 void LDRImmediateT3(uint32_t instruction);
 void LDRImmediateT4(uint32_t instruction);
 void LDRBImmediateT1(uint32_t instruction);
+void LDRBImmediateT2(uint32_t instruction);
+void LDRBImmediateT3(uint32_t instruction);
 void LDRHImmediateT1(uint32_t instruction);
+void LDRBT(uint32_t instruction);
 
 
 #endif // LDRImmediate_H

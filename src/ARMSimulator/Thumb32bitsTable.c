@@ -458,6 +458,17 @@ void initThumb32Table()
       Thumb32Table[dummy] = executeStoreSingleDataItem;
     }
   }
+  //
+  dummy = 0b1100000010;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy,i,5,4);
+    for(j = 0; j <= 0b1; j++)
+    {
+      dummy = setBits(dummy,j,0,0);
+      Thumb32Table[dummy] = executeLoadByteMemoryHints;
+    }
+  }
 }
 
 
@@ -981,7 +992,7 @@ void initThumb32StoreSingleDataItem()
 {
   uint32_t dummy;
   int i,j,k;
-  //
+
   //STRB(immediate)
   dummy = 0b100000000;
   for(j = 0; j <= 0b111111; j ++)
@@ -1049,7 +1060,65 @@ void initThumb32StoreSingleDataItem()
 }
 
 
-
+void initThumb32LoadByteMemoryHints()
+{
+  uint32_t dummy;
+  int i,j,k,h;
+  
+  //
+  dummy = 0b0100000000000000;
+  for(j = 0; j <= 0b111111; j ++)
+  {
+    dummy = setBits(dummy,j,13,8);
+    for(i = 0; i < 0b1111; i++)
+    {
+      dummy = setBits(dummy,i,7,4);
+      for(k = 0; k < 0b1111; k++)
+      {
+        dummy = setBits(dummy,k,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRBImmediateT2;
+      }
+    }
+  }
+  
+  dummy = 0b0010010000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,12,11);
+    for(i = 0; i <= 0b11; i++)
+    {
+      dummy = setBits(dummy,i,9,8);
+      for(k = 0; k < 0b1111; k++)
+      {
+        dummy = setBits(dummy,k,7,4);
+        for(h = 0; h <= 0b1111; h++)
+        {
+          dummy = setBits(dummy,h,3,0);
+          Thumb32LoadByteMemoryHints[dummy] = LDRBImmediateT3;
+        }
+      }
+    }
+  }
+  
+  dummy = 0b0011000000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,9,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRBImmediateT3;
+      }
+    }
+  }
+  //
+  
+  
+  
+}
 
 
 
