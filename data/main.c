@@ -1,16 +1,10 @@
-int abc = 0xabab;
-double value;
-
-void testFunc(void);
-
 int main(void)
 {
-	abc = 0x10;
-	//testFunc();
+	double abc = 2;
 
-	while(abc)
+	while(abc != 16)
 	{
-		abc--;
+		abc = abc * 2;
 	}
 
 	return 0;

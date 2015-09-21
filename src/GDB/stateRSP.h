@@ -20,8 +20,8 @@
 
 */
 
-#ifndef stateRSP_H
-#define stateRSP_H
+#ifndef StateRSP_H
+#define StateRSP_H
 
 #include "State.h"
 
@@ -53,4 +53,4 @@ struct RspData
 // char *rspState(RspData *rspData, char *data);
 void rspState(RspData *rspData, char *data);
 
-#endif // stateRSP_H
+#endif // StateRSP_H

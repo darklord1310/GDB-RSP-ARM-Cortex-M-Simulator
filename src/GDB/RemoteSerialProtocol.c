@@ -65,7 +65,7 @@ char *arm_m_profile =
 "   <reg name=\"xpsr\" bitsize=\"32\" type=\"uint32\" regnum=\"25\"/>"
 "</feature>";
 
-/* 
+/* Will be added if needed
 "   <reg name=\"msp\" bitsize=\"32\" regnum=\"17\" type=\"data_ptr\" group=\"general\"/>"
 "   <reg name=\"psp\" bitsize=\"32\" regnum=\"18\" type=\"data_ptr\" group=\"general\"/>"
 "   <reg name=\"control\" bitsize=\"8\" regnum=\"19\" type=\"uint8\" group=\"general\"/>"
