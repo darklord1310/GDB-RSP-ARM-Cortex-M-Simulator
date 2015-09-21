@@ -62,14 +62,17 @@ char *arm_m_profile =
 "   <reg name=\"sp\" bitsize=\"32\" type=\"data_ptr\"/>"
 "   <reg name=\"lr\" bitsize=\"32\" type=\"uint32\"/>"
 "   <reg name=\"pc\" bitsize=\"32\" type=\"code_ptr\"/>"
-"   <reg name=\"xpsr\" bitsize=\"32\" type=\"uint32\" regnum=\"16\"/>"
+"   <reg name=\"xpsr\" bitsize=\"32\" type=\"uint32\" regnum=\"25\"/>"
+"</feature>";
+
+/* 
 "   <reg name=\"msp\" bitsize=\"32\" regnum=\"17\" type=\"data_ptr\" group=\"general\"/>"
 "   <reg name=\"psp\" bitsize=\"32\" regnum=\"18\" type=\"data_ptr\" group=\"general\"/>"
 "   <reg name=\"control\" bitsize=\"8\" regnum=\"19\" type=\"uint8\" group=\"general\"/>"
 "   <reg name=\"faultmask\" bitsize=\"8\" regnum=\"20\" type=\"uint8\" group=\"general\"/>"
 "   <reg name=\"basepri\" bitsize=\"8\" regnum=\"21\" type=\"uint8\" group=\"general\"/>"
 "   <reg name=\"primask\" bitsize=\"8\" regnum=\"22\" type=\"uint8\" group=\"general\"/>"
-"</feature>";
+*/
 
 /* ARM Cortex-M4 FPU Register */
 char *arm_vfpv2 =
