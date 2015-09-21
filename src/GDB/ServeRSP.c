@@ -105,13 +105,11 @@ char *serveRSP(char *data)
     }
     Catch(errorSignal)
     {
-        char *asciiString = NULL, errorString[4] = "E";
+        char asciiString[4] = "";
 
         printf("Error signal: %d\n", errorSignal);
-        asciiString = createdHexToString(errorSignal, 1);
-        strcat(errorString, asciiString);
-        destroyHexToString(asciiString);
-        packet = gdbCreateMsgPacket(errorString);
+        sprintf(asciiString, "E%02d", errorSignal);
+        packet = gdbCreateMsgPacket(asciiString);
     }
 
     return packet;

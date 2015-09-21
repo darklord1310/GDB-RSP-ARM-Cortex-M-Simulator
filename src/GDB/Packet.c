@@ -79,7 +79,7 @@ void destroyPacket(char *packet)
  * Return:
  *      asciiString     HEX value in string form
  **************************************************************/
-char *createdHexToString(unsigned long long int regVal, int bytes)
+/* char *createdHexToString(unsigned long long int regVal, int bytes)
 {
     assert(bytes > 0);
     char *asciiString = malloc(bytes * 2 + 1);
@@ -120,13 +120,13 @@ char *createdHexToString(unsigned long long int regVal, int bytes)
     asciiString[bytes * 2] = '\0';
 
     return asciiString;
-}
+} */
 
-void destroyHexToString(char *asciiString)
+/* void destroyHexToString(char *asciiString)
 {
     if(asciiString != NULL)
         free(asciiString);
-}
+} */
 
 /****************************************************************
  * This function swap upper byte with lower byte of the byteData

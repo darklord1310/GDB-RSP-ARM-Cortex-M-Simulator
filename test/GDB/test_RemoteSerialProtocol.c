@@ -275,7 +275,7 @@ void test_handleQueryPacket_given_data_with_unrecognized_RSP_query_should_return
     TEST_ASSERT_EQUAL_STRING("$#00", reply);
 }
 
-void xtest_readSingleRegister_given_data_with_p1a_packet_should_return_first_fpuDoublePrecision_value(void)
+void test_readSingleRegister_given_data_with_p1a_packet_should_return_first_fpuDoublePrecision_value(void)
 {
     char data[] = "$p1a#d1";
     char *reply = NULL;
@@ -284,9 +284,9 @@ void xtest_readSingleRegister_given_data_with_p1a_packet_should_return_first_fpu
     fpuDoublePrecision[0] = 0x2143658778563412;
 
     decodeEightByte_ExpectAndReturn(0x2143658778563412, 0x1234567887654321);
-    createdHexToString_ExpectAndReturn(0x1234567887654321, 8, "1234567887654321");
+    // createdHexToString_ExpectAndReturn(0x1234567887654321, 8, "1234567887654321");
     gdbCreateMsgPacket_ExpectAndReturn("1234567887654321", "$1234567887654321#48");
-    destroyHexToString_Expect("1234567887654321");
+    // destroyHexToString_Expect("1234567887654321");
 
     reply = readSingleRegister(data);
 
@@ -315,7 +315,7 @@ void test_readSingleRegister_given_data_with_p2_packet_should_return_second_core
     TEST_ASSERT_EQUAL_STRING("$00004321#8a", reply);
 }
 
-void xtest_readSingleRegister_given_data_with_p12_packet_should_throw_GDB_SIGNAL_0(void)
+void test_readSingleRegister_given_data_with_p12_packet_should_throw_GDB_SIGNAL_0(void)
 {
     CEXCEPTION_T errorSignal;
     char data[] = "$p12#d3";
@@ -324,19 +324,19 @@ void xtest_readSingleRegister_given_data_with_p12_packet_should_throw_GDB_SIGNAL
     initCoreRegister();
 
     Try
-	{
+	  {
         reply = readSingleRegister(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
 
-void xtest_readSingleRegister_given_data_with_p_neg_1_packet_should_throw_GDB_SIGNAL_0(void)
+void test_readSingleRegister_given_data_with_p_neg_1_packet_should_throw_GDB_SIGNAL_0(void)
 {
     CEXCEPTION_T errorSignal;
     char data[] = "$p-1#ce";
@@ -345,14 +345,14 @@ void xtest_readSingleRegister_given_data_with_p_neg_1_packet_should_throw_GDB_SI
     initCoreRegister();
 
     Try
-	{
+    {
         reply = readSingleRegister(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -372,21 +372,21 @@ void xtest_readAllRegister_should_return_all_reg_val(void)
             if(i == 2)
             {
                 decodeFourByte_ExpectAndReturn(0x12345678, 0x78563412);
-                createdHexToString_ExpectAndReturn(0x78563412, 4, "78563412");
-                destroyHexToString_Expect("78563412");
+                // createdHexToString_ExpectAndReturn(0x78563412, 4, "78563412");
+                // destroyHexToString_Expect("78563412");
             }
             else
             {
                 decodeFourByte_ExpectAndReturn(0x00000000, 0x00000000);
-                createdHexToString_ExpectAndReturn(0x00000000, 4, "00000000");
-                destroyHexToString_Expect("00000000");
+                // createdHexToString_ExpectAndReturn(0x00000000, 4, "00000000");
+                // destroyHexToString_Expect("00000000");
             }
         }
         else    // PC
         {
             decodeFourByte_ExpectAndReturn(0x01000000, 0x00000001);
-            createdHexToString_ExpectAndReturn(0x00000001, 4, "00000001");
-            destroyHexToString_Expect("00000001");
+            // createdHexToString_ExpectAndReturn(0x00000001, 4, "00000001");
+            // destroyHexToString_Expect("00000001");
         }
     }
 
@@ -412,51 +412,25 @@ void test_readAllRegister_should_return_all_reg_val_including_fpu_reg(void)
         if(i < 16)
         {
             if(i == 2)
-            {
                 decodeFourByte_ExpectAndReturn(0x12345678, 0x78563412);
-                createdHexToString_ExpectAndReturn(0x78563412, 4, "78563412");
-                destroyHexToString_Expect("78563412");
-            }
             else if(i == 13)    //SP
-            {
                 decodeFourByte_ExpectAndReturn(0x20001000, 0x00100020);
-                createdHexToString_ExpectAndReturn(0x00100020, 4, "00100020");
-                destroyHexToString_Expect("00100020");
-            }
             else
-            {
                 decodeFourByte_ExpectAndReturn(0x00000000, 0x00000000);
-                createdHexToString_ExpectAndReturn(0x00000000, 4, "00000000");
-                destroyHexToString_Expect("00000000");
-            }
         }
         else    // PC
-        {
             decodeFourByte_ExpectAndReturn(0x01000000, 0x00000001);
-            createdHexToString_ExpectAndReturn(0x00000001, 4, "00000001");
-            destroyHexToString_Expect("00000001");
-        }
     }
 
     for(i = 0; i < 16; i++)
     {
         if(i == 1)
-        {
             decodeEightByte_ExpectAndReturn(0x1234567887654321, 0x2143658778563412);
-            createdHexToString_ExpectAndReturn(0x2143658778563412, 8, "2143658778563412");
-            destroyHexToString_Expect("2143658778563412");
-        }
         else
-        {
             decodeEightByte_ExpectAndReturn(0x0000000000000000, 0x0000000000000000);
-            createdHexToString_ExpectAndReturn(0x0000000000000000, 8, "0000000000000000");
-            destroyHexToString_Expect("0000000000000000");
-        }
     }
 
     decodeFourByte_ExpectAndReturn(0x00000000, 0x00000000);
-    createdHexToString_ExpectAndReturn(0x00000000, 4, "00000000");
-    destroyHexToString_Expect("00000000");
 
     gdbCreateMsgPacket_ExpectAndReturn("0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000100020000000000000000000000001000000000000000021436587785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                                        "$0000000000000000785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000100020000000000000000000000001000000000000000021436587785634120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000#70");
@@ -509,14 +483,14 @@ void test_writeSingleRegister_given_data_with_P30_should_throw_GDB_SIGNAL_0(void
     initCoreRegister();
 
     Try
-	{
+    {
         reply = writeSingleRegister(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -530,14 +504,14 @@ void test_writeSingleRegister_given_data_with_P_neg_5_should_throw_GDB_SIGNAL_0(
     initCoreRegister();
 
     Try
-	{
+    {
         reply = writeSingleRegister(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -706,7 +680,7 @@ void test_writeAllRegister_given_following_data_should_write_value_to_all_regist
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
 }
 
-void xtest_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
+void test_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0x0(void)
 {
     char data[] = "$m0,2#fb";
     char *reply = NULL;
@@ -714,10 +688,6 @@ void xtest_readMemory_given_m0_and_2_should_retrieve_memory_content_start_from_0
     memoryBlock[0] = 0x20;
     memoryBlock[1] = 0x3f;
 
-    createdHexToString_ExpectAndReturn(0x20, 1, "20");
-    destroyHexToString_Expect("20");
-    createdHexToString_ExpectAndReturn(0x3f, 1, "3f");
-    destroyHexToString_Expect("3f");
     gdbCreateMsgPacket_ExpectAndReturn("203f", "$203f#fb");
 
     reply = readMemory(data);
@@ -735,14 +705,6 @@ void test_readMemory_given_m80009d6_and_4_should_retrieve_memory_content_start_f
     memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 2)] = 0x70;
     memoryBlock[virtualMemToPhysicalMem(0x80009d6 + 3)] = 0xff;
 
-    createdHexToString_ExpectAndReturn(0xf6, 1, "f6");
-    destroyHexToString_Expect("f6");
-    createdHexToString_ExpectAndReturn(0x43, 1, "43");
-    destroyHexToString_Expect("43");
-    createdHexToString_ExpectAndReturn(0x70, 1, "70");
-    destroyHexToString_Expect("70");
-    createdHexToString_ExpectAndReturn(0xff, 1, "ff");
-    destroyHexToString_Expect("ff");
     gdbCreateMsgPacket_ExpectAndReturn("f64370ff", "$f64370ff#36");
 
     reply = readMemory(data);
@@ -757,14 +719,14 @@ void test_readMemory_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = readMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -776,14 +738,14 @@ void test_readMemory_given_m7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = readMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -825,14 +787,14 @@ void test_writeMemory_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = writeMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -844,14 +806,14 @@ void test_writeMemory_given_M7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = writeMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -863,14 +825,14 @@ void test_writeMemory_given_M8000d06_and_2_with_more_data_supply_should_throw_GD
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = writeMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -882,14 +844,14 @@ void test_writeMemory_given_M8000d06_and_2_with_no_data_supply_should_throw_GDB_
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = writeMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -901,14 +863,14 @@ void test_writeMemory_given_M8000d06_and_2_with_less_data_supply_should_throw_GD
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = writeMemory(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -919,8 +881,6 @@ void test_step_given_following_data_should_step_through_the_instruction(void)
     char *reply = NULL;
 
     armStep_Expect();
-    createdHexToString_ExpectAndReturn(GDB_SIGNAL_TRAP, 1, "05");
-    destroyHexToString_Expect("05");
     gdbCreateMsgPacket_ExpectAndReturn("S05", "$S05#b8");
 
     reply = step(data);
@@ -1030,8 +990,8 @@ void test_insertBreakpointOrWatchpoint_given_Z0_should_should_throw_GDB_SIGNAL_A
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -1066,8 +1026,8 @@ void test_insertBreakpointOrWatchpoint_given_Z1_should_should_throw_GDB_SIGNAL_A
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -1135,8 +1095,8 @@ void test_removeBreakpointOrWatchpoint_given_z0_should_should_throw_GDB_SIGNAL_A
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }
@@ -1170,8 +1130,8 @@ void test_removeBreakpointOrWatchpoint_given_z1_should_should_throw_GDB_SIGNAL_A
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING(NULL, reply);
 }

@@ -28,8 +28,8 @@
 char *gdbCreateMsgPacket(char *data);
 void destroyPacket(char *packet);
 
-char *createdHexToString(unsigned long long int regVal, int bytes);
-void destroyHexToString(char *asciiString);
+// char *createdHexToString(unsigned long long int regVal, int bytes);
+// void destroyHexToString(char *asciiString);
 
 uint32_t decodeTwoByte(uint32_t byteData);
 uint32_t decodeFourByte(uint32_t byteData);

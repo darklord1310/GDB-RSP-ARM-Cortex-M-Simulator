@@ -152,8 +152,6 @@ void displayErrorMsg(char *errorMsg)
 #endif
 }
 
-#endif
-
 void main()
 {
     SOCKET sock;

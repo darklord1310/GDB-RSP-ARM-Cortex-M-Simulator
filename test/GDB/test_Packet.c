@@ -34,7 +34,7 @@ void test_gdbCreateMsgPacket_given_string_of_data_should_return_a_complete_packe
     destroyPacket(packet);
 }
 
-void test_createdHexToString_given_regVal_should_return_4_byte_of_string_of_the_regVal(void)
+/* void test_createdHexToString_given_regVal_should_return_4_byte_of_string_of_the_regVal(void)
 {
     unsigned int regVal = 0xabababab;
     char *packet;
@@ -92,7 +92,7 @@ void test_createdHexToString_given_regVal_should_return_8_byte_of_string_of_the_
     TEST_ASSERT_EQUAL_STRING("2143658778563412", packet);
 
     destroyHexToString(packet);
-}
+} */
 
 void test_decodeTwoByte_given_0x7856_should_return_0x5678(void)
 {
