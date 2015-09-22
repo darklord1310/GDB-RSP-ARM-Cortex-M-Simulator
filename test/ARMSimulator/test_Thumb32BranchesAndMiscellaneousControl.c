@@ -224,4 +224,23 @@ void test_BLT1_given_PC_0x08000018_should_get_PC_0x0800000c_and_LR_0x0800001d()
 
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //NOP T2
+
+//test NOP.W
+void test_NOPT2_should_do_nothing()
+{
+  //create test fixture
+  coreReg[PC] = 0x08000018;
+  writeInstructionToMemoryGivenByAddress(0xf3af8000, 0x08000018);
+
+  //execute
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x0800001c,coreReg[PC]);
+}
+
+
+
 

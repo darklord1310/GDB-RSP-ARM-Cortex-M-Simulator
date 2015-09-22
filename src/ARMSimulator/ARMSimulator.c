@@ -64,6 +64,7 @@ void initializeAllTable()
   initThumb32bitsMoveRegisterAndImmediateShift();
   initThumb32bitsDataProcessingRegister();
   initThumb32bitsBranchesAndMiscellaneousControl();
+  initThumb32bitsHintInstructions();
   initThumb32bitsLoadWord();
   initThumb32bitsMultiplyAccumulate();
   initThumb32bitsLongMultiplyAccumulateDivide();
@@ -208,6 +209,15 @@ void executeBranchesAndMiscellaneousControl(uint32_t instruction)
   uint32_t opcode = (op2 << 7) | op1;
 
   (*Thumb32BranchesAndMiscellaneousControl[opcode])(instruction);
+}
+
+void executeHintInstructions(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction, 10, 8);
+  uint32_t op2 = getBits(instruction, 7, 0);
+  uint32_t opcode = (op1 << 7) | op2;
+
+  (*Thumb32HintInstructions[opcode])();
 }
 
 

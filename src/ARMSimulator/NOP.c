@@ -68,7 +68,7 @@ void NOPT1()
 where:
           <c><q>        See Standard assembler syntax fields on page A6-7.
 */
-void NOPT2(uint32_t instruction)
+void NOPT2()
 {
   if(inITBlock())
   {

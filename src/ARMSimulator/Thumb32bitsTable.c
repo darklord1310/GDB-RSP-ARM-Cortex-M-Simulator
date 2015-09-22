@@ -818,10 +818,18 @@ void initThumb32bitsBranchesAndMiscellaneousControl()
     if(((i & 0b1010000000) == 0b1010000000) || ((i & 0b1110000000) == 0b1110000000))
       Thumb32BranchesAndMiscellaneousControl[i] = BLT1;
   }
-  // NOP T2
-  
+  // Hint Instructions
+  Thumb32BranchesAndMiscellaneousControl[0b0000111010] = executeHintInstructions;
+  Thumb32BranchesAndMiscellaneousControl[0b0100111010] = executeHintInstructions;
 }
 
+
+void initThumb32bitsHintInstructions()
+{
+  // NOP T2
+  Thumb32HintInstructions[0] = NOPT2;
+  //
+}
 
 
 void initThumb32bitsLoadWord()
