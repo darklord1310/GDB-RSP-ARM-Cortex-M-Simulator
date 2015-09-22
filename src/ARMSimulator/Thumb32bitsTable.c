@@ -340,6 +340,22 @@ void initThumb32Table()
       Thumb32Table[dummy] = executeLoadByteMemoryHints;
     }
   }
+  //
+  dummy = 0b0100001000;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy,i,5,4);
+    for(j = 0; j <= 0b11; j++)
+    {
+      dummy = setBits(dummy,j,2,1);
+      for(k = 0; k <= 0b1; k++)
+      {
+        dummy = setBits(dummy,k,0,0);
+        Thumb32Table[dummy] = executeLoadStoreDualTableBranch;
+      }
+    }
+  }
+  
 }
 
 
@@ -956,12 +972,161 @@ void initThumb32LoadByteMemoryHints()
     }
   }
   //
+  dummy = 0b0011100000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,9,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRBT;
+      }
+    }
+  }
+  //
+  dummy = 0b0000000011110000;
+  for(k = 0; k <= 0b1111111; k++)
+  {
+    dummy = setBits(dummy,k,14,8);
+    for(h = 0; h < 0b1111; h++)
+    {
+      dummy = setBits(dummy,h,3,0);
+      Thumb32LoadByteMemoryHints[dummy] = LDRBLiteral;
+    }
+  }
+  //LDRBRegisterT2
+  dummy = 0b0000000000000000;
+  for(k = 0; k < 0b1111; k++)
+  {
+    dummy = setBits(dummy,k,7,4);
+    for(h = 0; h < 0b1111; h++)
+    {
+      dummy = setBits(dummy,h,3,0);
+      Thumb32LoadByteMemoryHints[dummy] = LDRBRegisterT2;
+    }
+  }
+  //
+  dummy = 0b1100000000000000;
+  for(j = 0; j <= 0b111111; j ++)
+  {
+    dummy = setBits(dummy,j,13,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRSBImmediateT1;
+      }
+    }
+  }
   
+  dummy = 0b1010010000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,12,11);
+    for(k = 0; k <= 0b11; k++)
+    {
+      dummy = setBits(dummy,k,9,8);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,7,4);
+        for(i = 0; i <= 0b1111; i++)
+        {
+          dummy = setBits(dummy,i,3,0);
+          Thumb32LoadByteMemoryHints[dummy] = LDRSBImmediateT2;
+        }
+      }
+    }
+  }
   
-  
+  dummy = 0b1011000000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,9,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRSBImmediateT2;
+      }
+    }
+  }
+  //
+  dummy = 0b1011100000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,9,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h <= 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRSBT;
+      }
+    }
+  }
+  //
+  dummy = 0b1011100000000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,9,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h <= 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadByteMemoryHints[dummy] = LDRSBT;
+      }
+    }
+  }
+  //
+  dummy = 0b1000000011110000;
+  for(j = 0; j <= 0b1111111; j ++)
+  {
+    dummy = setBits(dummy,j,14,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,3,0);
+      Thumb32LoadByteMemoryHints[dummy] = LDRSBLiteral;
+    }
+  }
+  //
+  dummy = 0b1000000000000000;
+  for(j = 0; j < 0b1111; j ++)
+  {
+    dummy = setBits(dummy,j,7,4);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,3,0);
+      Thumb32LoadByteMemoryHints[dummy] = LDRSBRegisterT2;
+    }
+  }
+
 }
 
 
-
+void initThumb32bitsLoadStoreDualTableBranch()
+{
+  uint32_t dummy;
+  int i,j,k,h;
+  
+  
+  dummy = 0b00000000;
+  for(k = 0; k <= 0b1111; k++)
+  {
+    dummy = setBits(dummy,k,3,0);
+    Thumb32LoadByteMemoryHints[dummy] = STREX;
+  }
+  
+  
+}
 
 

@@ -496,6 +496,37 @@ void STMDB(uint32_t instruction)
 
 
 
+
+
+/*Store Register Exclusive 
+ * 
+    STREX<c> <Rd>,<Rt>,[<Rn>{,#<imm8>}]
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1  1   0  1| 0  0| 1  0  0|W | 0|     Rn    |0 |M | 0|         Register List      |   
+
+  where:
+            <c><q>            See Standard assembler syntax fields on page A6-7.
+            
+            <Rd>              Specifies the destination register for the returned status value. The value returned is:
+                              0 if the operation updates memory
+                              1 if the operation fails to update memory.
+                              
+            <Rt>              Specifies the source register.
+            
+            <Rn>              Specifies the base register. This register is allowed to be the SP.
+            
+            <imm>             Specifies the immediate offset added to the value of <Rn> to form the address. Allowed
+                              values are multiples of 4 in the range 0-1020. <imm> can be omitted, meaning an offset of 0.
+          
+*/
+void STREX(uint32_t instruction)
+{
+  
+  
+}
+
+
 /* This function will write multiple register to memory based on the register list given
  * 
  * Input:  address              the base address of the memory
