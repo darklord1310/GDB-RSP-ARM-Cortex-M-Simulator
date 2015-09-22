@@ -17,9 +17,11 @@ main_dependency = {
   'ServeRSP.o'    => ['GDB/ServeRSP.h', 'GDB/RemoteSerialProtocol.h', 'GDB/Packet.h',
                       '..vendor/ceedling/vendor/c_exception/lib/CException', 'ErrorSignal.h',],
   'StateRSP.o'    => ['GDB/StateRSP.h', 'GDB/ServeRSP.h', 'GDB/State.h', 'GDB/Packet.h'],
-  'gdbServer.o'   => ['Main.c', 'Parser.h', 'ParserParse.h', 'Context.h', 'Log.h'],
-  'gdbServer.exe' => ['Main.o', 'Lexer.o', 'LexerError.o', 'Token.o', 'Parser.o',
-                      'ParserParse.o', 'Context.o', 'ErrorObject.o', 'TokenDebug.o',
+  'gdbServer.o'   => ['GDB/gdbServer.c', 'GDB/gdbServer.h', 'GDB/ServeRSP.h', 'GDB/StateRSP.h', 'GDB/State.h',
+                      'GDB/RemoteSerialProtocol.h', 'ARMSimulator/ARMRegisters.h', 'ARMSimulator/ARMSimulator.h',
+                      'MemoryBlock.h'],
+  'gdbServer.exe' => ['Main.o', 'ErrorSignal.o', 'MemoryBlock.o', 'GDB/Packet.o', 'GDB/RemoteSerialProtocol.o',
+                      'GDB/ServeRSP.o', 'GDB/StateRSP.o', 'GDB/gdbServer.o', 'TokenDebug.o',
                       'Tokenizer.o', 'CException.o'],
 }
 
