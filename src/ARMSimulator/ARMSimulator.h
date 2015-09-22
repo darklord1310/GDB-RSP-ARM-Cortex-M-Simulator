@@ -52,5 +52,6 @@ void executeLongMultiplyAccumulateDivide(uint32_t instruction);
 void executeLoadStoreMultiple(uint32_t instruction);
 void executeStoreSingleDataItem(uint32_t instruction);
 void executeLoadByteMemoryHints(uint32_t instruction);
+void executeLoadStoreDualTableBranch(uint32_t instruction);
 
 #endif // ARMSimulator_H

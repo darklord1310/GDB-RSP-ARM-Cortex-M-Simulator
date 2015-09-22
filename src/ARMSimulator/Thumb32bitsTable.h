@@ -118,6 +118,7 @@ void (*Thumb32LongMultiplyAccumulateDivide[128])(uint32_t instruction);
 void (*Thumb32LoadStoreMultiple[256])(uint32_t instruction);
 void (*Thumb32StoreSingleDataItem[512])(uint32_t instruction);
 void (*Thumb32LoadByteMemoryHints[65536])(uint32_t instruction);
+void (*Thumb32LoadStoreDualTableBranch[256])(uint32_t instruction);
 void (*Thumb32Table[1024])(uint32_t instruction);
 
 
@@ -134,6 +135,7 @@ void initThumb32bitsMultiplyAccumulate();
 void initThumb32bitsLongMultiplyAccumulateDivide();
 void initThumb32StoreSingleDataItem();
 void initThumb32LoadByteMemoryHints();
+void initThumb32bitsLoadStoreDualTableBranch();
 void initThumb32Table();
 
 void determineMoveRegisterAndImmediateShifts(uint32_t instruction);
