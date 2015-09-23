@@ -1,23 +1,23 @@
-/*  
-    Program Name       : GDB RSP and ARM Simulator
-    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
-    Copyright (C) 2015 TARUC
+﻿/*  
+    GDB RSP and ARM Simulator
+
+    Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
+    Jackson Teh Ka Sing, <jackson_dmc69@hotmail.com>
 
     This file is part of GDB RSP and ARM Simulator.
 
-    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    This program is free software, you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY, without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
-
+    along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdio.h>
@@ -64,6 +64,15 @@ char *arm_m_profile =
 "   <reg name=\"pc\" bitsize=\"32\" type=\"code_ptr\"/>"
 "   <reg name=\"xpsr\" bitsize=\"32\" type=\"uint32\" regnum=\"25\"/>"
 "</feature>";
+
+/* Will be added if needed
+"   <reg name=\"msp\" bitsize=\"32\" regnum=\"17\" type=\"data_ptr\" group=\"general\"/>"
+"   <reg name=\"psp\" bitsize=\"32\" regnum=\"18\" type=\"data_ptr\" group=\"general\"/>"
+"   <reg name=\"control\" bitsize=\"8\" regnum=\"19\" type=\"uint8\" group=\"general\"/>"
+"   <reg name=\"faultmask\" bitsize=\"8\" regnum=\"20\" type=\"uint8\" group=\"general\"/>"
+"   <reg name=\"basepri\" bitsize=\"8\" regnum=\"21\" type=\"uint8\" group=\"general\"/>"
+"   <reg name=\"primask\" bitsize=\"8\" regnum=\"22\" type=\"uint8\" group=\"general\"/>"
+*/
 
 /* ARM Cortex-M4 FPU Register */
 char *arm_vfpv2 =
@@ -168,7 +177,7 @@ char *readSingleRegister(char *data)
     char *packet = NULL;
     int regNum, byteToSent;
     unsigned long long int decodeVal;    //64-bits value
-    char asciiString[20];
+    char asciiString[20] = "";
 
     sscanf(data, "$p%x", &regNum);
     // printf("Reg no: %d\n", regNum);
@@ -218,31 +227,28 @@ char *readAllRegister()
     char *packet = NULL, fullRegValue[405] = "";
     int i, j;
     unsigned long long int decodeVal;
-    char *asciiString;
+    char asciiString[20] = "";
 
     //core register r0 - r12, SP, LR, PC, xPSR
     for(i = 0; i < NUM_OF_CORE_Register - 1; i++)
     {
         decodeVal = decodeFourByte(coreReg[i]);
-        asciiString = createdHexToString(decodeVal, 4);
+        sprintf(asciiString, "%08x", decodeVal);
         strcat(fullRegValue, asciiString);
-        destroyHexToString(asciiString);
     }
 
     //fpu register
     for(i = 0; i < NUM_OF_FPUD_Register; i++)
     {
         decodeVal = decodeEightByte(fpuDoublePrecision[i]);
-        asciiString = createdHexToString(decodeVal, 8);
+        sprintf(asciiString, "%016llx", decodeVal);
         strcat(fullRegValue, asciiString);
-        destroyHexToString(asciiString);
     }
 
     //fpu status register
     decodeVal = decodeFourByte(coreReg[fPSCR]);
-    asciiString = createdHexToString(decodeVal, 4);
+    sprintf(asciiString, "%08x", decodeVal);
     strcat(fullRegValue, asciiString);
-    destroyHexToString(asciiString);
 
     packet = gdbCreateMsgPacket(fullRegValue);
 
@@ -369,7 +375,7 @@ char *writeAllRegister(char *data)
  **********************************************************************************************/
 char *readMemory(char *data)
 {
-    char *packet = NULL, fullMemContent[0x3fff] = "", *asciiString = NULL;
+    char *packet = NULL, fullMemContent[0x3fff] = "", asciiString[4] = "";
     unsigned int addr, memoryContent = 0;
     int i, length;
 
@@ -392,9 +398,8 @@ char *readMemory(char *data)
     for(i = 1; i < length + 1; i++)
     {
         memoryContent = memoryBlock[virtualMemToPhysicalMem(addr)];
-        asciiString = createdHexToString(memoryContent, 1);
+        sprintf(asciiString, "%02x", memoryContent);
         strcat(fullMemContent, asciiString);
-        destroyHexToString(asciiString);
 
         addr++;
     }
@@ -468,9 +473,7 @@ char *writeMemory(char *data)
 char *step(char *data)
 {
     CEXCEPTION_T armException;
-    char *packet = NULL, *asciiString = NULL;
-    char *signal = "S", *error = "E";
-    char msg[4] = "";
+    char *packet = NULL, asciiString[4] = "";
 
     Try
     {
@@ -479,21 +482,13 @@ char *step(char *data)
     Catch(armException)
     {
         if(armException == UsageFault)
-        {
-            asciiString = createdHexToString(GDB_SIGNAL_ILL, 1);
-            strcat(msg, error);     //error msg
-        }
+            sprintf(asciiString, "E%02d", GDB_SIGNAL_ILL);
     }
 
-    if(asciiString == NULL)
-    {
-        asciiString = createdHexToString(GDB_SIGNAL_TRAP, 1);
-        strcat(msg, signal);        //signal trap
-    }
+    if(asciiString[0] == '\0')
+        sprintf(asciiString, "S%02d", GDB_SIGNAL_TRAP);
 
-    strcat(msg, asciiString);
-    destroyHexToString(asciiString);
-    packet = gdbCreateMsgPacket(msg);
+    packet = gdbCreateMsgPacket(asciiString);
 
     return packet;
 }
@@ -510,9 +505,7 @@ char *step(char *data)
 char *cont(char *data)
 {
     CEXCEPTION_T armException;
-    char *packet = NULL, *asciiString = NULL;
-    char *signal = "S", *error = "E";
-    char msg[4] = "";
+    char *packet = NULL, asciiString[4] = "";
 
     while(!findBreakpoint(bp))
     {
@@ -523,10 +516,7 @@ char *cont(char *data)
         Catch(armException)
         {
             if(armException == UsageFault)
-            {
-                asciiString = createdHexToString(GDB_SIGNAL_ILL, 1);
-                strcat(msg, error);     //error msg
-            }
+                sprintf(asciiString, "E%02d", GDB_SIGNAL_ILL);
 
             break;
         }
@@ -535,15 +525,10 @@ char *cont(char *data)
             break;
     }
 
-    if(asciiString == NULL)
-    {
-        asciiString = createdHexToString(GDB_SIGNAL_TRAP, 1);
-        strcat(msg, signal);        //signal trap
-    }
+    if(asciiString[0] == '\0')
+        sprintf(asciiString, "S%02d", GDB_SIGNAL_TRAP);
 
-    strcat(msg, asciiString);
-    destroyHexToString(asciiString);
-    packet = gdbCreateMsgPacket(msg);
+    packet = gdbCreateMsgPacket(asciiString);
 
     return packet;
 }

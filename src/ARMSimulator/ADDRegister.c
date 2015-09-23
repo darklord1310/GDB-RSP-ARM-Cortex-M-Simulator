@@ -1,27 +1,28 @@
 /*  
-    Program Name       : GDB RSP and ARM Simulator
-    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
-    Copyright (C) 2015 TARUC
+    GDB RSP and ARM Simulator
+
+    Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
+    Jackson Teh Ka Sing, <jackson_dmc69@hotmail.com>
 
     This file is part of GDB RSP and ARM Simulator.
 
-    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    This program is free software, you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY, without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
-
+    along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
 #include "ADDRegister.h"
+// #include "ADR.h"
 #include <assert.h>
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
@@ -236,17 +237,18 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   shiftType = determineShiftOperation(shiftType, shiftImmediate);
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
-  /* if(Rd == PC)
+  if(Rd == PC)                                              // only for encoding T2
   {
     uint32_t address = shiftedRm + coreReg[Rn] + 4;
     ALUWritePC(address);
   }
   else if(Rm == PC)
   {
-    coreReg[Rd] = alignPC(shiftedRm + 2, 4) + coreReg[Rn];
+    // coreReg[Rd] = alignPC(coreReg[Rm] + 2, 4) + coreReg[SP];
+    coreReg[Rd] = shiftedRm + coreReg[Rn] + 4;
   }
   else
-  { */
+  {
     temp = coreReg[Rn] + shiftedRm;
     coreReg[Rd] = temp;
 
@@ -257,5 +259,5 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
       updateOverflowFlagAddition(backupRn, shiftedRm, coreReg[Rd]);
       updateCarryFlagAddition(backupRn, shiftedRm);
     }
-  // }
+  }
 }

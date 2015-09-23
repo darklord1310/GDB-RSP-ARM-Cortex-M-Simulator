@@ -1,23 +1,23 @@
 /*  
-    Program Name       : GDB RSP and ARM Simulator
-    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
-    Copyright (C) 2015 TARUC
+    GDB RSP and ARM Simulator
+
+    Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
+    Jackson Teh Ka Sing, <jackson_dmc69@hotmail.com>
 
     This file is part of GDB RSP and ARM Simulator.
 
-    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    This program is free software, you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY, without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
-
+    along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -29,7 +29,7 @@ void initThumb32Table()
 {
   int i,j,k;
   uint32_t dummy;
-  
+
   Thumb32Table[0b1000000000] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
@@ -265,6 +265,135 @@ void initThumb32Table()
   Thumb32Table[0b1101011110] = executeDataProcessingRegister;
   Thumb32Table[0b1101011111] = executeDataProcessingRegister;
   //
+  Thumb32Table[0b1000000001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000000011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000000101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000000111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000001001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000001011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000001101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000001111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000010001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000010011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000010101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000010111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000011001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000011011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000011101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000011111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000100001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000100011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000100101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000100111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000101001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000101011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000101101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000101111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000110001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000110011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000110101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000110111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000111001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000111011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000111101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1000111111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001000001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001000011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001000101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001000111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001001001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001001011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001001101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001001111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001010001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001010011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001010101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001010111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001011001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001011011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001011101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001011111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001100001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001100011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001100101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001100111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001101001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001101011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001101101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001101111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001110001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001110011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001110101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001110111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001111001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001111011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001111101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1001111111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010000001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010000011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010000101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010000111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010001001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010001011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010001101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010001111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010010001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010010011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010010101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010010111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010011001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010011011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010011101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010011111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010100001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010100011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010100101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010100111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010101001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010101011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010101101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010101111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010110001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010110011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010110101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010110111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010111001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010111011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010111101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1010111111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011000001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011000011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011000101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011000111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011001001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011001011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011001101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011001111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011010001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011010011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011010101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011010111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011011001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011011011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011011101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011011111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011100001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011100011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011100101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011100111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011101001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011101011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011101101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011101111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011110001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011110011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011110101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011110111] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011111001] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011111011] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011111101] = executeBranchesAndMiscellaneousControl;
+  Thumb32Table[0b1011111111] = executeBranchesAndMiscellaneousControl;
+  //
   Thumb32Table[0b1100001010] = executeLoadWord;
   Thumb32Table[0b1100011010] = executeLoadWord;
   Thumb32Table[0b1100101010] = executeLoadWord;
@@ -435,6 +564,8 @@ void initThumb32bitsDataProcessingShiftedRegister()
     {
       if((i & 0b0000110100000) != 0b110100000)    // Rd != 1111 and Rn != 1101
         Thumb32DataProcessingShiftedRegister[i] = SUBRegisterT2;
+      else
+        Thumb32DataProcessingShiftedRegister[i] = SUBSPRegisterT1;
     }
     else
     {
@@ -681,6 +812,42 @@ void initThumb32bitsDataProcessingModifiedImmediate()
 
 
 
+void initThumb32bitsBranchesAndMiscellaneousControl()
+{
+  int i;
+
+  // Conditional Branch T2
+  for(i = 0b0000000000; i < 0b0110000000; i++)
+  {
+    if((i & 0b111000) != 0b111000)
+      Thumb32BranchesAndMiscellaneousControl[i] = ConditionalBranchT2;
+  }
+  // Unconditional Branch T2
+  for(i = 0b0010000000; i < 0b1000000000; i++)
+  {
+    if((i & 0b10000000) == 0b10000000)
+      Thumb32BranchesAndMiscellaneousControl[i] = UnconditionalBranchT2;
+  }
+  // BL T1
+  for(i = 0b1010000000; i < 0b10000000000; i++)
+  {
+    if(((i & 0b1010000000) == 0b1010000000) || ((i & 0b1110000000) == 0b1110000000))
+      Thumb32BranchesAndMiscellaneousControl[i] = BLT1;
+  }
+  // Hint Instructions
+  Thumb32BranchesAndMiscellaneousControl[0b0000111010] = executeHintInstructions;
+  Thumb32BranchesAndMiscellaneousControl[0b0100111010] = executeHintInstructions;
+}
+
+
+void initThumb32bitsHintInstructions()
+{
+  // NOP T2
+  Thumb32HintInstructions[0] = NOPT2;
+  //
+}
+
+
 void initThumb32bitsLoadWord()
 {
   int i,j,k;
@@ -801,7 +968,7 @@ void initThumb32bitsLoadStoreMultiple()
 {
   uint32_t dummy;
   int i,j,k;
-  
+
   //STM Register T2
   dummy = 0b01000000;
   for(j = 0; j <= 0b11111; j ++)
@@ -809,7 +976,7 @@ void initThumb32bitsLoadStoreMultiple()
     dummy = setBits(dummy,j,4,0);
     Thumb32LoadStoreMultiple[dummy] = STMRegisterT2;
   }
-  
+
   //LDM Register T2
   dummy = 0b01100000;
   for(j = 0; j <= 0b11111; j ++)
@@ -817,8 +984,8 @@ void initThumb32bitsLoadStoreMultiple()
     dummy = setBits(dummy,j,4,0);
     if(dummy != 0b01111101)
       Thumb32LoadStoreMultiple[dummy] = LDMRegisterT2;
-  } 
-  
+  }
+
   //STMDB
   dummy = 0b10000000;
   for(j = 0; j <= 0b11111; j ++)
@@ -826,19 +993,19 @@ void initThumb32bitsLoadStoreMultiple()
     dummy = setBits(dummy,j,4,0);
     if(dummy != 0b10011101)
       Thumb32LoadStoreMultiple[dummy] = STMDB;
-  } 
-  
+  }
+
   //LDMDB
   dummy = 0b10100000;
   for(j = 0; j <= 0b11111; j ++)
   {
     dummy = setBits(dummy,j,4,0);
     Thumb32LoadStoreMultiple[dummy] = LDMDB;
-  } 
-  
+  }
+
   //POP T2
   Thumb32LoadStoreMultiple[0b01111101] = POPT2;
-  
+
   //PUSH T2
   Thumb32LoadStoreMultiple[0b10011101] = PUSHT2;
 }

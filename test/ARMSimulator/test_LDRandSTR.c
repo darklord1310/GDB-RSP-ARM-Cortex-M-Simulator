@@ -12,6 +12,8 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
+#include "SUBSPRegister.h"
+#include "BL.h"
 #include "LDRImmediate.h"
 #include "ARMSimulator.h"
 #include "ARMRegisters.h"

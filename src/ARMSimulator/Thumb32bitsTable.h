@@ -1,23 +1,23 @@
 /*  
-    Program Name       : GDB RSP and ARM Simulator
-    Author             : Wong Yan Yin, Jackson Teh Ka Sing 
-    Copyright (C) 2015 TARUC
+    GDB RSP and ARM Simulator
+
+    Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
+    Jackson Teh Ka Sing, <jackson_dmc69@hotmail.com>
 
     This file is part of GDB RSP and ARM Simulator.
 
-    GDB RSP and ARM Simulator is free software, you can redistribute it and/or modify
+    This program is free software, you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    GDB RSP and ARM Simulator is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY, without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
-
+    along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -98,6 +98,9 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
+#include "SUBSPRegister.h"
+#include "BL.h"
+#include "NOP.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 
@@ -107,6 +110,8 @@ void (*Thumb32DataProcessingPlainImmediate[512])(uint32_t instruction);
 void (*Thumb32DataProcessingShiftedRegister[8192])(uint32_t instruction);
 void (*Thumb32MoveRegisterAndImmediateShift[128])(uint32_t instruction);
 void (*Thumb32DataProcessingRegister[256])(uint32_t instruction);
+void (*Thumb32BranchesAndMiscellaneousControl[1024])(uint32_t instruction);
+void (*Thumb32HintInstructions[2048])();
 void (*Thumb32LoadWord[4096])(uint32_t instruction);
 void (*Thumb32MultiplyAccumulate[512])(uint32_t instruction);
 void (*Thumb32LongMultiplyAccumulateDivide[128])(uint32_t instruction);
@@ -123,6 +128,8 @@ void initThumb32bitsDataProcessingPlainImmediate();
 void initThumb32bitsDataProcessingShiftedRegister();
 void initThumb32bitsMoveRegisterAndImmediateShift();
 void initThumb32bitsDataProcessingRegister();
+void initThumb32bitsBranchesAndMiscellaneousControl();
+void initThumb32bitsHintInstructions();
 void initThumb32bitsLoadWord();
 void initThumb32bitsMultiplyAccumulate();
 void initThumb32bitsLongMultiplyAccumulateDivide();

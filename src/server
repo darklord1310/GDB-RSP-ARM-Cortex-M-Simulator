@@ -6,7 +6,7 @@ gcc gdbserver.c                     \
     RemoteSerialProtocol.c          \
     Packet.c                        \
     ARMRegisters.c                  \
-    ErrorSignal.c                  \
+    ErrorSignal.c                   \
     MemoryBlock.c                   \
     getAndSetBits.c                 \
     getMask.c                       \
