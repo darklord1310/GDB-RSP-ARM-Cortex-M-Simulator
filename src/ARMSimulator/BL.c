@@ -74,6 +74,7 @@ void BLT1(uint32_t instruction)
         uint32_t nextInstrAddr = coreReg[PC] + 4;
         coreReg[LR] = nextInstrAddr | 0x1;
         coreReg[PC] = coreReg[PC] + imm32 + 4;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
       }
 
       shiftITState();
@@ -83,6 +84,7 @@ void BLT1(uint32_t instruction)
       uint32_t nextInstrAddr = coreReg[PC] + 4;
       coreReg[LR] = nextInstrAddr | 0x1;
       coreReg[PC] = coreReg[PC] + imm32 + 4;
+      coreReg[PC] = coreReg[PC] & 0xfffffffe;
     }
   }
   else

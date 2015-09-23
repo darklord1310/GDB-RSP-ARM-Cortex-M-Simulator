@@ -39,6 +39,7 @@ void STRImmediateT4(uint32_t instruction);
 void STRBT(uint32_t instruction);
 void STRHT(uint32_t instruction);
 void STRT(uint32_t instruction);
+void STRDImmediate(uint32_t instruction);
 
 
 #endif // STRImmediate_H

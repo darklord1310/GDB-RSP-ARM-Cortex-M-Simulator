@@ -1,0 +1,120 @@
+---
+
+# Notes:
+# Sample project C code is not presently written to produce a release artifact.
+# As such, release build options are disabled.
+# This sample, therefore, only demonstrates running a collection of unit tests.
+
+:project:
+  :use_exceptions: TRUE
+  :use_test_preprocessor: TRUE
+  :use_auxiliary_dependencies: TRUE
+  :build_root: build
+  :release_build: TRUE
+  :test_file_prefix: test_
+
+:release_build:
+  :output: gdbServer.exe
+#  :use_assembly: FALSE
+
+:environment:
+
+:extension:
+  :executable: .exe
+
+:paths:
+  :test:
+    - +:test/**
+    - +:test/ARMSimulator/**
+    - +:test/GDB/**
+    - -:test/support
+  :source:
+    - src/**
+    - src/ARMSimulator/**
+    - src/GDB/**
+  :support:
+    - +:test/support
+
+:defines:
+  # in order to add common defines:
+  #  1) remove the trailing [] from the :common: section
+  #  2) add entries to the :common: section (e.g. :test: has TEST defined)
+  :commmon: &common_defines []
+  :test:
+    - *common_defines
+    - TEST=
+    #- CEXCEPTION_USE_CONFIG_FILE
+  :test_preprocess:
+    - *common_defines
+    - TEST=
+
+:cmock:
+  :mock_prefix: mock_
+  :when_no_prototypes: :warn
+  :enforce_strict_ordering: TRUE
+  :plugins:
+    - :ignore
+    - :callback
+  :treat_as:
+    uint8:    HEX8
+    uint16:   HEX16
+    uint32:   UINT32
+    int8:     INT8
+    bool:     UINT8
+
+:tools:
+  :release_compiler:
+    :executable: gcc                  #exists in system search path
+    :name: 'gcc compiler'
+    :arguments:
+      - -c ${1}                       #source code input file (Ruby method call param list sub)
+      - -o ${2}                       #object file output (Ruby method call param list sub)
+      - -I src/GDB
+      - -I src/ARMSimulator
+      - -I src
+
+  :release_linker:
+    :executable: gcc                  #absolute file path
+    :name: 'gcc linker'
+    :arguments:
+      - ${1}                          #list of object files to link (Ruby method call param list sub)
+      - -lws2_32                      #link with winsock header
+      - -lm                           #link with math header
+      - -o ${2}                       #executable file output (Ruby method call param list sub)
+
+  :test_compiler:
+    :executable: gcc                    #exists in system search path
+    :name: 'gcc compiler'
+    :arguments:
+      - -c "${1}"                       #source code input file (Ruby method call param list sub)
+      - -o "${2}"                       #object file output (Ruby method call param list sub)
+      - -E
+      - -I"test"
+      - -I "vendor/ceedling/vendor/unity/src"
+      - -I "vendor/ceedling/vendor/cmock/src"
+      - -I "test/support"
+      - -I "src/GDB"
+      - -I "src/ARMSimulator"
+      - -I "src"
+
+  :test_linker:
+    :executable: gcc                    #absolute file path
+    :name: 'gcc linker'
+    :arguments:
+      - -l"ws2_32"                      #link with winsock header
+      - -l"m"                           #link with math header
+      - "${1}"                          #list of object files to link (Ruby method call param list sub)
+      - -o "${2}"                       #executable file output (Ruby method call param list sub)
+
+#:tools:
+# Ceedling defaults to using gcc for compiling, linking, etc.
+# As [:tools] is blank, gcc will be used (so long as it's in your system path)
+# See documentation to configure a given toolchain for use
+
+:plugins:
+  :load_paths:
+    - vendor/ceedling/plugins
+  :enabled:
+    - stdout_pretty_tests_report
+    - module_generator
+...
