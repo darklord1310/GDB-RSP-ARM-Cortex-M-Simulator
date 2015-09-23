@@ -77,7 +77,7 @@
 #include "CException.h"
 #include "RemoteSerialProtocol.h"
 #include "Thumb32bitsTable.h"
-#include "mock_Packet.h"
+#include "Packet.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"

@@ -196,6 +196,8 @@ void ConditionalBranchT1(uint32_t instruction)
         uint32_t afterSignExtend = signExtend(imm8AfterShift, 9);
         coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
       }
+      else
+        coreReg[PC] = coreReg[PC] + 2;
     }
     else
       SVC(instruction);

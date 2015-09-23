@@ -1290,10 +1290,52 @@ void initThumb32bitsLoadStoreDualTableBranch()
   for(k = 0; k <= 0b1111; k++)
   {
     dummy = setBits(dummy,k,3,0);
-    Thumb32LoadByteMemoryHints[dummy] = STREX;
+    Thumb32LoadStoreDualTableBranch[dummy] = STREX;
   }
-  
-  
+  //
+  dummy = 0b00100000;
+  for(j = 0; j < 2; j ++)
+  {
+    dummy = setBits(dummy,j,6,6);
+    for(k = 0; k <= 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,3,0);
+      Thumb32LoadStoreDualTableBranch[dummy] = STRDImmediate;
+    }
+  }
+  //
+  dummy = 0b10000000;
+  for(j = 0; j <= 0b11; j ++)
+  {
+    dummy = setBits(dummy,j,6,5);
+    for(k = 0; k <= 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,3,0);
+      Thumb32LoadStoreDualTableBranch[dummy] = STRDImmediate;
+    }
+  }
+  //
+  dummy = 0b00110000;
+  for(j = 0; j < 2; j ++)
+  {
+    dummy = setBits(dummy,j,6,6);
+    for(k = 0; k <= 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,3,0);
+      Thumb32LoadStoreDualTableBranch[dummy] = LDRDImmediate;
+    }
+  }
+  //
+  dummy = 0b10010000;
+  for(j = 0; j < 4; j ++)
+  {
+    dummy = setBits(dummy,j,6,5);
+    for(k = 0; k <= 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,3,0);
+      Thumb32LoadStoreDualTableBranch[dummy] = LDRDImmediate;
+    }
+  }
 }
 
 

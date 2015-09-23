@@ -884,7 +884,105 @@ void LDRSBT(uint32_t instruction)
 }
 
 
+/*Load Register Dual (immediate) Encoding T1
 
+  LDRD<c> <Rt>,<Rt2>,[<Rn>{,#+/-<imm8>}]
+  LDRD<c> <Rt>,<Rt2>,[<Rn>],#+/-<imm8>
+  LDRD<c> <Rt>,<Rt2>,[<Rn>,#+/-<imm8>]!
+
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1   1  1  0  1| 0  0| P  U  1  W  1|     Rn    |     Rt    |   Rt2   |      imm8     |
+
+  where:
+            <c><q>            See Standard assembler syntax fields on page A6-7.
+
+            <Rt>              Specifies the first source register.
+
+            <Rt2>             Specifies the second source register.
+
+            <Rn>              Specifies the base register. This register is allowed to be the SP.
+                              +/- Is + or omitted to indicate that the immediate offset is added to the base register value
+                              (add == TRUE), or – to indicate that the offset is to be subtracted (add == FALSE). Different
+                              instructions are generated for #0 and #-0.
+
+            <imm>             Specifies the immediate offset added to or subtracted from the value of <Rn> to form the
+                              address. Allowed values are multiples of 4 in the range 0-1020. For the offset addressing
+                              syntax, <imm> can be omitted, meaning an offset of 0.
+
+*/
+void LDRDImmediate(uint32_t instruction)
+{
+  uint32_t imm8 = getBits(instruction, 7, 0);
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t Rt2 = getBits(instruction,11,8);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t W = getBits(instruction,21,21);
+  uint32_t U = getBits(instruction,23,23);
+  uint32_t P = getBits(instruction,24,24);
+  uint32_t address;
+
+  if(U == 1)
+    address = coreReg[Rn] + (imm8 << 2);
+  else
+    address = coreReg[Rn] - (imm8 << 2);
+
+  int check = isOffPostOrPreIndex(P,W);
+
+  if(Rn == 0b1111)
+  {
+    LDRDLiteral(instruction);
+  }
+  else
+  {
+    if(inITBlock())
+    {
+      if( checkCondition(cond) )
+      {
+        if(check == OFFINDEX)
+        {
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+        }
+        else if(check == PREINDEX)
+        {
+          coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+          coreReg[Rn] = address;
+        }
+        else
+        {
+          coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+          coreReg[Rt2] = loadByteFromMemory(coreReg[Rn]+4, 4);
+          coreReg[Rn] = address;
+        }
+      }
+
+      shiftITState();
+    }
+    else
+    {
+      if(check == OFFINDEX)
+      {
+        coreReg[Rt] = loadByteFromMemory(address, 4);
+        coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+      }
+      else if(check == PREINDEX)
+      {
+        coreReg[Rt] = loadByteFromMemory(address, 4);
+        coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+        coreReg[Rn] = address;
+      }
+      else
+      {
+        coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+        coreReg[Rt2] = loadByteFromMemory(coreReg[Rn]+4, 4);
+        coreReg[Rn] = address;
+      }
+    }
+  }
+
+  coreReg[PC] += 4;
+}
 
 
 

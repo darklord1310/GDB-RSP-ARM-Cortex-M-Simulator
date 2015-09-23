@@ -2,10 +2,7 @@ int main(void)
 {
 	double abc = 2;
 
-	while(abc != 16)
-	{
-		abc = abc * 2;
-	}
+	abc = abc - 1;
 
 	return 0;
 }
