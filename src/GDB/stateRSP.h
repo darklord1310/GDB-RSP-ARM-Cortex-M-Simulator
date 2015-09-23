@@ -20,8 +20,8 @@
     along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef StateRSP_H
-#define StateRSP_H
+#ifndef stateRSP_H
+#define stateRSP_H
 
 #include "State.h"
 
