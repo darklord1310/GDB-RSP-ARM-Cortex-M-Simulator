@@ -484,7 +484,17 @@ void initThumb32Table()
       }
     }
   }
-  
+  //
+  dummy = 0b1100000110;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy,i,5,4);
+    for(j = 0; j <= 0b1; j++)
+    {
+      dummy = setBits(dummy,j,0,0);
+      Thumb32Table[dummy] = executeLoadHalfword;
+    }
+  }
 }
 
 
@@ -1337,5 +1347,35 @@ void initThumb32bitsLoadStoreDualTableBranch()
     }
   }
 }
+
+
+
+
+void initThumb32bitsLoadHalfword()
+{
+  
+  
+  
+  
+  
+  
+  
+  
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
