@@ -71,6 +71,7 @@ LoopFillZerobss:
 /* Call static constructors */
   //bl __libc_init_array
 /* Call the application's entry point.*/
+  mov   r5, #30
   bl  main
   bx  lr
 

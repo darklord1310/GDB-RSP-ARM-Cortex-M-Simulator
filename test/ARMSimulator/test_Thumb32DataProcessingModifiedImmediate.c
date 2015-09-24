@@ -171,6 +171,18 @@ void test_ANDImmediateT1_given_instruction_0xf00000ab_should_AND_0xab_with_R0_an
 }
 
 
+// AND r0 ,#0x80000000 (regression test)
+void test_ANDImmediateT1_given_instruction_0xf00000ab_should_AND_0x80000000_with_R0_and_place_it_into_R0()
+{
+  uint32_t instruction = 0xf0004000;
+  coreReg[0] = 0xabababab;
+
+  ARMSimulator(instruction);
+  TEST_ASSERT_EQUAL(0x80000000, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+}
+
+
 // ANDS r0 ,#-1 and affecting the flag register
 void test_ANDImmediateT1_given_instruction_0xf01030ff_should_AND_0xffffffff_with_R0_and_set_negative_flag()
 {
@@ -326,6 +338,24 @@ void test_BICImmediateT1_given_instruction_0xf0200101_should_AND_0xfe_with_R0_an
 }
 
 
+// BIC r0 ,#0x80000000 (regression test)
+void test_BICImmediateT1_given_instruction_0xf0204000_should_AND_0x7fffffff_with_R0_and_place_it_into_R0()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0204000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x2bababab, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
 // BICS r0 ,#-1 and affecting the flag register
 void test_BICImmediateT1_given_instruction_0xf03030ff_should_AND_0x0_with_R0_and_set_zero_flag()
 {
@@ -403,6 +433,24 @@ void test_ORRImmediateT1_given_instruction_0xf0400154_should_OR_0x54_with_R0_and
 
   TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
   TEST_ASSERT_EQUAL(0xabababff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// ORR r0 ,#0x80000000 (regression test)
+void test_ORRImmediateT1_given_instruction_0xf0404000_should_OR_0x80000000_with_R0_and_place_it_into_R0()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0404000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }
@@ -489,6 +537,24 @@ void test_ORNImmediateT1_given_instruction_0xf0600154_should_OR_0xffffffab_with_
 }
 
 
+// ORN r0 ,#0x80000000 (regression test)
+void test_ORNImmediateT1_given_instruction_0xf0604000_should_OR_0x7fffffff_with_R0_and_place_it_into_R0()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0604000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xffffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
 // ORNS r0 ,#-1 and affecting the flag register
 void test_ORNImmediateT1_given_instruction_0xf07030ff_should_OR_0x0_with_R0_and_set_negative_flag()
 {
@@ -569,6 +635,24 @@ void test_MVNImmediateT1_given_instruction_0xf06f07ab_should_move_0xffffff54_int
 }
 
 
+// MVN r0 ,#0x80000000 (regression test)
+void test_MVNImmediateT1_given_instruction_0xf06f4000_should_move_0x7fffffff_to_R0()
+{
+  coreReg[0] = 0xabababab;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf06f4000, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7fffffff, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
 // MVNS r5, #-1 and not affecting the flag register
 void test_MVNImmediateT1_given_instruction_0xf07f35ff_should_move_0x0_into_R5_and_update_zero_flag()
 {
@@ -641,6 +725,24 @@ void test_EORImmediateT1_given_instruction_0xf0800154_should_XOR_0x54_with_R0_an
 
   TEST_ASSERT_EQUAL(0xabababab, coreReg[0]);
   TEST_ASSERT_EQUAL(0xabababff, coreReg[1]);
+  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
+}
+
+
+// EOR.W r3, r3, #0x80000000 (regression test)
+void test_EORImmediateT1_given_instruction_0xf0834300_should_XOR_0x80000000_with_R3_and_place_it_into_R3()
+{
+  coreReg[3] = 0x3ff00000;
+
+  //create test fixture
+  writeInstructionToMemoryGivenByAddress(0xf0834300, 0x0800000C);
+  coreReg[PC] = 0x0800000C;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xbff00000, coreReg[3]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000010, coreReg[PC]);
 }

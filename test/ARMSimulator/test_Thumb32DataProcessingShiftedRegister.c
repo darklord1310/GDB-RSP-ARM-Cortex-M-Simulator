@@ -2049,7 +2049,7 @@ void test_ADDSPRegisterT3_given_r1_0x80000000_should_get_r0_0x90000000(void)
 
   armStep();
 
-  TEST_ASSERT_EQUAL(0xa0001000, coreReg[SP]);
+  TEST_ASSERT_EQUAL(0xa001fffc, coreReg[SP]);
   TEST_ASSERT_EQUAL(0x81000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
 }

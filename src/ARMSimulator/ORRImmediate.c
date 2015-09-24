@@ -60,7 +60,7 @@ void ORRImmediateT1(uint32_t instruction)
     uint32_t temp = (i << 3 ) | imm3;
     uint32_t modifyControl = (temp << 1) | bit7;
 
-    uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8, 1);
+    uint32_t ModifiedConstant = ModifyImmediateConstant(modifyControl, imm8, statusFlag);
 
     if(inITBlock())
     {
