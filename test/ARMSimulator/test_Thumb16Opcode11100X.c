@@ -103,13 +103,13 @@ void tearDown(void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Unconditional branch
 
-  
+
 //branch backward
 // test B label
 void test_unconditionalBranch_given_PC_0x0800001a_should_get_PC_is_0x0800000e_xPSR_unchanged(void)
 {
   uint32_t instruction = 0xE7F80000;
-  
+
   coreReg[PC] = 0x0800001a;
   ARMSimulator(instruction);
 
@@ -124,7 +124,7 @@ void test_unconditionalBranch_given_PC_0x0800001a_should_get_PC_is_0x0800000e_xP
 void test_unconditionalBranch_given_PC_0x0800000e_should_get_PC_is_0x0800001c_xPSR_unchanged(void)
 {
   uint32_t instruction = 0xE0050000;
-  
+
   coreReg[PC] = 0x0800000e;
   ARMSimulator(instruction);
 
@@ -138,7 +138,7 @@ void test_unconditionalBranch_given_last_in_IT_block_should_not_throw_error()
 {
   CEXCEPTION_T err;
   uint32_t instruction = 0xe0010000;
-  
+
   coreReg[PC] = 0x08000008;
 
   Try
@@ -162,7 +162,7 @@ void test_unconditionalBranch_given_not_last_in_IT_block_should_throw_error()
 {
   CEXCEPTION_T err;
   uint32_t instruction = 0xe0010000;
-  
+
   coreReg[PC] = 0x0800000c;
 
   Try
@@ -185,10 +185,10 @@ void test_unconditionalBranch_should_branch_to_itself()
 {
   coreReg[PC] = 0x080001b0;
   uint32_t instruction = 0xe7fe0000;
-  
+
   ARMSimulator(instruction);
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL( 0x080001b0, coreReg[PC]);
 }
 
@@ -196,13 +196,13 @@ void test_unconditionalBranch_should_branch_to_itself()
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Conditional branch
 
-  
+
 //branch forward
 // test BCC label
 void test_ConditionalBranch_given_PC_0x0800000c_should_get_PC_is_0x08000012_xPSR_unchanged(void)
 {
   uint32_t instruction = 0xd3010000;
-  
+
   resetCarryFlag();
   coreReg[PC] = 0x0800000c;
   ARMSimulator(instruction);
@@ -213,16 +213,32 @@ void test_ConditionalBranch_given_PC_0x0800000c_should_get_PC_is_0x08000012_xPSR
 
 
 
+//branch forward
+// test BLE 0x0800029e  (regression test)
+void test_ConditionalBranch_given_PC_0x08000282_should_get_PC_is_0x0800029e_xPSR_unchanged(void)
+{
+  uint32_t instruction = 0xdd0c0000;
+
+  coreReg[xPSR] = 0x81000000;
+  coreReg[PC] = 0x08000282;
+  ARMSimulator(instruction);
+
+  TEST_ASSERT_EQUAL(0x0800029e, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x81000000,coreReg[xPSR]);
+}
+
+
+
 //branch backward
 // test BCS label
 void test_ConditionalBranch_given_PC_0x0800001e_should_get_PC_is_0x08000008_xPSR_0x21000000(void)
 {
   uint32_t instruction = 0xd2f30000;
-  
+
   setCarryFlag();
   coreReg[PC] = 0x0800001e;
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x08000008, coreReg[PC]);
   TEST_ASSERT_EQUAL(0x21000000,coreReg[xPSR]);
 }
