@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -23,6 +23,7 @@
 
 
 #include "POP.h"
+#include "LDRRegister.h"
 #include "LoadAndWriteMemory.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
@@ -35,25 +36,25 @@
 #include "PUSH.h"
 #include "CException.h"
 #include "ErrorSignal.h"
-
+#include "ExceptionObject.h"
 
 /*Pop Multiple Registers Encoding T1
     POP<c> <registers>
-      
+
   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
   |1  0  1  1| 1| 1  0|P|       register_list    |                unused               |
-  
+
 where:
           <c><q>            See Standard assembler syntax fields on page A6-7.
-          
-          <registers>       Is a list of one or more registers, separated by commas and surrounded by 
+
+          <registers>       Is a list of one or more registers, separated by commas and surrounded by
                             { and }. It specifies the set of registers to be stored. The registers
                             are stored in sequence, the lowest-numbered register to the lowest memory
                             address, through to the highest-numbered register to the highest memory address.
-                            
+
           The SP cannot be in the list.
           If the PC is in the list, the LR must not be in the list.
-                            
+
 */
 void POPT1(uint32_t instruction)
 {
@@ -61,30 +62,36 @@ void POPT1(uint32_t instruction)
   uint32_t register_list = getBits(instruction, 23, 16);
   uint16_t temp = P << 7;
   uint16_t registerlist = ( temp << 8 ) | register_list;
-  
+
   if( bitCount(register_list) < 1)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
-  
-  
+
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      uint32_t address = coreReg[SP];     
+      uint32_t address = coreReg[SP];
       loadMultipleRegisterFromMemory(address, registerlist, 1, SP, 16);
     }
+    else
+    {
+      if(P == 1)
+        coreReg[PC] += 2;
+    }
+
     shiftITState();
-    coreReg[PC] += 2;
   }
   else
   {
-    uint32_t address = coreReg[SP];      
+    uint32_t address = coreReg[SP];
     loadMultipleRegisterFromMemory(address, registerlist, 1, SP, 16);
-    coreReg[PC] += 2;
   }
+
+  if(P != 1)
+    coreReg[PC] += 2;
 }
 
 
@@ -97,21 +104,21 @@ void POPT1(uint32_t instruction)
 
 /*Pop Multiple Registers Encoding T2
     POP<c> <registers>
-      
+
   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
   |1  1  1  0  1| 0  0| 0  1  0| 1| 1| 1  1  0  1|P |M | 0|        register_list       |
-  
+
 where:
           <c><q>            See Standard assembler syntax fields on page A6-7.
-          
-          <registers>       Is a list of one or more registers, separated by commas and surrounded by 
+
+          <registers>       Is a list of one or more registers, separated by commas and surrounded by
                             { and }. It specifies the set of registers to be stored. The registers
                             are stored in sequence, the lowest-numbered register to the lowest memory
                             address, through to the highest-numbered register to the highest memory address.
-                            
+
           The SP cannot be in the list.
           If the PC is in the list, the LR must not be in the list.
-                            
+
 */
 void POPT2(uint32_t instruction)
 {
@@ -119,20 +126,20 @@ void POPT2(uint32_t instruction)
   uint32_t P = getBits(instruction, 15, 15);
   uint32_t registerList = getBits(instruction, 12, 0);
   registerList = ( ( (P << 1) | M) << 13) | registerList;
-  
+
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {  
+    {
       loadMultipleRegisterFromMemory(coreReg[SP], registerList, 1, SP, 16);
     }
     shiftITState();
   }
   else
-  {  
+  {
     loadMultipleRegisterFromMemory(coreReg[SP], registerList, 1, SP, 16);
   }
-  
+
   if(P != 1)
     coreReg[PC] += 4;
 }

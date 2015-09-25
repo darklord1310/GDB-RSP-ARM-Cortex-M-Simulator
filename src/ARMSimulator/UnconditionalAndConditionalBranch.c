@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include "CException.h"
 #include "SVC.h"
-
+#include "ExceptionObject.h"
 
 /*Branch causes a branch to a target address.
 
@@ -74,6 +74,12 @@ void UnconditionalBranchT1(uint32_t instruction)
         coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
         coreReg[PC] = coreReg[PC] & 0xfffffffe;
       }
+      else
+      {
+        coreReg[PC] = coreReg[PC] + 2;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      }
+
       shiftITState();
     }
     else
@@ -85,8 +91,8 @@ void UnconditionalBranchT1(uint32_t instruction)
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 
@@ -156,8 +162,8 @@ void UnconditionalBranchT2(uint32_t instruction)
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 
@@ -216,8 +222,8 @@ void ConditionalBranchT1(uint32_t instruction)
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 
@@ -283,8 +289,8 @@ void ConditionalBranchT2(uint32_t instruction)
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 

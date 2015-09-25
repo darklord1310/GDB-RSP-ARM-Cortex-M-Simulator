@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "ExceptionObject.h"
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"

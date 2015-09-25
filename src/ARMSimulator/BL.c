@@ -29,6 +29,7 @@
 #include "ErrorSignal.h"
 #include <stdio.h>
 #include "CException.h"
+#include "ExceptionObject.h"
 #include "SVC.h"
 
 
@@ -89,7 +90,8 @@ void BLT1(uint32_t instruction)
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    // placePCtoVectorTable(UsageFault);
+    // Throw(UsageFault);
+    ThrowError();
   }
 }

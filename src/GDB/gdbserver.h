@@ -24,7 +24,7 @@
 #define gdbserver_H
 
 #define LOCAL_HOST_ADD  "127.0.0.1"
-#define DEFAULT_PORT    2010
+#define DEFAULT_PORT    2009
 #define PACKET_SIZE     0x3fff
 
 #ifdef  __MINGW32__

@@ -35,7 +35,7 @@
 #include "ErrorSignal.h"
 #include "ADR.h"
 #include "LoadAndWriteMemory.h"
-
+#include "ExceptionObject.h"
 
 /*Load Register(literal) Encoding T1
  *
@@ -160,16 +160,16 @@ void LDRLiteralT2(uint32_t instruction)
           coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
         else
         {
-          placePCtoVectorTable(UsageFault);
-          Throw(UsageFault);
+          //placePCtoVectorTable(UsageFault);
+          ThrowError();
         }
       }
       shiftITState();
     }
     else
     {
-      placePCtoVectorTable(UsageFault);
-      Throw(UsageFault);
+      //placePCtoVectorTable(UsageFault);
+      ThrowError();
     }
   }
   else
@@ -351,8 +351,8 @@ void LDRDLiteral(uint32_t instruction)
 
   if(getBits(coreReg[PC], 1, 0) != 0b00)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 
   if(U == 1)

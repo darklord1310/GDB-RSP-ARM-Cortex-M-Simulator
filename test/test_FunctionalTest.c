@@ -93,6 +93,7 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
+#include "ExceptionObject.h"
 
 
 extern char *targetCortexM4_XML;

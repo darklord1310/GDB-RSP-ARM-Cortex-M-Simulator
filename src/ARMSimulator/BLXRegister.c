@@ -31,6 +31,7 @@
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include <stdio.h>
+#include "ExceptionObject.h"
 #include "ErrorSignal.h"
 
 /*Branch with Link and Exchange
@@ -80,14 +81,14 @@ void BLXRegister(uint32_t instruction)
     }
     else
     {
-      placePCtoVectorTable(UsageFault);
-      Throw(UsageFault);
+      //placePCtoVectorTable(UsageFault);
+      ThrowError();
     }
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 

@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "ExceptionObject.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
 #include "SignedAndUnsignedSaturate.h"

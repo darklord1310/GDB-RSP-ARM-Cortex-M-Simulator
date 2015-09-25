@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "ExceptionObject.h"
 #include "SBCImmediate.h"
 #include "MOVT.h"
 #include "SignedAndUnsignedSaturate.h"
@@ -87,6 +88,7 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
+#include "ExceptionObject.h"
 
 
 void setUp(void)
