@@ -39,7 +39,7 @@ Reset_Handler:
   //ldr   sp, =_estack       /* set stack pointer */
  
 /* Copy the data segment initializers from flash to SRAM */  
-/*movs  r1, #0
+/*  movs  r1, #0
   b  LoopCopyDataInit
 
 CopyDataInit:
@@ -58,7 +58,7 @@ LoopCopyDataInit:
   b  LoopFillZerobss */
 /* Zero fill the bss segment. */  
 FillZerobss:
-/*movs  r3, #0
+/*  movs  r3, #0
   str  r3, [r2], #4
     
 LoopFillZerobss:
@@ -71,8 +71,8 @@ LoopFillZerobss:
 /* Call static constructors */
   //bl __libc_init_array
 /* Call the application's entry point.*/
-  mov   r5, #30
   bl  main
+  mov r5, #30
   bx  lr
 
   /* ldr	r0, =mydata

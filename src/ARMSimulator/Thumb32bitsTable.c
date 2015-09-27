@@ -484,7 +484,17 @@ void initThumb32Table()
       }
     }
   }
-  
+  //
+  dummy = 0b1100000110;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy,i,5,4);
+    for(j = 0; j <= 0b1; j++)
+    {
+      dummy = setBits(dummy,j,0,0);
+      Thumb32Table[dummy] = executeLoadHalfword;
+    }
+  }
 }
 
 
@@ -1337,5 +1347,79 @@ void initThumb32bitsLoadStoreDualTableBranch()
     }
   }
 }
+
+
+
+
+void initThumb32bitsLoadHalfword()
+{
+  uint32_t dummy;
+  int i,j,k,h;
+  //
+  dummy = 0b0100000000000000;
+  for(j = 0; j <= 0b111111; j ++)
+  {
+    dummy = setBits(dummy,j,13,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);        
+        Thumb32LoadHalfword[dummy] = LDRHImmediateT2;
+      }
+    }
+  }
+  
+  dummy = 0b0010010000000000;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy,i,12,11);
+    for(j = 0; j <= 0b11; j ++)
+    {
+      dummy = setBits(dummy,j,9,8);
+      for(k = 0; k < 0b1111; k++)
+      {
+        dummy = setBits(dummy,k,7,4);
+        for(h = 0; h < 0b1111; h++)
+        {
+          dummy = setBits(dummy,h,3,0);
+          Thumb32LoadHalfword[dummy] = LDRHImmediateT3;
+        }
+      }
+    }
+  }
+  
+  dummy = 0b0100000000000000;
+  for(j = 0; j <= 0b111111; j ++)
+  {
+    dummy = setBits(dummy,j,13,8);
+    for(k = 0; k < 0b1111; k++)
+    {
+      dummy = setBits(dummy,k,7,4);
+      for(h = 0; h < 0b1111; h++)
+      {
+        dummy = setBits(dummy,h,3,0);
+        Thumb32LoadHalfword[dummy] = LDRHImmediateT3;
+      }
+    }
+  }
+  //
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,8 +1,8 @@
 int main(void)
 {
-	double abc = 42.e12;
+	double abc = 40.4567;
 
-  abc = abc * 2.56789;
+  abc = abc / -8.25;
 
 	return 0;
 }

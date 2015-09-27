@@ -115,7 +115,7 @@ void test_LDRBImmediateT2_given_0xf8910000_should_get_R0_is_0x000000f0()
   coreReg[1] = 0x0800001b;
   writeInstructionToMemoryGivenByAddress(0xf8910000, 0x08000046);  // LDRB.W r0,[r1,#0]
   coreReg[PC] = 0x08000046;
-  
+
   //test
   armStep();
   

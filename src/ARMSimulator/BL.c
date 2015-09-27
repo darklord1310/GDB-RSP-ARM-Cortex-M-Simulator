@@ -77,6 +77,8 @@ void BLT1(uint32_t instruction)
         coreReg[PC] = coreReg[PC] + imm32 + 4;
         coreReg[PC] = coreReg[PC] & 0xfffffffe;
       }
+      else
+        coreReg[PC] += 4;
 
       shiftITState();
     }

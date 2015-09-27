@@ -72,6 +72,7 @@ void initializeAllTable()
   initThumb32StoreSingleDataItem();
   initThumb32LoadByteMemoryHints();
   initThumb32bitsLoadStoreDualTableBranch();
+  initThumb32bitsLoadHalfword();
   initThumb32Table();
 }
 
@@ -302,6 +303,18 @@ void executeLoadStoreDualTableBranch(uint32_t instruction)
   (*Thumb32LoadStoreDualTableBranch[opcode])(instruction);
 }
 
+
+void executeLoadHalfword(uint32_t instruction)
+{
+  uint32_t op1 = getBits(instruction,24,23);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t op2 = getBits(instruction,11,6);
+  uint32_t opcode = (((((op1 << 6) | op2) << 4) | Rn) << 4 ) | Rt;
+ 
+  (*Thumb32LoadHalfword[opcode])(instruction);
+  
+}
 
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
