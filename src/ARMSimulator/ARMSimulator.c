@@ -311,7 +311,7 @@ void executeLoadHalfword(uint32_t instruction)
   uint32_t Rt = getBits(instruction,15,12);
   uint32_t op2 = getBits(instruction,11,6);
   uint32_t opcode = (((((op1 << 6) | op2) << 4) | Rn) << 4 ) | Rt;
-  
+ 
   (*Thumb32LoadHalfword[opcode])(instruction);
   
 }
