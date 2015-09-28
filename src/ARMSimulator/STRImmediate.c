@@ -34,7 +34,7 @@
 #include "ErrorSignal.h"
 #include "ADR.h"
 #include "LoadAndWriteMemory.h"
-
+#include "ExceptionObject.h"
 
 
 /*Store Register (immediate) Encoding T1
@@ -177,8 +177,8 @@ void STRBImmediateT2(uint32_t instruction)
 
   if(Rn == 0b1111 || Rt == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 
   if(inITBlock())
@@ -244,8 +244,8 @@ void STRBImmediateT3(uint32_t instruction)
 
   if(check == UNDEFINED || Rn == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 
   if(inITBlock())
@@ -443,8 +443,8 @@ void STRHImmediateT3(uint32_t instruction)
 
   if(check == UNDEFINED || Rn == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 
   if(inITBlock())
@@ -636,8 +636,8 @@ void STRImmediateT4(uint32_t instruction)
 
   if(check == UNDEFINED || Rn == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 
   if(inITBlock())

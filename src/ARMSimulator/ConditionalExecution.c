@@ -85,7 +85,7 @@ int checkCondition(uint32_t condition)
                 return 1;
               else
                 return 0;
-    case LS : if( !isCarry() && isZero() )
+    case LS : if( !isCarry() || isZero() )
                 return 1;
               else
                 return 0;
@@ -101,7 +101,7 @@ int checkCondition(uint32_t condition)
                 return 1;
               else 
                 return 0;
-    case LE : if( isZero() && (getBits(coreReg[xPSR],31,31) != getBits(coreReg[xPSR],28,28) ) )
+    case LE : if( isZero() || (getBits(coreReg[xPSR],31,31) != getBits(coreReg[xPSR],28,28) ) )
                 return 1;
               else 
                 return 0;

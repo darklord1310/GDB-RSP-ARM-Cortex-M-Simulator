@@ -39,4 +39,6 @@ Exception *createException(char *msg, int errorCode, ExceptionType exceptionType
 void freeException(Exception *e);
 void dumpException(Exception *e);
 
+void ThrowError();
+
 #endif // ExceptionObject_H

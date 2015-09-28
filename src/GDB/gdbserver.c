@@ -103,7 +103,7 @@ void listenSocket(SOCKET *sock)
 /****************Accept connections.****************/
 void waitingForConnection(SOCKET *sock)
 {
-    printf( "5. Waiting for incoming connections..." );
+    printf( "5. Waiting on %s:%d...................", LOCAL_HOST_ADD, DEFAULT_PORT );
     SOCKET acceptSocket;
     while (1)
     {

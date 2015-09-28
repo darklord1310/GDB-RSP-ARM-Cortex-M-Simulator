@@ -85,6 +85,7 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
+#include "ExceptionObject.h"
 
 
 void setUp(void)

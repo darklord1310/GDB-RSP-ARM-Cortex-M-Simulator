@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include "CException.h"
 #include "SVC.h"
-
+#include "ExceptionObject.h"
 
 /*Branch causes a branch to a target address.
 
@@ -72,19 +72,27 @@ void UnconditionalBranchT1(uint32_t instruction)
       {
         uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
         coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
       }
+      else
+      {
+        coreReg[PC] = coreReg[PC] + 2;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      }
+
       shiftITState();
     }
     else
     {
       uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
       coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
+      coreReg[PC] = coreReg[PC] & 0xfffffffe;
     }
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 
@@ -139,17 +147,23 @@ void UnconditionalBranchT2(uint32_t instruction)
     if( inITBlock() )
     {
       if( checkCondition(cond) )
+      {
         coreReg[PC] = coreReg[PC] + imm32 + 4;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      }
 
       shiftITState();
     }
     else
+    {
       coreReg[PC] = coreReg[PC] + imm32 + 4;
+      coreReg[PC] = coreReg[PC] & 0xfffffffe;
+    }
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 
@@ -195,17 +209,21 @@ void ConditionalBranchT1(uint32_t instruction)
       {
         uint32_t afterSignExtend = signExtend(imm8AfterShift, 9);
         coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
       }
       else
+      {
         coreReg[PC] = coreReg[PC] + 2;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      }
     }
     else
       SVC(instruction);
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 
@@ -259,14 +277,20 @@ void ConditionalBranchT2(uint32_t instruction)
   if( !( inITBlock() ) && cond != 0b1110 )
   {
       if( checkCondition(cond) )
+      {
         coreReg[PC] = coreReg[PC] + imm32 + 4;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      }
       else
+      {
         coreReg[PC] = coreReg[PC] + 4;
+        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      }
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
 }
 

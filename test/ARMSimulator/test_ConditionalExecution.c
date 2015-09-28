@@ -381,13 +381,13 @@ void test_checkCondition_given_1101_and_possiblilty2_should_return_1(void)
 }
 
 //test case for LE
-// possibility 3: N is 0, OV is 1, Z is 0
+// possibility 3: N is 0, OV is 0, Z is 0
 void test_checkCondition_given_1101_and_possiblilty3_should_return_0(void)
 {
   //create test case
   cond = 0b1101;
   resetNegativeFlag();
-  setOverflowFlag();
+  resetOverflowFlag();
   resetZeroFlag();
  
 	int result = checkCondition(cond);

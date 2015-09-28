@@ -35,6 +35,7 @@
 #include "ErrorSignal.h"
 #include "LoadAndWriteMemory.h"
 #include "ShiftOperation.h"
+#include "ExceptionObject.h"
 
 /*Store Register (register) Encoding T1
  * 
@@ -114,8 +115,8 @@ void STRRegisterT2(uint32_t instruction)
   
   if(Rn == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
   
   if(inITBlock())
@@ -210,8 +211,8 @@ void STRHRegisterT2(uint32_t instruction)
   
   if(Rn == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
   
   if(inITBlock())
@@ -306,8 +307,8 @@ void STRBRegisterT2(uint32_t instruction)
   
   if(Rn == 0b1111)
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    //placePCtoVectorTable(UsageFault);
+    ThrowError();
   }
   
   if(inITBlock())

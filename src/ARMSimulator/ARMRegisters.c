@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -27,6 +27,8 @@
 #include "assert.h"
 #include "getMask.h"
 
+#define   SP_INIT_VALUE   0x2001fffc    // for Coocox, keil is init to 0x20001000
+#define   LR_INIT_VALUE   0xffffffff
 
 /*
   This function will initialize all the R0 to R15 to zero
@@ -71,7 +73,9 @@ void initCoreRegister()
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i == SP)
-      coreReg[i] = 0x20001000;    
+      coreReg[i] = SP_INIT_VALUE;
+    else if(i == LR)
+      coreReg[i] = LR_INIT_VALUE;
     else if(i == 16)
       coreReg[i] = 0x01000000;
     else

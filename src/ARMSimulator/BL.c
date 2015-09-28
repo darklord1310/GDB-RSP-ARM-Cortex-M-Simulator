@@ -29,6 +29,7 @@
 #include "ErrorSignal.h"
 #include <stdio.h>
 #include "CException.h"
+#include "ExceptionObject.h"
 #include "SVC.h"
 
 
@@ -76,6 +77,8 @@ void BLT1(uint32_t instruction)
         coreReg[PC] = coreReg[PC] + imm32 + 4;
         coreReg[PC] = coreReg[PC] & 0xfffffffe;
       }
+      else
+        coreReg[PC] += 4;
 
       shiftITState();
     }
@@ -89,7 +92,8 @@ void BLT1(uint32_t instruction)
   }
   else
   {
-    placePCtoVectorTable(UsageFault);
-    Throw(UsageFault);
+    // placePCtoVectorTable(UsageFault);
+    // Throw(UsageFault);
+    ThrowError();
   }
 }

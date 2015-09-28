@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "SBCImmediate.h"
+#include "ExceptionObject.h"
 #include "MOVT.h"
 #include "SignedAndUnsignedSaturate.h"
 #include "SignedAndUnsignedBitFieldExtract.h"
@@ -1235,6 +1236,7 @@ void test_POPT2_should_get_the_expected_result(void)
   {
     writeInstructionToMemoryGivenByAddress(0xe8bd1ffe, 0x08000046);  // pop {r1-r12}
     coreReg[PC] = 0x08000046;
+    coreReg[SP] = 0x20001000;
     armStep();
     
     TEST_ASSERT_EQUAL( 0x0800004a, coreReg[PC]);

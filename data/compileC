@@ -1,2 +1,2 @@
-arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g2 -Wall -O0 -c -DSTM32F429ZI -DSTM32F429xx main.c startup_stm32f429xx.s
-arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g2 -Wl,-Map=Ccode.map -O0 -Wl,--gc-sections -Wl,-Tstm32f429zi_flash.ld -g -o Ccode.elf startup_stm32f429xx.o main.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -Wall -O0 -c -DSTM32F429ZI -DSTM32F429xx main.c startup_stm32f429xx.s
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -g -Wl,-Map=Ccode.map -O0 -Wl,--gc-sections -Wl,-Tstm32f429zi_flash.ld -g -o Ccode.elf startup_stm32f429xx.o main.o

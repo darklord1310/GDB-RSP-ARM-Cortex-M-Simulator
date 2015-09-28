@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 #include <malloc.h>
+#include "ErrorSignal.h"
+#include "ARMRegisters.h"
 #include "ExceptionObject.h"
 
 Exception *createException(char *msg, int errorCode, ExceptionType exceptionType)
@@ -41,4 +43,11 @@ void freeException(Exception *e)
 void dumpException(Exception *e)
 {
     printf("%s (%c%d)\n", e->msg, e->exceptionType, e->errorCode);
+}
+
+void ThrowError()
+{
+  printf("PC: %x\n", coreReg[PC]);
+  placePCtoVectorTable(UsageFault);
+  Throw(UsageFault);
 }

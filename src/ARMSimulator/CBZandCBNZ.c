@@ -59,6 +59,9 @@ void CBNZorCBZ(uint32_t instruction)
   uint32_t imm32 = ( ( i << 5 ) | imm5 ) << 1 ;
 
   if(   ( op == 0 && coreReg[Rn] == 0)   ||  ( op == 1 && coreReg[Rn] != 0)     )
+  {
     coreReg[PC] = coreReg[PC] + imm32 + 4;
+    coreReg[PC] = coreReg[PC] & 0xfffffffe;
+  }
   
 }

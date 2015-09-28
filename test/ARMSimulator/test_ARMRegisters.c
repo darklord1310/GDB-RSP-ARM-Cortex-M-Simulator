@@ -20,11 +20,14 @@ void test_initCoreRegister_reset_the_coreReg_correctly(void)
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i == SP)
-      TEST_ASSERT_EQUAL(0x20001000, coreReg[i]);
+      TEST_ASSERT_EQUAL(0x2001fffc, coreReg[i]);
+    else if(i == LR)
+      TEST_ASSERT_EQUAL(0xffffffff, coreReg[i]);
     else if(i == xPSR)
       TEST_ASSERT_EQUAL(0x01000000, coreReg[i]);
     else
       TEST_ASSERT_EQUAL(0x0, coreReg[i]);
+
   }
 
   for(i = 0; i < NUM_OF_FPUD_Register; i++)

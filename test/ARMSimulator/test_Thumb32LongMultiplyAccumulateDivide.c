@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "ExceptionObject.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"
@@ -111,10 +112,10 @@ void test_instruction_given_0xfb812300_should_get_R2_is_0x00000001_R3_0x00000000
   coreReg[1] = 0xffffffff;
   writeInstructionToMemoryGivenByAddress(0xfb812300, 0x08000040);  // SMULL  r2,r3,r1,r0
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
-  
+
   TEST_ASSERT_EQUAL(0x00000000, coreReg[3]);
   TEST_ASSERT_EQUAL(0x00000001, coreReg[2]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
@@ -131,10 +132,10 @@ void test_instruction_given_0xfb812300_should_get_R2_is_0xf7ffffb1_R3_0x00000000
   coreReg[1] = 0xffffffff;
   writeInstructionToMemoryGivenByAddress(0xfb812300, 0x08000040);  // SMULL  r2,r3,r1,r0
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
-  
+
   TEST_ASSERT_EQUAL(0xffffffff, coreReg[3]);
   TEST_ASSERT_EQUAL(0xf7ffffb1, coreReg[2]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
@@ -146,8 +147,8 @@ void test_instruction_given_0xfb812300_should_get_R2_is_0xf7ffffb1_R3_0x00000000
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //UMULL T1
-  
-  
+
+
 //test UMULL  r2,r3,r1,r0
 void test_instruction_given_0xfba12300_should_get_R2_is_0x00000001_R3_0xfffffffe()
 {
@@ -156,7 +157,7 @@ void test_instruction_given_0xfba12300_should_get_R2_is_0x00000001_R3_0xfffffffe
   coreReg[1] = 0xffffffff;
   writeInstructionToMemoryGivenByAddress(0xfba12300, 0x0800003e);  // UMULL  r2,r3,r1,r0
   coreReg[PC] = 0x0800003e;
-  
+
   //test
   armStep();
 
@@ -175,7 +176,7 @@ void test_instruction_given_0xfba12300_should_get_R2_is_0xf7ffffb1_R3_0x0800004e
   coreReg[1] = 0xffffffff;
   writeInstructionToMemoryGivenByAddress(0xfba12300, 0x0800003e);  // UMULL  r2,r3,r1,r0
   coreReg[PC] = 0x0800003e;
-  
+
   //test
   armStep();
 
@@ -184,8 +185,8 @@ void test_instruction_given_0xfba12300_should_get_R2_is_0xf7ffffb1_R3_0x0800004e
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x0800004e, coreReg[3]);
 }
-  
-  
+
+
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //SMLAL T1
 
@@ -199,7 +200,7 @@ void test_instruction_given_0xfbc12300_should_get_R2_is_0x2b3332e4_R3_0x44444444
   coreReg[3] = 0x44444444;
   writeInstructionToMemoryGivenByAddress(0xfbc12300, 0x08000040);  // SMLAL  r2,r3,r1,r0
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
 
@@ -208,8 +209,8 @@ void test_instruction_given_0xfbc12300_should_get_R2_is_0x2b3332e4_R3_0x44444444
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x44444444, coreReg[3]);
 }
-  
-  
+
+
 //test SMLAL  r2,r3,r1,r0
 void test_instruction_given_0xfbc12300_should_get_R2_is_0x33333334_R3_0x44444444()
 {
@@ -220,7 +221,7 @@ void test_instruction_given_0xfbc12300_should_get_R2_is_0x33333334_R3_0x44444444
   coreReg[3] = 0x44444444;
   writeInstructionToMemoryGivenByAddress(0xfbc12300, 0x08000040);  // SMLAL  r2,r3,r1,r0
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
 
@@ -233,7 +234,7 @@ void test_instruction_given_0xfbc12300_should_get_R2_is_0x33333334_R3_0x44444444
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //UMLAL T1
-  
+
 //test UMLAL  r2,r3,r1,r0
 void test_instruction_given_0xfbe12300_should_get_R2_is_0x33333334_R3_0x44444442()
 {
@@ -244,7 +245,7 @@ void test_instruction_given_0xfbe12300_should_get_R2_is_0x33333334_R3_0x44444442
   coreReg[3] = 0x44444444;
   writeInstructionToMemoryGivenByAddress(0xfbe12300, 0x08000040);  // UMLAL  r2,r3,r1,r0
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
 
@@ -253,8 +254,8 @@ void test_instruction_given_0xfbe12300_should_get_R2_is_0x33333334_R3_0x44444442
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x44444442, coreReg[3]);
 }
-  
-  
+
+
 
 //test UMLAL  r2,r3,r1,r0
 void test_instruction_given_0xfbe12300_should_get_R2_is_0x2b3332e4_R3_0x4c444493()
@@ -266,7 +267,7 @@ void test_instruction_given_0xfbe12300_should_get_R2_is_0x2b3332e4_R3_0x4c444493
   coreReg[3] = 0x44444444;
   writeInstructionToMemoryGivenByAddress(0xfbe12300, 0x08000040);  // UMLAL  r2,r3,r1,r0
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
 
@@ -275,6 +276,7 @@ void test_instruction_given_0xfbe12300_should_get_R2_is_0x2b3332e4_R3_0x4c444493
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL(0x4c444493, coreReg[3]);
 }
-  
-  
+
+
+
 
