@@ -1,2 +1,7 @@
 1) implement the function AddWithCarry for easier implementation in the future
 2) breakpoint, SVC and some instructions inside ITandHints
+3) re-evaluate the POPT2, LDMIA/LDMEA
+4) Complete the halfword group and load dual group
+5) Complete the signed and unsigned divide
+6) Add the handling for undefined instructions
+7) Complete the 16bits breakpoint instruction

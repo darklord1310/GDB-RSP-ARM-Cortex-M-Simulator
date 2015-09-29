@@ -122,7 +122,7 @@ void LDRImmediateT1(uint32_t instruction)
 
 */
 void LDRImmediateT2(uint32_t instruction)
-{
+{ 
   uint32_t imm8 = getBits(instruction,23,16);
   uint32_t Rt   = getBits(instruction,26,24);
 
@@ -709,7 +709,7 @@ void LDRHImmediateT1(uint32_t instruction)
 
 */
 void LDRHImmediateT2(uint32_t instruction)
-{
+{ printf("here\n");
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t Rt = getBits(instruction,15,12);
   uint32_t imm12 = getBits(instruction,11,0);
