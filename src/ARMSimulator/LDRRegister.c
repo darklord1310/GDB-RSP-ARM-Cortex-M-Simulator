@@ -624,6 +624,11 @@ void LDMRegisterT2(uint32_t instruction)
       int writeBack = determineWriteBack(Rn, registerList,W);
       loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 16);
     }
+    else
+    {
+      if(P == 1)
+        coreReg[PC] += 4;
+    }
     shiftITState();
   }
   else
@@ -686,6 +691,11 @@ void LDMDB(uint32_t instruction)
       loadMultipleRegisterFromMemory(address, registerList, 0, Rn, 16);
       if(writeBack == 1)
         coreReg[Rn] = coreReg[Rn] - 4*getBitCount(registerList, 16);
+    }
+    else
+    {
+      if(P == 1)
+        coreReg[PC] += 4;
     }
     shiftITState();
   }

@@ -1370,7 +1370,7 @@ void initThumb32bitsLoadHalfword()
       }
     }
   }
-  
+  /*
   dummy = 0b0010010000000000;
   for(i = 0; i <= 0b11; i ++)
   {
@@ -1405,7 +1405,7 @@ void initThumb32bitsLoadHalfword()
     }
   }
   //
-  
+  */
 }
 
 
