@@ -162,7 +162,7 @@ void test_LDRBImmediateT3_given_offindex_should_get_expected_result(void)
   coreReg[12] = 0x0800011a;
   coreReg[PC] = 0x08000040;
   memoryBlock[ virtualMemToPhysicalMem(0x0800001b) ] = 0xf0;
-  writeInstructionToMemoryGivenByAddress(0xf81c0cff, 0x08000040);  //strb r0, [r12,#-255]
+  writeInstructionToMemoryGivenByAddress(0xf81c0cff, 0x08000040);  //ldrb r0, [r12,#-255]
 
   //execute
   armStep();
