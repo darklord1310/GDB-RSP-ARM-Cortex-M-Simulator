@@ -468,7 +468,7 @@ void test_LDRRegisterT2_given_instruction_0xf8545031_should_load_0x0800004f_into
   //LDRT Register T1
 
 //test ldrt.w LR, [r0, #8]
-void xtest_LDRTT1_given_instruction_0xf850ee08_should_load_0xf850bf00_into_LR()
+void test_LDRTT1_given_instruction_0xf850ee08_should_load_0xf850bf00_into_LR()
 {
   //create test fixture
   memoryBlock[ virtualMemToPhysicalMem(0x00000008) ] = 0x00;

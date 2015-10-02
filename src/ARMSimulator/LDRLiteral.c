@@ -380,5 +380,99 @@ void LDRDLiteral(uint32_t instruction)
 }
 
 
+/*Load Register Halfword (literal)
+ *
+      LDRB<c> <Rt>,<label>
+      LDRB<c> <Rt>,[PC,#-0]
+
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1   1  1  1| 0  0| 0|U | 0  1|1|  1  1  1  1|     Rt    |           imm12         |
+
+  where:
+              <c><q>            See Standard assembler syntax fields on page A6-7.
+
+              <Rt>              The destination register.
+
+              <label>           The label of the literal data item that is to be loaded into <Rt>. The assembler calculates the
+                                required value of the offset from the PC value of this instruction to the label. Permitted
+                                values of the offset are -4095 to 4095.
+
+              If the offset is zero or positive, imm32 is equal to the offset and add == TRUE.
+              If the offset is negative, imm32 is equal to minus the offset and add == FALSE.
+
+*/
+void LDRHLiteral(uint32_t instruction)
+{
+  uint32_t imm12 = getBits(instruction,11,0);
+  uint32_t Rt   = getBits(instruction,15,12);
+  uint32_t U = getBits(instruction,23,23);
+  uint32_t address;
+
+  if(U == 1)
+    address = alignPC(coreReg[PC] + 4, 4) + imm12;
+  else
+    address = alignPC(coreReg[PC] + 4, 4) - imm12;
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[Rt] = loadByteFromMemory(address, 2);
+
+    shiftITState();
+  }
+  else
+    coreReg[Rt] = loadByteFromMemory(address, 2);
+
+  coreReg[PC] += 4;
+}
 
 
+
+
+
+
+/*Load Register Halfword (literal)
+ *
+      LDRB<c> <Rt>,<label>
+      LDRB<c> <Rt>,[PC,#-0]
+
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1  1   1  1  1| 0  0| 0|U | 0  1|1|  1  1  1  1|     Rt    |           imm12         |
+
+  where:
+              <c><q>            See Standard assembler syntax fields on page A6-7.
+
+              <Rt>              The destination register.
+
+              <label>           The label of the literal data item that is to be loaded into <Rt>. The assembler calculates the
+                                required value of the offset from the PC value of this instruction to the label. Permitted
+                                values of the offset are -4095 to 4095.
+
+              If the offset is zero or positive, imm32 is equal to the offset and add == TRUE.
+              If the offset is negative, imm32 is equal to minus the offset and add == FALSE.
+
+*/
+void LDRSHLiteral(uint32_t instruction)
+{
+  uint32_t imm12 = getBits(instruction,11,0);
+  uint32_t Rt   = getBits(instruction,15,12);
+  uint32_t U = getBits(instruction,23,23);
+  uint32_t address;
+
+  if(U == 1)
+    address = alignPC(coreReg[PC] + 4, 4) + imm12;
+  else
+    address = alignPC(coreReg[PC] + 4, 4) - imm12;
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+
+    shiftITState();
+  }
+  else
+    coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+
+  coreReg[PC] += 4;
+}

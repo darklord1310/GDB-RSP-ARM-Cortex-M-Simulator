@@ -10,7 +10,7 @@
 #include "CException.h"
 
 extern ElfData *elfData;
-extern ElfSection *isr, *text;
+extern ElfSection *isr, *text, *rodata;
 extern uint32_t entryAddress;
 extern int fileStatus;
 
@@ -29,7 +29,10 @@ void test_getElfSection_to_get_the_info_of_the_elf_file(void)
 
     printf(".text section\n");
     printf("%x:       %2x%2x\n", text->destAddress, *(text->dataAddress), *(text->dataAddress + 1));
-    
+
     printf(".isr_vector section\n");
     printf("%x:       %2x%2x\n", isr->destAddress, *(isr->dataAddress), *(isr->dataAddress + 1));
+
+    printf(".rodata section\n");
+    printf("%x:       %2x%2x\n", rodata->destAddress, *(rodata->dataAddress), *(rodata->dataAddress + 1));
 }

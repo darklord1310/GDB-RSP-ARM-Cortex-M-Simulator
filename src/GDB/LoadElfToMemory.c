@@ -28,9 +28,10 @@
 
 
 #define ELF_FILE_DESTINATION  "C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
+#define COIDE_ELF_FILE        "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf"
 
 extern ElfData *elfData;
-extern ElfSection *isr, *text;
+extern ElfSection *isr, *text, *rodata;
 extern uint32_t entryAddress;
 extern int fileStatus;
 
@@ -38,18 +39,23 @@ void loadElf()
 {
   int i;
 
-  getElfSection(ELF_FILE_DESTINATION);
-
-  // .text section
-  printf("\nLoading section .text, size 0x%x lma 0x%x\n", text->size, text->destAddress);
-  for(i = 0; i < text->size; i++)
-    memoryBlock[virtualMemToPhysicalMem(text->destAddress + i)] = *(text->dataAddress + i);
-
+  getElfSection(COIDE_ELF_FILE);
+  
   // .isr_vector section
-  printf("Loading section .isr_vector, size 0x%x lma 0x%x\n", isr->size, isr->destAddress);
+  printf("\nLoading section .isr_vector, size 0x%x lma 0x%x\n", isr->size, isr->destAddress);
   for(i = 0; i < isr->size; i++)
     memoryBlock[virtualMemToPhysicalMem(isr->destAddress + i)] = *(isr->dataAddress + i);
 
-  printf("Start address 0x%x, load size %d\n", elfData->eh->e_entry - 1, text->size + isr->size);
+  // .text section
+  printf("Loading section .text, size 0x%x lma 0x%x\n", text->size, text->destAddress);
+  for(i = 0; i < text->size; i++)
+    memoryBlock[virtualMemToPhysicalMem(text->destAddress + i)] = *(text->dataAddress + i);
+
+  // .rodata section
+  printf("Loading section .rodata, size 0x%x lma 0x%x\n", rodata->size, rodata->destAddress);
+  for(i = 0; i < text->size; i++)
+    memoryBlock[virtualMemToPhysicalMem(rodata->destAddress + i)] = *(rodata->dataAddress + i);
+
+  printf("Start address 0x%x, load size %d\n", elfData->eh->e_entry - 1, text->size + isr->size + rodata->size);
   coreReg[PC] = elfData->eh->e_entry - 1;
 }
