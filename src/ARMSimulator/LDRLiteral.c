@@ -157,7 +157,10 @@ void LDRLiteralT2(uint32_t instruction)
           address = temp - imm12;
 
         if(getBits(address,1,0) == 0b00)
+        {
           coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
+          coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+        }
         else
         {
           //placePCtoVectorTable(UsageFault);
@@ -186,6 +189,7 @@ void LDRLiteralT2(uint32_t instruction)
           address = temp - imm12;
 
         coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
+        coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
       }
 
       shiftITState();
@@ -200,6 +204,7 @@ void LDRLiteralT2(uint32_t instruction)
         address = temp - imm12;
 
       coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
+      coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
     }
     coreReg[PC] += 4;
   }
@@ -245,17 +250,12 @@ void LDRBLiteral(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
       coreReg[Rt] = loadByteFromMemory(address, 1);
-    }
 
     shiftITState();
   }
   else
-  {
-
     coreReg[Rt] = loadByteFromMemory(address, 1);
-  }
 
   coreReg[PC] += 4;
 

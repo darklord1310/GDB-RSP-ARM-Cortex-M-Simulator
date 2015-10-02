@@ -64,7 +64,7 @@ int inITBlock();
 uint32_t getITCond();
 void shiftITState();
 int isLastInITBlock();
-
+uint32_t handlingForSP(uint32_t registerIndex, uint32_t value);
 
 
 #endif // StatusRegisters_H
