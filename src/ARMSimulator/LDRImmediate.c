@@ -189,7 +189,10 @@ void LDRImmediateT3(uint32_t instruction)
       if(Rt == PC)
       {
         if( getBits(address,1,0) == 0b00)
+        {
           coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+        }
         else
         {
           //placePCtoVectorTable(UsageFault);
@@ -197,7 +200,10 @@ void LDRImmediateT3(uint32_t instruction)
         }
       }
       else
+      {
         coreReg[Rt] = loadByteFromMemory(address, 4);
+        coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+      }
     }
 
     shiftITState();
@@ -208,7 +214,10 @@ void LDRImmediateT3(uint32_t instruction)
     if(Rt == PC)
     {
       if( getBits(address,1,0) == 0b00)
+      {
         coreReg[Rt] = loadByteFromMemory(address, 4);
+        coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+      }
       else
       {
         //placePCtoVectorTable(UsageFault);
@@ -216,7 +225,10 @@ void LDRImmediateT3(uint32_t instruction)
       }
     }
     else
+    {
       coreReg[Rt] = loadByteFromMemory(address, 4);
+      coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+    }
   }
 
   if(Rt != PC)
@@ -292,13 +304,17 @@ void LDRImmediateT4(uint32_t instruction)
           }
         }
         else
+        {
           coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+        }
       }
       else if(P == 1 && W == 1)
       {
         if(Rt != PC)
         {
           coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
           coreReg[Rn] = address;
         }
         else
@@ -323,6 +339,7 @@ void LDRImmediateT4(uint32_t instruction)
         if(Rt != PC)
         {
           coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
           coreReg[Rn] = address;
         }
         else
@@ -370,13 +387,17 @@ void LDRImmediateT4(uint32_t instruction)
           }
         }
         else
+        {
           coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+        }
       }
       else if(P == 1 && W == 1)
       {
         if(Rt != PC)
         {
           coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
           coreReg[Rn] = address;
         }
         else
@@ -401,6 +422,7 @@ void LDRImmediateT4(uint32_t instruction)
         if(Rt != PC)
         {
           coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
+          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
           coreReg[Rn] = address;
         }
         else
