@@ -186,16 +186,6 @@ void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
   {
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
-    /*
-    if(affectCarry == 1)                                //When an Operand2 constant is used with the instructions MOVS, MVNS, ANDS, ORRS, 
-    {                                                   //ORNS, EORS, BICS, TEQ or TST, the carry flag is updated to bit[31] of the constant
-                                                        //if the constant is greater than 255 and can be produced by shifting an 8-bit value
-      if(MSBofImmediate == 1)
-        setCarryFlag();
-      else
-        resetCarryFlag();
-    }
-    */
   }
 }
 
