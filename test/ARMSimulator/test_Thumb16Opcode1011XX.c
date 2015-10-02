@@ -90,6 +90,7 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
+#include "BKPT.h"
 
 
 void setUp(void)
@@ -103,58 +104,58 @@ void tearDown(void)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //IT block
-  
-// test ITTTT EQ 
+
+// test ITTTT EQ
 void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf010000_should_change_coreReg_to_0x03000000(void)
 {
   uint32_t instruction = 0xbf010000;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x03000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
-// test ITTT EQ 
+// test ITTT EQ
 void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf020000_should_change_coreReg_to_0x05000000(void)
 {
   uint32_t instruction = 0xbf020000;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(0x05000000, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
-// test ITT EQ 
+// test ITT EQ
 void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf040000_should_change_coreReg_to_0x01000400(void)
 {
   uint32_t instruction = 0xbf040000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x01000400, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
-// test IT EQ 
+// test IT EQ
 void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf080000_should_change_coreReg_to_0x01000800(void)
 {
   uint32_t instruction = 0xbf080000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x01000800, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( EQ ,cond);
 }
 
 
-// test IT MI 
+// test IT MI
 void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf480000_should_change_coreReg_to_0x01004800(void)
 {
   uint32_t instruction = 0xbf480000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x01004800, coreReg[xPSR]);
   TEST_ASSERT_EQUAL( MI ,cond);
@@ -163,7 +164,7 @@ void test_ITandHints_given_coreReg_0x00000000_instruction_0xbf480000_should_chan
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //ADD SP Immediate T1
-  
+
 //test case when carry is 1
 //test add SP,SP,#0x14
 void test_ADDSPImmediateT2_given_carry_is_1_SP_0x20001000_and_offset_20_should_get_SP_0x20001014()
@@ -171,7 +172,7 @@ void test_ADDSPImmediateT2_given_carry_is_1_SP_0x20001000_and_offset_20_should_g
   setCarryFlag();
   coreReg[SP] = 0x20001000;
   uint32_t instruction = 0xb0050000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x20001014, coreReg[SP]);
 
@@ -186,7 +187,7 @@ void test_ADDSPImmediateT2_given_carry_is_0_SP_0x20001000_and_offset_20_should_g
   resetCarryFlag();
   coreReg[SP] = 0x20001000;
   uint32_t instruction = 0xb0050000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x20001014, coreReg[SP]);
 }
@@ -194,13 +195,13 @@ void test_ADDSPImmediateT2_given_carry_is_0_SP_0x20001000_and_offset_20_should_g
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //REV T1
-  
+
 //test REV r2,r3
 void test_REVT1_given_r3_0xdeadbeef_should_get_r2_0xefbeadde()
 {
   coreReg[3] = 0xdeadbeef;
   uint32_t instruction = 0xba1a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xefbeadde, coreReg[2]);
 }
@@ -212,7 +213,7 @@ void test_REVT1_given_r7_0x10101010_should_get_r2_0x10101010()
 {
   coreReg[7] = 0x10101010;
   uint32_t instruction = 0xba3a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x10101010, coreReg[2]);
 }
@@ -220,13 +221,13 @@ void test_REVT1_given_r7_0x10101010_should_get_r2_0x10101010()
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //REV16 T1
-  
+
 //test REV16 r2,r3
 void test_REV16T1_given_r3_0xdeadbeef_should_get_r2_0xaddeefbe()
 {
   coreReg[3] = 0xdeadbeef;
   uint32_t instruction = 0xba5a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xaddeefbe, coreReg[2]);
 }
@@ -237,7 +238,7 @@ void test_REV16T1_given_r7_0x10101010_should_get_r2_0x10101010()
 {
   coreReg[7] = 0x10101010;
   uint32_t instruction = 0xba7a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x10101010, coreReg[2]);
 }
@@ -245,13 +246,13 @@ void test_REV16T1_given_r7_0x10101010_should_get_r2_0x10101010()
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //REVSH T1
-  
+
 //test REVSH r2,r3
 void test_REVSHT1_given_r3_0xdeadbeef_should_get_r2_0xffffefbe()
 {
   coreReg[3] = 0xdeadbeef;
   uint32_t instruction = 0xbada0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xffffefbe, coreReg[2]);
 }
@@ -262,7 +263,7 @@ void test_REVSHT1_given_r7_0x10101010_should_get_r2_0x00001010()
 {
   coreReg[7] = 0x10101010;
   uint32_t instruction = 0xbafa0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x00001010, coreReg[2]);
 }
@@ -277,10 +278,10 @@ void test_SXTHT1_given_r5_0x88888888_should_get_r2_0xffff8888()
 {
   coreReg[5] = 0x88888888;
   uint32_t instruction = 0xb22a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xffff8888, coreReg[2]);
-  
+
 }
 
 
@@ -290,26 +291,26 @@ void test_SXTHT1_given_r5_0x00004888_should_get_r2_0x00004888()
 {
   coreReg[5] = 0x00004888;
   uint32_t instruction = 0xb22a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x00004888, coreReg[2]);
-  
+
 }
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Signed Extend Byte T1
-  
+
 //sign bit is 1
 //test SXTB r2,r5
 void test_SXTBT1_given_r5_0x88888888_should_get_r2_0xffffff88()
 {
   coreReg[5] = 0x88888888;
   uint32_t instruction = 0xb26a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0xffffff88, coreReg[2]);
-  
+
 }
 
 
@@ -320,7 +321,7 @@ void test_SXTBT1_given_r5_0x00004848_should_get_r2_0x00000048()
 {
   coreReg[5] = 0x00004848;
   uint32_t instruction = 0xb26a0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x00000048, coreReg[2]);
 }
@@ -328,16 +329,16 @@ void test_SXTBT1_given_r5_0x00004848_should_get_r2_0x00000048()
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Unsigned Extend Byte T1
-  
+
 //test UXTH r2,r5
 void test_UXTHT1_given_r5_0x88888888_should_get_r2_0x00008888()
 {
   coreReg[5] = 0x88888888;
   uint32_t instruction = 0xb2aa0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x00008888, coreReg[2]);
-  
+
 }
 
 
@@ -346,25 +347,25 @@ void test_UXTHT1_given_r5_0xdeadbeef_should_get_r2_0x0000beef()
 {
   coreReg[5] = 0xdeadbeef;
   uint32_t instruction = 0xb2aa0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x0000beef, coreReg[2]);
-  
+
 }
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Unsigned Extend Byte T1
-  
+
 //test UXTB r2,r5
 void test_UXTBT1_given_r5_0x88888888_should_get_r2_0x00000088()
 {
   coreReg[5] = 0x88888888;
   uint32_t instruction = 0xb2ea0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x00000088, coreReg[2]);
-  
+
 }
 
 
@@ -373,10 +374,10 @@ void test_UXTBT1_given_r5_0xdeadbeef_should_get_r2_0x000000ef()
 {
   coreReg[5] = 0xdeadbeef;
   uint32_t instruction = 0xb2ea0000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x000000ef, coreReg[2]);
-  
+
 }
 
 
@@ -390,10 +391,10 @@ void test_CBNZ_given_r0_0x10_should_get_PC_0x08000036()
   coreReg[0] = 0x10;
   coreReg[PC] = 0x0800002a;
   uint32_t instruction = 0xb9200000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x08000036, coreReg[PC]);
-  
+
 }
 
 
@@ -404,16 +405,16 @@ void test_CBNZ_given_r0_0x00_should_not_get_PC_0x08000036()
   coreReg[0] = 0x00;
   coreReg[PC] = 0x0800002a;
   uint32_t instruction = 0xb9200000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_NOT_EQUAL(0x08000036, coreReg[PC]);
-  
+
 }
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Compare and Branch on Zero T1
-  
+
 
 //test case where r0 is not 0, should not jump
 //test CBZ r0 , bla  (the bla label is at address 0x08000036)
@@ -422,7 +423,7 @@ void test_CBZ_given_r0_0x10_should_not_get_PC_0x08000036()
   coreReg[0] = 0x10;
   coreReg[PC] = 0x0800002a;
   uint32_t instruction = 0xb1200000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_NOT_EQUAL(0x08000036, coreReg[PC]);
 }
@@ -435,7 +436,7 @@ void test_CBZ_given_r0_0x10_should_get_PC_0x08000030()
   coreReg[0] = 0x00;
   coreReg[PC] = 0x08000024;
   uint32_t instruction = 0xb1200000;
-  
+
   ARMSimulator(instruction);
   TEST_ASSERT_EQUAL(0x08000030, coreReg[PC]);
 }
@@ -444,8 +445,8 @@ void test_CBZ_given_r0_0x10_should_get_PC_0x08000030()
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Push Registers T1
-  
-  
+
+
 //push the maximum amount of allowed register for encoding T1
 //test push {r0-r7}
 void test_PUSHT1_given_SP_0x20001000_should_get_SP_0x20000FE0()
@@ -464,11 +465,11 @@ void test_PUSHT1_given_SP_0x20001000_should_get_SP_0x20000FE0()
   coreReg[11] = 0xcccccccc;
   coreReg[12] = 0xdddddddd;
   coreReg[SP] = 0x20001000;
-  
+
   uint32_t instruction = 0xb4ff0000;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(  0x20000FE0, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x11, memoryBlock[ virtualMemToPhysicalMem(0x20000fe0)]);
   TEST_ASSERT_EQUAL(  0x11, memoryBlock[ virtualMemToPhysicalMem(0x20000fe1)]);
@@ -524,11 +525,11 @@ void test_PUSHT1_given_SP_0x20001000_should_get_SP_0x20000FF4()
   coreReg[11] = 0xcccccccc;
   coreReg[12] = 0xdddddddd;
   coreReg[SP] = 0x20001000;
-  
+
   uint32_t instruction = 0xb4e00000;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(  0x20000FF4, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x66, memoryBlock[ virtualMemToPhysicalMem(0x20000ff4)]);
   TEST_ASSERT_EQUAL(  0x66, memoryBlock[ virtualMemToPhysicalMem(0x20000ff5)]);
@@ -566,11 +567,11 @@ void test_PUSHT1_given_SP_0x20001000_should_get_SP_0x20000FFC()
   coreReg[11] = 0xcccccccc;
   coreReg[12] = 0xdddddddd;
   coreReg[SP] = 0x20001000;
-  
+
   uint32_t instruction = 0xb4200000;
-  
+
   ARMSimulator(instruction);
-  
+
   TEST_ASSERT_EQUAL(  0x20000FFC, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x66, memoryBlock[ virtualMemToPhysicalMem(0x20000ffc)]);
   TEST_ASSERT_EQUAL(  0x66, memoryBlock[ virtualMemToPhysicalMem(0x20000ffd)]);
@@ -585,7 +586,7 @@ void test_PUSHT1_should_throw_error_when_registerlist_less_than_1()
 {
   CEXCEPTION_T err;
   uint32_t instruction = 0xb4000000;
-  
+
   Try
   {
     ARMSimulator(instruction);
@@ -603,7 +604,7 @@ void test_PUSHT1_should_throw_error_when_registerlist_less_than_1()
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //Pop Registers T1
-  
+
 //pop the maximum amount of allowed register for encoding T1
 //test pop {r0-r7}
 void test_POPT1_given_SP_0x20001000_and_pop_the_maximum_number_of_allowed_register_should_get_SP_0x20001000()
@@ -623,11 +624,11 @@ void test_POPT1_given_SP_0x20001000_and_pop_the_maximum_number_of_allowed_regist
   coreReg[12] = 0xdddddddd;
   coreReg[SP] = 0x20001000;
   coreReg[PC] = 0x08000040;
-  
+
   uint32_t instruction = 0xbcff0000;      //pop {r0-r7}
-  
+
   ARMSimulator(0xb4ff0000);               //push {r0-r7}
-  
+
   //clear all register to 0 to check whether really pop the correct values or not
   coreReg[0] = 0x00;
   coreReg[1] = 0x00;
@@ -643,7 +644,7 @@ void test_POPT1_given_SP_0x20001000_and_pop_the_maximum_number_of_allowed_regist
   coreReg[11] = 0x00;
   coreReg[12] = 0x00;
   ARMSimulator(instruction);              //pop {r0-r7}
-  
+
   TEST_ASSERT_EQUAL(  0x20001000, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x08000044, coreReg[PC]);
   TEST_ASSERT_EQUAL(  0x11111111, coreReg[0]);
@@ -677,11 +678,11 @@ void test_POPT1_given_SP_0x20001000_and_pop_some_of_the_allowed_register_should_
   coreReg[12] = 0xdddddddd;
   coreReg[SP] = 0x20001000;
   coreReg[PC] = 0x08000040;
-  
+
   uint32_t instruction = 0xbc3f0000;      //pop {r0-r7}
-  
+
   ARMSimulator(0xb4ff0000);               //push {r0-r7}
-  
+
   //clear all register to 0 to check whether really pop the correct values or not
   coreReg[0] = 0x00;
   coreReg[1] = 0x00;
@@ -697,7 +698,7 @@ void test_POPT1_given_SP_0x20001000_and_pop_some_of_the_allowed_register_should_
   coreReg[11] = 0x00;
   coreReg[12] = 0x00;
   ARMSimulator(instruction);              //pop {r0-r5}
-  
+
   TEST_ASSERT_EQUAL(  0x20000ff8, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x08000044, coreReg[PC]);
   TEST_ASSERT_EQUAL(  0x11111111, coreReg[0]);
@@ -731,11 +732,11 @@ void test_POPT1_given_SP_0x20001000_should_get_SP_0x20000FE4()
   coreReg[12] = 0xdddddddd;
   coreReg[SP] = 0x20001000;
   coreReg[PC] = 0x08000040;
-    
+
   uint32_t instruction = 0xbc200000;
-  
+
   ARMSimulator(0xb4ff0000);               //push {r0-r7}
-  
+
   //clear all register to 0 to check whether really pop the correct values or not
   coreReg[0] = 0x00;
   coreReg[1] = 0x00;
@@ -751,7 +752,7 @@ void test_POPT1_given_SP_0x20001000_should_get_SP_0x20000FE4()
   coreReg[11] = 0x00;
   coreReg[12] = 0x00;
   ARMSimulator(instruction);              //pop {r5}
-  
+
   TEST_ASSERT_EQUAL(  0x20000FE4, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x08000044, coreReg[PC]);
   TEST_ASSERT_EQUAL(  0x00, coreReg[0]);
@@ -771,7 +772,7 @@ void test_POPT1_should_throw_error_when_registerlist_less_than_1()
 {
   CEXCEPTION_T err;
   uint32_t instruction = 0xbc000000;
-  
+
   Try
   {
     ARMSimulator(instruction);
@@ -794,16 +795,16 @@ void test_SUBSPImmediateT1_given_SP_0x20000FE4_and_carry_is_0_should_get_SP_0x20
 {
   coreReg[PC] = 0x08000054;
   coreReg[SP] = 0x20000FE4;
-  
+
   resetCarryFlag();
   uint32_t instruction = 0xb0820000;
-  
+
   ARMSimulator(instruction);               //SUB SP,SP,#8
-  
-  
+
+
   TEST_ASSERT_EQUAL(  0x20000FDC, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x08000056, coreReg[PC]);
-  
+
 }
 
 
@@ -812,16 +813,16 @@ void test_SUBSPImmediateT1_given_SP_0x20000FE4_and_carry_is_1_should_get_SP_0x20
 {
   coreReg[PC] = 0x08000054;
   coreReg[SP] = 0x20000FE4;
-  
+
   setCarryFlag();
   uint32_t instruction = 0xb0820000;
-  
+
   ARMSimulator(instruction);               //SUB SP,SP,#8
-  
-  
+
+
   TEST_ASSERT_EQUAL(  0x20000FDC, coreReg[SP]);
   TEST_ASSERT_EQUAL(  0x08000056, coreReg[PC]);
-  
+
 }
 
 
@@ -831,11 +832,33 @@ void test_SUBSPImmediateT1_given_SP_0x20000FE4_and_carry_is_1_should_get_SP_0x20
 void test_NOPT1_should_get_PC_0x0800000C()
 {
   coreReg[PC] = 0x0800000a;
-  
+
   uint32_t instruction = 0xbf000000;
-  
-  ARMSimulator(instruction);          
-  
+
+  ARMSimulator(instruction);
+
   TEST_ASSERT_EQUAL(  0x0800000c, coreReg[PC]);
-  
+
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //BKPT T1
+
+void test_BKPT_should_throw_debug_monitor_exception()
+{
+  CEXCEPTION_T armException;
+
+  coreReg[PC] = 0x0800000a;
+
+  uint32_t instruction = 0xbe000000;
+
+  Try {
+    ARMSimulator(instruction);
+  }
+  Catch(armException) {
+    TEST_ASSERT_EQUAL(DebugMonitor, armException);
+  }
+
+  TEST_ASSERT_EQUAL(0x0800000a, coreReg[PC]);
 }

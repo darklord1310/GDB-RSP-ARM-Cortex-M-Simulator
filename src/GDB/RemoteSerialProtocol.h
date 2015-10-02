@@ -46,10 +46,11 @@ struct Watchpoint
     unsigned int size;
 };
 
-Breakpoint *bp;
+Breakpoint *breakpointList;
 Watchpoint wp[MAX_HW_WATCHPOINT];
 
 char *handleQueryPacket(char *data);
+char *handleException();
 char *readSingleRegister(char *data);
 char *readAllRegister();
 char *writeSingleRegister(char *data);
@@ -71,6 +72,6 @@ void initializeWatchpoint();
 void addWatchpoint(unsigned int addr, unsigned int size, BP_Type type);
 void removeWatchpoint(unsigned int addr, unsigned int size, BP_Type type);
 
-int findBreakpoint(Breakpoint *breakpoint);
+int hitBreakpoint(Breakpoint *breakpoint);
 
 #endif // RemoteSerialProtocol_H

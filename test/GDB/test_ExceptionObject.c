@@ -88,6 +88,7 @@
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "ExceptionObject.h"
+#include "BKPT.h"
 
 void setUp(void)
 {

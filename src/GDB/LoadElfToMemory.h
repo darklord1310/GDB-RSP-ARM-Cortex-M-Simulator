@@ -20,41 +20,10 @@
     along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef gdbserver_H
-#define gdbserver_H
 
-#define LOCAL_HOST_ADD  "127.0.0.1"
-#define DEFAULT_PORT    2009
-#define PACKET_SIZE     0x3fff
+#ifndef LoadElfToMemory_H
+#define LoadElfToMemory_H
 
-#ifdef  __MINGW32__
+void loadElf();
 
-#include <winsock2.h>
-#pragma comment(lib,<ws2_32.lib>)       //Winsock Library
-
-#elif  __linux__
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h> 
-#include <unistd.h>
-
-typedef unsigned int    u_int;
-typedef u_int           SOCKET;
-
-#define INVALID_SOCKET  (SOCKET)(~0)
-#define SOCKET_ERROR            (-1)
-
-#endif
-
-// void main();
-void winsockInit();
-void createSocket(SOCKET *sock);
-void bindSocket(SOCKET *sock, int port);
-void listenSocket(SOCKET *sock);
-void waitingForConnection(SOCKET *sock, int port);
-int sendBuffer(SOCKET *sock, char *sendbuf);
-int receiveBuffer(SOCKET *sock, char *recvbuf);
-void displayErrorMsg(char *errorMsg);
-
-#endif // gdbserver_H
+#endif // LoadElfToMemory_H

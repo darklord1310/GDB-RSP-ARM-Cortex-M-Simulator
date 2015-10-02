@@ -1,4 +1,4 @@
-﻿/*  
+﻿/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -160,6 +160,13 @@ char *handleQueryPacket(char *data)
     // }
 
     return packet;
+}
+
+char *handleException()
+{
+    char *packet = NULL;
+
+    packet = gdbCreateMsgPacket("S05");
 }
 
 /******************************************************
@@ -506,8 +513,9 @@ char *cont(char *data)
 {
     CEXCEPTION_T armException;
     char *packet = NULL, asciiString[4] = "";
+    int stopSignal = 0;
 
-    while(!findBreakpoint(bp))
+    while(!hitBreakpoint(breakpointList) && !stopSignal)
     {
         Try
         {
@@ -518,7 +526,7 @@ char *cont(char *data)
             if(armException == UsageFault)
                 sprintf(asciiString, "E%02d", GDB_SIGNAL_ILL);
 
-            break;
+            stopSignal = 1;
         }
 
         if(virtualMemToPhysicalMem(coreReg[PC]) == RAM_BASE_ADDR)   // stop if reach the end of code addr
@@ -543,7 +551,7 @@ char *cont(char *data)
  *      0           if breakpoint do not match with PC register
  *      1           if breakpoint match with PC register
  ********************************************************************/
-int findBreakpoint(Breakpoint *breakpoint)
+int hitBreakpoint(Breakpoint *breakpoint)
 {
     if(breakpoint != NULL)
     {
@@ -554,7 +562,7 @@ int findBreakpoint(Breakpoint *breakpoint)
             if(breakpoint->next != NULL)
             {
                 if(coreReg[PC] > breakpoint->addr)
-                    findBreakpoint(breakpoint->next);
+                    hitBreakpoint(breakpoint->next);
             }
         }
     }
@@ -610,7 +618,7 @@ char *insertBreakpointOrWatchpoint(char *data)
     {
         case BP_MEMORY:
         case BP_HARDWARE:
-            addBreakpoint(&bp, addr);
+            addBreakpoint(&breakpointList, addr);
             break;
         case WP_WRITE:
             // break;
@@ -676,7 +684,7 @@ char *removeBreakpointOrWatchpoint(char *data)
     {
         case BP_MEMORY:
         case BP_HARDWARE:
-            removeBreakpoint(&bp, addr);
+            removeBreakpoint(&breakpointList, addr);
             break;
         case WP_WRITE:
             // break;

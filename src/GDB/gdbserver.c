@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -31,6 +31,7 @@
 #include "ARMSimulator.h"
 #include "State.h"
 #include "StateRSP.h"
+#include "LoadElfToMemory.h"
 
 #ifdef  __MINGW32__
 /****************Initialize Winsock.****************/
@@ -69,13 +70,13 @@ void createSocket(SOCKET *sock)
 }
 
 /****************Bind the socket.****************/
-void bindSocket(SOCKET *sock)
+void bindSocket(SOCKET *sock, int port)
 {
     printf( "3. Binding socket....................." );
     struct sockaddr_in service;
     service.sin_family = AF_INET;
     service.sin_addr.s_addr = inet_addr( LOCAL_HOST_ADD );
-    service.sin_port = htons( DEFAULT_PORT );
+    service.sin_port = htons( port );
     if ( bind( *sock, (SOCKADDR*) &service, sizeof(service) ) == SOCKET_ERROR )
     {
         displayErrorMsg("bind()");
@@ -101,9 +102,9 @@ void listenSocket(SOCKET *sock)
 }
 
 /****************Accept connections.****************/
-void waitingForConnection(SOCKET *sock)
+void waitingForConnection(SOCKET *sock, int port)
 {
-    printf( "5. Waiting on %s:%d...................", LOCAL_HOST_ADD, DEFAULT_PORT );
+    printf( "5. Waiting on %s:%d..........", LOCAL_HOST_ADD, port );
     SOCKET acceptSocket;
     while (1)
     {
@@ -152,21 +153,29 @@ void displayErrorMsg(char *errorMsg)
 #endif
 }
 
-void main()
+int main(int argc, const char * argv[])
 {
+    int i, portNumber = DEFAULT_PORT;
     SOCKET sock;
     RspData rspData = {INITIAL, sock};
 
+    for(i = 0; i < argc; i++)
+    {
+        if(argv[i][0] == ':')
+          sscanf(argv[i], ":%d", &portNumber);
+    }
+
     initializeSimulator();
     initializeWatchpoint();
+    loadElf();
 
 #ifdef  __MINGW32__
     winsockInit();
 #endif
     createSocket(&rspData.sock);
-    bindSocket(&rspData.sock);
+    bindSocket(&rspData.sock, portNumber);
     listenSocket(&rspData.sock);
-    waitingForConnection(&rspData.sock);
+    waitingForConnection(&rspData.sock, portNumber);
 
     int bytesSent;
     int bytesRecv;
@@ -177,34 +186,25 @@ void main()
     while(1)
     {
         bytesRecv = receiveBuffer(&rspData.sock, recvbuf);
+
         if(bytesRecv != -1)
         {
             recvbuf[bytesRecv] = '\0';
             printf( "recvbuf: %s\n", recvbuf );
         }
         else
+        {
             rspData.state = NACK;
+            recvbuf[0] = '\0';
+        }
 
-        // do {
-            // reply = rspState(&rspData, recvbuf);
-            rspState(&rspData, recvbuf);
-        // }while(state == ACK || state == NACK || state == KILL);
+        rspState(&rspData, recvbuf);
 
         if(rspData.state == KILL)
         {
             break;
         }
-        /* else
-        {
-            bytesSent = sendBuffer(&rspData.sock, reply);
-            printf("reply: %s\n", reply);
-        } */
-
-        /* if(reply != NULL)
-            free(reply); */
     }
-
-    // deleteAllBreakpoint(&bp);
 
 #ifdef  __MINGW32__
     /****************Close our socket entirely****************/

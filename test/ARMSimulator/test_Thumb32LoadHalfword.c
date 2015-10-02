@@ -12,6 +12,7 @@
 #include "CLZ.h"
 #include "SUBSPRegister.h"
 #include "BL.h"
+#include "BKPT.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"
@@ -116,7 +117,7 @@ void test_LDRHImmediateT2_given_0xf8b10000_should_get_R0_is_0xbeef()
   coreReg[1] = 0x08000060;
   writeInstructionToMemoryGivenByAddress(0xf8b10000, 0x08000040);  // LDRH.W r0,[r1,#0]
   coreReg[PC] = 0x08000040;
-  
+
   //test
   armStep();
 

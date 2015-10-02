@@ -54,7 +54,8 @@ char *serveRSP(char *data)
                 packet = gdbCreateMsgPacket("");
                 break;
             case '?':   /* Indicate the reason the target halted */
-                packet = gdbCreateMsgPacket("S05");
+                packet = handleException();
+                // packet = gdbCreateMsgPacket("S05");
                 break;
             case 'c':   /* Continue */
                 packet = cont(data);
