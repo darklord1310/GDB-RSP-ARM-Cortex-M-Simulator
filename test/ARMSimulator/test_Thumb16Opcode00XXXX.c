@@ -1543,10 +1543,8 @@ void test_ADDSPRegisterT2_given_r15_is_0x0800003e_SP_is_0x20010000_should_get_0x
   coreReg[SP] = 0x20001000;
   coreReg[PC]  = 0x0800003e;
   ARMSimulator(instruction);
-  printf("%x\n", coreReg[SP]);
-  printf("end\n");
-  TEST_ASSERT_EQUAL(0x28001042, coreReg[SP]);
 
+  TEST_ASSERT_EQUAL(0x28001042, coreReg[SP]);
   TEST_ASSERT_EQUAL(0x28001042, coreReg[SP]);
   TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
 }

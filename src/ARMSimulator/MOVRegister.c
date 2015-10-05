@@ -133,16 +133,16 @@ void MOVRegisterToRegisterT2(uint32_t instruction)
 
 /* Move From Register To Register Encoding T3
 
-MOV{S}<c>.W <Rd>,<Rm>
+    MOV{S}<c>.W <Rd>,<Rm>
 
-NOTE
-====
-ARM deprecates the use of the following MOV (register) instructions:
-• ones in which <Rd> is the SP or PC and <Rm> is also the SP or PC is deprecated.
-• ones in which S is specified and <Rm> is the SP, or <Rm> is the PC.
+    NOTE
+    ====
+    ARM deprecates the use of the following MOV (register) instructions:
+        • ones in which <Rd> is the SP or PC and <Rm> is also the SP or PC is deprecated.
+        • ones in which S is specified and <Rm> is the SP, or <Rm> is the PC.
 
-31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-|1  1  1  0 1 |0  1| 0  0  1  0 |S| 1  1  1  1 |0| 0  0  0 |    Rd   |0 0 0 0|  Rm   |
+    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+    |1  1  1  0 1 |0  1| 0  0  1  0 |S| 1  1  1  1 |0| 0  0  0 |    Rd   |0 0 0 0|  Rm   |
 
 where:
           S         If present, specifies that the instruction updates the flags. Otherwise, the instruction does not
@@ -201,7 +201,8 @@ void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
   else
   {
     coreReg[Rd] = coreReg[Rm];
-
+    coreReg[Rd] = handlingForSP(Rd, coreReg[Rd]);          //check if Rd is SP or not, if it is then mask off the last 2 bits
+    
     if(S == 1)
     {
       updateZeroFlag(coreReg[Rd]);

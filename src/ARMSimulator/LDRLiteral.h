@@ -29,7 +29,9 @@
 void LDRLiteralT1(uint32_t instruction);
 void LDRLiteralT2(uint32_t instruction);
 void LDRBLiteral(uint32_t instruction);
+void LDRHLiteral(uint32_t instruction);
 void LDRSBLiteral(uint32_t instruction);
+void LDRSHLiteral(uint32_t instruction);
 void LDRDLiteral(uint32_t instruction);
 
 

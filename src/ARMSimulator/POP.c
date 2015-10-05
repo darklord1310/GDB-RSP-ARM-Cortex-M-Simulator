@@ -133,6 +133,11 @@ void POPT2(uint32_t instruction)
     {
       loadMultipleRegisterFromMemory(coreReg[SP], registerList, 1, SP, 16);
     }
+    else
+    {
+      if(P == 1)
+        coreReg[PC] += 4;
+    }
     shiftITState();
   }
   else

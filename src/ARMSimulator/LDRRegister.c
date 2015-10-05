@@ -129,7 +129,10 @@ void LDRRegisterT2(uint32_t instruction)
       if(Rt == PC)
       {
         if( getBits(address,1,0) == 0b00)
+        {
           coreReg[Rt] = loadByteFromMemory(address, 4);
+          coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+        }
         else
         {
           //placePCtoVectorTable(UsageFault);
@@ -137,7 +140,10 @@ void LDRRegisterT2(uint32_t instruction)
         }
       }
       else
+      {
         coreReg[Rt] = loadByteFromMemory(address, 4);
+        coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+      }
     }
     shiftITState();
   }
@@ -146,7 +152,10 @@ void LDRRegisterT2(uint32_t instruction)
     if(Rt == PC)
     {
       if( getBits(address,1,0) == 0b00)
+      {
         coreReg[Rt] = loadByteFromMemory(address, 4);
+        coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+      }
       else
       {
         //placePCtoVectorTable(UsageFault);
@@ -154,7 +163,10 @@ void LDRRegisterT2(uint32_t instruction)
       }
     }
     else
+    {
       coreReg[Rt] = loadByteFromMemory(address, 4);
+      coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+    }
   }
 
   if(Rt != PC)
@@ -254,6 +266,53 @@ void LDRHRegisterT1(uint32_t instruction)
   }
 
   coreReg[PC] += 2;
+}
+
+
+
+
+/*Load Register Halfword (register) Encoding T2
+ *
+    LDRH<c>.W <Rt>,[<Rn>,<Rm>{,LSL #<imm2>}]
+
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5  4 3 2 1 0
+  | 1  1  1  1  1| 0  0| 0  0  0  1  1|     Rn   |      Rt    | 0| 0 0 0 0 0|imm2|   Rm  |            
+
+  where:
+            <c><q>          See Standard assembler syntax fields on page A6-7.
+
+            <Rt>            Specifies the destination register. This register is allowed to be the SP. It is also allowed to
+                            be the PC, provided the instruction is either outside an IT block or the last instruction of an
+                            IT block. If it is the PC, it causes a branch to the address (data) loaded into the PC.
+
+            <Rn>            Specifies the register that contains the base value. This register is allowed to be the SP.
+
+            <Rm>            Contains the offset that is shifted left and added to the value of <Rn> to form the address.
+
+            <shift>         Specifies the number of bits the value from <Rm> is shifted left, in the range 0-3. If this option
+                            is omitted, a shift by 0 is assumed and both encodings are permitted. If this option is
+                            specified, only encoding T2 is permitted.
+
+*/
+void LDRHRegisterT2(uint32_t instruction)
+{
+  uint32_t Rm   = getBits(instruction,3,0);
+  uint32_t imm2   = getBits(instruction,5,4);
+  uint32_t Rt   = getBits(instruction,15,12);
+  uint32_t Rn   = getBits(instruction,19,16);
+  uint32_t address = coreReg[Rn] +  executeShiftOperation(LSL, imm2, coreReg[Rm], 0);
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[Rt] = loadByteFromMemory(address, 2);
+
+    shiftITState();
+  }
+  else
+    coreReg[Rt] = loadByteFromMemory(address, 2);
+
+  coreReg[PC] += 4;
 }
 
 
@@ -514,6 +573,56 @@ void LDRSHRegisterT1(uint32_t instruction)
 
 
 
+
+
+/*Load Register Signed Halfword (register) Encoding T2
+ *
+    LDRSH<c>.W <Rt>,[<Rn>,<Rm>{,LSL #<imm2>}]
+
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5  4 3 2 1 0
+  |1  1   1  1  1| 0  0| 1  0  0  1  1|     Rn    |     Rt    | 0| 0 0 0 0 0|imm2|   Rm  |
+
+  where:
+            <c><q>          See Standard assembler syntax fields on page A6-7.
+
+            <Rt>            Specifies the destination register. This register is allowed to be the SP. It is also allowed to
+                            be the PC, provided the instruction is either outside an IT block or the last instruction of an
+                            IT block. If it is the PC, it causes a branch to the address (data) loaded into the PC.
+
+            <Rn>            Specifies the register that contains the base value. This register is allowed to be the SP.
+
+            <Rm>            Contains the offset that is shifted left and added to the value of <Rn> to form the address.
+
+            <shift>         Specifies the number of bits the value from <Rm> is shifted left, in the range 0-3. If this option
+                            is omitted, a shift by 0 is assumed and both encodings are permitted. If this option is
+                            specified, only encoding T2 is permitted.
+
+*/
+void LDRSHRegisterT2(uint32_t instruction)
+{
+  uint32_t Rm   = getBits(instruction,3,0);
+  uint32_t imm2   = getBits(instruction,5,4);
+  uint32_t Rt   = getBits(instruction,15,12);
+  uint32_t Rn   = getBits(instruction,19,16);
+  uint32_t address = coreReg[Rn] +  executeShiftOperation(LSL, imm2, coreReg[Rm], 0);
+
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+
+    shiftITState();
+  }
+  else
+    coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+
+  coreReg[PC] += 4;
+}
+
+
+
+
+
 /*Load Multiple Increment After Encoding T1
  *
   LDM<c> <Rn>!,<registers> <Rn> not included in <registers>
@@ -624,6 +733,11 @@ void LDMRegisterT2(uint32_t instruction)
       int writeBack = determineWriteBack(Rn, registerList,W);
       loadMultipleRegisterFromMemory(coreReg[Rn], registerList, writeBack, Rn, 16);
     }
+    else
+    {
+      if(P == 1)
+        coreReg[PC] += 4;
+    }
     shiftITState();
   }
   else
@@ -686,6 +800,11 @@ void LDMDB(uint32_t instruction)
       loadMultipleRegisterFromMemory(address, registerList, 0, Rn, 16);
       if(writeBack == 1)
         coreReg[Rn] = coreReg[Rn] - 4*getBitCount(registerList, 16);
+    }
+    else
+    {
+      if(P == 1)
+        coreReg[PC] += 4;
     }
     shiftITState();
   }

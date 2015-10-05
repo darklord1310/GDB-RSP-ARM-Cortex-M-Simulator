@@ -954,6 +954,20 @@ void test_LDMRegisterT2_given_writeback_1_should_get_the_expected_result(void)
 }
 
 
+void test_LDMRegisterT2_given_condition_is_not_meet_and_PC_is_in_the_regsiter_list_should_add_pc_correctly(void)
+{
+  writeInstructionToMemoryGivenByAddress(0xbf080000, 0x0800000a);  // IT EQ
+  writeInstructionToMemoryGivenByAddress(0xe8b08002, 0x0800000c);  // ldmeq r0!, {r1,pc}
+  coreReg[PC] = 0x0800000a;
+  
+  armStep();
+  armStep();
+
+  TEST_ASSERT_EQUAL( 0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL( 0x08000010, coreReg[PC]);
+}
+
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //LDMDB
@@ -1158,6 +1172,19 @@ void test_LDMDB_given_writeback_1_should_get_the_expected_result(void)
 }
 
 
+void test_LDMDB_given_condition_is_not_meet_and_PC_is_in_the_regsiter_list_should_add_pc_correctly(void)
+{
+  writeInstructionToMemoryGivenByAddress(0xbf080000, 0x0800000a);  // IT EQ
+  writeInstructionToMemoryGivenByAddress(0xe93087fe, 0x0800000c);  // ldmdbeq.w r0!, {r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,pc}
+  coreReg[PC] = 0x0800000a;
+  
+  armStep();
+  armStep();
+
+  TEST_ASSERT_EQUAL( 0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL( 0x08000010, coreReg[PC]);
+}
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //POPT2
@@ -1260,6 +1287,19 @@ void test_POPT2_should_get_the_expected_result(void)
   }
 }
 
+
+void test_POPT2_given_condition_is_not_meet_and_PC_is_in_the_regsiter_list_should_add_pc_correctly(void)
+{
+  writeInstructionToMemoryGivenByAddress(0xbf080000, 0x0800000a);  // IT EQ
+  writeInstructionToMemoryGivenByAddress(0xe8bd87fe, 0x0800000c);  // popeq.w r0!, {r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,pc}
+  coreReg[PC] = 0x0800000a;
+  
+  armStep();
+  armStep();
+
+  TEST_ASSERT_EQUAL( 0x0, coreReg[0]);
+  TEST_ASSERT_EQUAL( 0x08000010, coreReg[PC]);
+}
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
   //PUSHT2
