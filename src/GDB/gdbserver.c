@@ -31,6 +31,7 @@
 #include "ARMSimulator.h"
 #include "State.h"
 #include "StateRSP.h"
+#include "LoadElf.h"
 
 #ifdef  __MINGW32__
 /****************Initialize Winsock.****************/
@@ -155,10 +156,13 @@ void displayErrorMsg(char *errorMsg)
 void main()
 {
     SOCKET sock;
+    ElfData *elfData = openElfFile(COIDE_ELF_FILE);
     RspData rspData = {INITIAL, sock};
 
     initializeSimulator();
     initializeWatchpoint();
+    
+    loadElf(elfData);
 
 #ifdef  __MINGW32__
     winsockInit();

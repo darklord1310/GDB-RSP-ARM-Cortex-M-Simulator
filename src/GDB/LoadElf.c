@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include "LoadElf.h"
-// #include "ARMRegisters.h"
+#include "ARMRegisters.h"
 #include "MemoryBlock.h"
 #include "ProgramElf.h"
 #include "GetHeaders.h"
@@ -11,7 +11,7 @@
 #include "CException.h"
 #include "ErrorCode.h"
 
-#define ELF_FILE    "C:/Users/user06D/Desktop/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
+#define getStartAddress(elfdata)    (elfData->eh->e_entry) & 0xfffffffe
 
 extern ElfData *elfData;
 extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
@@ -21,7 +21,7 @@ extern int fileStatus;
 void loadElf(ElfData *elfData)
 {
   int i, j, flashStartAddr = 0x08000000, flashSize = 2048 * 1024;
-  uint32_t physAddr;
+  uint32_t physAddr, loadSize = 0;
   char *sectionName;
   ElfSection *elfSection;
 
@@ -38,6 +38,7 @@ void loadElf(ElfData *elfData)
 
       // printf("Section Name: %s\n", sectionName);
       elfSection = getElfSectionInfo(elfData, sectionName);
+      loadSize += elfSection->size;
       // printf("Section data: 0x%x\n", *(elfSection->dataAddress));
 
       simulatorCopyBlock(physAddr, elfSection->dataAddress, elfSection->size);
@@ -45,6 +46,9 @@ void loadElf(ElfData *elfData)
       printf("Loading section %s, size 0x%x lma 0x%x\n", sectionName, elfSection->size, physAddr);
     }
   }
+  
+  coreReg[PC] = getStartAddress(elfData);
+printf("Start address 0x%x, load size %d\n\n", coreReg[PC], loadSize);
 }
 
 uint32_t getSectionLma(ElfData *elfData, int index)

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include "LoadElf.h"
-// #include "ARMRegisters.h"
+#include "ARMRegisters.h"
 #include "mock_MemoryBlock.h"
 #include "ProgramElf.h"
 #include "GetHeaders.h"
@@ -11,8 +11,8 @@
 #include "elf.h"
 #include "CException.h"
 #include "ErrorCode.h"
-// #include "getAndSetBits.h"
-// #include "getMask.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
 
 #define ELF_FILE    "C:/Users/user06D/Desktop/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
 
@@ -175,4 +175,6 @@ void test_loadElf()
   simulatorCopyBlock_Expect(0x0800079c, data->dataAddress, data->size);
 
   loadElf(elfData);
+  
+  TEST_ASSERT_EQUAL(0x8000764, coreReg[PC]);
 }
