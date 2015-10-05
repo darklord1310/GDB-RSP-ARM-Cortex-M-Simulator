@@ -52,26 +52,38 @@ void resetMemoryBlock()
     int i;
 
     for(i = 0; i < sizeof(memoryBlock); i++)
+    {
         memoryBlock[i] = 0;
+    }
 }
 
-uint32_t virtualMemToPhysicalMem(uint32_t mem)
+uint32_t virtualMemToPhysicalMem(uint32_t virtualMem)
 {
     uint32_t virtualAddr = 0xffffffff;
 
-    if(mem < 0x20000000)
+    if(virtualMem < 0x20000000)
     {
-        if(mem >= 0x8000000)
-            virtualAddr = ((mem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR + 0x10000;
-        else if(mem < 0x10000)
-            virtualAddr = mem;
+        if(virtualMem >= 0x8000000)
+            virtualAddr = ((virtualMem - 0x20000000) & 0x000fffff) + ROM_BASE_ADDR + 0x10000;
+        else if(virtualMem < 0x10000)
+            virtualAddr = virtualMem;
         // else
             // printf("Code space not enough\n");
     }
-    else if(mem < 0x40000000)
-        virtualAddr = ((mem - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;
+    else if(virtualMem < 0x40000000)
+        virtualAddr = ((virtualMem - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;
     else
         printf("Memory exceeded\n");
 
     return virtualAddr;
+}
+
+void simulatorCopyBlock(uint32_t sourceAddr, uint8_t *destAddr, uint32_t size)
+{
+  int i = 0;
+  
+  for(i = 0; i < size; i++)
+  {
+    memoryBlock[virtualMemToPhysicalMem(sourceAddr + i)] = destAddr[i];
+  }
 }

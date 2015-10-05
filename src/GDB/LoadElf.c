@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include "LoadElf.h"
 // #include "ARMRegisters.h"
-// #include "MemoryBlock.h"
+#include "MemoryBlock.h"
 #include "ProgramElf.h"
 #include "GetHeaders.h"
 #include "Relocator.h"
@@ -18,35 +18,52 @@ extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
 extern uint32_t entryAddress;
 extern int fileStatus;
 
-void loadElf()
+void loadElf(ElfData *elfData)
 {
-  getElfSection(ELF_FILE);
-/*Loading section .isr_vector, size 0x1ac lma 0x8000000
-  Loading section .text, size 0x5d8 lma 0x80001b0
-  Loading section .rodata, size 0x8 lma 0x8000788
-  Loading section .init_array, size 0x8 lma 0x8000790
-  Loading section .fini_array, size 0x4 lma 0x8000798
-  Loading section .data, size 0x428 lma 0x800079c
-  Start address 0x8000764, load size 3008 */
+  int i, j, flashStartAddr = 0x08000000, flashSize = 2048 * 1024;
+  uint32_t physAddr;
+  char *sectionName;
+  ElfSection *elfSection;
 
-  printf("Loading section .isr_vector, size 0x%x lma 0x%x\n", isr->size, isr->destAddress);
-  printf("Loading section .text, size 0x%x lma 0x%x\n", text->size, text->destAddress);
-  printf("Loading section .rodata, size 0x%x lma 0x%x\n", rodata->size, rodata->destAddress);
-  printf("Loading section .init_array, size 0x%x lma 0x%x\n", initArray->size, initArray->destAddress);
-  printf("Loading section .fini_array, size 0x%x lma 0x%x\n", finiArray->size, finiArray->destAddress);
-  printf("Loading section .data, size 0x%x lma 0x%x\n", data->size, data->destAddress);
+  // getElfSection(ELF_FILE);
+  // Start address 0x8000764, load size 3008
 
+  for(i = 0; i < elfData->eh->e_shnum; i++)
+  {
+    physAddr = getSectionLma(elfData, i);
 
+    if(isWithinRange(physAddr, flashStartAddr, flashSize))
+    {
+      sectionName = getSectionInfoNameUsingIndex(elfData, i);
+
+      // printf("Section Name: %s\n", sectionName);
+      elfSection = getElfSectionInfo(elfData, sectionName);
+      // printf("Section data: 0x%x\n", *(elfSection->dataAddress));
+
+      simulatorCopyBlock(physAddr, elfSection->dataAddress, elfSection->size);
+
+      printf("Loading section %s, size 0x%x lma 0x%x\n", sectionName, elfSection->size, physAddr);
+    }
+  }
 }
 
-uint32_t mappingVirtAddress(int index)
+uint32_t getSectionLma(ElfData *elfData, int index)
 {
   int i;
-  elfData = openElfFile(ELF_FILE);
-  
+
   for(i = 0; i < elfData->eh->e_phnum; i++)
   {
-    if(elfData->sh[index].sh_addr <= elfData->ph[i].p_vaddr + elfData->ph[i].p_memsz)
+    if(elfData->sh[index].sh_offset < elfData->ph[i].p_offset + elfData->ph[i].p_filesz && elfData->sh[index].sh_addr >= elfData->ph[i].p_vaddr)
       return elfData->ph[i].p_paddr + elfData->sh[index].sh_offset - elfData->ph[i].p_offset;
   }
+
+  return -1;
+}
+
+int isWithinRange(uint32_t address, uint32_t startAddr, uint32_t size)
+{
+  if(address <= startAddr + size && address >= startAddr)
+    return 1;
+
+  return 0;
 }

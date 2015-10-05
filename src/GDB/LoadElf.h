@@ -2,8 +2,12 @@
 #define LoadElf_H
 
 #include <stdint.h>
+#include "GetHeaders.h"
 
-void loadElf();
-uint32_t mappingVirtAddress();
+#define getSectionVma(elfData, i)     getSectionVirtualAddress(elfData, i)
+
+void loadElf(ElfData *elfData);
+uint32_t getSectionLma(ElfData *elfData, int index);
+int isWithinRange(uint32_t address, uint32_t startAddr, uint32_t size);
 
 #endif // LoadElf_H
