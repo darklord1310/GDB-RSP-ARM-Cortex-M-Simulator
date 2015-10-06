@@ -9,7 +9,7 @@
 #include "ErrorCode.h"
 
 ElfData *elfData;
-ElfSection *isr, *text, *rodata, *init_array, *fini_array, *data;
+ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
 uint32_t entryAddress = 0;
 int fileStatus = FILE_CLOSED;
 
@@ -66,6 +66,7 @@ Elf32_Phdr *getProgramHeaders(ElfData *elfData){
   fread(elfData->ph, phSizeToMalloc, 1, elfData->myFile->file);
 
   int i;
+<<<<<<< HEAD
 
   printf("\nProgram Headers\n");
   for(i = 0; i < elfData->eh->e_phnum; i++)
@@ -74,6 +75,13 @@ Elf32_Phdr *getProgramHeaders(ElfData *elfData){
                             elfData->ph[i].p_paddr,  \
                             elfData->ph[i].p_filesz);
   }
+=======
+  // printf("\nProgram Header\n");
+  // for(i = 0; i < elfData->eh->e_phnum; i++)
+  // {
+    // printf("%10x%10x%10x%10x\n", elfData->ph[i].p_vaddr, elfData->ph[i].p_paddr, elfData->ph[i].p_filesz, elfData->ph[i].p_memsz);
+  // }
+>>>>>>> b71dabc09b4f0684a762fcb5e7e47514dbba599c
 
   return elfData->ph;
 }
@@ -102,6 +110,7 @@ Elf32_Shdr *getSectionHeaders(ElfData *elfData){
 
   inStreamMoveFilePtr(elfData->myFile, elfData->eh->e_shoff);
   fread(elfData->sh, shSizeToMalloc, 1, elfData->myFile->file);
+<<<<<<< HEAD
 
   int i;
 
@@ -119,6 +128,18 @@ Elf32_Shdr *getSectionHeaders(ElfData *elfData){
                                          elfData->sh[i].sh_info   \
                                          );
   }
+=======
+  
+  int i;
+  // printf("Section Header\n");
+  // for(i = 0; i < elfData->eh->e_shnum; i++)
+  // {
+    // printf("%10x%10x%10x\n", elfData->sh[i].sh_addr,   \
+                             // elfData->sh[i].sh_offset, \
+                             // elfData->sh[i].sh_size    \
+                             // );
+  // }
+>>>>>>> b71dabc09b4f0684a762fcb5e7e47514dbba599c
 
   return elfData->sh;
 }
@@ -665,9 +686,15 @@ void getElfSection(char *elfFile) {
   elfData = openElfFile(elfFile);
   isr     = getElfSectionInfo(elfData, ".isr_vector");
   text    = getElfSectionInfo(elfData, ".text");
+<<<<<<< HEAD
   rodata  = getElfSectionInfo(elfData, ".rodata");
   init_array  = getElfSectionInfo(elfData, ".init_array");
   fini_array  = getElfSectionInfo(elfData, ".fini_array");
+=======
+  initArray = getElfSectionInfo(elfData, ".init_array");
+  finiArray = getElfSectionInfo(elfData, ".fini_array");
+  rodata = getElfSectionInfo(elfData, ".rodata");
+>>>>>>> b71dabc09b4f0684a762fcb5e7e47514dbba599c
   data = getElfSectionInfo(elfData, ".data");
 
   entryAddress = (*(uint32_t *)(&isr->dataAddress[4]));
@@ -709,6 +736,10 @@ void closeElfSection(ElfSection *elfSection) {
 void closeElfFile(void) {
   closeElfSection(isr);
   closeElfSection(text);
+<<<<<<< HEAD
+=======
+  closeElfSection(initArray);
+>>>>>>> b71dabc09b4f0684a762fcb5e7e47514dbba599c
   closeElfData(elfData);
 
   fileStatus = FILE_CLOSED;

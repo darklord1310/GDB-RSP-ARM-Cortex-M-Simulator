@@ -32,7 +32,7 @@ typedef enum {
 } File_Status;
 
 extern ElfData *elfData;
-extern ElfSection *isr, *text, *rodata, *init_array, *fini_array, *data;
+extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
 extern uint32_t entryAddress;
 extern int fileStatus;
 
