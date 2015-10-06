@@ -10,7 +10,7 @@
 #include "CException.h"
 
 extern ElfData *elfData;
-extern ElfSection *isr, *text, *rodata;
+extern ElfSection *isr, *text, *rodata, *init_array, *fini_array, *data;
 extern uint32_t entryAddress;
 extern int fileStatus;
 
