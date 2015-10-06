@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -39,7 +39,6 @@
 // char *rspState(RspData *rspData, char *data)
 void rspState(RspData *rspData, char *data)
 {
-    // char *packet = NULL;
     static int nack = 0;
 
     if(data[0] == '+')
@@ -52,11 +51,9 @@ void rspState(RspData *rspData, char *data)
                 break;
             case '$':
                 data++;
-                // printf("data: %s\n", data);
 
                 if(!verifyPacket(data))
                 {
-                    // printf("yes\n");
                     sendBuffer(&(rspData->sock), "-");
                     rspData->state = NACK;
                 }
@@ -77,6 +74,8 @@ void rspState(RspData *rspData, char *data)
         sendBuffer(&(rspData->sock), "-");
         rspData->state = NACK;
     }
+    else if(data != NULL && data[0] == '\0')
+        rspData->state = NACK;
 
 again:
     switch(rspData->state)
@@ -95,11 +94,9 @@ again:
         case ACK:
             nack = 0;
             rspData->state = SERVE_RSP;
-            // printf("yes\n");
             break;
         case NACK:
             nack++;
-            // printf("nack: %d\n", nack);
 
             if(nack == 5)
                 rspData->state = KILL;
@@ -107,23 +104,12 @@ again:
                 rspData->state = INITIAL;
             break;
         case SERVE_RSP:
-            /* if(!verifyPacket(data))
+            if(!strcmp("$k#6b", data))
             {
-                printf("yes\n");
-                sendBuffer(&(rspData->sock), "-");
-                rspData->state = NACK;
-            } */
-            // else
-            // {
-                if(!strcmp("$k#6b", data))
-                {
-                    rspData->state = KILL;
-                    break;
-                }
-                sendBuffer(&(rspData->sock), serveRSP(data));
-                // packet = serveRSP(data);
-                // printf("yes\n");
-            // }
+                rspData->state = KILL;
+                break;
+            }
+            sendBuffer(&(rspData->sock), serveRSP(data));
 
             rspData->state = INITIAL;
             break;
@@ -137,5 +123,4 @@ again:
 
     if(rspData->state == NACK)
         goto again;
-    // return packet;
 }

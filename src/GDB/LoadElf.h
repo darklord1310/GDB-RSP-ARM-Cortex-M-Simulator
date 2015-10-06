@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -21,19 +21,18 @@
 */
 
 
-#ifndef MemoryBlock_H
-#define MemoryBlock_H
+#ifndef LoadElf_H
+#define LoadElf_H
 
 #include <stdint.h>
+#include "GetHeaders.h"
 
-#define KILO_BYTE               1024
-#define ROM_BASE_ADDR           0x00000    //500kb of virtual memory
-#define RAM_BASE_ADDR           0x80000    //500kb of virtual memory
+#define ELF_FILE    "C:/Users/user06D/Desktop/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
+#define COIDE_ELF_FILE    "C:/Users/user06D/Desktop/ARM-BlinkyLED/Test01/Debug/bin/Test01.elf"
+#define getSectionVma(elfData, i)     getSectionVirtualAddress(elfData, i)
 
-uint8_t memoryBlock[KILO_BYTE * KILO_BYTE];
+void loadElf(ElfData *elfData);
+uint32_t getSectionLma(ElfData *elfData, int index);
+int isWithinRange(uint32_t address, uint32_t startAddr, uint32_t size);
 
-void resetMemoryBlock();
-uint32_t virtualMemToPhysicalMem(uint32_t virtualMem);
-void simulatorCopyBlock(uint32_t sourceAddr, uint8_t *destAddr, uint32_t size);
-
-#endif // MemoryBlock_H
+#endif // LoadElf_H

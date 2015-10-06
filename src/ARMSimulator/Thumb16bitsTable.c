@@ -275,6 +275,14 @@ void initThumb16bitsOpcode1011XX()
   Thumb16Opcode1011XX[0b0000101] = SUBSPImmediateT1;
   Thumb16Opcode1011XX[0b0000110] = SUBSPImmediateT1;
   Thumb16Opcode1011XX[0b0000111] = SUBSPImmediateT1;
+  Thumb16Opcode1011XX[0b1110000] = BKPT;
+  Thumb16Opcode1011XX[0b1110001] = BKPT;
+  Thumb16Opcode1011XX[0b1110010] = BKPT;
+  Thumb16Opcode1011XX[0b1110011] = BKPT;
+  Thumb16Opcode1011XX[0b1110100] = BKPT;
+  Thumb16Opcode1011XX[0b1110101] = BKPT;
+  Thumb16Opcode1011XX[0b1110110] = BKPT;
+  Thumb16Opcode1011XX[0b1110111] = BKPT;
 }
 
 

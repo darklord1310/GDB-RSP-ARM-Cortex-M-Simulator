@@ -851,74 +851,74 @@ void test_step_given_following_data_should_step_through_the_instruction(void)
 
 void test_addBreakpoint_given_0x80009d6_should_add_0x80009d6_bp_addr_into_Breakpoint_list(void)
 {
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
 
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
-    TEST_ASSERT_NULL(bp);
+    deleteAllBreakpoint(&breakpointList);
+    TEST_ASSERT_NULL(breakpointList);
 }
 
 void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoint_list(void)
 {
-    addBreakpoint(&bp, 0x80009d6);
-    addBreakpoint(&bp, 0x8000ab6);
-    addBreakpoint(&bp, 0x8000bc6);
+    addBreakpoint(&breakpointList, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x8000ab6);
+    addBreakpoint(&breakpointList, 0x8000bc6);
 
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NOT_NULL(bp->next);
-    TEST_ASSERT_NOT_NULL(bp->next->next);
-    TEST_ASSERT_NULL(bp->next->next->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
-    TEST_ASSERT_EQUAL(0x8000ab6, bp->next->addr);
-    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->next->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NOT_NULL(breakpointList->next);
+    TEST_ASSERT_NOT_NULL(breakpointList->next->next);
+    TEST_ASSERT_NULL(breakpointList->next->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
+    TEST_ASSERT_EQUAL(0x8000ab6, breakpointList->next->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, breakpointList->next->next->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_addBreakpoint_given_several_addr_should_add_all_bp_addr_into_Breakpoint_list_according_to_addr(void)
 {
-    addBreakpoint(&bp, 0x80009d6);
-    addBreakpoint(&bp, 0x8000bc6);
-    addBreakpoint(&bp, 0x8000ab6);
+    addBreakpoint(&breakpointList, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x8000bc6);
+    addBreakpoint(&breakpointList, 0x8000ab6);
 
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NOT_NULL(bp->next);
-    TEST_ASSERT_NOT_NULL(bp->next->next);
-    TEST_ASSERT_NULL(bp->next->next->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
-    TEST_ASSERT_EQUAL(0x8000ab6, bp->next->addr);
-    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->next->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NOT_NULL(breakpointList->next);
+    TEST_ASSERT_NOT_NULL(breakpointList->next->next);
+    TEST_ASSERT_NULL(breakpointList->next->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
+    TEST_ASSERT_EQUAL(0x8000ab6, breakpointList->next->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, breakpointList->next->next->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_removeBreakpoint_given_0x80009d6_should_remove_bp_from_Breakpoint_list(void)
 {
-    addBreakpoint(&bp, 0x80009d6);
-    removeBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
+    removeBreakpoint(&breakpointList, 0x80009d6);
 
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_NULL(breakpointList);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_removeBreakpoint_given_several_addr_should_remove_0x8000ab6_bp_from_Breakpoint_list(void)
 {
-    addBreakpoint(&bp, 0x80009d6);
-    addBreakpoint(&bp, 0x8000ab6);
-    addBreakpoint(&bp, 0x8000bc6);
-    removeBreakpoint(&bp, 0x8000ab6);
+    addBreakpoint(&breakpointList, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x8000ab6);
+    addBreakpoint(&breakpointList, 0x8000bc6);
+    removeBreakpoint(&breakpointList, 0x8000ab6);
 
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NOT_NULL(bp->next);
-    TEST_ASSERT_NULL(bp->next->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
-    TEST_ASSERT_EQUAL(0x8000bc6, bp->next->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NOT_NULL(breakpointList->next);
+    TEST_ASSERT_NULL(breakpointList->next->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
+    TEST_ASSERT_EQUAL(0x8000bc6, breakpointList->next->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_insertBreakpointOrWatchpoint_given_Z0_should_insert_breakpoint_at_0x080009d6(void)
@@ -931,11 +931,11 @@ void test_insertBreakpointOrWatchpoint_given_Z0_should_insert_breakpoint_at_0x08
     reply = insertBreakpointOrWatchpoint(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_insertBreakpointOrWatchpoint_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -967,11 +967,11 @@ void test_insertBreakpointOrWatchpoint_given_Z1_should_insert_breakpoint_at_0x08
     reply = insertBreakpointOrWatchpoint(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_insertBreakpointOrWatchpoint_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -1028,9 +1028,9 @@ void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x08
     reply = insertBreakpointOrWatchpoint(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
     char data2[] = "$z0,80009d6,2#cf";
 
@@ -1038,9 +1038,9 @@ void test_removeBreakpointOrWatchpoint_given_z0_should_insert_breakpoint_at_0x08
     reply = removeBreakpointOrWatchpoint(data2);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_NULL(breakpointList);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_removeBreakpointOrWatchpoint_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -1067,15 +1067,15 @@ void test_removeBreakpointOrWatchpoint_given_z1_should_insert_breakpoint_at_0x08
     char data[] = "$z1,80009d6,2#d0";
     char *reply = NULL;
 
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
     gdbCreateMsgPacket_ExpectAndReturn("OK", "$OK#9a");
 
     reply = removeBreakpointOrWatchpoint(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_NULL(breakpointList);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_removeBreakpointOrWatchpoint_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
@@ -1138,62 +1138,62 @@ void test_removeBreakpointOrWatchpoint_given_z3_and_z2_should_insert_read_and_wr
     TEST_ASSERT_EQUAL(0, wp[0].size);
 }
 
-void test_findBreakpoint_given_no_breakpoint_in_breakpoint_lits_should_return_0(void)
+void test_hitBreakpoint_given_no_breakpoint_in_breakpoint_lits_should_return_0(void)
 {
     resetMemoryBlock();
     coreReg[PC] = 0x80009d6;
 
-    TEST_ASSERT_EQUAL(0, findBreakpoint(bp));
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_EQUAL(0, hitBreakpoint(breakpointList));
+    TEST_ASSERT_NULL(breakpointList);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
-void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d6_should_return_1(void)
+void test_hitBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d6_should_return_1(void)
 {
     resetMemoryBlock();
     coreReg[PC] = 0x80009d6;
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
 
-    TEST_ASSERT_EQUAL(1, findBreakpoint(bp));
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(1, hitBreakpoint(breakpointList));
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
-void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_0(void)
+void test_hitBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_0(void)
 {
     resetMemoryBlock();
     coreReg[PC] = 0x80009d0;
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
 
-    TEST_ASSERT_EQUAL(0, findBreakpoint(bp));
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(0, hitBreakpoint(breakpointList));
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
-void test_findBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_1_when_it_reach_during_while_loop(void)
+void test_hitBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_1_when_it_reach_during_while_loop(void)
 {
     resetMemoryBlock();
     coreReg[PC] = 0x80009d0;
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
 
-    while(!findBreakpoint(bp))
+    while(!hitBreakpoint(breakpointList))
     {
         coreReg[PC] += 2;
     }
 
-    TEST_ASSERT_EQUAL(1, findBreakpoint(bp));
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_EQUAL(1, hitBreakpoint(breakpointList));
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
 }
 
 void test_initializeWatchpoint_should_initialize_all_4_watchpoint(void)

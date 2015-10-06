@@ -73,6 +73,7 @@ LoopFillZerobss:
 /* Call the application's entry point.*/
   bl  main
   mov r5, #30
+  bkpt  #0x0
   bx  lr
 
   /* ldr	r0, =mydata

@@ -68,6 +68,7 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
+#include "BKPT.h"
 
 
 void (*Thumb16Opcode00XXXX[64])(uint32_t instruction);

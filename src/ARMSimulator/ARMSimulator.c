@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -265,9 +265,9 @@ void executeLoadStoreMultiple(uint32_t instruction)
   uint32_t W = getBits(instruction,21,21);
   uint32_t WRn = (W << 4) | Rn;
   uint32_t opcode = ( ( (op << 1) | L) << 5) | WRn;
-  
+
   (*Thumb32LoadStoreMultiple[opcode])(instruction);
-  
+
 }
 
 
@@ -276,7 +276,7 @@ void executeStoreSingleDataItem(uint32_t instruction)
   uint32_t op1 = getBits(instruction,23,21);
   uint32_t op2 = getBits(instruction,11,6);
   uint32_t opcode = (op1 << 6) | op2;
-  
+
   (*Thumb32StoreSingleDataItem[opcode])(instruction);
 }
 
@@ -311,9 +311,8 @@ void executeLoadHalfword(uint32_t instruction)
   uint32_t Rt = getBits(instruction,15,12);
   uint32_t op2 = getBits(instruction,11,6);
   uint32_t opcode = (((((op1 << 6) | op2) << 4) | Rn) << 4 ) | Rt;
- 
+
   (*Thumb32LoadHalfword[opcode])(instruction);
-  
 }
 
 

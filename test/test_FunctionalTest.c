@@ -94,6 +94,7 @@
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "ExceptionObject.h"
+#include "BKPT.h"
 
 
 extern char *targetCortexM4_XML;

@@ -16,6 +16,7 @@
 #include "CLZ.h"
 #include "SUBSPRegister.h"
 #include "BL.h"
+#include "BKPT.h"
 #include "ModifiedImmediateConstant.h"
 #include "ConditionalExecution.h"
 #include "Thumb16bitsTable.h"

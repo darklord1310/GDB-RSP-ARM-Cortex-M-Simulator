@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -1033,14 +1033,14 @@ void initThumb32StoreSingleDataItem()
   {
     dummy = setBits(dummy,j,5,0);
     Thumb32StoreSingleDataItem[dummy] = STRBImmediateT2;
-  } 
-  
+  }
+
   dummy = 0b000100000;
   for(j = 0; j <= 0b11111; j ++)
   {
     dummy = setBits(dummy,j,4,0);
     Thumb32StoreSingleDataItem[dummy] = STRBImmediateT3;
-  } 
+  }
   //
   dummy = 0b000000000;
   for(j = 0; j <= 0b11111; j ++)
@@ -1055,7 +1055,7 @@ void initThumb32StoreSingleDataItem()
     dummy = setBits(dummy,j,5,0);
     Thumb32StoreSingleDataItem[dummy] = STRHImmediateT2;
   }
-  
+
   dummy = 0b001100000;
   for(j = 0; j <= 0b11111; j ++)
   {
@@ -1083,14 +1083,14 @@ void initThumb32StoreSingleDataItem()
     dummy = setBits(dummy,j,5,0);
     Thumb32StoreSingleDataItem[dummy] = STRImmediateT3;
   }
-  
+
   dummy = 0b010100000;
   for(j = 0; j <= 0b11111; j ++)
   {
     dummy = setBits(dummy,j,4,0);
     Thumb32StoreSingleDataItem[dummy] = STRImmediateT4;
   }
-  
+
 }
 
 
@@ -1098,7 +1098,7 @@ void initThumb32LoadByteMemoryHints()
 {
   uint32_t dummy;
   int i,j,k,h;
-  
+
   //
   dummy = 0b0100000000000000;
   for(j = 0; j <= 0b111111; j ++)
@@ -1114,7 +1114,7 @@ void initThumb32LoadByteMemoryHints()
       }
     }
   }
-  
+
   dummy = 0b0010010000000000;
   for(j = 0; j <= 0b11; j ++)
   {
@@ -1133,7 +1133,7 @@ void initThumb32LoadByteMemoryHints()
       }
     }
   }
-  
+
   dummy = 0b0011000000000000;
   for(j = 0; j <= 0b11; j ++)
   {
@@ -1200,7 +1200,7 @@ void initThumb32LoadByteMemoryHints()
       }
     }
   }
-  
+
   dummy = 0b1010010000000000;
   for(j = 0; j <= 0b11; j ++)
   {
@@ -1219,7 +1219,7 @@ void initThumb32LoadByteMemoryHints()
       }
     }
   }
-  
+
   dummy = 0b1011000000000000;
   for(j = 0; j <= 0b11; j ++)
   {
@@ -1294,8 +1294,8 @@ void initThumb32bitsLoadStoreDualTableBranch()
 {
   uint32_t dummy;
   int i,j,k,h;
-  
-  
+
+
   dummy = 0b00000000;
   for(k = 0; k <= 0b1111; k++)
   {

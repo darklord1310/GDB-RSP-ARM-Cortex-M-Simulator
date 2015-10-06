@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -21,19 +21,11 @@
 */
 
 
-#ifndef MemoryBlock_H
-#define MemoryBlock_H
+#ifndef BKPT_H
+#define BKPT_H
 
 #include <stdint.h>
 
-#define KILO_BYTE               1024
-#define ROM_BASE_ADDR           0x00000    //500kb of virtual memory
-#define RAM_BASE_ADDR           0x80000    //500kb of virtual memory
+void BKPT(uint32_t instruction);
 
-uint8_t memoryBlock[KILO_BYTE * KILO_BYTE];
-
-void resetMemoryBlock();
-uint32_t virtualMemToPhysicalMem(uint32_t virtualMem);
-void simulatorCopyBlock(uint32_t sourceAddr, uint8_t *destAddr, uint32_t size);
-
-#endif // MemoryBlock_H
+#endif // BKPT_H

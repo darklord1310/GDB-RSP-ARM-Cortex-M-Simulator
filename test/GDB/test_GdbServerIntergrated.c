@@ -92,6 +92,7 @@
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "ExceptionObject.h"
+#include "BKPT.h"
 
 
 extern char *targetCortexM4_XML;
@@ -347,14 +348,14 @@ void test_serveRSP_given_data_with_p_neg_1_packet_should_throw_GDB_SIGNAL_0(void
     initCoreRegister();
 
     Try
-	{
+	  {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+	  {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+	  }
 
     TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
 }
@@ -449,14 +450,14 @@ void test_serveRSP_given_data_with_P_neg_5_should_throw_GDB_SIGNAL_0(void)
     initCoreRegister();
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_0, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E00#a5", reply);
 }
@@ -611,14 +612,14 @@ void test_serveRSP_given_m0_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 
@@ -632,14 +633,14 @@ void test_serveRSP_given_m7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 }
@@ -681,14 +682,14 @@ void test_serveRSP_given_M8000d06_and_neg_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
 
@@ -702,14 +703,14 @@ void test_serveRSP_given_M7ffffff_and_2_should_throw_GDB_SIGNAL_ABRT(void)
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -722,14 +723,14 @@ void test_serveRSP_given_M8000d06_and_2_with_more_data_supply_should_throw_GDB_S
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -742,14 +743,14 @@ void test_serveRSP_given_M8000d06_and_2_with_no_data_supply_should_throw_GDB_SIG
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+        TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -762,14 +763,14 @@ void test_serveRSP_given_M8000d06_and_2_with_less_data_supply_should_throw_GDB_S
     char *reply = NULL;
 
     Try
-	{
+    {
         reply = serveRSP(data);
     }
     Catch(errorSignal)
-	{
-		TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+    {
+      TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
+      printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -827,11 +828,11 @@ void test_serveRSP_given_Z0_should_insert_breakpoint_at_0x080009d6(void)
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -848,8 +849,8 @@ void test_serveRSP_given_Z0_should_should_throw_GDB_SIGNAL_ABRT(void)
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+        printf("Error signal: %x\n", errorSignal);
+    }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -863,11 +864,11 @@ void test_serveRSP_given_Z1_should_insert_breakpoint_at_0x080009d6(void)
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0x80009d6, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -884,8 +885,8 @@ void test_serveRSP_given_Z1_should_should_throw_GDB_SIGNAL_ABRT(void)
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+		    printf("Error signal: %x\n", errorSignal);
+	  }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -921,14 +922,14 @@ void test_serveRSP_given_z0_should_insert_breakpoint_at_0x080009d6(void)
     char data[] = "$z0,80009d6,2#cf";
     char *reply = NULL;
 
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
 
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_NULL(breakpointList);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -945,8 +946,8 @@ void test_serveRSP_given_z0_should_should_throw_GDB_SIGNAL_ABRT(void)
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+		    printf("Error signal: %x\n", errorSignal);
+	  }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -957,14 +958,14 @@ void test_serveRSP_given_z1_should_insert_breakpoint_at_0x080009d6(void)
     char data[] = "$z1,80009d6,2#d0";
     char *reply = NULL;
 
-    addBreakpoint(&bp, 0x80009d6);
+    addBreakpoint(&breakpointList, 0x80009d6);
 
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_NULL(breakpointList);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -981,8 +982,8 @@ void test_serveRSP_given_z1_should_should_throw_GDB_SIGNAL_ABRT(void)
     Catch(errorSignal)
     {
         TEST_ASSERT_EQUAL(GDB_SIGNAL_ABRT, errorSignal);
-		printf("Error signal: %x\n", errorSignal);
-	}
+		    printf("Error signal: %x\n", errorSignal);
+	  }
 
     TEST_ASSERT_EQUAL_STRING("$E06#ab", reply);
     free(reply);
@@ -1052,17 +1053,17 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_should_stop_when_a_breakpoint_is
     memoryBlock[8] = 0xde;
     memoryBlock[9] = 0x21;  //movs  r1, #0xde
     // printf("PC: %x\n", coreReg[PC]);
-    addBreakpoint(&bp, 0xa);
+    addBreakpoint(&breakpointList, 0xa);
 
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NULL(bp->next);
-    TEST_ASSERT_EQUAL(0xa, bp->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NULL(breakpointList->next);
+    TEST_ASSERT_EQUAL(0xa, breakpointList->addr);
     TEST_ASSERT_EQUAL(0xa, coreReg[PC]);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -1092,27 +1093,27 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_2_breakpoint_should_stop_whe
     memoryBlock[16] = 0x32;
     memoryBlock[17] = 0x24; //movs  r4, #50
     // printf("PC: %x\n", coreReg[PC]);
-    addBreakpoint(&bp, 0xa);
-    addBreakpoint(&bp, 0x10);
+    addBreakpoint(&breakpointList, 0xa);
+    addBreakpoint(&breakpointList, 0x10);
 
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
-    TEST_ASSERT_NOT_NULL(bp);
-    TEST_ASSERT_NOT_NULL(bp->next);
-    TEST_ASSERT_NULL(bp->next->next);
-    TEST_ASSERT_EQUAL(0xa, bp->addr);
-    TEST_ASSERT_EQUAL(0x10, bp->next->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList);
+    TEST_ASSERT_NOT_NULL(breakpointList->next);
+    TEST_ASSERT_NULL(breakpointList->next->next);
+    TEST_ASSERT_EQUAL(0xa, breakpointList->addr);
+    TEST_ASSERT_EQUAL(0x10, breakpointList->next->addr);
     TEST_ASSERT_EQUAL(0xa, coreReg[PC]);
 
-    removeBreakpoint(&bp, 0xa);
+    removeBreakpoint(&breakpointList, 0xa);
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
 
     TEST_ASSERT_EQUAL(0x10, coreReg[PC]);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -1147,10 +1148,10 @@ void test_serveRSP_given_c_packet_and_PC_is_0x807ff00_should_stop_when_reach_the
     reply = serveRSP(data);
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
-    TEST_ASSERT_NULL(bp);
+    TEST_ASSERT_NULL(breakpointList);
     TEST_ASSERT_EQUAL(0x8070000, coreReg[PC]);
 
-    deleteAllBreakpoint(&bp);
+    deleteAllBreakpoint(&breakpointList);
     free(reply);
 }
 
@@ -1216,7 +1217,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_watch_read_watchpoint_should
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
     reply = serveRSP(dataWatchpoint2);      //add read watchpoint first
     TEST_ASSERT_EQUAL_STRING("$OK#9a", reply);
-    
+
     TEST_ASSERT_EQUAL(WP_WRITE, wp[0].type);
     TEST_ASSERT_EQUAL(0x20000000, wp[0].addr);
     TEST_ASSERT_EQUAL(4, wp[0].size);
@@ -1234,7 +1235,7 @@ void test_serveRSP_given_c_packet_and_PC_is_0x0_and_watch_read_watchpoint_should
 
     TEST_ASSERT_EQUAL_STRING("$S05#b8", reply);
     TEST_ASSERT_EQUAL(0x80001b2, coreReg[PC]);      //ldr   r1, [r0]
-    
+
     coreReg[PC] = 0x80001b4;
     reply = serveRSP(data);         //continue
 
