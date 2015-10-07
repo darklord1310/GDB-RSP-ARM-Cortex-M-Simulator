@@ -31,11 +31,7 @@
 #include "ARMSimulator.h"
 #include "State.h"
 #include "StateRSP.h"
-<<<<<<< HEAD
-#include "LoadElfToMemory.h"
-=======
 #include "LoadElf.h"
->>>>>>> b71dabc09b4f0684a762fcb5e7e47514dbba599c
 
 #ifdef  __MINGW32__
 /****************Initialize Winsock.****************/

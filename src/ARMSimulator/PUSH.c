@@ -34,6 +34,7 @@
 #include "ErrorSignal.h"
 #include "CException.h"
 #include "ExceptionObject.h"
+#include "LoadAndWriteMemory.h"
 
 
 /*Push Multiple Registers Encoding T1

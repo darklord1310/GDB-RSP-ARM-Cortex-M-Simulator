@@ -25,6 +25,7 @@
 #include "ErrorSignal.h"
 #include "ARMRegisters.h"
 #include "ExceptionObject.h"
+#include "CException.h"
 
 Exception *createException(char *msg, int errorCode, ExceptionType exceptionType)
 {

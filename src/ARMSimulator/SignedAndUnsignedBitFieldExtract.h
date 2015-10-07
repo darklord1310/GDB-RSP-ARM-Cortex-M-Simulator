@@ -27,7 +27,9 @@
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "ITandHints.h"
+#include "StatusRegisters.h"
 #include "ConditionalExecution.h"
+#include "UnconditionalAndConditionalBranch.h"
 #include <stdint.h>
 #include <stdio.h>
 

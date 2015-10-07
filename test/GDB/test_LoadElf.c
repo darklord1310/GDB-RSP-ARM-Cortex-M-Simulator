@@ -14,7 +14,7 @@
 #include "getAndSetBits.h"
 #include "getMask.h"
 
-#define ELF_FILE    "C:/Users/user06D/Desktop/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
+#define ELF_FILE          "C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
 
 extern ElfData *elfData;
 extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
@@ -176,5 +176,5 @@ void test_loadElf()
 
   loadElf(elfData);
   
-  TEST_ASSERT_EQUAL(0x8000764, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x8000760, coreReg[PC]);
 }
