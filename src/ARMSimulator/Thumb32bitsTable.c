@@ -495,6 +495,17 @@ void initThumb32Table()
       Thumb32Table[dummy] = executeLoadHalfword;
     }
   }
+  //
+  dummy = 0b0110000000;
+  for(i = 0; i <= 0b11; i ++)
+  {
+    dummy = setBits(dummy,i,5,4);
+    for(j = 0; j <= 0b1; j++)
+    {
+      dummy = setBits(dummy,j,0,0);
+      Thumb32Table[dummy] = executeLoadHalfword;
+    }
+  }
 }
 
 

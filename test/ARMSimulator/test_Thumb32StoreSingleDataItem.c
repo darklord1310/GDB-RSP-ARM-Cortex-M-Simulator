@@ -646,3 +646,73 @@ void test_STRImmediateT4_given_postindex_should_get_expected_result(void)
   TEST_ASSERT_EQUAL( 0x20001000, coreReg[12]);
   TEST_ASSERT_EQUAL( 0x08000042, coreReg[PC]);
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STRBT
+
+//test STRBT.W r1,[r2,#255]
+/*  r1 = 0x0f
+ *  r2 = 0x200010ff
+ */
+void test_STRBT_should_get_0x0f_at_memory_address_0x20001fff(void)
+{
+  coreReg[1] = 0x0f;
+  coreReg[2] = 0x200010ff;
+  coreReg[PC] = 0x08000046;
+  writeInstructionToMemoryGivenByAddress(0xf8021eff, 0x08000046);  //STRBT.W r1,[r2,#255]
+
+  //execute
+  armStep();
+
+  TEST_ASSERT_EQUAL( 0x0f, memoryBlock[ virtualMemToPhysicalMem(0x200011fe) ]);
+  TEST_ASSERT_EQUAL( 0x0800004a, coreReg[PC]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STRHT
+  
+//test STRHT.W r1,[r2,#255]
+/*  r1 = 0xde0f
+ *  r2 = 0x200010ff
+ */
+void test_STRHT_should_get_expected_result_at_memory_address(void)
+{
+  coreReg[1] = 0xde0f;
+  coreReg[2] = 0x200010ff;
+  coreReg[PC] = 0x08000046;
+  writeInstructionToMemoryGivenByAddress(0xf8221eff, 0x08000046);  //STRHT.W r1,[r2,#255]
+
+  //execute
+  armStep();
+
+  TEST_ASSERT_EQUAL( 0x0f, memoryBlock[ virtualMemToPhysicalMem(0x200011fe) ]);
+  TEST_ASSERT_EQUAL( 0xde, memoryBlock[ virtualMemToPhysicalMem(0x200011ff) ]);
+  TEST_ASSERT_EQUAL( 0x0800004a, coreReg[PC]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //STRHT
+  
+//test STRT.W r1,[r2,#255]
+/*  r1 = 0xdeadde0f
+ *  r2 = 0x200010ff
+ */
+void test_STRT_should_get_expected_result_at_memory_address(void)
+{
+  coreReg[1] = 0xdeadde0f;
+  coreReg[2] = 0x200010ff;
+  coreReg[PC] = 0x08000046;
+  writeInstructionToMemoryGivenByAddress(0xf8421eff, 0x08000046);  //STRT.W r1,[r2,#255]
+
+  //execute
+  armStep();
+
+  TEST_ASSERT_EQUAL( 0x0f, memoryBlock[ virtualMemToPhysicalMem(0x200011fe) ]);
+  TEST_ASSERT_EQUAL( 0xde, memoryBlock[ virtualMemToPhysicalMem(0x200011ff) ]);
+  TEST_ASSERT_EQUAL( 0xad, memoryBlock[ virtualMemToPhysicalMem(0x20001200) ]);
+  TEST_ASSERT_EQUAL( 0xde, memoryBlock[ virtualMemToPhysicalMem(0x20001201) ]);
+  TEST_ASSERT_EQUAL( 0x0800004a, coreReg[PC]);
+}

@@ -599,9 +599,6 @@ void LDRBImmediateT3(uint32_t instruction)
   else
     address = coreReg[Rn] - imm8;
 
-  if(P == 1 && W == 0 && U == 1)                    //if this condition meet, this is actually a LDRBT instruction
-    LDRBT(instruction);
-
   int check = isOffPostOrPreIndex(P,W);
 
   if(check == UNDEFINED)
@@ -796,9 +793,6 @@ void LDRHImmediateT3(uint32_t instruction)
   else
     address = coreReg[Rn] - imm8;
 
-  if(P == 1 && W == 0 && U == 1)                    //if this condition meet, this is actually a LDRHT instruction
-    LDRHT(instruction);
-
   int check = isOffPostOrPreIndex(P,W);
 
   if(check == UNDEFINED)
@@ -977,9 +971,6 @@ void LDRSBImmediateT2(uint32_t instruction)
     address = coreReg[Rn] + imm8;
   else
     address = coreReg[Rn] - imm8;
-
-  if(P == 1 && W == 0 && U == 1)                    //if this condition meet, this is actually a LDRSB instruction
-    LDRSBT(instruction);
 
   int check = isOffPostOrPreIndex(P,W);
 
@@ -1299,9 +1290,6 @@ void LDRSHImmediateT2(uint32_t instruction)
     address = coreReg[Rn] + imm8;
   else
     address = coreReg[Rn] - imm8;
-
-  if(P == 1 && W == 0 && U == 1)                    //if this condition meet, this is actually a LDRSB instruction
-    LDRSHT(instruction);
 
   int check = isOffPostOrPreIndex(P,W);
 
