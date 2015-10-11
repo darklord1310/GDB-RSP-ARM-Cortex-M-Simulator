@@ -148,7 +148,7 @@ def compile_list(list, src_path, obj_path, exe_path, config)
                     ' ' + optionize('', config[:linker_options], nil)
           # Compile the command
           command = linker + ' ' +                                            \
-                    options + ' ' + dependees.join(' ') + ' ' +               \
+                    dependees.join(' ') + ' ' + options + ' ' +               \
                     opt_out_file + ' ' + n.name
           if config[:verbose] == :yes
             puts(command)

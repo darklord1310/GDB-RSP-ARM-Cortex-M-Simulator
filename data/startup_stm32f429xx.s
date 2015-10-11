@@ -36,10 +36,10 @@ mydata: .word	4
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 Reset_Handler:
-  //ldr   sp, =_estack       /* set stack pointer */
+  ldr   sp, =_estack       /* set stack pointer */
  
 /* Copy the data segment initializers from flash to SRAM */  
-/*  movs  r1, #0
+  movs  r1, #0
   b  LoopCopyDataInit
 
 CopyDataInit:
@@ -55,16 +55,16 @@ LoopCopyDataInit:
   cmp  r2, r3
   bcc  CopyDataInit
   ldr  r2, =_sbss
-  b  LoopFillZerobss */
+  b  LoopFillZerobss
 /* Zero fill the bss segment. */  
 FillZerobss:
-/*  movs  r3, #0
+  movs  r3, #0
   str  r3, [r2], #4
     
 LoopFillZerobss:
   ldr  r3, = _ebss
   cmp  r2, r3
-  bcc  FillZerobss */
+  bcc  FillZerobss
 
 /* Call the clock system intitialization function.*/
   //bl  SystemInit   

@@ -35,5 +35,6 @@ uint8_t memoryBlock[KILO_BYTE * KILO_BYTE];
 void resetMemoryBlock();
 uint32_t virtualMemToPhysicalMem(uint32_t virtualMem);
 void simulatorCopyBlock(uint32_t sourceAddr, uint8_t *destAddr, uint32_t size);
+void copySingleBlock(uint32_t sourceAddr, uint8_t data);
 
 #endif // MemoryBlock_H
