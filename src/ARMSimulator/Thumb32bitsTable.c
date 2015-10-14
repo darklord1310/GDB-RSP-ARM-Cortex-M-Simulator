@@ -1542,11 +1542,76 @@ void initThumb32bitsLoadHalfword()
 
 
 
+/* Changes to be made (eg)
+
+00 00 xxxx Store Register Exclusive STREX on page A7-438
+00 01 xxxx Load Register Exclusive LDREX on page A7-270
+0x 10 xxxx Store Register Dual STRD (immediate) on page A7-436
+1x x0 xxxx
+
+void (**)(uint32_t) foo
+
+tabulateOpcodeTable()
 
 
+// instructionPointerTable is a pointer to array 16 of function which takes in (uint32_t) type returning void
+void (*instructionPointer)[16](uint32_t);
+
+void (**table)(uint32_t) = malloc(sizeof(void (*)(uint32_t)) * 16);
+table[3](instructionCode);
+
+typedef struct MainOpcodeTable_t MainOpcodeTable;
+
+struct MainOpcodeTable
+{
+  // opcodeSubTable is a pointer to pointer to function (uint32_t) returning void
+  void (**opcodeSubTable)(uint32_t) ;
+  uint32_t mask;
+  uint32_t shift;
+}
+
+MainOpcodeTable mainopcodeTable[2048];
 
 
+void (**)(uint32_t) foo(index)
+{
+  void (**table)(uint32_t)
+  static void (**table0010)(uint32_t);
+  opcode = getOpcode(0b000011011, index);
+  switch(opcode)
+  {
+    case 0b0000:
+                    table = malloc(sizeof(void (*)(uint32_t)) * 16);
+                    for(i = 0; i < 16; i++)
+                    {
+                      table[i] = strex;
+                    }
+                    //..
+                    break;
+    
+    case 0b0001: 
+                    table = malloc(sizeof(void (*)(uint32_t)) * 16);
+                    //..
+                    break;
+                    
+    case 0x0010:
+                    table = malloc(sizeof(void (*)(uint32_t)) * 16);
+                    table0010 = table;
+                    //..
+                    break;
+                    
+    case 0x0100:    table = malloc(sizeof(void (*)(uint32_t)) * 16);
+                    for(i = 0; i < 16; i++)
+                    {
+                      table[i] = invalidinstruction;
+                    }
+                    table[4] = strexb;
+                    table[5] = strexh;
+  }
+  return table;
+}
 
+*/
 
 
 

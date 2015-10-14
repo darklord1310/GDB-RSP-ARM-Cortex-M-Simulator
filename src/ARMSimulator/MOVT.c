@@ -70,5 +70,5 @@ void MOVTT1(uint32_t instruction)
 */
 void executeMOVT(uint32_t Rd, uint32_t immediate)
 {
-  coreReg[Rd] = immediate << 16 | (coreReg[Rd] & 0xffff);
+  writeToCoreRegisters(Rd, immediate << 16 | (coreReg[Rd] & 0xffff) );
 }

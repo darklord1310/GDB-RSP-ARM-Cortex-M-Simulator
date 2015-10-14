@@ -128,7 +128,7 @@ void LSLRegisterT2(uint32_t instruction)
 void executeLSLRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S)
 {
   unsigned int timesToShift = getBits(coreReg[Rm], 7, 0);    //get the lowest byte from the Rm register
-  coreReg[Rd] = executeLSL(timesToShift, coreReg[Rn], S);
+  writeToCoreRegisters(Rd, executeLSL(timesToShift, coreReg[Rn], S) );
 
   if( S == 1)
   {

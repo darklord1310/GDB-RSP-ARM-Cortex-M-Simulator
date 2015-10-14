@@ -85,7 +85,8 @@ void executeADCImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
   uint32_t carry = getBits(coreReg[xPSR], 29, 29);
   uint32_t backupRn = coreReg[Rn];
   uint32_t temp = coreReg[Rn] + immediate;
-  coreReg[Rd] = temp + carry;               //get the result of Rn + immediate + carry flag
+  
+  writeToCoreRegisters(Rd, temp + carry);       //get the result of Rn + immediate + carry flag          
 
   if(S == 1)
   {

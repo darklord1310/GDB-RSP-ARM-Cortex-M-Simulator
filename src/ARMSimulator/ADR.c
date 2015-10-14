@@ -65,8 +65,6 @@ void ADRT1(uint32_t instruction)
   uint32_t Rd = getBits(instruction,26,24);
   uint32_t imm8 = getBits(instruction,23,16) << 2;
 
-
-  //bug here, forgot to shift left twice
   if(inITBlock())
   {
     if( checkCondition(cond) )
@@ -202,7 +200,7 @@ void executeADR(uint32_t Rd, uint32_t immediate, Add add)
   uint32_t PCAfterAlign = alignPC(coreReg[PC]+4, 4);
   
   if(add == TRUE)
-    coreReg[Rd] =  PCAfterAlign + immediate;
+    writeToCoreRegisters(Rd, PCAfterAlign + immediate);
   else
-    coreReg[Rd] =  PCAfterAlign - immediate;
+    writeToCoreRegisters(Rd, PCAfterAlign - immediate);
 }

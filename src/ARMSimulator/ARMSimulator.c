@@ -376,7 +376,7 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 
 
 
-
+//this is the old function and it is no longer in use, the reason it does not get deleted is because many of the test code created earlier use this function
 void ARMSimulator(uint32_t instruction)
 {
   int check = is32or16instruction(instruction);

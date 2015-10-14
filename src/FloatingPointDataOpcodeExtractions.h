@@ -1,5 +1,0 @@
-#ifndef FloatingPointDataOpcodeExtractions_H
-#define FloatingPointDataOpcodeExtractions_H
-
-
-#endif // FloatingPointDataOpcodeExtractions_H

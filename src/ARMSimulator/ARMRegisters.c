@@ -141,3 +141,15 @@ void writeDoublePrecision(int regNum, uint64_t valueToWrite)
 
 }
 
+
+
+void writeToCoreRegisters(int regNum, uint32_t valueToWrite)
+{
+  if(regNum == SP)
+    coreReg[regNum] = setBits(valueToWrite,0b00,1,0);     //if the register to write is SP, mask off the last 2 bits
+  else if(regNum == PC)
+    coreReg[regNum] = setBits(valueToWrite,0b0,0,0);      //if the register to write is PC, mask off the last bit
+  else
+    coreReg[regNum] = valueToWrite;
+}
+

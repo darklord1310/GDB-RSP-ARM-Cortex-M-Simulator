@@ -94,7 +94,7 @@ void executeSSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDir
     shiftRn = coreReg[Rn] << shiftImmediate;
 
   temp = (shiftRn < min) ? min: (shiftRn > max ? max: shiftRn);
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd , temp );
 
   updateQFlag(max, min, shiftRn, sign);
 }
@@ -170,7 +170,7 @@ void executeUSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDir
     shiftRn = coreReg[Rn] << shiftImmediate;
 
   temp = (shiftRn > max) ? max: (shiftRn < 0 ? 0: shiftRn);
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd , temp );
 
   updateQFlag(max, min, shiftRn, sign);
 }

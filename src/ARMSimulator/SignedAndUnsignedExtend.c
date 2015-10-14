@@ -60,19 +60,13 @@ void SXTHT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      coreReg[Rd] = signExtend(coreReg[Rm], 16);
-    }
+      writeToCoreRegisters(Rd , signExtend(coreReg[Rm], 16) );
 
     shiftITState();
     coreReg[PC] += 2;
   }
   else
-  {
-    coreReg[Rd] = signExtend(coreReg[Rm], 16);
-    coreReg[PC] += 2;
-  }
-
+    writeToCoreRegisters(Rd , signExtend(coreReg[Rm], 16) );
 }
 
 
@@ -106,12 +100,12 @@ void SXTBT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rd] = signExtend(coreReg[Rm], 8);
+      writeToCoreRegisters(Rd , signExtend(coreReg[Rm], 8) );
 
     shiftITState();
   }
   else
-    coreReg[Rd] = signExtend(coreReg[Rm], 8);
+    writeToCoreRegisters(Rd , signExtend(coreReg[Rm], 8) );
 
   coreReg[PC] += 2;
 }
@@ -188,12 +182,12 @@ void UXTBT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    coreReg[Rd] = getBits(coreReg[Rm], 7, 0);
+      writeToCoreRegisters(Rd , getBits(coreReg[Rm], 7, 0) );
 
     shiftITState();
   }
   else
-  coreReg[Rd] = getBits(coreReg[Rm], 7, 0);
+    writeToCoreRegisters(Rd , getBits(coreReg[Rm], 7, 0) );
 
   coreReg[PC] += 2;
 }
@@ -237,7 +231,7 @@ void SXTHT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       rotated = executeROR(rotation, coreReg[Rm], 0);
-      coreReg[Rd] = signExtend(rotated, 16);
+      writeToCoreRegisters(Rd , signExtend(rotated, 16) );
     }
 
     shiftITState();
@@ -245,7 +239,7 @@ void SXTHT2(uint32_t instruction)
   else
   {
     rotated = executeROR(rotation, coreReg[Rm], 0);
-    coreReg[Rd] = signExtend(rotated, 16);
+    writeToCoreRegisters(Rd , signExtend(rotated, 16) );
   }
 
   coreReg[PC] += 4;
@@ -290,7 +284,7 @@ void UXTHT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       rotated = executeROR(rotation, coreReg[Rm], 0);
-      coreReg[Rd] = getBits(rotated, 15, 0);
+      writeToCoreRegisters(Rd , getBits(rotated, 15, 0) );
     }
 
     shiftITState();
@@ -298,7 +292,7 @@ void UXTHT2(uint32_t instruction)
   else
   {
     rotated = executeROR(rotation, coreReg[Rm], 0);
-    coreReg[Rd] = getBits(rotated, 15, 0);
+    writeToCoreRegisters(Rd , getBits(rotated, 15, 0) );
   }
 
   coreReg[PC] += 4;
@@ -343,7 +337,7 @@ void SXTBT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       rotated = executeROR(rotation, coreReg[Rm], 0);
-      coreReg[Rd] = signExtend(rotated, 8);
+      writeToCoreRegisters(Rd , signExtend(rotated, 8) );
     }
 
     shiftITState();
@@ -351,7 +345,7 @@ void SXTBT2(uint32_t instruction)
   else
   {
     rotated = executeROR(rotation, coreReg[Rm], 0);
-    coreReg[Rd] = signExtend(rotated, 8);
+    writeToCoreRegisters(Rd , signExtend(rotated, 8) );
   }
 
   coreReg[PC] += 4;
@@ -396,7 +390,7 @@ void UXTBT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       rotated = executeROR(rotation, coreReg[Rm], 0);
-      coreReg[Rd] = getBits(rotated, 7, 0);
+      writeToCoreRegisters(Rd , getBits(rotated, 7, 0) );
     }
 
     shiftITState();
@@ -404,7 +398,7 @@ void UXTBT2(uint32_t instruction)
   else
   {
     rotated = executeROR(rotation, coreReg[Rm], 0);
-    coreReg[Rd] = getBits(rotated, 7, 0);
+    writeToCoreRegisters(Rd , getBits(rotated, 7, 0) );
   }
 
   coreReg[PC] += 4;

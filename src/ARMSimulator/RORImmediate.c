@@ -84,7 +84,7 @@ void RORImmediateT1(uint32_t instruction)
 */
 void executeRORImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = executeROR(imm5, coreReg[Rm], S);
+  writeToCoreRegisters(Rd , executeROR(imm5, coreReg[Rm], S) );
 
   if(S == 1)
   {

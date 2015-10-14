@@ -37,6 +37,8 @@
 #include "LoadAndWriteMemory.h"
 #include "ExceptionObject.h"
 
+
+
 /*Load Register(literal) Encoding T1
  *
     LDR<c> <Rt>,<label>
@@ -74,30 +76,30 @@ void LDRLiteralT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      uint32_t temp = alignPC(coreReg[PC] + 4, 4);              // the PC need to add with 4 and align it
-                                                                // and the value is written into temp
+      uint32_t temp = alignPC(coreReg[PC] + 4, 4);                      // the PC need to add with 4 and align it
+                                                                        // and the value is written into temp
 
-      uint32_t imm10 = imm8 << 2;                               // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
+      uint32_t imm10 = imm8 << 2;                                       // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
 
-      uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
-                                                                // a word from the memory
-
-      coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
+      uint32_t address = temp + imm10;                                  // so the temp(which is the PC) + imm10 is the address where we need to get
+                                                                        // a word from the memory
+      
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );       //load a word from the address and store it into the register
     }
 
     shiftITState();
   }
   else
   {
-    uint32_t temp = alignPC(coreReg[PC] + 4, 4);              // the PC need to add with 4 and align it
-                                                              // and the value is written into temp
+    uint32_t temp = alignPC(coreReg[PC] + 4, 4);                        // the PC need to add with 4 and align it
+                                                                        // and the value is written into temp
 
-    uint32_t imm10 = imm8 << 2;                               // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
+    uint32_t imm10 = imm8 << 2;                                         // the imm8 need to shift 2 times to the left and bit1:0 is force to 0
 
-    uint32_t address = temp + imm10;                          // so the temp(which is the PC) + imm10 is the address where we need to get
-                                                              // a word from the memory
+    uint32_t address = temp + imm10;                                    // so the temp(which is the PC) + imm10 is the address where we need to get
+                                                                        // a word from the memory
 
-    coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );         //load a word from the address and store it into the register
   }
 
   coreReg[PC] += 2;
@@ -157,10 +159,7 @@ void LDRLiteralT2(uint32_t instruction)
           address = temp - imm12;
 
         if(getBits(address,1,0) == 0b00)
-        {
-          coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
-          coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
-        }
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
         else
         {
           //placePCtoVectorTable(UsageFault);
@@ -188,8 +187,7 @@ void LDRLiteralT2(uint32_t instruction)
         else
           address = temp - imm12;
 
-        coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
-        coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
       }
 
       shiftITState();
@@ -203,8 +201,7 @@ void LDRLiteralT2(uint32_t instruction)
       else
         address = temp - imm12;
 
-      coreReg[Rt] = loadByteFromMemory(address, 4);             //load a word from the address and store it into the register
-      coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
     }
     coreReg[PC] += 4;
   }
@@ -250,12 +247,12 @@ void LDRBLiteral(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 1);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
   coreReg[PC] += 4;
 

@@ -69,7 +69,7 @@ void BX(uint32_t instruction)
           // uint32_t bit0 = getBits(coreReg[Rm], 0, 0);
           // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);          // EPSR.T = coreReg[Rm]<0>
           // coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                //change the bit 0 to be 0
-          coreReg[PC] = coreReg[Rm] & 0xfffffffe;
+          writeToCoreRegisters(PC, coreReg[Rm]);
         }
         else
           coreReg[PC] += 2;
@@ -81,7 +81,7 @@ void BX(uint32_t instruction)
         // uint32_t bit0 = getBits(coreReg[Rm], 0, 0);
         // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);            // EPSR.T = coreReg[Rm]<0>
         // coreReg[Rm] = setBits(coreReg[Rm], 0, 0, 0);                  //change the bit 0 to be 0
-        coreReg[PC] = coreReg[Rm] & 0xfffffffe;
+        writeToCoreRegisters(PC, coreReg[Rm]);
       }
     }
     else

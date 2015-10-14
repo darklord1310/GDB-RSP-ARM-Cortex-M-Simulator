@@ -476,9 +476,7 @@ void STMDB(uint32_t instruction)
     {                   
       writeMultipleRegisterToMemory(address, registerList,16, 0, Rn);
       if(W == 1)                                //if writeback is 1 then update the Rn register
-      {
-        coreReg[Rn] = address;
-      }
+        writeToCoreRegisters(Rn , address);
     }
     shiftITState();
   }
@@ -486,9 +484,7 @@ void STMDB(uint32_t instruction)
   {                 
     writeMultipleRegisterToMemory(address, registerList,16, 0, Rn);
     if(W == 1)                                //if writeback is 1 then update the Rn register
-    {
-      coreReg[Rn] = address;
-    }
+      writeToCoreRegisters(Rn , address);
   }
   
   coreReg[PC] += 4;
@@ -551,10 +547,7 @@ void writeMultipleRegisterToMemory(uint32_t address, uint32_t registerList, uint
   }
   
   if(writeBack == 1)                                //if writeback is 1 then update the Rn register
-  {
-    coreReg[Rn] = coreReg[Rn] + 4*bitCount;
-  }
-  
+    writeToCoreRegisters(Rn , coreReg[Rn] + 4*bitCount);
 }
 
 
@@ -575,7 +568,6 @@ int lowestSetBit(uint32_t value)
   }
   
   return counter;
-  
 }
 
 

@@ -158,6 +158,5 @@ void pushMultipleRegisterToMemory(uint32_t address, uint32_t registerList, int s
     }
   }
 
-  coreReg[SP] = coreReg[SP] - 4*bitCount(registerList);
-
+  writeToCoreRegisters(SP , coreReg[SP] - 4*bitCount(registerList) );
 }

@@ -37,6 +37,8 @@
 #include "STRRegister.h"
 #include "ExceptionObject.h"
 
+
+
 /*Load Register (register) Encoding T1
  *
     LDR<c> <Rt>,[<Rn>,<Rm>]
@@ -65,22 +67,17 @@ void LDRRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction,24,22);
   uint32_t Rn   = getBits(instruction,21,19);
   uint32_t Rt   = getBits(instruction,18,16);
-
+  uint32_t address = coreReg[Rn] +  coreReg[Rm];
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      uint32_t address = coreReg[Rn] +  coreReg[Rm];
-      coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
 
     shiftITState();
   }
   else
-  {
-    uint32_t address = coreReg[Rn] + coreReg[Rm];
-    coreReg[Rt] = loadByteFromMemory(address, 4);                        //load a word from the address and store it into the register
-  }
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );                    
 
   coreReg[PC] += 2;
 }
@@ -129,10 +126,7 @@ void LDRRegisterT2(uint32_t instruction)
       if(Rt == PC)
       {
         if( getBits(address,1,0) == 0b00)
-        {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
-        }
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
         else
         {
           //placePCtoVectorTable(UsageFault);
@@ -140,10 +134,7 @@ void LDRRegisterT2(uint32_t instruction)
         }
       }
       else
-      {
-        coreReg[Rt] = loadByteFromMemory(address, 4);
-        coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
-      }
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
     }
     shiftITState();
   }
@@ -152,10 +143,7 @@ void LDRRegisterT2(uint32_t instruction)
     if(Rt == PC)
     {
       if( getBits(address,1,0) == 0b00)
-      {
-        coreReg[Rt] = loadByteFromMemory(address, 4);
-        coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
-      }
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
       else
       {
         //placePCtoVectorTable(UsageFault);
@@ -163,10 +151,7 @@ void LDRRegisterT2(uint32_t instruction)
       }
     }
     else
-    {
-      coreReg[Rt] = loadByteFromMemory(address, 4);
-      coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
   }
 
   if(Rt != PC)
@@ -208,12 +193,12 @@ void LDRTT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-        coreReg[Rt] = loadByteFromMemory(address, 4);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 4);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
 
   coreReg[PC] += 4;
 }
@@ -248,22 +233,17 @@ void LDRHRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction,24,22);
   uint32_t Rn   = getBits(instruction,21,19);
   uint32_t Rt   = getBits(instruction,18,16);
+  uint32_t address = coreReg[Rn] +  coreReg[Rm];
 
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      uint32_t address = coreReg[Rn] +  coreReg[Rm];
-      coreReg[Rt] = loadByteFromMemory(address, 2);
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
     shiftITState();
   }
   else
-  {
-    uint32_t address = coreReg[Rn] + coreReg[Rm];
-    coreReg[Rt] = loadByteFromMemory(address, 2);
-  }
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) ); 
 
   coreReg[PC] += 2;
 }
@@ -305,12 +285,12 @@ void LDRHRegisterT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 2);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 2);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
   coreReg[PC] += 4;
 }
@@ -346,22 +326,17 @@ void LDRBRegisterT1(uint32_t instruction)
   uint32_t Rm = getBits(instruction,24,22);
   uint32_t Rn   = getBits(instruction,21,19);
   uint32_t Rt   = getBits(instruction,18,16);
-
+  uint32_t address = coreReg[Rn] +  coreReg[Rm];
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      uint32_t address = coreReg[Rn] +  coreReg[Rm];
-      coreReg[Rt] = loadByteFromMemory(address, 1);
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
     shiftITState();
   }
   else
-  {
-    uint32_t address = coreReg[Rn] + coreReg[Rm];
-    coreReg[Rt] = loadByteFromMemory(address, 1);
-  }
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) ); 
 
   coreReg[PC] += 2;
 }
@@ -402,12 +377,12 @@ void LDRBRegisterT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 1);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
   coreReg[PC] += 4;
 }
@@ -451,8 +426,7 @@ void LDRSBRegisterT1(uint32_t instruction)
       uint32_t address = coreReg[Rn] +  coreReg[Rm];
       uint32_t data =  loadByteFromMemory(address, 1);
       data = signExtend(data, 8);
-
-      coreReg[Rt] = data;
+      writeToCoreRegisters(Rt , data);
     }
 
     shiftITState();
@@ -462,8 +436,7 @@ void LDRSBRegisterT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + coreReg[Rm];
     uint32_t data =  loadByteFromMemory(address, 1);
     data = signExtend(data, 8);
-
-    coreReg[Rt] = data;
+    writeToCoreRegisters(Rt , data);
   }
 
   coreReg[PC] += 2;
@@ -505,12 +478,12 @@ void LDRSBRegisterT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+    writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
 
   coreReg[PC] += 4;
 }
@@ -553,8 +526,7 @@ void LDRSHRegisterT1(uint32_t instruction)
       uint32_t address = coreReg[Rn] +  coreReg[Rm];
       uint32_t data =  loadByteFromMemory(address, 2);
       data = signExtend(data, 16);
-
-      coreReg[Rt] = data;
+      writeToCoreRegisters(Rt , data );
     }
 
     shiftITState();
@@ -564,8 +536,7 @@ void LDRSHRegisterT1(uint32_t instruction)
     uint32_t address = coreReg[Rn] + coreReg[Rm];
     uint32_t data =  loadByteFromMemory(address, 2);
     data = signExtend(data, 16);
-
-    coreReg[Rt] = data;
+    writeToCoreRegisters(Rt , data );
   }
 
   coreReg[PC] += 2;
@@ -609,12 +580,12 @@ void LDRSHRegisterT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+    writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
 
   coreReg[PC] += 4;
 }
@@ -792,6 +763,7 @@ void LDMDB(uint32_t instruction)
   uint32_t M = getBits(instruction, 14,14);
   registerList = ( ( ( (P << 1) | M) << 1) << 13) | registerList;
   uint32_t address = coreReg[Rn] - 4*getBitCount(registerList, 16);
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
@@ -799,7 +771,7 @@ void LDMDB(uint32_t instruction)
       int writeBack = determineWriteBack(Rn, registerList, W);
       loadMultipleRegisterFromMemory(address, registerList, 0, Rn, 16);
       if(writeBack == 1)
-        coreReg[Rn] = coreReg[Rn] - 4*getBitCount(registerList, 16);
+        writeToCoreRegisters(Rn , coreReg[Rn] - 4*getBitCount(registerList, 16) );
     }
     else
     {
@@ -813,7 +785,7 @@ void LDMDB(uint32_t instruction)
     int writeBack = determineWriteBack( Rn, registerList, W);
     loadMultipleRegisterFromMemory(address, registerList, 0, Rn, 16);
     if(writeBack == 1)
-      coreReg[Rn] = coreReg[Rn] - 4*getBitCount(registerList, 16);
+      writeToCoreRegisters(Rn , coreReg[Rn] - 4*getBitCount(registerList, 16) );
   }
 
   if(P != 1)
@@ -839,21 +811,15 @@ void loadMultipleRegisterFromMemory(uint32_t address, uint32_t registerList, uin
   {
     if( getBits(registerList, i ,i) == 1)           //if the bit[i] of the registerList is 1, then load the value of the address into r[i]
     {
-      if(i != PC)
-        coreReg[i] = loadByteFromMemory(address, 4);
-      else
-        coreReg[i] = maskOffBit( loadByteFromMemory(address, 4), 0);
-
+      writeToCoreRegisters(i , loadByteFromMemory(address, 4) );
       bitCount++;
       address+=4;
     }
   }
 
   if(writeBack == 1)                                //if writeback is 1 then update the Rn register
-  {
-    coreReg[Rn] = coreReg[Rn] + 4*bitCount;
-  }
-
+    writeToCoreRegisters(Rn , coreReg[Rn] + 4*bitCount );
+  
 }
 
 

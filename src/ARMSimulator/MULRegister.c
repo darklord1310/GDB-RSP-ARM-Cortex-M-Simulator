@@ -129,7 +129,7 @@ void MULRegisterT2(uint32_t instruction)
 */
 void executeMULRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S)
 {
-  coreReg[Rd] = coreReg[Rm] * coreReg[Rn];
+  writeToCoreRegisters(Rd, coreReg[Rm] * coreReg[Rn] );
   
   if(S == 1)
   {

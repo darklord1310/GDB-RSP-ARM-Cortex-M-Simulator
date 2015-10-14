@@ -74,8 +74,8 @@ void TSTImmediateT1(uint32_t instruction)
 */
 void executeTSTImmediate(uint32_t immediate, uint32_t Rn)
 {
-    uint32_t result = immediate & coreReg[Rn];
+  uint32_t result = immediate & coreReg[Rn];
 
-    updateZeroFlag(result);
-    updateNegativeFlag(result);
+  updateZeroFlag(result);
+  updateNegativeFlag(result);
 }

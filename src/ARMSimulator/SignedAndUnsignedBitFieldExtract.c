@@ -63,14 +63,16 @@ void SBFXT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rd] = signExtend(temp, tempMSB);
+      writeToCoreRegisters(Rd , signExtend(temp, tempMSB) );
+    
     shiftITState();
   }
   else
-    coreReg[Rd] = signExtend(temp, tempMSB);
+    writeToCoreRegisters(Rd , signExtend(temp, tempMSB) );
 
   coreReg[PC] += 4;
 }
+
 
 /* Unsigned Bit Field Extract Encoding T1
 
@@ -111,11 +113,12 @@ void UBFXT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rd] = getBits(temp, tempMSB, 0);
+      writeToCoreRegisters(Rd , getBits(temp, tempMSB, 0) );
+
     shiftITState();
   }
   else
-    coreReg[Rd] = getBits(temp, tempMSB, 0);
+    writeToCoreRegisters(Rd , getBits(temp, tempMSB, 0) );
 
   coreReg[PC] += 4;
 }

@@ -61,12 +61,12 @@ void MLST1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rd] = coreReg[Ra] - coreReg[Rn] * coreReg[Rm];
+      writeToCoreRegisters(Rd, coreReg[Ra] - coreReg[Rn] * coreReg[Rm] );
 
     shiftITState();
   }
   else
-    coreReg[Rd] = coreReg[Ra] - coreReg[Rn] * coreReg[Rm];
+    writeToCoreRegisters(Rd, coreReg[Ra] - coreReg[Rn] * coreReg[Rm] );
 
   coreReg[PC] += 4;
 }

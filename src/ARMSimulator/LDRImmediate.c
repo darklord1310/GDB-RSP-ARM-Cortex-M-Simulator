@@ -176,23 +176,19 @@ void LDRImmediateT2(uint32_t instruction)
 */
 void LDRImmediateT3(uint32_t instruction)
 {
-  uint32_t address;
   uint32_t imm12 = getBits(instruction,11,0);
   uint32_t Rn   = getBits(instruction,19,16);
   uint32_t Rt   = getBits(instruction,15,12);
-
+  uint32_t address = coreReg[Rn] + imm12;
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      address = coreReg[Rn] + imm12;
       if(Rt == PC)
       {
         if( getBits(address,1,0) == 0b00)
-        {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
-        }
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
         else
         {
           //placePCtoVectorTable(UsageFault);
@@ -200,24 +196,17 @@ void LDRImmediateT3(uint32_t instruction)
         }
       }
       else
-      {
-        coreReg[Rt] = loadByteFromMemory(address, 4);
-        coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
-      }
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
     }
 
     shiftITState();
   }
   else
   {
-    address = coreReg[Rn] + imm12;
     if(Rt == PC)
     {
       if( getBits(address,1,0) == 0b00)
-      {
-        coreReg[Rt] = loadByteFromMemory(address, 4);
-        coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
-      }
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
       else
       {
         //placePCtoVectorTable(UsageFault);
@@ -225,10 +214,7 @@ void LDRImmediateT3(uint32_t instruction)
       }
     }
     else
-    {
-      coreReg[Rt] = loadByteFromMemory(address, 4);
-      coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
   }
 
   if(Rt != PC)
@@ -292,8 +278,7 @@ void LDRImmediateT4(uint32_t instruction)
         {
           if( getBits(address,1,0) == 0b00)
           {
-            coreReg[Rt] = loadByteFromMemory(address, 4);
-            coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+            writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
             // uint32_t bit0 = getBits(coreReg[Rt], 0, 0);
             // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);   // EPSR.T = coreReg[Rt]<0>
           }
@@ -304,25 +289,20 @@ void LDRImmediateT4(uint32_t instruction)
           }
         }
         else
-        {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
-        }
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
       }
       else if(P == 1 && W == 1)
       {
         if(Rt != PC)
         {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
           coreReg[Rn] = address;
         }
         else
         {
           if( getBits(address,1,0) == 0b00)
           {
-            coreReg[Rt] = loadByteFromMemory(address, 4);
-            coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+            writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
             // uint32_t bit0 = getBits(coreReg[Rt], 0, 0);
             // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);   // EPSR.T = coreReg[Rt]<0>
             coreReg[Rn] = address;
@@ -338,16 +318,14 @@ void LDRImmediateT4(uint32_t instruction)
       {
         if(Rt != PC)
         {
-          coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
-          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+          writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 4) );
           coreReg[Rn] = address;
         }
         else
         {
           if( getBits(coreReg[Rn],1,0) == 0b00)
           {
-            coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
-            coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+            writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 4) );
             // uint32_t bit0 = getBits(coreReg[Rt], 0, 0);
             // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);   // EPSR.T = coreReg[Rt]<0>
             coreReg[Rn] = address;
@@ -375,8 +353,7 @@ void LDRImmediateT4(uint32_t instruction)
         {
           if( getBits(address,1,0) == 0b00)
           {
-            coreReg[Rt] = loadByteFromMemory(address, 4);
-            coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+            writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
             // uint32_t bit0 = getBits(coreReg[Rt], 0, 0);
             // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);   // EPSR.T = coreReg[Rt]<0>
           }
@@ -387,25 +364,20 @@ void LDRImmediateT4(uint32_t instruction)
           }
         }
         else
-        {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
-        }
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
       }
       else if(P == 1 && W == 1)
       {
         if(Rt != PC)
         {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
           coreReg[Rn] = address;
         }
         else
         {
           if( getBits(address,1,0) == 0b00)
           {
-            coreReg[Rt] = loadByteFromMemory(address, 4);
-            coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+            writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
             // uint32_t bit0 = getBits(coreReg[Rt], 0, 0);
             // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);   // EPSR.T = coreReg[Rt]<0>
             coreReg[Rn] = address;
@@ -421,16 +393,14 @@ void LDRImmediateT4(uint32_t instruction)
       {
         if(Rt != PC)
         {
-          coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
-          coreReg[Rt] = handlingForSP(Rt, coreReg[Rt]);             //check if the register is SP, if it is, then mask off the last 2 bits
+          writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 4) );
           coreReg[Rn] = address;
         }
         else
         {
           if( getBits(coreReg[Rn],1,0) == 0b00)
           {
-            coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
-            coreReg[Rt] = coreReg[Rt] & 0xfffffffe;
+            writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 4) );
             // uint32_t bit0 = getBits(coreReg[Rt], 0, 0);
             // coreReg[xPSR] = setBits(coreReg[xPSR], bit0, 24, 24);   // EPSR.T = coreReg[Rt]<0>
             coreReg[Rn] = address;
@@ -482,23 +452,17 @@ void LDRBImmediateT1(uint32_t instruction)
   uint32_t imm5 = getBits(instruction,26,22);
   uint32_t Rn   = getBits(instruction,21,19);
   uint32_t Rt   = getBits(instruction,18,16);
-
+  uint32_t address = coreReg[Rn] + imm5;
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      uint32_t address = coreReg[Rn] +  imm5;
-      coreReg[Rt] = loadByteFromMemory(address, 1);
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
     shiftITState();
   }
   else
-  {
-    uint32_t address = coreReg[Rn] + imm5;
-    coreReg[Rt] = loadByteFromMemory(address, 1);
-  }
-
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
   coreReg[PC] += 2;
 }
@@ -542,12 +506,12 @@ void LDRBImmediateT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 1);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
   coreReg[PC] += 4;
 
@@ -612,15 +576,15 @@ void LDRBImmediateT3(uint32_t instruction)
     if( checkCondition(cond) )
     {
       if(check == OFFINDEX)
-        coreReg[Rt] = loadByteFromMemory(address,1);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
       else if(check == PREINDEX)
       {
-        coreReg[Rt] = loadByteFromMemory(address,1);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
         coreReg[Rn] = address;
       }
       else
       {
-        coreReg[Rt] = loadByteFromMemory(coreReg[Rn],1);
+        writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 1) );
         coreReg[Rn] = address;
       }
     }
@@ -630,15 +594,15 @@ void LDRBImmediateT3(uint32_t instruction)
   else
   {
     if(check == OFFINDEX)
-      coreReg[Rt] = loadByteFromMemory(address,1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
     else if(check == PREINDEX)
     {
-      coreReg[Rt] = loadByteFromMemory(address,1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
       coreReg[Rn] = address;
     }
     else
     {
-      coreReg[Rt] = loadByteFromMemory(coreReg[Rn],1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 1) );
       coreReg[Rn] = address;
     }
   }
@@ -679,22 +643,17 @@ void LDRHImmediateT1(uint32_t instruction)
   uint32_t imm5 = getBits(instruction,26,22);
   uint32_t Rn   = getBits(instruction,21,19);
   uint32_t Rt   = getBits(instruction,18,16);
-
+  uint32_t address = coreReg[Rn] +  2*imm5;
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      uint32_t address = coreReg[Rn] +  2*imm5;
-      coreReg[Rt] = loadByteFromMemory(address, 2);
-    }
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
     shiftITState();
   }
   else
-  {
-    uint32_t address = coreReg[Rn] + 2*imm5;
-    coreReg[Rt] = loadByteFromMemory(address, 2);
-  }
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
   coreReg[PC] += 2;
 }
@@ -737,12 +696,12 @@ void LDRHImmediateT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 2);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 2);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
   coreReg[PC] += 4;
 }
@@ -806,15 +765,15 @@ void LDRHImmediateT3(uint32_t instruction)
     if( checkCondition(cond) )
     {
       if(check == OFFINDEX)
-        coreReg[Rt] = loadByteFromMemory(address,2);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
       else if(check == PREINDEX)
       {
-        coreReg[Rt] = loadByteFromMemory(address,2);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
         coreReg[Rn] = address;
       }
       else
       {
-        coreReg[Rt] = loadByteFromMemory(coreReg[Rn],2);
+        writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 2) );
         coreReg[Rn] = address;
       }
     }
@@ -824,15 +783,15 @@ void LDRHImmediateT3(uint32_t instruction)
   else
   {
     if(check == OFFINDEX)
-      coreReg[Rt] = loadByteFromMemory(address,2);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
     else if(check == PREINDEX)
     {
-      coreReg[Rt] = loadByteFromMemory(address,2);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
       coreReg[Rn] = address;
     }
     else
     {
-      coreReg[Rt] = loadByteFromMemory(coreReg[Rn],2);
+      writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 2) );
       coreReg[Rn] = address;
     }
   }
@@ -870,12 +829,12 @@ void LDRBT(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 1);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 1);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 1) );
 
   coreReg[PC] += 4;
 }
@@ -917,12 +876,12 @@ void LDRSBImmediateT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+    writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
 
   coreReg[PC] += 4;
 }
@@ -985,15 +944,15 @@ void LDRSBImmediateT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       if(check == OFFINDEX)
-        coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+        writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
       else if(check == PREINDEX)
       {
-        coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+        writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
         coreReg[Rn] = address;
       }
       else
       {
-        coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+        writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(coreReg[Rn], 1), 8) );
         coreReg[Rn] = address;
       }
     }
@@ -1003,15 +962,15 @@ void LDRSBImmediateT2(uint32_t instruction)
   else
   {
     if(check == OFFINDEX)
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
     else if(check == PREINDEX)
     {
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
       coreReg[Rn] = address;
     }
     else
     {
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(coreReg[Rn], 1), 8) );
       coreReg[Rn] = address;
     }
   }
@@ -1051,12 +1010,12 @@ void LDRSBT(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = signExtend( loadByteFromMemory(address, 1), 8);
+    writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 1), 8) );
 
   coreReg[PC] += 4;
 }
@@ -1118,19 +1077,19 @@ void LDRDImmediate(uint32_t instruction)
       {
         if(check == OFFINDEX)
         {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
+          writeToCoreRegisters(Rt2 , loadByteFromMemory(address+4, 4) );
         }
         else if(check == PREINDEX)
         {
-          coreReg[Rt] = loadByteFromMemory(address, 4);
-          coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+          writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
+          writeToCoreRegisters(Rt2 , loadByteFromMemory(address+4, 4) );
           coreReg[Rn] = address;
         }
         else
         {
-          coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
-          coreReg[Rt2] = loadByteFromMemory(coreReg[Rn]+4, 4);
+          writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 4) );
+          writeToCoreRegisters(Rt2 , loadByteFromMemory(coreReg[Rn]+4, 4) );
           coreReg[Rn] = address;
         }
       }
@@ -1141,19 +1100,19 @@ void LDRDImmediate(uint32_t instruction)
     {
       if(check == OFFINDEX)
       {
-        coreReg[Rt] = loadByteFromMemory(address, 4);
-        coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
+        writeToCoreRegisters(Rt2 , loadByteFromMemory(address+4, 4) );
       }
       else if(check == PREINDEX)
       {
-        coreReg[Rt] = loadByteFromMemory(address, 4);
-        coreReg[Rt2] = loadByteFromMemory(address+4, 4);
+        writeToCoreRegisters(Rt , loadByteFromMemory(address, 4) );
+        writeToCoreRegisters(Rt2 , loadByteFromMemory(address+4, 4) );
         coreReg[Rn] = address;
       }
       else
       {
-        coreReg[Rt] = loadByteFromMemory(coreReg[Rn], 4);
-        coreReg[Rt2] = loadByteFromMemory(coreReg[Rn]+4, 4);
+        writeToCoreRegisters(Rt , loadByteFromMemory(coreReg[Rn], 4) );
+        writeToCoreRegisters(Rt2 , loadByteFromMemory(coreReg[Rn]+4, 4) );
         coreReg[Rn] = address;
       }
     }
@@ -1191,12 +1150,12 @@ void LDRHT(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = loadByteFromMemory(address, 2);
+      writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = loadByteFromMemory(address, 2);
+    writeToCoreRegisters(Rt , loadByteFromMemory(address, 2) );
 
   coreReg[PC] += 4;
 }
@@ -1237,13 +1196,12 @@ void LDRSHImmediateT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
-
+    writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
 
   coreReg[PC] += 4;
 }
@@ -1301,15 +1259,15 @@ void LDRSHImmediateT2(uint32_t instruction)
     if( checkCondition(cond) )
     {
       if(check == OFFINDEX)
-        coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+        writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
       else if(check == PREINDEX)
       {
-        coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+        writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
         coreReg[Rn] = address;
       }
       else
       {
-        coreReg[Rt] = signExtend( loadByteFromMemory(coreReg[Rn], 2), 16);
+        writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(coreReg[Rn], 2), 16) );
         coreReg[Rn] = address;
       }
     }
@@ -1319,15 +1277,15 @@ void LDRSHImmediateT2(uint32_t instruction)
   else
   {
     if(check == OFFINDEX)
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
     else if(check == PREINDEX)
     {
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
       coreReg[Rn] = address;
     }
     else
     {
-      coreReg[Rt] = signExtend( loadByteFromMemory(coreReg[Rn], 2), 16);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(coreReg[Rn], 2), 16) );
       coreReg[Rn] = address;
     }
   }
@@ -1366,12 +1324,12 @@ void LDRSHT(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+      writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
 
     shiftITState();
   }
   else
-    coreReg[Rt] = signExtend( loadByteFromMemory(address, 2), 16);
+    writeToCoreRegisters(Rt , signExtend( loadByteFromMemory(address, 2), 16) );
 
   coreReg[PC] += 4;
 }

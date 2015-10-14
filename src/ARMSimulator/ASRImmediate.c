@@ -123,7 +123,7 @@ void ASRImmediateT2(uint32_t instruction)
 */
 void executeASRImmediate(uint32_t imm5, uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = executeASR(imm5, coreReg[Rm], S);
+  writeToCoreRegisters(Rd, executeASR(imm5, coreReg[Rm], S) );
 
   if(S == 1)
   {

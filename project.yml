@@ -27,12 +27,14 @@
     - +:test/**
     - +:test/ARMSimulator/**
     - +:test/GDB/**
+    - +:test/FloatingPointInstructions/**   
     - -:test/support
   :source:
     - src/**
     - src/ARMSimulator/**
     - src/GDB/**
     - src/ElfReader/**
+    - src/FloatingPointInstructions/**
   :support:
     - +:test/support
 
@@ -73,6 +75,7 @@
       - -I src/ElfReader
       - -I src/GDB
       - -I src/ARMSimulator
+      - -I src/FloatingPointInstructions
       - -I src
 
   :release_linker:
@@ -98,6 +101,7 @@
       - -I src/ElfReader
       - -I src/GDB
       - -I src/ARMSimulator
+      - -I src/FloatingPointInstructions
       - -I src
       - -D TEST=
 

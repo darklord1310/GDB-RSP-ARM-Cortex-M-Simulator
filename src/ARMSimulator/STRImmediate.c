@@ -84,7 +84,6 @@ void STRImmediateT1(uint32_t instruction)
     writeByteToMemory(address, coreReg[Rt],4);               //store a word to the address and store it into the memory
   }
 
-
   coreReg[PC] += 2;
 }
 
@@ -258,12 +257,12 @@ void STRBImmediateT3(uint32_t instruction)
         else if(check == PREINDEX)
         {
           writeByteToMemory(address, coreReg[Rt],1);
-          coreReg[Rn] = address;
+          writeToCoreRegisters(Rn , address);
         }
         else
         {
           writeByteToMemory(coreReg[Rn], coreReg[Rt],1);
-          coreReg[Rn] = address;
+          writeToCoreRegisters(Rn , address);
         }
       }
 
@@ -276,12 +275,12 @@ void STRBImmediateT3(uint32_t instruction)
       else if(check == PREINDEX)
       {
         writeByteToMemory(address, coreReg[Rt],1);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
       else
       {
         writeByteToMemory(coreReg[Rn], coreReg[Rt],1);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
     }
   }
@@ -459,12 +458,12 @@ void STRHImmediateT3(uint32_t instruction)
         else if(check == PREINDEX)
         {
           writeByteToMemory(address, coreReg[Rt],2);
-          coreReg[Rn] = address;
+          writeToCoreRegisters(Rn , address);
         }
         else
         {
           writeByteToMemory(coreReg[Rn], coreReg[Rt],2);
-          coreReg[Rn] = address;
+          writeToCoreRegisters(Rn , address);
         }
       }
 
@@ -477,12 +476,12 @@ void STRHImmediateT3(uint32_t instruction)
       else if(check == PREINDEX)
       {
         writeByteToMemory(address, coreReg[Rt],2);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
       else
       {
         writeByteToMemory(coreReg[Rn], coreReg[Rt],2);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
     }
   }
@@ -583,7 +582,6 @@ void STRImmediateT3(uint32_t instruction)
     shiftITState();
   }
   else
-
     writeByteToMemory(address, coreReg[Rt],4);
 
   coreReg[PC] += 4;
@@ -654,12 +652,12 @@ void STRImmediateT4(uint32_t instruction)
         else if(check == PREINDEX)
         {
           writeByteToMemory(address, coreReg[Rt],4);
-          coreReg[Rn] = address;
+          writeToCoreRegisters(Rn , address);
         }
         else
         {
           writeByteToMemory(coreReg[Rn], coreReg[Rt],4);
-          coreReg[Rn] = address;
+          writeToCoreRegisters(Rn , address);
         }
       }
 
@@ -672,18 +670,17 @@ void STRImmediateT4(uint32_t instruction)
       else if(check == PREINDEX)
       {
         writeByteToMemory(address, coreReg[Rt],4);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
       else
       {
         writeByteToMemory(coreReg[Rn], coreReg[Rt],4);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
     }
   }
 
   coreReg[PC] += 4;
-
 }
 
 
@@ -765,7 +762,6 @@ void STRHT(uint32_t instruction)
 
   //here no need to add the pc because it will be added at the caller which is the STRHImmediateT3
 
-
 }
 
 
@@ -805,7 +801,6 @@ void STRT(uint32_t instruction)
     writeByteToMemory(address, coreReg[Rt],4);              
 
   //here no need to add the pc because it will be added at the caller which is the STRImmediateT4
-
 }
 
 /*Store Register Dual (immediate) Encoding T1
@@ -852,12 +847,6 @@ void STRDImmediate(uint32_t instruction)
 
   int check = isOffPostOrPreIndex(P,W);
 
-  // if(Rn == 0b1111)
-  // {
-    // placePCtoVectorTable(UsageFault);
-    // Throw(UsageFault);
-  // }
-
   if(inITBlock())
   {
     if( checkCondition(cond) )
@@ -871,13 +860,13 @@ void STRDImmediate(uint32_t instruction)
       {
         writeByteToMemory(address, coreReg[Rt],4);
         writeByteToMemory(address+4, coreReg[Rt2],4);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
       else
       {
         writeByteToMemory(coreReg[Rn], coreReg[Rt],4);
         writeByteToMemory(coreReg[Rn]+4, coreReg[Rt2],4);
-        coreReg[Rn] = address;
+        writeToCoreRegisters(Rn , address);
       }
     }
 
@@ -894,13 +883,13 @@ void STRDImmediate(uint32_t instruction)
     {
       writeByteToMemory(address, coreReg[Rt],4);
       writeByteToMemory(address+4, coreReg[Rt2],4);
-      coreReg[Rn] = address;
+      writeToCoreRegisters(Rn , address);
     }
     else
     {
       writeByteToMemory(coreReg[Rn], coreReg[Rt],4);
       writeByteToMemory(coreReg[Rn]+4, coreReg[Rt2],4);
-      coreReg[Rn] = address;
+      writeToCoreRegisters(Rn , address);
     }
   }
 
