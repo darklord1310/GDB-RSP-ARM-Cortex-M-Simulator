@@ -22,14 +22,112 @@
 
 
 #include "Thumb32bitsTable.h"
+#include "getMask.h"
+#include "getAndSetBits.h"
+#include <string.h>
 #include <stdio.h>
+#include <math.h>
+
+
+void invalidInstruction(uint32_t instruction)
+{
+}
+
+
+//get to know which the base 10bits opcode from the given string
+void findBaseOpcode(char *string, BitsInfo *bitsInfo)
+{
+  uint32_t dummy = 0;
+  int sizeOfString = strlen(string) - 1;
+  int i = 0, numberOfbitsSegment = 0;
+
+  while(sizeOfString >= 0)
+  {
+    if(string[sizeOfString] == 'X')
+      dummy = setBits(dummy,0b0,i,i);
+    else if(string[sizeOfString] == '0')
+      dummy = setBits(dummy,0b0,i,i);
+    else if(string[sizeOfString] == '1')
+      dummy = setBits(dummy,0b1,i,i);
+    
+    sizeOfString--;
+    i++;
+  }
+  
+  (*bitsInfo).baseOpcode = dummy;
+}
+
+
+void getBitsInfo(char *string, BitsInfo *bitsInfo)
+{
+  int i = 0, numberOfXbits = 0;
+  int sizeOfString = strlen(string) - 1;
+  int index = sizeOfString;
+  
+  while(sizeOfString >= 0)
+  {
+    if(string[sizeOfString] == 'X')
+    {
+      (*bitsInfo).PositionOfbitX[i] = index-sizeOfString;
+      numberOfXbits++;
+      i++;
+    }
+    sizeOfString--;
+  }
+  
+  (*bitsInfo).noOfDontCareBits = numberOfXbits;
+  (*bitsInfo).PositionOfbitX[i] = -1;    //to indicate that it is the end
+}
+
+
+
+void tabulateTable(char *string, void (*table[])(uint32_t), void (*function)(uint32_t) )
+{
+  BitsInfo bitsInfo;
+  int i = 0, j = 0, k = 0;
+  
+  findBaseOpcode(string, &bitsInfo);        //find the base opcode
+  getBitsInfo(string, &bitsInfo);           //get the neccessary bits info
+  
+  for(j = 0; j < pow(2,bitsInfo.noOfDontCareBits); j++)
+  {
+    while(bitsInfo.PositionOfbitX[i] != -1)
+    {
+      bitsInfo.baseOpcode = setBits(bitsInfo.baseOpcode, getBits(j,i,i), bitsInfo.PositionOfbitX[i], bitsInfo.PositionOfbitX[i]);
+      i++;
+    }
+    
+    //printf("0x%08x\n", bitsInfo.baseOpcode);
+    //if(table[bitsInfo.baseOpcode] == NULL)
+      table[bitsInfo.baseOpcode] = function;
+    //else
+      //Throw(INSTRUCTION_OCCUPIED);
+    
+    i = 0;
+  }
+  
+  
+}
 
 
 void initThumb32Table()
 {
-  int i,j,k;
-  uint32_t dummy;
+  tabulateTable("0100XX0XXX", Thumb32Table, executeLoadStoreMultiple );
+  tabulateTable("0100XX1XXX", Thumb32Table, executeLoadStoreDualTableBranch );
+  tabulateTable("0101XXXXXX", Thumb32Table, executeDataProcessingShiftedRegister );
+  tabulateTable("10X0XXXXX0", Thumb32Table, executeDataProcessingModifiedImmediate );
+  tabulateTable("10X1XXXXX0", Thumb32Table, executeDataProcessingPlainImmediate );
+  tabulateTable("10XXXXXXX1", Thumb32Table, executeBranchesAndMiscellaneousControl );
+  tabulateTable("11000XXX0X", Thumb32Table, executeStoreSingleDataItem );
+  tabulateTable("1100XX001X", Thumb32Table, executeLoadByteMemoryHints );
+  tabulateTable("1100XX011X", Thumb32Table, executeLoadHalfword );
+  tabulateTable("1100XX101X", Thumb32Table, executeLoadWord );
+  tabulateTable("1100XX111X", Thumb32Table, invalidInstruction );
+  tabulateTable("11010XXXXX", Thumb32Table, executeDataProcessingRegister );
+  tabulateTable("110110XXXX", Thumb32Table, executeMultiplyAccumulate );
+  tabulateTable("110111XXXX", Thumb32Table, executeLongMultiplyAccumulateDivide );
 
+  /*
   Thumb32Table[0b1000000000] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1000000010] = executeDataProcessingModifiedImmediate;
@@ -99,6 +197,8 @@ void initThumb32Table()
   Thumb32Table[0b1010111100] = executeDataProcessingModifiedImmediate;
   Thumb32Table[0b1010111110] = executeDataProcessingModifiedImmediate;
   //
+  */
+  /*
   Thumb32Table[0b1001000000] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1001000010] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1001000010] = executeDataProcessingPlainImmediate;
@@ -168,6 +268,7 @@ void initThumb32Table()
   Thumb32Table[0b1011111100] = executeDataProcessingPlainImmediate;
   Thumb32Table[0b1011111110] = executeDataProcessingPlainImmediate;
   //
+  /*
   Thumb32Table[0b0101000000] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101000001] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101000010] = executeDataProcessingShiftedRegister;
@@ -232,6 +333,8 @@ void initThumb32Table()
   Thumb32Table[0b0101111110] = executeDataProcessingShiftedRegister;
   Thumb32Table[0b0101111111] = executeDataProcessingShiftedRegister;
   //
+  */
+  /*
   Thumb32Table[0b1101000000] = executeDataProcessingRegister;
   Thumb32Table[0b1101000001] = executeDataProcessingRegister;
   Thumb32Table[0b1101000010] = executeDataProcessingRegister;
@@ -264,7 +367,9 @@ void initThumb32Table()
   Thumb32Table[0b1101011101] = executeDataProcessingRegister;
   Thumb32Table[0b1101011110] = executeDataProcessingRegister;
   Thumb32Table[0b1101011111] = executeDataProcessingRegister;
+  */
   //
+  /*
   Thumb32Table[0b1000000001] = executeBranchesAndMiscellaneousControl;
   Thumb32Table[0b1000000011] = executeBranchesAndMiscellaneousControl;
   Thumb32Table[0b1000000101] = executeBranchesAndMiscellaneousControl;
@@ -394,6 +499,8 @@ void initThumb32Table()
   Thumb32Table[0b1011111101] = executeBranchesAndMiscellaneousControl;
   Thumb32Table[0b1011111111] = executeBranchesAndMiscellaneousControl;
   //
+  */
+  /*
   Thumb32Table[0b1100001010] = executeLoadWord;
   Thumb32Table[0b1100011010] = executeLoadWord;
   Thumb32Table[0b1100101010] = executeLoadWord;
@@ -403,6 +510,8 @@ void initThumb32Table()
   Thumb32Table[0b1100101011] = executeLoadWord;
   Thumb32Table[0b1100111011] = executeLoadWord;
   //
+  */
+  /*
   Thumb32Table[0b1101100000] = executeMultiplyAccumulate;
   Thumb32Table[0b1101100001] = executeMultiplyAccumulate;
   Thumb32Table[0b1101100010] = executeMultiplyAccumulate;
@@ -420,6 +529,8 @@ void initThumb32Table()
   Thumb32Table[0b1101101110] = executeMultiplyAccumulate;
   Thumb32Table[0b1101101111] = executeMultiplyAccumulate;
   //
+  */
+  /*
   Thumb32Table[0b1101110000] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101110001] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101110010] = executeLongMultiplyAccumulateDivide;
@@ -436,7 +547,9 @@ void initThumb32Table()
   Thumb32Table[0b1101111101] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101111110] = executeLongMultiplyAccumulateDivide;
   Thumb32Table[0b1101111111] = executeLongMultiplyAccumulateDivide;
+  */
   //
+  /*
   dummy = 0b0100000000;
   for(i = 0; i <= 0b11; i ++)
   {
@@ -447,7 +560,9 @@ void initThumb32Table()
       Thumb32Table[dummy] = executeLoadStoreMultiple;
     }
   }
+  */
   //
+  /*
   dummy = 0b1100000000;
   for(i = 0; i <= 0b111; i ++)
   {
@@ -458,7 +573,9 @@ void initThumb32Table()
       Thumb32Table[dummy] = executeStoreSingleDataItem;
     }
   }
+  */
   //
+  /*
   dummy = 0b1100000010;
   for(i = 0; i <= 0b11; i ++)
   {
@@ -470,6 +587,7 @@ void initThumb32Table()
     }
   }
   //
+  /*
   dummy = 0b0100001000;
   for(i = 0; i <= 0b11; i ++)
   {
@@ -484,18 +602,10 @@ void initThumb32Table()
       }
     }
   }
+  */
   //
-  dummy = 0b1100000110;
-  for(i = 0; i <= 0b11; i ++)
-  {
-    dummy = setBits(dummy,i,5,4);
-    for(j = 0; j <= 0b1; j++)
-    {
-      dummy = setBits(dummy,j,0,0);
-      Thumb32Table[dummy] = executeLoadHalfword;
-    }
-  }
   //
+  /*
   dummy = 0b0110000000;
   for(i = 0; i <= 0b11; i ++)
   {
@@ -506,6 +616,7 @@ void initThumb32Table()
       Thumb32Table[dummy] = executeLoadHalfword;
     }
   }
+  */
 }
 
 

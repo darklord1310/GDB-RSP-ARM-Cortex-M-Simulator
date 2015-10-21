@@ -104,6 +104,18 @@
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 
+typedef void (*FuncPointer)(uint32_t);
+typedef struct MainOpcodeTable MainOpcodeTable; 
+typedef struct BitsInfo_t BitsInfo;
+
+struct BitsInfo_t 
+{
+  uint32_t noOfDontCareBits;
+  uint32_t baseOpcode;
+  uint32_t PositionOfbitX[32];
+};
+
+typedef enum {INSTRUCTION_OCCUPIED} tabulatingError;
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);
 void (*Thumb32DataProcessingPlainImmediate[512])(uint32_t instruction);
