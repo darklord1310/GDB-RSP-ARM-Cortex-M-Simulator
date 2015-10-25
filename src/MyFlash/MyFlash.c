@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include "MyFlash.h"
 
+#define FILE_LOCATION   "C:/CooCox/CoIDE_V2Beta/bin/ElfLocation.txt"    // might cause problem to other computer as the
+                                                                        // directory that coocox install is different
+// #define FILE_LOCATION   "C:/ElfLocation.txt"
 
 void writeFile(FILE *file, char *filename, char *mode, char *str)
 {
@@ -32,8 +35,7 @@ int main(int argc, const char * argv[])
 {
   int i;
   char elfPath[1024] = "", device[100]= "", *ret1, *ret2, *dir, buf[100];
-  char *filename = "C:/CooCox/CoIDE_V2Beta/bin/ElfLocation.txt";
-  // char *filename = "ElfLocation.txt";
+  char *filename = FILE_LOCATION;
   FILE file;
 
   for(i = 0; i < argc; i++)
@@ -41,7 +43,7 @@ int main(int argc, const char * argv[])
     ret1 = strstr(argv[i], ".elf");
     ret2 = strstr(argv[i], "--driver=");
 
-    if(ret1 != NULL)
+    if(ret1 != NULL)            //locate the correct elf file
     {
       if(strcmp(ret1, ".elf") == 0 && ret2 == NULL)
         strcpy(elfPath, argv[i]);

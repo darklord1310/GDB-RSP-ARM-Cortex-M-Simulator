@@ -27,8 +27,6 @@
 #include <stdint.h>
 #include "GetHeaders.h"
 
-#define ELF_FILE          "C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
-
 #define getStartAddress(elfdata)                (elfData->eh->e_entry) & 0xfffffffe
 #define getTotalProgramHeader(elfData)          (elfData->eh->e_phnum)
 #define getTotalSectionHeader(elfData)          (elfData->eh->e_shnum)

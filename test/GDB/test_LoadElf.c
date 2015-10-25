@@ -14,7 +14,7 @@
 #include "getAndSetBits.h"
 #include "getMask.h"
 
-#define ELF_FILE          "C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
+#define ELF_FILE          "data/Ccode.elf"
 
 extern ElfData *elfData;
 extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;

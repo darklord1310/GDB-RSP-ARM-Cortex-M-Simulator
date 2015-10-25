@@ -1,4 +1,4 @@
-// #include <stdio.h>
+#include <stdio.h>
 #include "unity.h"
 #include "FileOperation.h"
 
@@ -14,7 +14,7 @@ void test_readFile_should_obtain_all_the_data_from_the_file(void)
 {
   FILE file;
   ConfigInfo configInfo = {0, 0, 0, 0};
-  char *filename = "ElfLocation.txt", *str, str1[100], str2[100];
+  char *filename = "TEST1.txt", *str, str1[100], str2[100];
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
   char device[] = "STM32F429ZI";
 
@@ -65,7 +65,7 @@ void test_readConfigfile_given_device_STM32F429YI_should_read_the_info(void)
 void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
 {
   FILE *file;
-  char *filename = "ElfLocation.txt", *str, str1[100];
+  char *filename = "TEST2.txt", *str, str1[100];
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
   char buffer[1024] = "";
 
@@ -91,7 +91,7 @@ void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
 void test_writeFile_should_write_a_string_to_a_text(void)
 {
   FILE *file;
-  char *filename = "ElfLocation.txt", *str, elfPath[100], secondStr[100];
+  char *filename = "TEST2.txt", *str, elfPath[100], secondStr[100];
   char strToWrite[] = "HelloJackson";
   char buffer[1024] = "";
 
