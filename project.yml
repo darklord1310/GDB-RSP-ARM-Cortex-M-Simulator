@@ -27,12 +27,14 @@
     - +:test/**
     - +:test/ARMSimulator/**
     - +:test/GDB/**
+    - +:test/MyFlash/**
     - -:test/support
   :source:
     - src/**
     - src/ARMSimulator/**
     - src/GDB/**
     - src/ElfReader/**
+    - src/MyFlash/**
   :support:
     - +:test/support
 
@@ -98,6 +100,7 @@
       - -I src/ElfReader
       - -I src/GDB
       - -I src/ARMSimulator
+      - -I src/MyFlash
       - -I src
       - -D TEST=
 

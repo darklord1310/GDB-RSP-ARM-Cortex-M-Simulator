@@ -44,7 +44,7 @@ config = {
   :compiler     => 'gcc',
   :linker       => 'gcc',
   :include_path => [CEXCEPTION_PATH,
-                    'src', 'src/GDB', 'src/ARMSimulator', 'src/ElfReader'],
+                    'src', 'src/GDB', 'src/ARMSimulator', 'src/ElfReader', 'src/MyFlash'],
   # :user_define  => ['CEXCEPTION_USE_CONFIG_FILE'],
 #  :library_path => 'lib',
   :library => ['ws2_32'],
@@ -68,7 +68,7 @@ namespace :custom do
     compile_list(main_dependency, 'src', 'build/release/host/c', 'build/release', config)
     # compile_list(exception_dependency, CEXCEPTION_PATH, 'build/release/host/c', 'build/release', config)
     compile_list(header_dependency, 'src', 'src', 'build/release', config)
-#    p Rake.application.tasks
+    # p Rake.application.tasks
     Rake::Task["build/release/Main.exe"].invoke
   end
 end
@@ -81,9 +81,28 @@ namespace :brute do
     dep_list = compile_all(['src/GDB', 'src/ARMSimulator', 'src/ElfReader', 'src'], 'build/release/host/c', config)
     link_all(getDependers(dep_list), 'build/release/Main.exe', config)
     Rake::Task["build/release/Main.exe"].invoke
+    #rename the original gdbserver
+    sh 'mv C:/CooCox/CoIDE_V2Beta/bin/gdbserver.exe C:/CooCox/CoIDE_V2Beta/bin/gdbserverOrignal.exe' if File.exist? "gdbserverOrignal.exe"
+    sh 'mv build/release/Main.exe build/release/gdbserver.exe'                      #rename Main to gdbserver
+    sh 'mv build/release/gdbserver.exe C:/CooCox/CoIDE_V2Beta/bin/gdbserver.exe'    #move to desire destination
 #    p Rake.application.tasks
 #    p Rake::Task.tasks
   end
 end
 
-#sh 'mv ./main.exe ./run.exe' if File.exist? "run.exe"  ==> use mv to rename of move
+namespace :myflash do
+  desc 'Build myflash release code'
+  task :release do
+    #dep_list = compile_list(exception_dependency, CEXCEPTION_PATH, 'build/release/host/c', '.', config)
+    #dep_list.merge!(compile_all(['src'], 'build/release/host/c', config))
+    dep_list = compile_all(['src/MyFlash'], 'build/release/host/c', config)
+    link_all(getDependers(dep_list), 'build/release/myFlash.exe', config)
+    Rake::Task["build/release/myFlash.exe"].invoke
+    #rename the original coflash
+    sh 'mv C:/CooCox/CoIDE_V2Beta/bin/coflash.exe C:/CooCox/CoIDE_V2Beta/bin/coflashOrignal.exe' if File.exist? "coflashOrignal.exe"
+    sh 'mv build/release/myFlash.exe build/release/coflash.exe'                 #rename myFlash to coflash
+    sh 'mv build/release/coflash.exe C:/CooCox/CoIDE_V2Beta/bin/coflash.exe'    #move to desire destination
+#    p Rake.application.tasks
+#    p Rake::Task.tasks
+  end
+end

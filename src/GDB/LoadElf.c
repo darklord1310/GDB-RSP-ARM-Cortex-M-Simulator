@@ -39,9 +39,9 @@ extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
 extern uint32_t entryAddress;
 extern int fileStatus;
 
-void loadElf(ElfData *elfData)
+void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
 {
-  int i, j, flashStartAddr = 0x08000000, flashSize = 2048 * 1024;
+  int i, j;
   uint32_t physAddr, loadSize = 0;
   char *sectionName;
   ElfSection *elfSection;

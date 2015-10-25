@@ -3,8 +3,6 @@
 #include "Relocator.h"
 #include "Read_File.h"
 #include "elf.h"
-#include <stdio.h>
-#include <malloc.h>
 #include "CException.h"
 #include "ErrorCode.h"
 

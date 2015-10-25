@@ -10,21 +10,24 @@ void tearDown(void)
 {
 }
 
-void test_readElfText_should_obtain_all_the_data_from_the_file(void)
+void test_readFile_should_obtain_all_the_data_from_the_file(void)
 {
   FILE file;
   ConfigInfo configInfo = {0, 0, 0, 0};
-  char *filename = "ElfLocation.txt", *str;
+  char *filename = "ElfLocation.txt", *str, str1[100], str2[100];
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
-  char elfPath2[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf\n";
+  char device[] = "STM32F429ZI";
 
   // write file to the text
   writeFile(&file, filename, "w", elfPath);
-  
-  // read file from the text that was written
-	str = readElfText(&file, filename);
+  writeFile(&file, filename, "a", device);
 
-  TEST_ASSERT_EQUAL_STRING(elfPath2, str);
+  // read file from the text that was written
+	str = readFile(&file, filename);
+  sscanf(str, "%s %s", str1, str2);
+
+  TEST_ASSERT_EQUAL_STRING(elfPath, str1);
+  TEST_ASSERT_EQUAL_STRING(device, str2);
 }
 
 void test_readConfigfile_given_device_STM32F429ZI_should_read_the_info(void)
@@ -62,10 +65,9 @@ void test_readConfigfile_given_device_STM32F429YI_should_read_the_info(void)
 void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
 {
   FILE *file;
-  char *filename = "ElfLocation.txt", *str;
+  char *filename = "ElfLocation.txt", *str, str1[100];
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
-  char elfPath2[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf\n";
-  char buffer[100] = "";
+  char buffer[1024] = "";
 
 	writeFile(file, filename, "w", elfPath);
 
@@ -76,10 +78,11 @@ void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
     printf("error: cannot open the file %s\n", filename);
     return;
   }
-  
-  str = fgets(buffer, 100, file);   // fget from the file for test
 
-  TEST_ASSERT_EQUAL_STRING(elfPath2, str);
+  str = fgets(buffer, 1024, file);   // fget from the file for test
+  sscanf(str, "%s", str1);
+
+  TEST_ASSERT_EQUAL_STRING(elfPath, str1);
 
   // Close the file
   fclose(file);
@@ -88,10 +91,9 @@ void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
 void test_writeFile_should_write_a_string_to_a_text(void)
 {
   FILE *file;
-  char *filename = "ElfLocation.txt", *str;
-  char strToWrite[] = "Hello Jackson";
-  char strToWrite2[] = "Hello Jackson\n";
-  char buffer[100] = "";
+  char *filename = "ElfLocation.txt", *str, elfPath[100], secondStr[100];
+  char strToWrite[] = "HelloJackson";
+  char buffer[1024] = "";
 
 	writeFile(file, filename, "a", strToWrite);
 
@@ -102,14 +104,12 @@ void test_writeFile_should_write_a_string_to_a_text(void)
     printf("error: cannot open the file %s\n", filename);
     return;
   }
-  
-  str = fgets(buffer, 100, file);   // fget from the file for test
 
-  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf\n", str);
-  
-  str = fgets(buffer, 100, file);   // fget from the file for test
+  str = fgets(buffer, 1024, file);   // fget from the file for test
+  sscanf(str, "%s %s", elfPath, secondStr);
 
-  TEST_ASSERT_EQUAL_STRING(strToWrite2, str);
+  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf", elfPath);
+  TEST_ASSERT_EQUAL_STRING(strToWrite, secondStr);
 
   // Close the file
   fclose(file);

@@ -1,6 +1,5 @@
-#include <stdint.h>
 #include "unity.h"
-#include "MyFlash.h"
+#include "GPIOs.h"
 
 void setUp(void)
 {

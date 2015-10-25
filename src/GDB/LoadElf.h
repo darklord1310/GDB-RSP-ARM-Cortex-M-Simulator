@@ -28,7 +28,6 @@
 #include "GetHeaders.h"
 
 #define ELF_FILE          "C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
-#define COIDE_ELF_FILE    "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf"
 
 #define getStartAddress(elfdata)                (elfData->eh->e_entry) & 0xfffffffe
 #define getTotalProgramHeader(elfData)          (elfData->eh->e_phnum)
@@ -42,7 +41,7 @@
 #define getProgramType(elfData, i)              (elfData->ph[i].p_type)
 
 
-void loadElf(ElfData *elfData);
+void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize);
 uint32_t getSectionLma(ElfData *elfData, int sectionIndex);
 int isWithinRange(uint32_t address, uint32_t startAddr, uint32_t size);
 int isProgramLoadType(ElfData *elfData, int index);

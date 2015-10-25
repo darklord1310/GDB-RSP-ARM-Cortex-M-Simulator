@@ -195,7 +195,7 @@ void test_loadElf()
   simulatorCopyBlock_Expect(0x08000798, finiArray->dataAddress, finiArray->size);
   simulatorCopyBlock_Expect(0x0800079c, data->dataAddress, data->size);
 
-  loadElf(elfData);
+  loadElf(elfData, 0x8000000, 2048*1024);
 
   TEST_ASSERT_EQUAL(0x8000760, coreReg[PC]);
 

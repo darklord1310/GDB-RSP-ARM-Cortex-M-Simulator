@@ -31,6 +31,8 @@
 #include "ARMSimulator.h"
 #include "State.h"
 #include "StateRSP.h"
+#include "FileOperation.h"
+#include "ConfigurationDetail.h"
 #include "LoadElf.h"
 
 #ifdef  __MINGW32__
@@ -156,9 +158,16 @@ void displayErrorMsg(char *errorMsg)
 int main(int argc, const char * argv[])
 {
     int i, portNumber = DEFAULT_PORT;
+    char *configFile = "config", *str, elfPath[100], device[100];
     SOCKET sock;
-    ElfData *elfData = openElfFile(COIDE_ELF_FILE);
+    FILE file;
+    ElfData *elfData;
     RspData rspData = {INITIAL, sock};
+    ConfigInfo configInfo = {.flashOrigin = 0,
+                             .flashSize = 0,
+                             .ramOrigin = 0,
+                             .ramSize = 0
+                            };
 
     for(i = 0; i < argc; i++)
     {
@@ -169,8 +178,6 @@ int main(int argc, const char * argv[])
     initializeSimulator();
     initializeWatchpoint();
 
-    loadElf(elfData);
-
 #ifdef  __MINGW32__
     winsockInit();
 #endif
@@ -178,6 +185,13 @@ int main(int argc, const char * argv[])
     bindSocket(&rspData.sock, portNumber);
     listenSocket(&rspData.sock);
     waitingForConnection(&rspData.sock, portNumber);
+    
+    // Retrieve data from file
+    str = readFile(&file, ELF_TEXT_FILE);
+    sscanf(str, "%s %s", elfPath, device);
+    elfData = openElfFile(elfPath);
+    readConfigfile(&file, configFile, &configInfo, device);
+    loadElf(elfData, configInfo.flashOrigin, configInfo.flashSize);
 
     int bytesSent;
     int bytesRecv;

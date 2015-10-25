@@ -2,6 +2,8 @@
 #define Get_File_Header_H
 
 #include <stdio.h>
+#include <string.h>
+#include <malloc.h>
 
 #include "Read_File.h"
 #include "elf.h"

@@ -2,10 +2,10 @@
 #include "FileOperation.h"
 
 
-char *readElfText(FILE *file, char *filename)
+char *readFile(FILE *file, char *filename)
 {
   int i = 0;
-  char buffer[100] = "", *str, *elfPath;
+  char buffer[1024] = "", *str;
 
   file = fopen(filename, "r");
 
@@ -15,12 +15,12 @@ char *readElfText(FILE *file, char *filename)
     exit;
   }
 
-  elfPath = fgets(buffer, 100, file);
+  str = fgets(buffer, 1024, file);
 
   // Close the file
   fclose(file);
 
-  return elfPath;
+  return str;
 }
 
 void readConfigfile(FILE *file, char *filename, ConfigInfo *configInfo, char *device)
@@ -85,7 +85,7 @@ void writeFile(FILE *file, char *filename, char *mode, char *str)
   }
 
   fputs(str, file);
-  fprintf(file, "\n");
+  fprintf(file, " ");
 
   // Close the file
   fclose(file);
