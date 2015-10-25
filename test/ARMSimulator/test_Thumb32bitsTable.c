@@ -91,8 +91,6 @@
 
 void setUp(void)
 {
-  initializeSimulator();
-  
 }
 
 void tearDown(void)
@@ -161,10 +159,15 @@ void test_getBitsInfo_given_string_0100XX0XXX_should_update_the_parameters_in_st
 }
 
 
-void test()
+void testing()
 {
+  // TableException *table = createTableException(1,0b00011111, 0b00011101);
+  // printf("%x %x\n", table[0].mask , table[0].exceptionValue);
+  // printf("%x %x\n", table[1].mask , table[1].exceptionValue);
+  // printf("%x %x\n", table[2].mask , table[2].exceptionValue);
+  tabulateTable("01XXXXXXXXXXXXXX", Thumb32LoadByteMemoryHints, LDRBImmediateT2 ,  createTableException(2,0b0000000000001111, 0b00001111, 0b0000000011110000, 0b11110000) );
+  (*Thumb32LoadByteMemoryHints[0b0100000011010001])(0b0);
 
-  
 }
 
 

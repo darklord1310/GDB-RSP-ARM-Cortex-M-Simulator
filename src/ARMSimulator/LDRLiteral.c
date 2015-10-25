@@ -233,7 +233,7 @@ void LDRLiteralT2(uint32_t instruction)
 
 */
 void LDRBLiteral(uint32_t instruction)
-{
+{ printf("here\n");
   uint32_t imm12 = getBits(instruction,11,0);
   uint32_t Rt   = getBits(instruction,15,12);
   uint32_t U = getBits(instruction,23,23);

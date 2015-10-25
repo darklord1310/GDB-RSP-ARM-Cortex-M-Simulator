@@ -318,7 +318,7 @@ void test_LDRBLiteral_given_negative_index_should_get_expected_result(void)
 
   //execute
   armStep();
- 
+  
   TEST_ASSERT_EQUAL( 0x4f, coreReg[0]);
   TEST_ASSERT_EQUAL( 0x08000044, coreReg[PC]);
 }
