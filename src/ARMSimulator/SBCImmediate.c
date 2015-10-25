@@ -85,7 +85,7 @@ void executeSBCImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
   uint32_t carry = ~getBits(coreReg[xPSR], 29, 29) & 0x1;
   uint32_t backupRn = coreReg[Rn];
   uint32_t temp = coreReg[Rn] - immediate;
-  coreReg[Rd] = temp - carry;               //get the result of Rn - immediate - NOT carry flag
+  writeToCoreRegisters(Rd , temp - carry);        //get the result of Rn - immediate - NOT carry flag             
 
   if(S == 1)
   {

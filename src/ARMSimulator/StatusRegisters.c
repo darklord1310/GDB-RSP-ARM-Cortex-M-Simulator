@@ -309,20 +309,3 @@ void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign)
       setQFlag();
   }
 }
-
-
-
-
-/*
-  This function will mask off the last 2 bits if it is SP
-  
-  Return:
-            the value which has already been masked off
-*/
-uint32_t handlingForSP(uint32_t registerIndex, uint32_t value)
-{
-  if(registerIndex == SP)
-    return setBits(value,0b00,1,0);
-  else
-    return value;
-}

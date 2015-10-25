@@ -60,8 +60,8 @@ void CBNZorCBZ(uint32_t instruction)
 
   if(   ( op == 0 && coreReg[Rn] == 0)   ||  ( op == 1 && coreReg[Rn] != 0)     )
   {
-    coreReg[PC] = coreReg[PC] + imm32 + 4;
-    coreReg[PC] = coreReg[PC] & 0xfffffffe;
+    writeToCoreRegisters(PC, coreReg[PC] + imm32 + 4 );
   }
-  
+  else
+    writeToCoreRegisters(PC, coreReg[PC] + 2);
 }

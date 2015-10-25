@@ -63,31 +63,21 @@ void UnconditionalBranchT1(uint32_t instruction)
 {
   uint32_t imm11 = getBits(instruction,26,16);
   uint32_t imm11AfterShift = imm11 << 1;
-
+  uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
+  
   if( !( inITBlock() ) || isLastInITBlock())
   {
     if( inITBlock() )
     {
       if( checkCondition(cond) )
-      {
-        uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
-        coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC,  coreReg[PC]+afterSignExtend+4);
       else
-      {
-        coreReg[PC] = coreReg[PC] + 2;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC,  coreReg[PC] + 2);
 
       shiftITState();
     }
     else
-    {
-      uint32_t afterSignExtend = signExtend(imm11AfterShift, 12);
-      coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
-      coreReg[PC] = coreReg[PC] & 0xfffffffe;
-    }
+      writeToCoreRegisters(PC,  coreReg[PC]+afterSignExtend+4);
   }
   else
   {
@@ -147,18 +137,12 @@ void UnconditionalBranchT2(uint32_t instruction)
     if( inITBlock() )
     {
       if( checkCondition(cond) )
-      {
-        coreReg[PC] = coreReg[PC] + imm32 + 4;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC,  coreReg[PC] + imm32 + 4);
 
       shiftITState();
     }
     else
-    {
-      coreReg[PC] = coreReg[PC] + imm32 + 4;
-      coreReg[PC] = coreReg[PC] & 0xfffffffe;
-    }
+      writeToCoreRegisters(PC,  coreReg[PC] + imm32 + 4);
   }
   else
   {
@@ -200,22 +184,16 @@ void ConditionalBranchT1(uint32_t instruction)
   uint32_t imm8 = getBits(instruction,23,16);
   uint32_t imm8AfterShift = imm8 << 1;
   uint32_t condition = getBits(instruction,27,24);
-
+  uint32_t afterSignExtend = signExtend(imm8AfterShift, 9);
+  
   if( !( inITBlock() ) && condition != 0b1110 )
   {
     if(condition != 0b1111 )
     {
       if( checkCondition(condition) )
-      {
-        uint32_t afterSignExtend = signExtend(imm8AfterShift, 9);
-        coreReg[PC] = coreReg[PC] + afterSignExtend + 4;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC,  coreReg[PC] + afterSignExtend + 4);
       else
-      {
-        coreReg[PC] = coreReg[PC] + 2;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC,  coreReg[PC] + 2);
     }
     else
       SVC(instruction);
@@ -264,9 +242,6 @@ void ConditionalBranchT2(uint32_t instruction)
   uint32_t J2 = getBits(instruction, 11, 11);
   uint32_t cond = getBits(instruction, 25, 22);
 
-  // uint32_t I1 = ~(J1 ^ S) & 0x1;
-  // uint32_t I2 = ~(J2 ^ S) & 0x1;
-
   uint32_t imm32 = imm11 << 1;
   imm32 = imm6 << 12 | imm32;
   imm32 = J2 << 18 | imm32;
@@ -277,15 +252,9 @@ void ConditionalBranchT2(uint32_t instruction)
   if( !( inITBlock() ) && cond != 0b1110 )
   {
       if( checkCondition(cond) )
-      {
-        coreReg[PC] = coreReg[PC] + imm32 + 4;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC, coreReg[PC] + imm32 + 4 );
       else
-      {
-        coreReg[PC] = coreReg[PC] + 4;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
-      }
+        writeToCoreRegisters(PC, coreReg[PC] + 4 );
   }
   else
   {

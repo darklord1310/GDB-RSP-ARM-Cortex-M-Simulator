@@ -246,7 +246,7 @@ void executeSUBImmediate(uint32_t Rn, uint32_t Rd, uint32_t immediate, uint32_t 
 {
   uint32_t backupRn = coreReg[Rn];
   uint32_t temp = coreReg[Rn] - immediate;            //get the result of Rn - immediate
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd , temp);
 
   if(S == 1)
   {

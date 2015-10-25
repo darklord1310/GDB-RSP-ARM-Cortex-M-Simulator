@@ -98,10 +98,6 @@ void POPT1(uint32_t instruction)
 
 
 
-
-
-
-
 /*Pop Multiple Registers Encoding T2
     POP<c> <registers>
 
@@ -141,9 +137,7 @@ void POPT2(uint32_t instruction)
     shiftITState();
   }
   else
-  {
     loadMultipleRegisterFromMemory(coreReg[SP], registerList, 1, SP, 16);
-  }
 
   if(P != 1)
     coreReg[PC] += 4;

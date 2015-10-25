@@ -74,9 +74,8 @@ void BLT1(uint32_t instruction)
       if( checkCondition(cond) )
       {
         uint32_t nextInstrAddr = coreReg[PC] + 4;
-        coreReg[LR] = nextInstrAddr | 0x1;
-        coreReg[PC] = coreReg[PC] + imm32 + 4;
-        coreReg[PC] = coreReg[PC] & 0xfffffffe;
+        writeToCoreRegisters(LR, nextInstrAddr | 0x1);
+        writeToCoreRegisters(PC, coreReg[PC] + imm32 + 4);
       }
       else
         coreReg[PC] += 4;
@@ -86,9 +85,8 @@ void BLT1(uint32_t instruction)
     else
     {
       uint32_t nextInstrAddr = coreReg[PC] + 4;
-      coreReg[LR] = nextInstrAddr | 0x1;
-      coreReg[PC] = coreReg[PC] + imm32 + 4;
-      coreReg[PC] = coreReg[PC] & 0xfffffffe;
+      writeToCoreRegisters(LR, nextInstrAddr | 0x1);
+      writeToCoreRegisters(PC, coreReg[PC] + imm32 + 4);
     }
   }
   else

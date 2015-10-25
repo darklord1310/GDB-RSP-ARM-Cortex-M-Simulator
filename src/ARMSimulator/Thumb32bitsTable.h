@@ -104,6 +104,35 @@
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include <stdint.h>
 
+typedef struct BitsInfo_t BitsInfo;
+typedef struct TableException TableException;
+
+struct BitsInfo_t 
+{
+  uint32_t noOfDontCareBits;
+  uint32_t baseOpcode;
+  uint32_t PositionOfbitX[32];
+};
+
+struct TableException
+{
+  uint32_t mask;
+  uint32_t exceptionValue;
+  
+};
+
+#define NO_EXCEPTION 0
+#define MAXIMUM_NO_OF_TABLE_EXCEPTIONS 31
+
+typedef enum {INSTRUCTION_OCCUPIED} tabulatingError;
+
+
+void findBaseOpcode(char *string, BitsInfo *bitsInfo);
+void getBitsInfo(char *string, BitsInfo *bitsInfo);
+TableException *createTableException(int numberOfExceptions, ...);
+void tabulateTable(char *string, void (*table[])(uint32_t), void (*function)(uint32_t) , TableException *tableException);
+int determineTableException(TableException *tableException, uint32_t opcode);
+
 
 void (*Thumb32DataProcessingModifiedImmediate[8192])(uint32_t instruction);
 void (*Thumb32DataProcessingPlainImmediate[512])(uint32_t instruction);

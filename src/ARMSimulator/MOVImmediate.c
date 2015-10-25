@@ -180,7 +180,7 @@ void MOVImmediateT3(uint32_t instruction)
 */
 void executeMOVImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = immediate;                              //move immediate into destination register
+  writeToCoreRegisters(Rd, immediate);
 
   if(S == 1)
   {

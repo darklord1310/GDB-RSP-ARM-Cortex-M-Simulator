@@ -162,8 +162,8 @@ void executeADCRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
   temp = coreReg[Rn] + shiftedRm;
-  coreReg[Rd] = temp + carryFlag;                                       //get the result of Rn + Rm + Carry
-
+  writeToCoreRegisters(Rd, temp + carryFlag);                              //get the result of Rn + Rm + Carry
+                                  
   if(S == 1)
   {
     updateZeroFlag(coreReg[Rd]);

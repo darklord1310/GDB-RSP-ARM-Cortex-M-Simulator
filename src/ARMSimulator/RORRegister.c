@@ -124,7 +124,7 @@ void RORRegisterT2(uint32_t instruction)
 void executeRORRegister(uint32_t Rd, uint32_t Rn, uint32_t Rm, uint32_t S)
 {
   uint32_t timesToRotate = getBits(coreReg[Rm], 7 ,0);
-  coreReg[Rd] = executeROR(timesToRotate, coreReg[Rn], S);
+  writeToCoreRegisters(Rd , executeROR(timesToRotate, coreReg[Rn], S) );
   
   if( S == 1)
   {

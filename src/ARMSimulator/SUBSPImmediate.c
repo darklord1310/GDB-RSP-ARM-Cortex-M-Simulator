@@ -66,14 +66,14 @@ void SUBSPImmediateT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[SP] = coreReg[SP] - ( imm7 << 2);
+      writeToCoreRegisters(SP , coreReg[SP] - ( imm7 << 2));
 
     shiftITState();
     coreReg[PC] += 2;
   }
   else
   {
-    coreReg[SP] = coreReg[SP] - ( imm7 << 2);
+    writeToCoreRegisters(SP , coreReg[SP] - ( imm7 << 2));
     coreReg[PC] += 2;
   }
 }

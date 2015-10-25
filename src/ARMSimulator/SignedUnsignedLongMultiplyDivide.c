@@ -62,16 +62,16 @@ void SMULLT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      coreReg[RdLo] = getBits(result,31,0);
-      coreReg[RdHi] = (uint32_t)(result >> 32);
+      writeToCoreRegisters(RdLo , getBits(result,31,0) );
+      writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
     }
 
     shiftITState();
   }
   else
   {
-    coreReg[RdLo] = getBits(result,31,0);
-    coreReg[RdHi] = (uint32_t)(result >> 32);
+    writeToCoreRegisters(RdLo , getBits(result,31,0) );
+    writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
   }
 
   coreReg[PC] += 4;
@@ -114,16 +114,16 @@ void UMULLT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      coreReg[RdLo] = getBits(result,31,0);
-      coreReg[RdHi] = (uint32_t)(result >> 32);
+      writeToCoreRegisters(RdLo , getBits(result,31,0) );
+      writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
     }
 
     shiftITState();
   }
   else
   {
-    coreReg[RdLo] = getBits(result,31,0);
-    coreReg[RdHi] = (uint32_t)(result >> 32);
+    writeToCoreRegisters(RdLo , getBits(result,31,0) );
+    writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
   }
 
   coreReg[PC] += 4;
@@ -185,16 +185,16 @@ void SMLALT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      coreReg[RdLo] = getBits(result,31,0);
-      coreReg[RdHi] = (uint32_t)(result >> 32);
+      writeToCoreRegisters(RdLo , getBits(result,31,0) );
+      writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
     }
 
     shiftITState();
   }
   else
   {
-    coreReg[RdLo] = getBits(result,31,0);
-    coreReg[RdHi] = (uint32_t)(result >> 32);
+    writeToCoreRegisters(RdLo , getBits(result,31,0) );
+    writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
   }
 
   coreReg[PC] += 4;
@@ -233,16 +233,16 @@ void UMLALT1(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      coreReg[RdLo] = getBits(result,31,0);
-      coreReg[RdHi] = (uint32_t)(result >> 32);
+      writeToCoreRegisters(RdLo , getBits(result,31,0) );
+      writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
     }
 
     shiftITState();
   }
   else
   {
-    coreReg[RdLo] = getBits(result,31,0);
-    coreReg[RdHi] = (uint32_t)(result >> 32);
+    writeToCoreRegisters(RdLo , getBits(result,31,0) );
+    writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
   }
 
   coreReg[PC] += 4;

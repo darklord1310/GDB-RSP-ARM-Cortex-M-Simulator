@@ -146,7 +146,7 @@ void executeASRRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S)
     lastBitShifted = MSB;             
   }
 
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd, temp );
   
   if( S == 1)
   {

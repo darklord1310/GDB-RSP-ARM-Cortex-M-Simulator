@@ -22,7 +22,6 @@
 
 
 #include "SUBSPRegister.h"
-// #include "ADR.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
 #include "ARMRegisters.h"
@@ -106,7 +105,7 @@ void executeSUBSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, uint32_t shiftTy
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
   temp = coreReg[SP] - shiftedRm;
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd,temp);
 
   if(S == 1)
   {

@@ -194,14 +194,11 @@ void MOVRegisterT3(uint32_t instruction)
 */
 void executeMOVRegister(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  if(Rd == PC)                    // only for encoding T1
-    ALUWritePC(coreReg[Rm]);
-  else if(Rm == PC)
-    coreReg[Rd] = coreReg[Rm] + 4;
+  if(Rm == PC)
+    writeToCoreRegisters(Rd, coreReg[Rm] + 4);
   else
   {
-    coreReg[Rd] = coreReg[Rm];
-    coreReg[Rd] = handlingForSP(Rd, coreReg[Rd]);          //check if Rd is SP or not, if it is then mask off the last 2 bits
+    writeToCoreRegisters(Rd, coreReg[Rm]);
     
     if(S == 1)
     {

@@ -128,7 +128,7 @@ void executeRSBImmediate(uint32_t immediate, uint32_t Rn, uint32_t Rd, uint32_t 
 {
   uint32_t backupRn = coreReg[Rn];            //prevent the Rn value to be overwritten in case if Rn = Rd
   uint32_t temp = immediate - coreReg[Rn];    //get the result of 0 - Rn
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd , temp );
 
   if(S == 1)
   {

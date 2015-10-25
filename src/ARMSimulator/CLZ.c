@@ -74,8 +74,7 @@ void CLZT1(uint32_t instruction)
 void executeCLZ(uint32_t Rm, uint32_t Rd)
 {
   uint32_t result = highestSetBit(coreReg[Rm]);
-
-  coreReg[Rd] = 32 - 1 - result;
+  writeToCoreRegisters(Rd, 32 - 1 - result );
 }
 
 

@@ -66,7 +66,7 @@ void MVNRegisterT1(uint32_t instruction)
     if( checkCondition(cond) )
     {
       uint32_t result = executeShiftOperation(OMITTED, 0, coreReg[Rm], 0);
-      coreReg[Rd] = ~result; 
+      writeToCoreRegisters(Rd,  ~result );
       //no update flag here
     }
    
@@ -75,7 +75,7 @@ void MVNRegisterT1(uint32_t instruction)
   else
   {
     uint32_t result = executeShiftOperation(OMITTED, 0, coreReg[Rm], 1);
-    coreReg[Rd] = ~result; 
+    writeToCoreRegisters(Rd,  ~result );
 
     updateZeroFlag(coreReg[Rd]);
     updateNegativeFlag(coreReg[Rd]);
@@ -129,7 +129,7 @@ void MVNRegisterT2(uint32_t instruction)
     {
       int shiftType = determineShiftOperation(type, shiftAmount);
       uint32_t result = executeShiftOperation(shiftType, shiftAmount, coreReg[Rm], S);
-      coreReg[Rd] = ~result; 
+      writeToCoreRegisters(Rd,  ~result );
       if(S == 1)
       {
         updateZeroFlag(coreReg[Rd]);
@@ -144,8 +144,8 @@ void MVNRegisterT2(uint32_t instruction)
   {
     int shiftType = determineShiftOperation(type, shiftAmount);
     uint32_t result = executeShiftOperation(shiftType, shiftAmount, coreReg[Rm], S);
-
-    coreReg[Rd] = ~result; 
+    writeToCoreRegisters(Rd,  ~result );
+    
     if(S == 1)
     {
       updateZeroFlag(coreReg[Rd]);

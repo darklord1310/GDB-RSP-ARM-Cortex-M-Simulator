@@ -79,7 +79,7 @@ void MVNImmediateT1(uint32_t instruction)
 */
 void executeMVNImmediate(uint32_t immediate, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = ~immediate;                              //move NOT immediate into destination register
+  writeToCoreRegisters(Rd,  ~immediate );                     //move NOT immediate into destination register
 
   if(S == 1)
   {

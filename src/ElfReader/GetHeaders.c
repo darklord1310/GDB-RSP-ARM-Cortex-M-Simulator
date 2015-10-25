@@ -663,9 +663,9 @@ void getElfSection(char *elfFile) {
   elfData = openElfFile(elfFile);
   isr     = getElfSectionInfo(elfData, ".isr_vector");
   text    = getElfSectionInfo(elfData, ".text");
+  rodata  = getElfSectionInfo(elfData, ".rodata");
   initArray = getElfSectionInfo(elfData, ".init_array");
   finiArray = getElfSectionInfo(elfData, ".fini_array");
-  rodata = getElfSectionInfo(elfData, ".rodata");
   data = getElfSectionInfo(elfData, ".data");
 
   entryAddress = (*(uint32_t *)(&isr->dataAddress[4]));
@@ -707,6 +707,7 @@ void closeElfSection(ElfSection *elfSection) {
 void closeElfFile(void) {
   closeElfSection(isr);
   closeElfSection(text);
+  closeElfSection(rodata);
   closeElfSection(initArray);
   closeElfSection(finiArray);
   closeElfSection(data);

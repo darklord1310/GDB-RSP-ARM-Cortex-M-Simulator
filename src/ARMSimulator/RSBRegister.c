@@ -97,7 +97,7 @@ void executeRSBRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   shiftedRm = executeShiftOperation(shiftType, shiftImmediate, coreReg[Rm], 0);
 
   temp = shiftedRm - coreReg[Rn];
-  coreReg[Rd] = temp;
+  writeToCoreRegisters(Rd , temp );
 
   if(S == 1)
   {

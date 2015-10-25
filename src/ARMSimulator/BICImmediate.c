@@ -84,11 +84,11 @@ void BICImmediateT1(uint32_t instruction)
 */
 void executeBICImmediate(uint32_t immediate, uint32_t Rd, uint32_t Rn, uint32_t S)
 {
-    coreReg[Rd] = ~immediate & coreReg[Rn];
+  writeToCoreRegisters(Rd, ~immediate & coreReg[Rn]);
 
-    if(S == 1)
-    {
-        updateZeroFlag(coreReg[Rd]);
-        updateNegativeFlag(coreReg[Rd]);
-    }
+  if(S == 1)
+  {
+    updateZeroFlag(coreReg[Rd]);
+    updateNegativeFlag(coreReg[Rd]);
+  }
 }

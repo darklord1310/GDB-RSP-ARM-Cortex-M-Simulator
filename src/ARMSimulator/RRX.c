@@ -71,7 +71,7 @@ void RRXT1(uint32_t instruction)
 */
 void executeRRXT1(uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = executeRRX(coreReg[Rm], S);;
+  writeToCoreRegisters(Rd , executeRRX(coreReg[Rm], S) );
 
   if(S == 1)
   {

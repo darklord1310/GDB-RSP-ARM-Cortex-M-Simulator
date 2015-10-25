@@ -60,12 +60,12 @@ void MLAT1(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      coreReg[Rd] = coreReg[Rn] * coreReg[Rm] + coreReg[Ra];
+      writeToCoreRegisters(Rd, coreReg[Rn] * coreReg[Rm] + coreReg[Ra] );
 
     shiftITState();
   }
   else
-    coreReg[Rd] = coreReg[Rn] * coreReg[Rm] + coreReg[Ra];
+    writeToCoreRegisters(Rd, coreReg[Rn] * coreReg[Rm] + coreReg[Ra] );
 
   coreReg[PC] += 4;
 }

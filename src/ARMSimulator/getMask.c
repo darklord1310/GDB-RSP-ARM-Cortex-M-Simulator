@@ -44,7 +44,6 @@ uint32_t getMaskforGetBits(int bitPosition)
   for(i = 0; i < bitPosition + 1; i++)
   {
     mask = ( mask << 1 ) | 0x01;
-    
   }
   
   return mask;

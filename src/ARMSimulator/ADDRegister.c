@@ -21,6 +21,7 @@
 */
 
 
+#include "ADDRegister.h"
 #include <assert.h>
 #include <stdio.h>
 #include "StatusRegisters.h"

@@ -121,7 +121,7 @@ void LSRImmediateT2(uint32_t instruction)
 */
 void executeLSRImmediate(uint32_t immediate, uint32_t Rm, uint32_t Rd, uint32_t S)
 {
-  coreReg[Rd] = executeLSR(immediate, coreReg[Rm], S);
+  writeToCoreRegisters(Rd , executeLSR(immediate, coreReg[Rm], S) );
 
   if(S == 1)
   {
