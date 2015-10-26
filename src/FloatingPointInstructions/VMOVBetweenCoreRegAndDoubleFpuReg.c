@@ -21,7 +21,7 @@
 */
 
 
-#include "VMOV.h"
+#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 
@@ -44,20 +44,22 @@ where :
           
           <Rt2>           The ARM core register that <Sm1> is transferred to or from.
 */
-void VMOV(uint32_t instruction)
+void VMOVBetweenCoreRegAndDoubleFpuReg(uint32_t instruction)
 {
   uint32_t Vm = getBits(instruction, 3, 0);
   uint32_t M = getBits(instruction, 5, 5);
   uint32_t Rt = getBits(instruction, 15, 12);
   uint32_t Rt2 = getBits(instruction, 19, 16);
-  uint32_t op = getBits(instruction, 4, 4);
+  uint32_t op = getBits(instruction, 20, 20);
   uint32_t m = (Vm << 1) | M;
-
+  
+  executeFPUChecking();
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      if(op == 0)
+      if(op == 1)
       {
         writeToCoreRegisters(Rt,  fpuSinglePrecision[m]);
         writeToCoreRegisters(Rt2, fpuSinglePrecision[m+1]);
@@ -72,7 +74,7 @@ void VMOV(uint32_t instruction)
   }
   else
   {
-    if(op == 0)
+    if(op == 1)
     { 
       writeToCoreRegisters(Rt,  fpuSinglePrecision[m]);
       writeToCoreRegisters(Rt2, fpuSinglePrecision[m+1]);

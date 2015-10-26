@@ -1,4 +1,5 @@
 #include "unity.h"
+#include <stdint.h>
 #include "ExceptionObject.h"
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
@@ -49,6 +50,8 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
+#include "MOVRegister.h"
+#include "CMPRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
 #include "RSBImmediate.h"
@@ -59,10 +62,9 @@
 #include "MemoryBlock.h"
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
-#include "CException.h"
 #include "SVC.h"
-#include "ADDSPImmediate.h"
 #include "ADR.h"
+#include "ADDSPImmediate.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
 #include "REV.h"
@@ -71,8 +73,8 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
-#include "LoadAndWriteMemory.h"
 #include "Thumb32bitsTable.h"
+#include "LoadAndWriteMemory.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
@@ -89,44 +91,32 @@
 #include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
 #include "VMOVBetweenCoreRegAndfpuSReg.h"
 
-
 void setUp(void)
 {
   initializeSimulator();
 }
 
-
 void tearDown(void)
 {
 }
 
-
-/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //ADD (SP plus immediate)
-  
-// test ADD r0,SP,#0x20
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r0_is_0x20001020_xPSR_unchanged(void)
+/*
+// VMOV    s0, s1, r0, r1
+void test_VMOV_should_move_the_correct_values_from_r0_r1_into_s1_and_s2()
 {
-  uint32_t instruction = 0xa8080000;
+  writeToCoreRegisters(0, 0xe000ed88);
+  writeToCoreRegisters(1, 0x00f00000);
+
+  writeInstructionToMemoryGivenByAddress(0xec410a10, 0x08000046);  // VMOV    s0, s1, r0, r1
+  coreReg[PC] = 0x08000046;
   
-  coreReg[SP] = 0x20001000;
-  ARMSimulator(instruction);
-
-  TEST_ASSERT_EQUAL(0x20001020, coreReg[0]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
-}
-
-
-// test ADD r7,SP,#0x20
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r7_is_0x20001020_xPSR_unchanged(void)
-{
-  uint32_t instruction = 0xaf080000;
+  armStep();
   
-  coreReg[SP] = 0x20001000;
-  ARMSimulator(instruction);
-
-  TEST_ASSERT_EQUAL(0x20001020, coreReg[7]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x00f00000e000ed88, fpuDoublePrecision[0]);
+  TEST_ASSERT_EQUAL(0, fpuDoublePrecision[1]);
+  TEST_ASSERT_EQUAL(0xe000ed88, fpuSinglePrecision[0] );
+  TEST_ASSERT_EQUAL(0x00f00000, fpuSinglePrecision[1] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
-
+*/
 

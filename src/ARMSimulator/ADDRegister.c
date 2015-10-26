@@ -221,8 +221,8 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
 
   if(Rd == PC)                                              // only for encoding T2
   {
-    uint32_t address = shiftedRm + coreReg[Rn] + 4;
-    ALUWritePC(address);
+    coreReg[Rd] = shiftedRm + coreReg[Rn] + 4;
+    maskOffBit(coreReg[Rd], 0);
   }
   else if(Rm == PC)
   {

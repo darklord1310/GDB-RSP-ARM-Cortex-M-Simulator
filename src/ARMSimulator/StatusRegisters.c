@@ -263,15 +263,6 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
 }
 
 
-void ALUWritePC(uint32_t address)
-{
-  coreReg[PC] = setBits(address, 0b0, 0, 0);
-
-  if(getBits(address, 31, 28) >= 0xa)
-    coreReg[PC] = 0x00fff05e;
-}
-
-
 bool isQSet()
 {
   if( getBits(coreReg[xPSR], 27, 27) )
@@ -309,3 +300,23 @@ void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign)
       setQFlag();
   }
 }
+
+
+
+/*
+  This function actually should not be included here, it should be included in
+  a separate module, but due to the troublesome to include the module header 
+  to all the test files, it is place here instead
+  
+  This function will check whether the FPU is enable or not
+  If FPU is not enable but is trying to use it, then throw error
+             
+*/
+void executeFPUChecking()
+{
+  
+  
+}
+
+
+

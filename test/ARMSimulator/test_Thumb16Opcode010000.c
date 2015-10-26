@@ -87,7 +87,8 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
-#include "VMOV.h"
+#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
+#include "VMOVBetweenCoreRegAndfpuSReg.h"
 
 
 

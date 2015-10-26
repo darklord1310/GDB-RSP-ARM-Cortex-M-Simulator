@@ -64,8 +64,6 @@ int inITBlock();
 uint32_t getITCond();
 void shiftITState();
 int isLastInITBlock();
-void ALUWritePC(uint32_t address);
-uint32_t handlingForSP(uint32_t registerIndex, uint32_t value);
-
+void executeFPUChecking();
 
 #endif // StatusRegisters_H

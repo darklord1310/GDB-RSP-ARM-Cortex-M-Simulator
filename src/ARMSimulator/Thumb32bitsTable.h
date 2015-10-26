@@ -100,7 +100,8 @@
 #include "BL.h"
 #include "NOP.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
-#include "VMOV.h"
+#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
+#include "VMOVBetweenCoreRegAndfpuSReg.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;
@@ -139,7 +140,7 @@ void (*Thumb32DataProcessingShiftedRegister[8192])(uint32_t instruction);
 void (*Thumb32MoveRegisterAndImmediateShift[128])(uint32_t instruction);
 void (*Thumb32DataProcessingRegister[256])(uint32_t instruction);
 void (*Thumb32BranchesAndMiscellaneousControl[1024])(uint32_t instruction);
-void (*Thumb32HintInstructions[2048])();
+void (*Thumb32HintInstructions[2048])(uint32_t instruction);
 void (*Thumb32LoadWord[4096])(uint32_t instruction);
 void (*Thumb32MultiplyAccumulate[512])(uint32_t instruction);
 void (*Thumb32LongMultiplyAccumulateDivide[128])(uint32_t instruction);
@@ -149,6 +150,7 @@ void (*Thumb32LoadByteMemoryHints[65536])(uint32_t instruction);
 void (*Thumb32LoadStoreDualTableBranch[256])(uint32_t instruction);
 void (*Thumb32LoadHalfword[65536])(uint32_t instruction);
 void (*Thumb32CoprocessorInstructions[65536])(uint32_t instruction);
+void (*FloatingPoint32bitsTransfer[64])(uint32_t instruction);
 void (*Thumb32Table[2048])(uint32_t instruction);
 
 
@@ -168,6 +170,7 @@ void initThumb32LoadByteMemoryHints();
 void initThumb32bitsLoadStoreDualTableBranch();
 void initThumb32bitsLoadHalfword();
 void initThumb32bitsCoprocessorInstructions();
+void initFloatingPoint32bitsTransfer();
 void initThumb32Table();
 
 void determineMoveRegisterAndImmediateShifts(uint32_t instruction);

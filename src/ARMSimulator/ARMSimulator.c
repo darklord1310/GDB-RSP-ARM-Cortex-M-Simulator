@@ -72,6 +72,10 @@ void initializeAllTable()
   initThumb32bitsLoadHalfword();
   initThumb32bitsCoprocessorInstructions();
   initThumb32Table();
+  
+  //Floating Point Instructions
+  initFloatingPoint32bitsTransfer();
+  
 }
 
 
@@ -217,7 +221,7 @@ void executeHintInstructions(uint32_t instruction)
   uint32_t op2 = getBits(instruction, 7, 0);
   uint32_t opcode = (op1 << 7) | op2;
 
-  (*Thumb32HintInstructions[opcode])();
+  (*Thumb32HintInstructions[opcode])(instruction);
 }
 
 
@@ -382,6 +386,17 @@ void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
   }
 }
 
+
+void executeFloatingPoint32bitsTransfer(uint32_t instruction)
+{
+  uint32_t L = getBits(instruction,20,20);
+  uint32_t C = getBits(instruction,8,8);
+  uint32_t A = getBits(instruction,23,21);
+  uint32_t B = getBits(instruction,6,5);
+  uint32_t opcode = (((((L << 1) | C) << 3) | A) << 1) | B;
+  
+  (*FloatingPoint32bitsTransfer[64])(instruction);
+}
 
 
 //this is the old function and it is no longer in use, the reason it does not get deleted is because many of the test code created earlier use this function

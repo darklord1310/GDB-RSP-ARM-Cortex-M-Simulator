@@ -88,7 +88,9 @@
 #include "MLA.h"
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
-#include "VMOV.h"
+#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
+#include "VMOVBetweenCoreRegAndfpuSReg.h"
+
 
 void setUp(void)
 {
@@ -100,18 +102,70 @@ void tearDown(void)
 }
 
 
-void test_VMOV_should_move_the_correct_value_into_s1_and_s2()
+// VMOV    s0, s1, r0, r1
+void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_values_from_r0_r1_into_s1_and_s2()
 {
   writeToCoreRegisters(0, 0xe000ed88);
   writeToCoreRegisters(1, 0x00f00000);
 
-  writeInstructionToMemoryGivenByAddress(0xec410a30, 0x08000046);  // VMOV
+  writeInstructionToMemoryGivenByAddress(0xec410a10, 0x08000046);  // VMOV    s0, s1, r0, r1
   coreReg[PC] = 0x08000046;
   
   armStep();
   
-  TEST_ASSERT_EQUAL(fpuDoublePrecision[0], 0xe000ed8800000000);
-  TEST_ASSERT_EQUAL(fpuDoublePrecision[1], 0x0000000000f00000);
-  TEST_ASSERT_EQUAL(fpuSinglePrecision[1], 0xe000ed88);
-  TEST_ASSERT_EQUAL(fpuSinglePrecision[2], 0x00f00000);
+  TEST_ASSERT_EQUAL(0x00f00000e000ed88, fpuDoublePrecision[0]);
+  TEST_ASSERT_EQUAL(0, fpuDoublePrecision[1]);
+  TEST_ASSERT_EQUAL(0xe000ed88, fpuSinglePrecision[0] );
+  TEST_ASSERT_EQUAL(0x00f00000, fpuSinglePrecision[1] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+// VMOV    r5, r6, s0, s1
+void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_values_from_s0_s1_into_r5_and_r6()
+{
+  writeDoublePrecision(0, 0x00f00000e000ed88);
+  writeInstructionToMemoryGivenByAddress(0xec565a10, 0x0800002a);  // VMOV    r5, r6, s0, s1
+  coreReg[PC] = 0x0800002a;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xe000ed88,coreReg[5]);
+  TEST_ASSERT_EQUAL(0x00f00000,coreReg[6]);
+  TEST_ASSERT_EQUAL(0x0800002e,coreReg[PC]);
+}
+
+
+// VMOV    d1, r0, r1
+void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_value_from_r0_r1_into_d1()
+{
+  writeToCoreRegisters(0, 0xe000ed88);
+  writeToCoreRegisters(1, 0x00f00000);
+
+  writeInstructionToMemoryGivenByAddress(0xec410b11, 0x08000046);  // VMOV    d1, r0, r1
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x00f00000e000ed88, fpuDoublePrecision[1]);
+  TEST_ASSERT_EQUAL(0xe000ed88, fpuSinglePrecision[2] );
+  TEST_ASSERT_EQUAL(0x00f00000, fpuSinglePrecision[3] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+
+// VMOV    r5, r6, d1
+void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_values_from_d1_to_r5_and_r6()
+{
+  writeDoublePrecision(1, 0x00f00000e000ed88);
+
+  writeInstructionToMemoryGivenByAddress(0xec565b11, 0x08000046);  // VMOV    r5, r6, d1
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xe000ed88, coreReg[5] );
+  TEST_ASSERT_EQUAL(0x00f00000, coreReg[6] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
