@@ -54,5 +54,6 @@ void executeStoreSingleDataItem(uint32_t instruction);
 void executeLoadByteMemoryHints(uint32_t instruction);
 void executeLoadStoreDualTableBranch(uint32_t instruction);
 void executeLoadHalfword(uint32_t instruction);
+void executeCoprocessorInstructions(uint32_t instruction);
 
 #endif // ARMSimulator_H

@@ -26,7 +26,6 @@
 #include "SUBImmediate.h"
 #include "ADDRegister.h"
 #include "SUBRegister.h"
-#include "ADDSPRegister.h"
 #include "ITandHints.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
@@ -85,7 +84,6 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
-#include "SUBSPRegister.h"
 #include "BL.h"
 #include "NOP.h"
 #include "MLA.h"
@@ -93,6 +91,7 @@
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "ExceptionObject.h"
 #include "BKPT.h"
+#include "VMOV.h"
 
 
 extern char *targetCortexM4_XML;

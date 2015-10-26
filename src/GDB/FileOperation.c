@@ -12,7 +12,6 @@ char *readFile(FILE *file, char *filename)
   if(file == NULL)
   {
     printf("error: cannot open the file %s\n", filename);
-    exit;
   }
 
   str = fgets(buffer, 1024, file);

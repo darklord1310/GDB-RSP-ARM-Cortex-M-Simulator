@@ -25,11 +25,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include "StatusRegisters.h"
-#include "ADDRegister.h"
-#include "ADR.h"
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
-#include "ADDSPRegister.h"
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
@@ -135,31 +132,15 @@ void ADDRegisterToRegisterT2(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      if(Rm == 0b1101)
-        ADDSPRegisterT1(instruction);
-      else if(Rdn == 0b1101)
-        ADDSPRegisterT2(instruction);
-      else
-        executeADDRegister(Rm, Rdn, Rdn, 0, 0, 0);
-    }
+      executeADDRegister(Rm, Rdn, Rdn, 0, 0, 0);
+    
     shiftITState();
-
-    if( Rdn != PC)
-      coreReg[PC] += 2;
   }
   else
-  {
-    if(Rm == 0b1101)
-      ADDSPRegisterT1(instruction);
-    else if(Rdn == 0b1101)
-      ADDSPRegisterT2(instruction);
-    else
-      executeADDRegister(Rm, Rdn, Rdn, 0, 0, 0);
+    executeADDRegister(Rm, Rdn, Rdn, 0, 0, 0);
 
-    if( Rdn != PC)
-      coreReg[PC] += 2;
-  }
+  if( Rdn != PC)
+    coreReg[PC] += 2;
 }
 
 
@@ -245,7 +226,6 @@ void executeADDRegister(uint32_t Rm, uint32_t Rd, uint32_t Rn, uint32_t S, uint3
   }
   else if(Rm == PC)
   {
-    // coreReg[Rd] = alignPC(coreReg[Rm] + 2, 4) + coreReg[SP];
     coreReg[Rd] = shiftedRm + coreReg[Rn] + 4;
   }
   else

@@ -32,11 +32,8 @@
 #include "ARMRegisters.h"
 #include "Thumb16bitsTable.h"
 #include "Thumb32bitsTable.h"
-#include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
-#include "ADDSPImmediate.h"
-#include "ADR.h"
 
 
 void initializeSimulator()
@@ -73,6 +70,7 @@ void initializeAllTable()
   initThumb32LoadByteMemoryHints();
   initThumb32bitsLoadStoreDualTableBranch();
   initThumb32bitsLoadHalfword();
+  initThumb32bitsCoprocessorInstructions();
   initThumb32Table();
 }
 
@@ -315,6 +313,16 @@ void executeLoadHalfword(uint32_t instruction)
   (*Thumb32LoadHalfword[opcode])(instruction);
 }
 
+
+void executeCoprocessorInstructions(uint32_t instruction)
+{ 
+  uint32_t op1 = getBits(instruction,25,20);
+  uint32_t coproc = getBits(instruction,11,8);
+  uint32_t op = getBits(instruction,4,4);
+  uint32_t opcode = ( ( (op1 << 1) | op) << 4) | coproc;
+  
+  (*Thumb32CoprocessorInstructions[opcode])(instruction);
+}
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {

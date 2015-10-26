@@ -140,20 +140,8 @@ void tabulateTable(char *string, void (*table[])(uint32_t), void (*function)(uin
     }
     
     if( determineTableException(tableException, bitsInfo.baseOpcode) == 0)
-    {
-      // printf("%x\n", bitsInfo.baseOpcode);
       table[bitsInfo.baseOpcode] = function;
-    }
-    
-    /*
-    if(tableException.mask == NO_EXCEPTION && tableException.exceptionBits == NO_EXCEPTION)
-      table[bitsInfo.baseOpcode] = function;
-    else
-    { 
-      if( (bitsInfo.baseOpcode & tableException.mask) != tableException.exceptionBits)
-        table[bitsInfo.baseOpcode] = function; 
-    }
-    */
+
     i = 0;
   }  
 }
@@ -161,10 +149,11 @@ void tabulateTable(char *string, void (*table[])(uint32_t), void (*function)(uin
 
 void initThumb32Table()
 {
-  tabulateTable("XXXXXXXXXX", Thumb32Table, invalidInstruction , createTableException(NO_EXCEPTION) );   
+  // tabulateTable("XXXXXXXXXX", Thumb32Table, invalidInstruction , createTableException(NO_EXCEPTION) );   
   tabulateTable("0100XX0XXX", Thumb32Table, executeLoadStoreMultiple , createTableException(NO_EXCEPTION) );
   tabulateTable("0100XX1XXX", Thumb32Table, executeLoadStoreDualTableBranch , createTableException(NO_EXCEPTION) );
   tabulateTable("0101XXXXXX", Thumb32Table, executeDataProcessingShiftedRegister  , createTableException(NO_EXCEPTION) );
+  tabulateTable("011XXXXXXX", Thumb32Table, executeCoprocessorInstructions  , createTableException(NO_EXCEPTION) );
   tabulateTable("10X0XXXXX0", Thumb32Table, executeDataProcessingModifiedImmediate , createTableException(NO_EXCEPTION) );
   tabulateTable("10X1XXXXX0", Thumb32Table, executeDataProcessingPlainImmediate , createTableException(NO_EXCEPTION) );
   tabulateTable("10XXXXXXX1", Thumb32Table, executeBranchesAndMiscellaneousControl , createTableException(NO_EXCEPTION) );
@@ -175,13 +164,14 @@ void initThumb32Table()
   tabulateTable("11010XXXXX", Thumb32Table, executeDataProcessingRegister , createTableException(NO_EXCEPTION) );
   tabulateTable("110110XXXX", Thumb32Table, executeMultiplyAccumulate , createTableException(NO_EXCEPTION) );
   tabulateTable("110111XXXX", Thumb32Table, executeLongMultiplyAccumulateDivide , createTableException(NO_EXCEPTION) );
+  tabulateTable("111XXXXXXX", Thumb32Table, executeCoprocessorInstructions  , createTableException(NO_EXCEPTION) );
 }
 
 
 
 void initThumb32bitsLoadStoreMultiple()
 {
-  tabulateTable("XXXXXXXX", Thumb32LoadStoreMultiple, invalidInstruction ,  createTableException(NO_EXCEPTION) );  
+  // tabulateTable("XXXXXXXX", Thumb32LoadStoreMultiple, invalidInstruction ,  createTableException(NO_EXCEPTION) );  
   tabulateTable("010XXXXX", Thumb32LoadStoreMultiple, STMRegisterT2 ,  createTableException(NO_EXCEPTION) );
   tabulateTable("011XXXXX", Thumb32LoadStoreMultiple, LDMRegisterT2 ,  createTableException(1,0b00011111, 0b00011101) );
   tabulateTable("01111101", Thumb32LoadStoreMultiple, POPT2 ,          createTableException(NO_EXCEPTION) );
@@ -193,7 +183,7 @@ void initThumb32bitsLoadStoreMultiple()
 
 void initThumb32bitsLoadStoreDualTableBranch()
 {
-  tabulateTable("XXXXXXXX", Thumb32LoadStoreDualTableBranch, invalidInstruction ,  createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXX", Thumb32LoadStoreDualTableBranch, invalidInstruction ,  createTableException(NO_EXCEPTION) );
   tabulateTable("0X10XXXX", Thumb32LoadStoreDualTableBranch, STRDImmediate ,  createTableException(NO_EXCEPTION) );
   tabulateTable("1XX0XXXX", Thumb32LoadStoreDualTableBranch, STRDImmediate ,  createTableException(NO_EXCEPTION) );
   tabulateTable("0X11XXXX", Thumb32LoadStoreDualTableBranch, LDRDImmediate ,  createTableException(NO_EXCEPTION) );
@@ -203,7 +193,7 @@ void initThumb32bitsLoadStoreDualTableBranch()
 
 void initThumb32bitsDataProcessingShiftedRegister()
 {
-  tabulateTable("XXXXXXXXXXXXX", Thumb32DataProcessingShiftedRegister, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXXXXX", Thumb32DataProcessingShiftedRegister, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("0000XXXXXXXXX", Thumb32DataProcessingShiftedRegister, ANDRegisterT2 , createTableException(1, 0b0000000011110, 0b1110) );
   tabulateTable("0000XXXX11111", Thumb32DataProcessingShiftedRegister, TSTRegisterT2 , createTableException(NO_EXCEPTION, NO_EXCEPTION) );
   tabulateTable("0001XXXXXXXXX", Thumb32DataProcessingShiftedRegister, BICRegisterT2 , createTableException(NO_EXCEPTION, NO_EXCEPTION) );
@@ -223,9 +213,15 @@ void initThumb32bitsDataProcessingShiftedRegister()
 }
 
 
+void initThumb32bitsCoprocessorInstructions()
+{
+  tabulateTable("000100X101X", Thumb32CoprocessorInstructions, VMOV , createTableException(NO_EXCEPTION) );
+  tabulateTable("000101X101X", Thumb32CoprocessorInstructions, VMOV , createTableException(NO_EXCEPTION) );
+}
+
 void initThumb32bitsMoveRegisterAndImmediateShift()
 {
-  tabulateTable("XXXXXXX", Thumb32MoveRegisterAndImmediateShift, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXX", Thumb32MoveRegisterAndImmediateShift, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("0000000", Thumb32MoveRegisterAndImmediateShift, MOVRegisterT3 , createTableException(NO_EXCEPTION) );
   tabulateTable("00XXXXX", Thumb32MoveRegisterAndImmediateShift, LSLImmediateT2 , createTableException(1,0b0011111, 0b00000) );
   tabulateTable("01XXXXX", Thumb32MoveRegisterAndImmediateShift, LSRImmediateT2 , createTableException(NO_EXCEPTION) );
@@ -237,7 +233,7 @@ void initThumb32bitsMoveRegisterAndImmediateShift()
 
 void initThumb32bitsDataProcessingModifiedImmediate()
 {
-  tabulateTable("XXXXXXXXXXXXX", Thumb32DataProcessingModifiedImmediate, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXXXXX", Thumb32DataProcessingModifiedImmediate, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("0000XXXXXXXXX", Thumb32DataProcessingModifiedImmediate, ANDImmediateT1 , createTableException(1,0b0000000001111, 0b1111) );
   tabulateTable("0000XXXXX1111", Thumb32DataProcessingModifiedImmediate, TSTImmediateT1 , createTableException(NO_EXCEPTION) );
   tabulateTable("0001XXXXXXXXX", Thumb32DataProcessingModifiedImmediate, BICImmediateT1 , createTableException(NO_EXCEPTION) );
@@ -259,7 +255,7 @@ void initThumb32bitsDataProcessingModifiedImmediate()
 
 void initThumb32bitsDataProcessingPlainImmediate()
 {
-  tabulateTable("XXXXXXXXX", Thumb32DataProcessingPlainImmediate, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXX", Thumb32DataProcessingPlainImmediate, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("00000XXXX", Thumb32DataProcessingPlainImmediate, ADDImmediateT4 , createTableException(1,0b000001111, 0b1111) );
   tabulateTable("000001111", Thumb32DataProcessingPlainImmediate, ADRT3 , createTableException(NO_EXCEPTION) );
   tabulateTable("00100XXXX", Thumb32DataProcessingPlainImmediate, MOVImmediateT3 , createTableException(NO_EXCEPTION) );
@@ -277,7 +273,7 @@ void initThumb32bitsDataProcessingPlainImmediate()
 
 void initThumb32bitsBranchesAndMiscellaneousControl()
 {
-  tabulateTable("XXXXXXXXXX", Thumb32BranchesAndMiscellaneousControl, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXX", Thumb32BranchesAndMiscellaneousControl, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("0X0XXXXXXX", Thumb32BranchesAndMiscellaneousControl, ConditionalBranchT2 , createTableException(1,0b0000111000, 0b111000) );
   tabulateTable("0X00111010", Thumb32BranchesAndMiscellaneousControl, executeHintInstructions , createTableException(NO_EXCEPTION) );
   tabulateTable("0X1XXXXXXX", Thumb32BranchesAndMiscellaneousControl, UnconditionalBranchT2 , createTableException(NO_EXCEPTION) );
@@ -287,7 +283,7 @@ void initThumb32bitsBranchesAndMiscellaneousControl()
 
 void initThumb32StoreSingleDataItem()
 {
-  tabulateTable("XXXXXXXXX", Thumb32StoreSingleDataItem, invalidInstruction ,  createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXX", Thumb32StoreSingleDataItem, invalidInstruction ,  createTableException(NO_EXCEPTION) );
   tabulateTable("100XXXXXX", Thumb32StoreSingleDataItem, STRBImmediateT2 ,  createTableException(NO_EXCEPTION) );
   tabulateTable("0001XXXXX", Thumb32StoreSingleDataItem, STRBImmediateT3 ,  createTableException(NO_EXCEPTION) );
   tabulateTable("0000XXXXX", Thumb32StoreSingleDataItem, STRBRegisterT2 ,  createTableException(NO_EXCEPTION) );
@@ -302,7 +298,7 @@ void initThumb32StoreSingleDataItem()
 
 void initThumb32LoadByteMemoryHints()
 {
-  tabulateTable("XXXXXXXXXXXXXXXX", Thumb32LoadByteMemoryHints, invalidInstruction ,  createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXXXXXXXX", Thumb32LoadByteMemoryHints, invalidInstruction ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01XXXXXXXXXXXXXX", Thumb32LoadByteMemoryHints, LDRBImmediateT2 ,  createTableException(2,0b0000000000001111, 0b00001111, 0b0000000011110000, 0b11110000) );
   tabulateTable("001XX1XXXXXXXXXX", Thumb32LoadByteMemoryHints, LDRBImmediateT3 ,  createTableException(1,0b0000000011110000, 0b11110000) );
   tabulateTable("001100XXXXXXXXXX", Thumb32LoadByteMemoryHints, LDRBImmediateT3 ,  createTableException(2,0b0000000000001111, 0b00001111, 0b0000000011110000, 0b11110000) );
@@ -320,7 +316,7 @@ void initThumb32LoadByteMemoryHints()
 
 void initThumb32bitsLoadHalfword()
 {
-  tabulateTable("XXXXXXXXXXXXXXXX", Thumb32LoadHalfword, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXXXXXXXX", Thumb32LoadHalfword, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("01XXXXXXXXXXXXXX", Thumb32LoadHalfword, LDRHImmediateT2 , createTableException(2, 0b0000000000001111, 0b1111, 0b0000000011110000, 0b11110000) );
   tabulateTable("001XX1XXXXXXXXXX", Thumb32LoadHalfword, LDRHImmediateT3 , createTableException(2, 0b0000000000001111, 0b1111, 0b0000000011110000, 0b11110000) );
   tabulateTable("001100XXXXXXXXXX", Thumb32LoadHalfword, LDRHImmediateT3 , createTableException(2, 0b0000000000001111, 0b1111, 0b0000000011110000, 0b11110000) );
@@ -338,7 +334,7 @@ void initThumb32bitsLoadHalfword()
 
 void initThumb32bitsLoadWord()
 {
-  tabulateTable("XXXXXXXXXXXX", Thumb32LoadWord, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXXXX", Thumb32LoadWord, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("01XXXXXXXXXX", Thumb32LoadWord, LDRImmediateT3 , createTableException(1,0b000000001111, 0b1111) );
   tabulateTable("001XX1XXXXXX", Thumb32LoadWord, LDRImmediateT4 , createTableException(1,0b000000001111, 0b1111) );
   tabulateTable("001100XXXXXX", Thumb32LoadWord, LDRImmediateT4 , createTableException(1,0b000000001111, 0b1111) );
@@ -350,7 +346,7 @@ void initThumb32bitsLoadWord()
 
 void initThumb32bitsDataProcessingRegister()
 {
-  tabulateTable("XXXXXXXX", Thumb32DataProcessingRegister, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXX", Thumb32DataProcessingRegister, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("000X0000", Thumb32DataProcessingRegister, LSLRegisterT2 , createTableException(NO_EXCEPTION) );
   tabulateTable("001X0000", Thumb32DataProcessingRegister, LSRRegisterT2 , createTableException(NO_EXCEPTION) );
   tabulateTable("010X0000", Thumb32DataProcessingRegister, ASRRegisterT2 , createTableException(NO_EXCEPTION) );
@@ -373,7 +369,7 @@ void initThumb32bitsDataProcessingRegister()
 
 void initThumb32bitsHintInstructions()
 {
-  tabulateTable("XXXXXXXXXXX", Thumb32HintInstructions, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXXXX", Thumb32HintInstructions, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("00000000000", Thumb32HintInstructions, NOPT2 , createTableException(NO_EXCEPTION) ); 
 }
 
@@ -381,7 +377,7 @@ void initThumb32bitsHintInstructions()
 
 void initThumb32bitsMultiplyAccumulate()
 {
-  tabulateTable("XXXXXXXXX", Thumb32MultiplyAccumulate, invalidInstruction , createTableException(NO_EXCEPTION) );
+  // tabulateTable("XXXXXXXXX", Thumb32MultiplyAccumulate, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("000000000", Thumb32MultiplyAccumulate, MLAT1 , createTableException(1, 0b000001111, 0b1111) );
   tabulateTable("000001111", Thumb32MultiplyAccumulate, MULRegisterT2 , createTableException(NO_EXCEPTION) );
   tabulateTable("00001XXXX", Thumb32MultiplyAccumulate, MLST1 , createTableException(NO_EXCEPTION) );
@@ -390,7 +386,7 @@ void initThumb32bitsMultiplyAccumulate()
 
 void initThumb32bitsLongMultiplyAccumulateDivide()
 {
-  tabulateTable("XXXXXXX", Thumb32LongMultiplyAccumulateDivide, invalidInstruction ,  createTableException(NO_EXCEPTION) );    
+  // tabulateTable("XXXXXXX", Thumb32LongMultiplyAccumulateDivide, invalidInstruction ,  createTableException(NO_EXCEPTION) );    
   tabulateTable("0000000", Thumb32LongMultiplyAccumulateDivide, SMULLT1 ,  createTableException(NO_EXCEPTION) );
   tabulateTable("0011111", Thumb32LongMultiplyAccumulateDivide, SDIVT1 ,  createTableException(NO_EXCEPTION) );
   tabulateTable("0100000", Thumb32LongMultiplyAccumulateDivide, UMULLT1 ,  createTableException(NO_EXCEPTION) );

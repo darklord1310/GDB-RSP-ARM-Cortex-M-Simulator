@@ -20,7 +20,6 @@
 #include "SUBImmediate.h"
 #include "ADDRegister.h"
 #include "SUBRegister.h"
-#include "ADDSPRegister.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
 #include "LSRRegister.h"
@@ -47,7 +46,6 @@
 #include "ErrorSignal.h"
 #include "CException.h"
 #include "SVC.h"
-#include "ADDSPRegister.h"
 #include "ADDSPImmediate.h"
 #include "ADR.h"
 #include "STRImmediate.h"
@@ -81,7 +79,6 @@
 #include "ORNRegister.h"
 #include "TEQRegister.h"
 #include "RSBRegister.h"
-#include "SUBSPRegister.h"
 #include "CLZ.h"
 #include "BL.h"
 #include "CLZ.h"
@@ -90,7 +87,7 @@
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "BKPT.h"
-
+#include "VMOV.h"
 
 void setUp(void)
 {
