@@ -1,4 +1,0 @@
-#!/bin/bash
-
-rake release
-mv build\release\gdbDebugger.exe C:\CooCox\CoIDE_V2Beta\bin

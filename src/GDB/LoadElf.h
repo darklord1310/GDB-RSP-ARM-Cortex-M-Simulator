@@ -27,12 +27,21 @@
 #include <stdint.h>
 #include "GetHeaders.h"
 
-#define ELF_FILE    "C:/Users/user06D/Desktop/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
-#define COIDE_ELF_FILE    "C:/Users/user06D/Desktop/ARM-BlinkyLED/Test01/Debug/bin/Test01.elf"
-#define getSectionVma(elfData, i)     getSectionVirtualAddress(elfData, i)
+#define getStartAddress(elfdata)                (elfData->eh->e_entry) & 0xfffffffe
+#define getTotalProgramHeader(elfData)          (elfData->eh->e_phnum)
+#define getTotalSectionHeader(elfData)          (elfData->eh->e_shnum)
+#define getSectionVma(elfData, i)               getSectionVirtualAddress(elfData, i)
+#define getSectionOffset(elfData, i)            (elfData->sh[i].sh_offset)
+#define getProgramOffset(elfData, i)            (elfData->ph[i].p_offset)
+#define getProgramFileSizez(elfData, i)         (elfData->ph[i].p_filesz)
+#define getProgramPhysicalAddress(elfData, i)   (elfData->ph[i].p_paddr)
+#define getProgramVirtualAddress(elfData, i)    (elfData->ph[i].p_paddr)
+#define getProgramType(elfData, i)              (elfData->ph[i].p_type)
 
-void loadElf(ElfData *elfData);
-uint32_t getSectionLma(ElfData *elfData, int index);
+
+void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize);
+uint32_t getSectionLma(ElfData *elfData, int sectionIndex);
 int isWithinRange(uint32_t address, uint32_t startAddr, uint32_t size);
+int isProgramLoadType(ElfData *elfData, int index);
 
 #endif // LoadElf_H

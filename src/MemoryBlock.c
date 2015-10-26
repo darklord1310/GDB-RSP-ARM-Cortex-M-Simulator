@@ -87,3 +87,8 @@ void simulatorCopyBlock(uint32_t sourceAddr, uint8_t *destAddr, uint32_t size)
     memoryBlock[virtualMemToPhysicalMem(sourceAddr + i)] = destAddr[i];
   }
 }
+
+void copySingleBlock(uint32_t sourceAddr, uint8_t data)
+{
+  memoryBlock[virtualMemToPhysicalMem(sourceAddr)] = data;
+}

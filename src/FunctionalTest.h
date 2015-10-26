@@ -59,5 +59,6 @@ void tarRemoteCommand();
 void loadSimpleAssembly();
 void loadITBlock();
 void singleStep();
+void storeAffectedReg(int regNum, unsigned int regValue);
 
 #endif // FunctionalTest_H

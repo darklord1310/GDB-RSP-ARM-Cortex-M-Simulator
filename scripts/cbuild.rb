@@ -1,4 +1,4 @@
-# Build script for C
+# Build script for C (ver 0.4)
 # Copyright (C) 2015 Poh Tze Ven, <pohtv@acd.tarc.edu.my>
 #
 # This file is part of C Compiler & Interpreter project.
@@ -12,26 +12,35 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
-# along with GDB RSP and ARM Simulator.  If not, see <http://www.gnu.org/licenses/>.
+# along with C Compiler & Interpreter.  If not, see <http://www.gnu.org/licenses/>.
+
+require 'rake/clean' if !(defined? CLEAN)
+require 'rexml/document'
+include REXML
+
+# task :clobber => :clean do
+  # puts "Clobbering. It may take sometime..."
+# end
 
 def appendSlashToPath(path)
+  return if path == nil || path == ''
   path[-1] == '/'? path : path + '/'
 end
 
 def prependProperPathToFilename(filename, src_path, obj_path, exe_path)
-  if filename =~ /.+\.o$/
-    obj_path + filename
-  elsif filename =~ /.+\.exe$/
-    exe_path + filename
+  if filename =~ /.+\.o$/i
+    obj_path != '' ? File.join(obj_path, filename) : filename
+  elsif filename =~ /.+\.(?:exe|bin|hex|elf)$/i
+    exe_path != '' ? File.join(exe_path, filename) : filename
   else
-    src_path + filename
+    src_path != '' ? File.join(src_path, filename) : filename
   end
 end
 
 def prependProperPathToFilenames(filenames, src_path, obj_path, exe_path)
   # If filenames is a string, then just prepend appropriate path
   if filenames.is_a? String
-    prependProperPathToFilename(filenames, src_path, obj_path, exe_path)
+    [prependProperPathToFilename(filenames, src_path, obj_path, exe_path)]
   else
     filenames.map { |f|
       prependProperPathToFilename(f, src_path, obj_path, exe_path)
@@ -52,13 +61,20 @@ def optionize(option_key, data, err_msg)
 end
 
 def compile_list(list, src_path, obj_path, exe_path, config)
-  FileUtils.mkdir_p obj_path
-  FileUtils.mkdir_p exe_path
+  return_list = {}
+
+  src_path = '' if src_path == '.' || src_path == nil
+  obj_path = '' if obj_path == '.' || obj_path == nil
+  exe_path = '' if exe_path == '.' || exe_path == nil
+
+  FileUtils.mkdir_p obj_path if obj_path != ''
+  FileUtils.mkdir_p exe_path if exe_path != ''
   directory obj_path
   directory exe_path
-  src_path = appendSlashToPath(src_path)
-  obj_path = appendSlashToPath(obj_path)
-  exe_path = appendSlashToPath(exe_path)
+
+#  src_path = appendSlashToPath(src_path)
+#  obj_path = appendSlashToPath(obj_path)
+#  exe_path = appendSlashToPath(exe_path)
 
   raise ArgumentError,                                                        \
         "Error: Missing ':option_keys:output_file' in the config."            \
@@ -75,18 +91,19 @@ def compile_list(list, src_path, obj_path, exe_path, config)
 
   list.each do |obj|
     # Append path to depender
-    depender = prependProperPathToFilenames(obj[0], src_path, obj_path, exe_path)
+    depender = prependProperPathToFilenames(obj[0], src_path, obj_path, exe_path)[0]
     # Append path to dependee list
 #    dependees = [obj_path, exe_path]
     dependees = []
-    dependees += prependProperPathToFilenames(obj[1], src_path, obj_path, exe_path)
-#    p dependees
-#    p dependees.select { |f| File.directory? f }  
-    file depender => dependees do |n|
-      case obj[0]
-        when /.+\.o$/     # Handle object file
+    dependees.push(*prependProperPathToFilenames(obj[1], src_path, obj_path, exe_path))
+    return_list[depender] = dependees
+#    p depender
+#    p dependees.select { |f| File.directory? f }
+    case obj[0]
+      when /.+\.o$/i     # Handle object file
+        file depender => dependees do |n|
           dependees = n.prerequisites.select { |f|
-            f =~ /.+\.c$/ || f =~ /.+\.cpp$/ || f =~ /.+\.cc$/
+            (f =~ /\.(?:s|asm|c|cpp|cc|c\+\+)$/i) && !(File.directory? f)
           }
           # Get compiler
           raise ArgumentError,                                                \
@@ -108,7 +125,13 @@ def compile_list(list, src_path, obj_path, exe_path, config)
             puts("compiling #{n.name}...")
           end
           system(command)
-        when /.+\.exe$/   # Handle executable file
+        end
+#        p depender
+        CLEAN.include(depender)
+#        CLOBBER << depender
+
+      when /.+\.(?:exe|bin|hex|elf)$/i        # Handle executable file
+        file depender => dependees do |n|
           # Gather only dependee files (exclude directories)
           dependees = n.prerequisites.select { |f| !(File.directory? f) }
           # Get linker
@@ -125,7 +148,7 @@ def compile_list(list, src_path, obj_path, exe_path, config)
                     ' ' + optionize('', config[:linker_options], nil)
           # Compile the command
           command = linker + ' ' +                                            \
-                    options + ' ' + dependees.join(' ') + ' ' +               \
+                    dependees.join(' ') + ' ' + options + ' ' +               \
                     opt_out_file + ' ' + n.name
           if config[:verbose] == :yes
             puts(command)
@@ -133,9 +156,99 @@ def compile_list(list, src_path, obj_path, exe_path, config)
             puts("linking #{n.name}...")
           end
           system(command)
-        else
-          raise TypeError, "Error: Sorry, don't know how to produce '#{obj[0]}'"
-      end
+        end
+#        p depender
+        CLEAN.include(depender)
+#        CLOBBER << depender
+
+      else
+        file depender => dependees do |n|
+          sh "touch #{n.name}"
+        end
     end
   end
+  return return_list
+end
+
+def compile_all(src_paths, obj_path, config)
+  return_list = {}
+  dependency_list = {}
+  depender_list = []
+
+  if !src_paths.is_a? Array
+    src_paths = [src_paths]
+  end
+  src_paths.each do |path|
+    file_list = FileList.new( File.join(path, '*.s'),      \
+                              File.join(path, '*.asm'),    \
+                              File.join(path, '*.c'),      \
+                              File.join(path, '*.cc'),     \
+                              File.join(path, '*.cpp'),    \
+                              File.join(path, '*.c++'))
+#    trimmed_file_list = file_list.pathmap("%f")
+#    p file_list
+#    p trimmed_file_list
+    # Create dependency list and depender list
+    file_list.each do |n|
+      name = File.basename(n)
+      depender = name.gsub(/\.(?:s|asm|c|cpp|cc|c\+\+)$/i, ".o")
+      dependency_list[depender] = [n]
+      depender_list << depender
+#      # Add to clean and clobber lists
+#      CLEAN.include(depender)
+#      CLOBBER << depender
+    end
+#    p dependency_list
+    return_list = compile_list(dependency_list, ".", obj_path, ".", config)
+  end
+  return return_list
+end
+
+def link_all(obj_list, exe_path_and_name, config)
+  dependency_list = {File.basename(exe_path_and_name) => obj_list}
+  compile_list(dependency_list, '.', '.', File.dirname(exe_path_and_name), config)
+end
+
+def getDependers(dependency_list)
+  dependency_list.keys
+end
+
+def getAllSrcFiles(coIdeProjectFile)
+  list = []
+  xmlfile = File.new(coIdeProjectFile)
+  xmldoc = Document.new(xmlfile)
+
+  # Now get the root element
+  root = xmldoc.root
+#  puts "Root element : " + root.attributes["version"]
+
+  xmldoc.elements.each("Project/Files/File") { |e|
+    name = e.attributes["path"]
+#    puts "File name : " + name if e.attributes["type"] == "1"  && name =~ /\.(?:c|cc|cpp|c++|s|asm)$/i
+#    puts "File name : " + name if e.attributes["type"] == "1"
+    list << name if e.attributes["type"] == "1"
+  }
+
+  return list
+end
+
+def trim_string(str)
+  str.gsub!(/^\s*/, "").gsub!(/\s*$/, "")
+end
+
+def match_extensions(name, ext_filter_list)
+  exts = [ext_filter_list.each {|n| trim_string(n).gsub!(/^\./, "") }]
+  name =~ /#{"\\.(?:#{exts.join("|")})$"}/i
+end
+
+def createCompilationDependencyList(list, ext_filter_list, out_path, out_ext)
+  dependency_list = {}
+  out_path = '' if out_path == '.' || out_path == nil
+  list = list.select {|n| n if match_extensions(n, ext_filter_list) }
+  dependers = list.map {|n|
+    name = File.basename(n.gsub(/\.[^\/]+$/i, out_ext))
+    out_path == '' ? File.join(out_path, name) : name
+  }
+  dependers.zip(list) { |key, val| dependency_list[key] = val }
+  dependency_list
 end

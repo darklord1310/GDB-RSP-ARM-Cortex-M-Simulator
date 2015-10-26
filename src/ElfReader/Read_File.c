@@ -1,7 +1,7 @@
 #include "Read_File.h"
 #include <stdio.h>
 #include <malloc.h>
-// #include "CException.h"
+#include "CException.h"
 #include "ErrorCode.h"
 
 /******************************************************************************

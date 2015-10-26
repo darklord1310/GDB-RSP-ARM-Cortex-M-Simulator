@@ -14,7 +14,7 @@
 #include "getAndSetBits.h"
 #include "getMask.h"
 
-#define ELF_FILE    "C:/Users/user06D/Desktop/GDB-RSP-ARM-Cortex-M-Simulator/data/Ccode.elf"
+#define ELF_FILE          "data/Ccode.elf"
 
 extern ElfData *elfData;
 extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
@@ -71,7 +71,7 @@ Program Headers:
    01     .data
    02     .ccmram .bss ._user_heap_stack
 */
-void test_getSectionLma_given_elfData__should_return_the_correct_physical_address()
+void test_getSectionLma_given_elfData_should_return_the_load_memory_address()
 {
   uint32_t physAddr;
   elfData = openElfFile(ELF_FILE);
@@ -141,26 +141,47 @@ void test_getSectionLma_given_elfData__should_return_the_correct_physical_addres
 
   physAddr = getSectionLma(elfData, 21);
   TEST_ASSERT_EQUAL(-1, physAddr);
+
+  closeElfData(elfData);
 }
 
 void test_isWithinRange_given_start_addr_size_and_should_return_1_if_its_within_range()
 {
-  int size = 2048000;   //2048k
+  int size = 2048 * 1024;   //2048k
   getElfSection(ELF_FILE);
 
-  TEST_ASSERT_EQUAL(1, isWithinRange(isr->destAddress, 0x08000000, size));
-  TEST_ASSERT_EQUAL(1, isWithinRange(text->destAddress, 0x08000000, size));
-  TEST_ASSERT_EQUAL(1, isWithinRange(rodata->destAddress, 0x08000000, size));
-  TEST_ASSERT_EQUAL(1, isWithinRange(initArray->destAddress, 0x08000000, size));
-  TEST_ASSERT_EQUAL(1, isWithinRange(finiArray->destAddress, 0x08000000, size));
-  TEST_ASSERT_EQUAL(1, isWithinRange(data->destAddress, 0x20000000, size));
+  TEST_ASSERT_EQUAL(1, isWithinRange(0x08000000, 0x08000000, size));
+  TEST_ASSERT_EQUAL(1, isWithinRange(0x07ffffff + size, 0x08000000, size));
+  TEST_ASSERT_EQUAL(1, isWithinRange(0x080008fe, 0x08000000, size));
+
+  closeElfFile();
 }
 
 void test_isWithinRange_given_start_addr_and_size_should_return_0_if_its_not_within_range()
 {
-  int size = 2048000;   //2048k
+  int size = 2048 * 1024;   //2048k
 
-  TEST_ASSERT_EQUAL(0, isWithinRange(0, 0x08000000, size));
+  TEST_ASSERT_EQUAL(0, isWithinRange(0x07ffffff, 0x08000000, size));
+  TEST_ASSERT_EQUAL(0, isWithinRange(0x08000000 + size, 0x08000000, size));
+}
+
+void test_isProgramLoadType_given_program_type_should_return_1()
+{
+  elfData = openElfFile(ELF_FILE);
+
+  TEST_ASSERT_EQUAL(1, isProgramLoadType(elfData, 0));
+
+  closeElfData(elfData);
+}
+
+void test_isProgramLoadType_given_program_type_other_than_PT_LOAD_should_return_0()
+{
+  elfData = openElfFile(ELF_FILE);
+  elfData->ph[0].p_type = PT_DYNAMIC;
+
+  TEST_ASSERT_EQUAL(0, isProgramLoadType(elfData, 0));
+
+  closeElfData(elfData);
 }
 
 void test_loadElf()
@@ -174,7 +195,9 @@ void test_loadElf()
   simulatorCopyBlock_Expect(0x08000798, finiArray->dataAddress, finiArray->size);
   simulatorCopyBlock_Expect(0x0800079c, data->dataAddress, data->size);
 
-  loadElf(elfData);
-  
-  TEST_ASSERT_EQUAL(0x8000764, coreReg[PC]);
+  loadElf(elfData, 0x8000000, 2048*1024);
+
+  TEST_ASSERT_EQUAL(0x8000760, coreReg[PC]);
+
+  closeElfFile();
 }

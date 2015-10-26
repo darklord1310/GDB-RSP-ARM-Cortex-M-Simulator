@@ -5,4 +5,5 @@ Ceedling.load_project
 
 task :default => %w[ test:all release ]
 
-#load "host.rb"
+load "scripts/host.rb"
+load "scripts/hw.rb"

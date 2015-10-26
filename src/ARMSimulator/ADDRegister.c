@@ -23,15 +23,17 @@
 
 #include "ADDRegister.h"
 #include <assert.h>
+#include <stdio.h>
+#include "StatusRegisters.h"
+#include "ADDRegister.h"
+#include "ADR.h"
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
-#include "StatusRegisters.h"
 #include "ADDSPRegister.h"
 #include "ModifiedImmediateConstant.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include "ShiftOperation.h"
-#include <stdio.h>
 
 
 /*Add Register To Register Encoding T1

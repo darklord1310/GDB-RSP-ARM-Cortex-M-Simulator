@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "ModifiedImmediateConstant.h"
+#include "ShiftOperation.h"
 
 void RRXT1(uint32_t instruction);
 void executeRRXT1(uint32_t Rm, uint32_t Rd, uint32_t S);

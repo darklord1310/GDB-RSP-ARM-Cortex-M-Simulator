@@ -23,6 +23,7 @@
 
 #include "ModifiedImmediateConstant.h"
 #include "StatusRegisters.h"
+#include "getAndSetBits.h"
 #include <stdio.h>
 
 

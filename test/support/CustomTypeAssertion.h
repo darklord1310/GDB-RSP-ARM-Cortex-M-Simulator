@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -27,17 +27,17 @@
 #include "FunctionalTest.h"
 #include "ARMRegisters.h"
 
-/* #define TEST_ASSERT_EQUAL_ReadLine(expectedLine, actualLine)	\
-			   assertEqualReadLine(expectedLine,				\
-								   actualLine,					\
-								   __LINE__						\
-								  ); */
+/* #define TEST_ASSERT_EQUAL_ReadLine(expectedLine, actualLine)   \
+          assertEqualReadLine(expectedLine,                       \
+                              actualLine,                         \
+                              __LINE__                            \
+                             ); */
 
 
-#define TEST_ASSERT_EQUAL_Register(affectedReg)	                \
-			   assertEqualRegister(affectedReg,					\
-								   __LINE__						\
-								  );
+#define TEST_ASSERT_EQUAL_Register(affectedReg)   \
+          assertEqualRegister(affectedReg,        \
+                              __LINE__            \
+                             );
 
 // void assertEqualReadLine(char *expectedLine, IntelHex16Data *data, int line);
 

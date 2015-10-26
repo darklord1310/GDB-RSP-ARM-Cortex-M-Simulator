@@ -3,8 +3,6 @@
 #include "Relocator.h"
 #include "Read_File.h"
 #include "elf.h"
-#include <stdio.h>
-#include <malloc.h>
 #include "CException.h"
 #include "ErrorCode.h"
 
@@ -65,7 +63,7 @@ Elf32_Phdr *getProgramHeaders(ElfData *elfData){
   inStreamMoveFilePtr(elfData->myFile, elfData->eh->e_phoff);
   fread(elfData->ph, phSizeToMalloc, 1, elfData->myFile->file);
 
-  int i;
+  /* int i;
 
   printf("\nProgram Headers\n");
   for(i = 0; i < elfData->eh->e_phnum; i++)
@@ -73,8 +71,7 @@ Elf32_Phdr *getProgramHeaders(ElfData *elfData){
     printf("%10x%10x%8x\n", elfData->ph[i].p_vaddr,  \
                             elfData->ph[i].p_paddr,  \
                             elfData->ph[i].p_filesz);
-  }
-
+  } */
 
   return elfData->ph;
 }
@@ -103,8 +100,8 @@ Elf32_Shdr *getSectionHeaders(ElfData *elfData){
 
   inStreamMoveFilePtr(elfData->myFile, elfData->eh->e_shoff);
   fread(elfData->sh, shSizeToMalloc, 1, elfData->myFile->file);
-  
-  int i;
+
+  /* int i;
 
   printf("Section Headers\n");
   for(i = 0; i < elfData->eh->e_shnum; i++)
@@ -119,7 +116,7 @@ Elf32_Shdr *getSectionHeaders(ElfData *elfData){
                                          elfData->sh[i].sh_info,  \
                                          elfData->sh[i].sh_info   \
                                          );
-  }
+  } */
 
   return elfData->sh;
 }
@@ -667,9 +664,8 @@ void getElfSection(char *elfFile) {
   isr     = getElfSectionInfo(elfData, ".isr_vector");
   text    = getElfSectionInfo(elfData, ".text");
   rodata  = getElfSectionInfo(elfData, ".rodata");
-  initArray  = getElfSectionInfo(elfData, ".init_array");
-  finiArray  = getElfSectionInfo(elfData, ".fini_array");
-  rodata = getElfSectionInfo(elfData, ".rodata");
+  initArray = getElfSectionInfo(elfData, ".init_array");
+  finiArray = getElfSectionInfo(elfData, ".fini_array");
   data = getElfSectionInfo(elfData, ".data");
 
   entryAddress = (*(uint32_t *)(&isr->dataAddress[4]));
@@ -711,7 +707,10 @@ void closeElfSection(ElfSection *elfSection) {
 void closeElfFile(void) {
   closeElfSection(isr);
   closeElfSection(text);
+  closeElfSection(rodata);
   closeElfSection(initArray);
+  closeElfSection(finiArray);
+  closeElfSection(data);
   closeElfData(elfData);
 
   fileStatus = FILE_CLOSED;

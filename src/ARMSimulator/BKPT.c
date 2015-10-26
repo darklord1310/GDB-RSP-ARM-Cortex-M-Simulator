@@ -29,6 +29,7 @@
 #include "getMask.h"
 #include "ConditionalExecution.h"
 #include "ErrorSignal.h"
+#include "CException.h"
 
 
 /*

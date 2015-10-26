@@ -26,6 +26,7 @@
 #include "StatusRegisters.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
+#include "UnconditionalAndConditionalBranch.h"
 #include "ErrorSignal.h"
 #include <stdio.h>
 #include "CException.h"
