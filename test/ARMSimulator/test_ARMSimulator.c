@@ -85,8 +85,7 @@
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "ExceptionObject.h"
 #include "BKPT.h"
-#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
-#include "VMOVBetweenCoreRegAndfpuSReg.h"
+#include "VMOV.h"
 
 void setUp(void)
 {

@@ -86,8 +86,7 @@
 #include "ExceptionObject.h"
 #include "BKPT.h"
 #include <math.h>
-#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
-#include "VMOVBetweenCoreRegAndfpuSReg.h"
+#include "VMOV.h"
 
 void setUp(void)
 {

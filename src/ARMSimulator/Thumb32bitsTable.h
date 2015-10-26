@@ -100,8 +100,7 @@
 #include "BL.h"
 #include "NOP.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
-#include "VMOVBetweenCoreRegAndDoubleFpuReg.h"
-#include "VMOVBetweenCoreRegAndfpuSReg.h"
+#include "VMOV.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;
