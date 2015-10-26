@@ -393,9 +393,9 @@ void executeFloatingPoint32bitsTransfer(uint32_t instruction)
   uint32_t C = getBits(instruction,8,8);
   uint32_t A = getBits(instruction,23,21);
   uint32_t B = getBits(instruction,6,5);
-  uint32_t opcode = (((((L << 1) | C) << 3) | A) << 1) | B;
-  
-  (*FloatingPoint32bitsTransfer[64])(instruction);
+  uint32_t opcode = (((((L << 1) | C) << 3) | A) << 2) | B;
+
+  (*FloatingPoint32bitsTransfer[opcode])(instruction);
 }
 
 

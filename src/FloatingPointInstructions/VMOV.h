@@ -36,5 +36,7 @@
 
 void VMOVBetweenCoreRegAndfpuSReg(uint32_t instruction);
 void VMOVBetweenCoreRegAndDoubleFpuReg(uint32_t instruction);
+void VMOVBetweenScalarAndCoreReg(uint32_t instruction);
+void VMSR(uint32_t instruction);
 
 #endif // VMOV_H

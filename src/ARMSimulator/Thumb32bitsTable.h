@@ -149,7 +149,7 @@ void (*Thumb32LoadByteMemoryHints[65536])(uint32_t instruction);
 void (*Thumb32LoadStoreDualTableBranch[256])(uint32_t instruction);
 void (*Thumb32LoadHalfword[65536])(uint32_t instruction);
 void (*Thumb32CoprocessorInstructions[65536])(uint32_t instruction);
-void (*FloatingPoint32bitsTransfer[64])(uint32_t instruction);
+void (*FloatingPoint32bitsTransfer[128])(uint32_t instruction);
 void (*Thumb32Table[2048])(uint32_t instruction);
 
 

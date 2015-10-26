@@ -99,23 +99,74 @@ void tearDown(void)
 {
 }
 
-/*
-// VMOV    s0, s1, r0, r1
-void test_VMOV_should_move_the_correct_values_from_r0_r1_into_s1_and_s2()
-{
-  writeToCoreRegisters(0, 0xe000ed88);
-  writeToCoreRegisters(1, 0x00f00000);
 
-  writeInstructionToMemoryGivenByAddress(0xec410a10, 0x08000046);  // VMOV    s0, s1, r0, r1
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VMOV (between ARM core register and single-precision register)
+
+// VMOV s3, r10
+void test_VMOV_should_move_the_correct_value_from_r10_into_s3()
+{
+  writeToCoreRegisters(10, 0xbbbbbbbb);
+
+  writeInstructionToMemoryGivenByAddress(0xee01aa90, 0x08000046);  // VMOV s3, r10
   coreReg[PC] = 0x08000046;
   
   armStep();
   
-  TEST_ASSERT_EQUAL(0x00f00000e000ed88, fpuDoublePrecision[0]);
-  TEST_ASSERT_EQUAL(0, fpuDoublePrecision[1]);
-  TEST_ASSERT_EQUAL(0xe000ed88, fpuSinglePrecision[0] );
-  TEST_ASSERT_EQUAL(0x00f00000, fpuSinglePrecision[1] );
+  TEST_ASSERT_EQUAL(0xbbbbbbbb00000000, fpuDoublePrecision[1]);
+  TEST_ASSERT_EQUAL(0xbbbbbbbb, fpuSinglePrecision[3] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
-*/
 
+
+
+// VMOV r10, s3
+void test_VMOV_should_move_the_correct_value_from_s3_into_r10()
+{
+  writeSinglePrecision(3, 0xbbbbbbbb);
+
+  writeInstructionToMemoryGivenByAddress(0xee11aa90, 0x08000046);  // VMOV r10, s3
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xbbbbbbbb, coreReg[10] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    // VMOV (ARM core register to scalar)
+    
+// VMOV.32 d3[0], r9
+void test_VMOV_should_move_the_correct_value_from_r9_into_lower16bits_of_d3()
+{
+  writeToCoreRegisters(9, 0xaaaaaaaa);
+
+  writeInstructionToMemoryGivenByAddress(0xee039b10, 0x08000046);  // VMOV.32 d3[0], r9
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x00000000aaaaaaaa, fpuDoublePrecision[3]);
+  TEST_ASSERT_EQUAL(0xaaaaaaaa, fpuSinglePrecision[6] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+
+// VMOV.32 d3[1], r9
+void test_VMOV_should_move_the_correct_value_from_r9_into_upper16bits_of_d3()
+{
+  writeToCoreRegisters(9, 0xaaaaaaaa);
+
+  writeInstructionToMemoryGivenByAddress(0xee239b10, 0x08000046);  // VMOV.32 d3[1], r9
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xaaaaaaaa00000000, fpuDoublePrecision[3]);
+  TEST_ASSERT_EQUAL(0xaaaaaaaa, fpuSinglePrecision[7] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
