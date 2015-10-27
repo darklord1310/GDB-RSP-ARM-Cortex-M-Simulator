@@ -191,17 +191,46 @@ void VMOVBetweenScalarAndCoreReg(uint32_t instruction)
     VMRS<c> <Rt>, FPSCR
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0| 0  0  H  0|     Vd    |     Rt    | 1  0 1 1|D|0 0|1|0 0 0 0|
+|1  1  1  0| 1  1  1  0| 1  1  1  1| 0  0  0  1|     Rt    | 1  0 1 0|0 0 0 1|0 0 0 0|
 
 where :
-          <size>          The data size. It must be either 32 or omitted.
-          
-          <Dd[x]>         The doubleword register and required word. x is 1 for the top half of the register, or 0 for the bottom
-                          half, and is encoded in H.
-                          
-          <Rt>            The source ARM core register.
+          <Rt>      The destination ARM core register. This register can be R0-R14 or APSR_nzcv. APSR_nzcv is
+                    encoded as Rt = ’1111’, and the instruction transfers the FPSCR N, Z, C, and V flags to the APSR
+                    N, Z, C, and V flags.
 */
 void VMSR(uint32_t instruction)
 {
+  uint32_t Rt = getBits(instruction,15,12);
+  uint32_t NZCVbits;
+  
+  executeFPUChecking();
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(Rt != 0b1111)
+        writeToCoreRegisters(Rt, coreReg[fPSCR]);
+      else
+      {
+        NZCVbits = getBits(instruction,31,28);
+        coreReg[Rt] = setBits(coreReg[Rt], NZCVbits, 31,28);
+      }
+    }
+    
+    shiftITState();
+  }
+  else
+  {
+    if(Rt != 0b1111)
+      writeToCoreRegisters(Rt, coreReg[fPSCR]);
+    else
+    {
+      NZCVbits = getBits(instruction,31,28);
+      coreReg[Rt] = setBits(coreReg[Rt], NZCVbits, 31,28);
+    }
+  }
+
+  coreReg[PC] += 4;  
   
 }
