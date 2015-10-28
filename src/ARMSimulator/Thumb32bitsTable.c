@@ -406,7 +406,7 @@ void initFloatingPoint32bitsTransfer()
   tabulateTable("0100X00", FloatingPoint32bitsTransfer, VMOVBetweenScalarAndCoreReg ,  createTableException(NO_EXCEPTION) );
   tabulateTable("1100X00", FloatingPoint32bitsTransfer, VMOVBetweenScalarAndCoreReg ,  createTableException(NO_EXCEPTION) );
   tabulateTable("00111XX", FloatingPoint32bitsTransfer, VMSR ,  createTableException(NO_EXCEPTION) );
-  tabulateTable("10111XX", FloatingPoint32bitsTransfer, VMSR ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("10111XX", FloatingPoint32bitsTransfer, VMRS ,  createTableException(NO_EXCEPTION) );
 }
 
 

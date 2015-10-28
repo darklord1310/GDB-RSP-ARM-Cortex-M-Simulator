@@ -101,6 +101,8 @@
 #include "NOP.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "VMOV.h"
+#include "VMSR.h"
+#include "VMRS.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;

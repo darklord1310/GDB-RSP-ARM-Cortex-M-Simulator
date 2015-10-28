@@ -89,6 +89,10 @@
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "VMOV.h"
+#include "VMSR.h"
+#include "VMRS.h"
+
+
 
 void setUp(void)
 {
@@ -170,3 +174,56 @@ void test_VMOV_should_move_the_correct_value_from_r9_into_upper16bits_of_d3()
   TEST_ASSERT_EQUAL(0xaaaaaaaa, fpuSinglePrecision[7] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VMSR 
+    
+void test_VMSR_given_r0_0xe000ed88_should_get_FPSCR_0xe0000088()
+{
+  writeToCoreRegisters(0, 0xe000ed88);
+
+  writeInstructionToMemoryGivenByAddress(0xeee10a10, 0x08000046);  // VMSR 	FPSCR, r0
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xe0000088, coreReg[fPSCR]);
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]); 
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VMRS
+    
+//test case which core register is general purpose register
+void test_VMRS_given_FPSCR_is_0x20000009f_should_get_r0_is_0x2000009f()
+{
+  writeToCoreRegisters(fPSCR, 0x2000009f);
+
+  writeInstructionToMemoryGivenByAddress(0xeef10a10, 0x08000046);  // VMSR 	r0, FPSCR
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x2000009f, coreReg[0]);
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]); 
+}
+
+
+
+//test case which core register is xPSR
+void test_VMRS_given_FPSCR_is_0x20000009f_should_get_xPSR_is_0x21000000()
+{
+  writeToCoreRegisters(fPSCR, 0x2000009f);
+
+  writeInstructionToMemoryGivenByAddress(0xeef1fa10, 0x08000046);  // VMSR 	r15, FPSCR
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x21000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]); 
+}
+
+

@@ -89,7 +89,8 @@
 #include "MLS.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
 #include "VMOV.h"
-
+#include "VMSR.h"
+#include "VMRS.h"
 
 void setUp(void)
 {

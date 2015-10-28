@@ -94,6 +94,9 @@
 #include "ExceptionObject.h"
 #include "BKPT.h"
 #include "VMOV.h"
+#include "VMSR.h"
+#include "VMRS.h"
+
 
 
 extern char *targetCortexM4_XML;

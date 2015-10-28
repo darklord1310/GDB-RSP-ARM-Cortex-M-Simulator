@@ -87,6 +87,9 @@
 #include "BKPT.h"
 #include <math.h>
 #include "VMOV.h"
+#include "VMSR.h"
+#include "VMRS.h"
+
 
 void setUp(void)
 {

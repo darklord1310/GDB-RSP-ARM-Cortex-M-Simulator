@@ -21,8 +21,8 @@
 */
 
 
-#ifndef VMOV_H
-#define VMOV_H
+#ifndef VMRS_H
+#define VMRS_H
 
 #include <stdint.h>
 #include "ConditionalExecution.h"
@@ -34,8 +34,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-void VMOVBetweenCoreRegAndfpuSReg(uint32_t instruction);
-void VMOVBetweenCoreRegAndDoubleFpuReg(uint32_t instruction);
-void VMOVBetweenScalarAndCoreReg(uint32_t instruction);
+void VMRS(uint32_t instruction);
 
-#endif // VMOV_H
+#endif // VMRS_H
