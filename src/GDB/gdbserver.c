@@ -178,6 +178,12 @@ int main(int argc, const char * argv[])
     initializeSimulator();
     initializeWatchpoint();
 
+    // Retrieve the port number from a self created config file
+    portNumber = readGdbServerConfigFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/GDBServerConfig.ini");
+
+    if(portNumber == -1)
+      portNumber = DEFAULT_PORT;
+
 #ifdef  __MINGW32__
     winsockInit();
 #endif
@@ -185,9 +191,9 @@ int main(int argc, const char * argv[])
     bindSocket(&rspData.sock, portNumber);
     listenSocket(&rspData.sock);
     waitingForConnection(&rspData.sock, portNumber);
-    
-    // Retrieve data from file
-    str = readFile(&file, ELF_TEXT_FILE);
+
+    // Retrieve data from elf file
+    str = readFile(&file, ELF_FILE_LOCATION);
     sscanf(str, "%s %s", elfPath, device);
     elfData = openElfFile(elfPath);
     readConfigfile(&file, configFile, &configInfo, device);

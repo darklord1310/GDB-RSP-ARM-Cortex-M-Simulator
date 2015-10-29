@@ -14,7 +14,7 @@ void tearDown(void)
 void test_coflash_given_argv_should_write_elf_path_to_the_text(void)
 {
   FILE *file;
-  char *filename = "TEST3.txt", *str, buffer[1024], str1[100], str2[100];
+  char *filename = "TEST1.txt", *str, buffer[1024], str1[100], str2[100];
   const char *argv[] = {"program", "STM32F429ZI", "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf"};
 
 	coflash(3, argv);
@@ -40,7 +40,7 @@ void test_coflash_given_argv_should_write_elf_path_to_the_text(void)
 void test_coflash_given_argv_with_different_arrangement_should_write_elf_path_to_the_text(void)
 {
   FILE *file;
-  char *filename = "TEST3.txt", *str, buffer[1024], str1[100], str2[100];
+  char *filename = "TEST1.txt", *str, buffer[1024], str1[100], str2[100];
   const char *argv[] = {"STM32F429ZI", "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf", "program"};
 
 	coflash(3, argv);
@@ -63,10 +63,12 @@ void test_coflash_given_argv_with_different_arrangement_should_write_elf_path_to
   fclose(file);
 }
 
-void xtest_getcwd()
+void test_backwardToForwardSlash_given_string_with_backslash_should_to_forward_slash(void)
 {
   char *str, buffer[1024];
-  
+
   str = getcwd(buffer, 1024);
-  puts(str);
+  backwardToForwardSlash(buffer);
+
+  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator", buffer);
 }

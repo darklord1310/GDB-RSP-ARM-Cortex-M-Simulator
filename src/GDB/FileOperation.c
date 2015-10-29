@@ -12,7 +12,7 @@ char *readFile(FILE *file, char *filename)
   if(file == NULL)
   {
     printf("error: cannot open the file %s\n", filename);
-    exit;
+    return "";
   }
 
   str = fgets(buffer, 1024, file);
@@ -72,6 +72,36 @@ void readConfigfile(FILE *file, char *filename, ConfigInfo *configInfo, char *de
   fclose(file);
 }
 
+int readGdbServerConfigFile(FILE *file, char *filename)
+{
+  char *str = NULL, buffer[1024], prefix;
+  int portNumber = -1;
+  file = fopen(filename, "r");
+
+  if(file == NULL)
+  {
+    printf("error: cannot open the file %s\n", filename);
+    return -1;
+  }
+
+  str = fgets(buffer, 100, file);
+
+  if(str != NULL)       // reach end of file
+  {
+    if(strncmp(str, "[GDBServer]", strlen("[GDBServer]")) == 0)
+    {
+      str = fgets(buffer, 100, file);     // get IP
+      str = fgets(buffer, 100, file);     // get Port number
+      sscanf(str, "Port=%d", &portNumber);
+    }
+  }
+
+  // Close the file
+  fclose(file);
+
+  return portNumber;
+}
+
 void writeFile(FILE *file, char *filename, char *mode, char *str)
 {
   int i = 0;
@@ -89,4 +119,15 @@ void writeFile(FILE *file, char *filename, char *mode, char *str)
 
   // Close the file
   fclose(file);
+}
+
+void backwardToForwardSlash(char *path)
+{
+  int i;
+
+  for(i = 0; path[i] != '\0'; i++)
+  {
+    if(path[i] == '\\')
+      path[i] = '/';
+  }
 }

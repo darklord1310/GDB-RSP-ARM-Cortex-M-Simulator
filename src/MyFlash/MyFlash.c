@@ -3,10 +3,6 @@
 #include <unistd.h>
 #include "MyFlash.h"
 
-#define FILE_LOCATION   "C:/CooCox/CoIDE_V2Beta/bin/ElfLocation.txt"    // might cause problem to other computer as the
-                                                                        // directory that coocox install is different
-// #define FILE_LOCATION   "C:/ElfLocation.txt"
-
 void writeFile(FILE *file, char *filename, char *mode, char *str)
 {
   int i = 0;
@@ -26,6 +22,16 @@ void writeFile(FILE *file, char *filename, char *mode, char *str)
   fclose(file);
 }
 
+void backwardToForwardSlash(char *path)
+{
+  int i;
+
+  for(i = 0; path[i] != '\0'; i++)
+  {
+    if(path[i] == '\\')
+      path[i] = '/';
+  }
+}
 
 #if defined (TEST)
 int coflash(int argc, const char * argv[])
@@ -34,8 +40,7 @@ int main(int argc, const char * argv[])
 #endif
 {
   int i;
-  char elfPath[1024] = "", device[100]= "", *ret1, *ret2, *dir, buf[100];
-  char *filename = FILE_LOCATION;
+  char elfPath[1024] = "", device[100]= "", *ret1, *ret2, *dir, buf[1024];
   FILE file;
 
   for(i = 0; i < argc; i++)
@@ -53,8 +58,17 @@ int main(int argc, const char * argv[])
       strcpy(device, argv[i]);
   }
 
-  writeFile(&file, filename, "w", elfPath);
-  writeFile(&file, filename, "a", device);
+  dir = getcwd(buf, 1024);
+  backwardToForwardSlash(buf);
+
+#if defined (TEST)
+  strcat(buf, "/TEST1.txt");
+#else
+  strcat(buf, "/ElfLocation.txt");
+#endif
+
+  writeFile(&file, buf, "w", elfPath);
+  writeFile(&file, buf, "a", device);
 
   return 0;
 }

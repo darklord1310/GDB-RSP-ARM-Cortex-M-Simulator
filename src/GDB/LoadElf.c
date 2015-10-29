@@ -63,7 +63,7 @@ void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
   }
 
   closeElfSection(elfSection);
-  coreReg[PC] = getStartAddress(elfData);
+  writeToCoreRegisters(PC, getStartAddress(elfData));
   printf("Start address 0x%x, load size %d\n\n", coreReg[PC], loadSize);
 }
 

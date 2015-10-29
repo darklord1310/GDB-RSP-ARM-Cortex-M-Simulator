@@ -252,3 +252,10 @@ def createCompilationDependencyList(list, ext_filter_list, out_path, out_ext)
   dependers.zip(list) { |key, val| dependency_list[key] = val }
   dependency_list
 end
+
+def up_to_date?(new, old)
+  if File.exist?(new) && File.exist?(old)
+    return true if File.mtime(new) > File.mtime(old)
+  end
+  return false
+end
