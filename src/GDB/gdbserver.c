@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <unistd.h>
 #include "ServeRSP.h"
 #include "ARMRegisters.h"
 #include "MemoryBlock.h"
@@ -158,7 +159,7 @@ void displayErrorMsg(char *errorMsg)
 int main(int argc, const char * argv[])
 {
     int i, portNumber = DEFAULT_PORT;
-    char *configFile = "config", *str, elfPath[100], device[100];
+    char *configFile = "config", *str, elfPath[100], device[100], *dir, buf[1024];
     SOCKET sock;
     FILE file;
     ElfData *elfData;
@@ -179,10 +180,17 @@ int main(int argc, const char * argv[])
     initializeWatchpoint();
 
     // Retrieve the port number from a self created config file
-    portNumber = readGdbServerConfigFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/GDBServerConfig.ini");
+    dir = getcwd(buf, 1024);
+    backwardToForwardSlash(buf);
+    strcat(buf, "/GDBServerConfig.ini");
+    portNumber = readGdbServerConfigFile(&file, buf);
+
+    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "w", buf);
 
     if(portNumber == -1)
       portNumber = DEFAULT_PORT;
+    // else
+      // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", "2009");
 
 #ifdef  __MINGW32__
     winsockInit();
@@ -193,8 +201,18 @@ int main(int argc, const char * argv[])
     waitingForConnection(&rspData.sock, portNumber);
 
     // Retrieve data from elf file
-    str = readFile(&file, ELF_FILE_LOCATION);
+    dir = getcwd(buf, 1024);
+    backwardToForwardSlash(buf);
+    strcat(dir, "/bin/ElfLocation.txt");
+
+    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", dir);
+
+    str = readFile(&file, dir);
     sscanf(str, "%s %s", elfPath, device);
+
+    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", elfPath);
+    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", device);
+
     elfData = openElfFile(elfPath);
     readConfigfile(&file, configFile, &configInfo, device);
     loadElf(elfData, configInfo.flashOrigin, configInfo.flashSize);

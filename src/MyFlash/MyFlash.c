@@ -5,8 +5,6 @@
 
 void writeFile(FILE *file, char *filename, char *mode, char *str)
 {
-  int i = 0;
-
   file = fopen(filename, mode);
 
   if(file == NULL)
@@ -64,7 +62,7 @@ int main(int argc, const char * argv[])
 #if defined (TEST)
   strcat(buf, "/TEST1.txt");
 #else
-  strcat(buf, "/ElfLocation.txt");
+  strcat(buf, "/bin/ElfLocation.txt");
 #endif
 
   writeFile(&file, buf, "w", elfPath);

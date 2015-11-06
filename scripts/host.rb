@@ -14,7 +14,7 @@ config = {
   :library => ['ws2_32'],
 #  :linker_script => 'MyLinkerScript.ld',
 #  :compiler_options => ['-DOK'],                 # Other compiler options
-#  :linker_options => ['-DOK'],                   # Other linker options
+ :linker_options => ['-g'],                       # Other linker options
   :option_keys  => {:library => '-l',
                     :library_path => '-L',
                     :include_path => '-I',
@@ -32,6 +32,9 @@ namespace :gdbserver do
   flash_target = "#{COIDE_PATH}/coflash.exe"
   original_gdb = "#{COIDE_PATH}/gdbserverOriginal.exe"
   original_flash = "#{COIDE_PATH}/coflashOriginal.exe"
+  config_file =  "#{COIDE_PATH}/config"
+  gdb_config_file =  "#{COIDE_PATH}/GDBServerConfig.ini"
+  elfLocation_file = "#{COIDE_PATH}/ElfLocation.txt"
   desc 'Build and deploy gdbserver + coflash'
   task :deploy do
     dep_list = compile_all(['src/GDB', 'src/ARMSimulator', 'src/ElfReader', 'src'], 'build/release/host/c', config)
@@ -41,7 +44,7 @@ namespace :gdbserver do
       sh "mv #{gdb_target} #{original_gdb}"       #rename the original executable file
       sh "cp #{GDBSERVER_FILE} #{gdb_target}"     #move to desire destination
     end
-    
+
     dep_list = compile_all(['src/MyFlash'], 'build/release/host/c', config)
     link_all(getDependers(dep_list), 'build/release/myFlash.exe', config)
     Rake::Task[MYFLASH_FILE].invoke
@@ -49,8 +52,11 @@ namespace :gdbserver do
       sh "mv #{flash_target} #{original_flash}"   #rename the original executable file
       sh "cp #{MYFLASH_FILE} #{flash_target}"     #move to desire destination
     end
+
+    sh "cp config #{config_file}"
+    sh "cp GDBServerConfig.ini #{gdb_config_file}"
   end
-  
+
   desc 'Revert to original gdbserver + coflash'
   task :revert do
     if File.exist? original_gdb
@@ -58,6 +64,15 @@ namespace :gdbserver do
     end
     if File.exist? original_flash
       sh "mv #{original_flash} #{flash_target}"
+    end
+    if File.exist? config_file
+      sh "rm #{config_file}"
+    end
+    if File.exist? gdb_config_file
+      sh "rm #{gdb_config_file}"
+    end
+    if File.exist? elfLocation_file
+      sh "rm #{elfLocation_file}"
     end
   end
 end

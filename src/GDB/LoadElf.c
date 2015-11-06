@@ -33,6 +33,7 @@
 #include "elf.h"
 #include "CException.h"
 #include "ErrorCode.h"
+#include "FileOperation.h"
 
 extern ElfData *elfData;
 extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;

@@ -4,7 +4,6 @@
 
 char *readFile(FILE *file, char *filename)
 {
-  int i = 0;
   char buffer[1024] = "", *str;
 
   file = fopen(filename, "r");
@@ -104,8 +103,6 @@ int readGdbServerConfigFile(FILE *file, char *filename)
 
 void writeFile(FILE *file, char *filename, char *mode, char *str)
 {
-  int i = 0;
-
   file = fopen(filename, mode);
 
   if(file == NULL)
