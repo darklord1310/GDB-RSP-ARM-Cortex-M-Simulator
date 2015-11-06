@@ -30,26 +30,38 @@ MYFLASH_FILE   = "build/release/myFlash.exe"
 namespace :gdbserver do
   gdb_target = "#{COIDE_PATH}/gdbserver.exe"
   flash_target = "#{COIDE_PATH}/coflash.exe"
+
   original_gdb = "#{COIDE_PATH}/gdbserverOriginal.exe"
   original_flash = "#{COIDE_PATH}/coflashOriginal.exe"
+
   config_file =  "#{COIDE_PATH}/config"
   gdb_config_file =  "#{COIDE_PATH}/GDBServerConfig.ini"
   elfLocation_file = "#{COIDE_PATH}/ElfLocation.txt"
-  desc 'Build and deploy gdbserver + coflash'
-  task :deploy do
+
+  desc 'Release gdbserver'
+  task :release do
     dep_list = compile_all(['src/GDB', 'src/ARMSimulator', 'src/ElfReader', 'src'], 'build/release/host/c', config)
-    link_all(getDependers(dep_list), 'build/release/gdbserver.exe', config)
+    link_all(getDependers(dep_list), GDBSERVER_FILE, config)
     Rake::Task[GDBSERVER_FILE].invoke
+
+    dep_list = compile_all(['src/MyFlash'], 'build/release/host/c', config)
+    link_all(getDependers(dep_list), MYFLASH_FILE, config)
+    Rake::Task[MYFLASH_FILE].invoke
+  end
+
+  desc 'Build and deploy gdbserver + coflash'
+  task :deploy => :release do
     if !up_to_date?(gdb_target, GDBSERVER_FILE)
-      sh "mv #{gdb_target} #{original_gdb}"       #rename the original executable file
+      if !File.exist? original_gdb
+        sh "mv #{gdb_target} #{original_gdb}"     #rename the original executable file
+      end
       sh "cp #{GDBSERVER_FILE} #{gdb_target}"     #move to desire destination
     end
 
-    dep_list = compile_all(['src/MyFlash'], 'build/release/host/c', config)
-    link_all(getDependers(dep_list), 'build/release/myFlash.exe', config)
-    Rake::Task[MYFLASH_FILE].invoke
     if !up_to_date?(flash_target, MYFLASH_FILE)
-      sh "mv #{flash_target} #{original_flash}"   #rename the original executable file
+      if !File.exist? original_flash
+        sh "mv #{flash_target} #{original_flash}"   #rename the original executable file
+      end
       sh "cp #{MYFLASH_FILE} #{flash_target}"     #move to desire destination
     end
 

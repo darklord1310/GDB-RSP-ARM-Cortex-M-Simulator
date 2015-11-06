@@ -159,7 +159,7 @@ void displayErrorMsg(char *errorMsg)
 int main(int argc, const char * argv[])
 {
     int i, portNumber = DEFAULT_PORT;
-    char *configFile = "config", *str, elfPath[100], device[100], *dir, buf[1024];
+    char *str, elfPath[100], device[100], *dir, buf[1024];
     SOCKET sock;
     FILE file;
     ElfData *elfData;
@@ -180,17 +180,13 @@ int main(int argc, const char * argv[])
     initializeWatchpoint();
 
     // Retrieve the port number from a self created config file
-    dir = getcwd(buf, 1024);
-    backwardToForwardSlash(buf);
+    dir = getDirectoryName((char *)argv[0]);
+    strcpy(buf, dir);
     strcat(buf, "/GDBServerConfig.ini");
     portNumber = readGdbServerConfigFile(&file, buf);
 
-    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "w", buf);
-
     if(portNumber == -1)
-      portNumber = DEFAULT_PORT;
-    // else
-      // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", "2009");
+      portNumber = DEFAULT_PORT;        // use default port if no return -1
 
 #ifdef  __MINGW32__
     winsockInit();
@@ -200,21 +196,18 @@ int main(int argc, const char * argv[])
     listenSocket(&rspData.sock);
     waitingForConnection(&rspData.sock, portNumber);
 
-    // Retrieve data from elf file
-    dir = getcwd(buf, 1024);
-    backwardToForwardSlash(buf);
-    strcat(dir, "/bin/ElfLocation.txt");
+    // Retrieve location of elf file
+    strcpy(buf, dir);
+    strcat(buf, "/ElfLocation.txt");
 
-    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", dir);
-
-    str = readFile(&file, dir);
+    str = readFile(&file, buf);
     sscanf(str, "%s %s", elfPath, device);
 
-    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", elfPath);
-    // writeFile(&file, "C:/CooCox/CoIDE_V2Beta/bin/err.txt", "a", device);
-
+    // Retrieve the data from elf file
     elfData = openElfFile(elfPath);
-    readConfigfile(&file, configFile, &configInfo, device);
+    strcpy(buf, dir);
+    strcat(buf, "/config");
+    readConfigfile(&file, buf, &configInfo, device);
     loadElf(elfData, configInfo.flashOrigin, configInfo.flashSize);
 
     int bytesSent;

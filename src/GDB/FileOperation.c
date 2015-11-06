@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <string.h>
+#include <malloc.h>
 #include "FileOperation.h"
 
 
@@ -43,10 +45,7 @@ void readConfigfile(FILE *file, char *filename, ConfigInfo *configInfo, char *de
     else
     {
       if(strncmp(str, device, strlen(device)) == 0)
-      {
-        // configInfo->device = device;
         break;
-      }
     }
   } while(1);
 
@@ -116,6 +115,24 @@ void writeFile(FILE *file, char *filename, char *mode, char *str)
 
   // Close the file
   fclose(file);
+}
+
+char *getDirectoryName(char *pathname)
+{
+  char *tempStr = NULL, *directoryPath = NULL;
+  int len;
+
+  tempStr = strrchr (pathname, '\\');
+  len = tempStr - pathname;
+
+  if(tempStr != NULL)
+  {
+    directoryPath = malloc(len + 1);
+    strncpy(directoryPath, pathname, len);
+    directoryPath[len] = '\0';
+  }
+
+  return directoryPath;
 }
 
 void backwardToForwardSlash(char *path)
