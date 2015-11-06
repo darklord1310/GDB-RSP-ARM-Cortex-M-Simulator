@@ -33,11 +33,15 @@
 #define PC                      15
 #define xPSR                    16
 #define fPSCR                   17
+#define AIRCR                   0  // Application Interrupt and Reset Control Register
+#define CCR                     1  // Configuration and Control Register
 #define NUM_OF_FPUD_Register    16
 #define NUM_OF_FPUS_Register    32
+#define NUM_OF_SYS_Register     2
 
 
 uint32_t coreReg[NUM_OF_CORE_Register];
+uint32_t systemReg[NUM_OF_SYS_Register];
 uint32_t fpuSinglePrecision[NUM_OF_FPUS_Register];
 uint64_t fpuDoublePrecision[NUM_OF_FPUD_Register];
 

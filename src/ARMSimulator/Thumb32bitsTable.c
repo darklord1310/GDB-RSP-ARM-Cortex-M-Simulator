@@ -164,7 +164,7 @@ void initThumb32Table()
   tabulateTable("11010XXXXX", Thumb32Table, executeDataProcessingRegister , createTableException(NO_EXCEPTION) );
   tabulateTable("110110XXXX", Thumb32Table, executeMultiplyAccumulate , createTableException(NO_EXCEPTION) );
   tabulateTable("110111XXXX", Thumb32Table, executeLongMultiplyAccumulateDivide , createTableException(NO_EXCEPTION) );
-  tabulateTable("111XXXXXXX", Thumb32Table, executeCoprocessorInstructions  , createTableException(NO_EXCEPTION) );
+  tabulateTable("111XXXXXXX", Thumb32Table, executeCoprocessorInstructions2  , createTableException(NO_EXCEPTION) );
 }
 
 
@@ -212,14 +212,25 @@ void initThumb32bitsDataProcessingShiftedRegister()
   tabulateTable("1110XXXXXXXXX", Thumb32DataProcessingShiftedRegister, RSBRegisterT1 , createTableException(NO_EXCEPTION) );
 }
 
-
+// T == 0
 void initThumb32bitsCoprocessorInstructions()
 {
   tabulateTable("000100X101X", Thumb32CoprocessorInstructions, VMOVBetweenCoreRegAndDoubleFpuReg , createTableException(NO_EXCEPTION) );
   tabulateTable("000101X101X", Thumb32CoprocessorInstructions, VMOVBetweenCoreRegAndDoubleFpuReg , createTableException(NO_EXCEPTION) );
   tabulateTable("10XXX01101X", Thumb32CoprocessorInstructions, executeFloatingPoint32bitsTransfer , createTableException(NO_EXCEPTION) );
   tabulateTable("10XXX11101X", Thumb32CoprocessorInstructions, executeFloatingPoint32bitsTransfer , createTableException(NO_EXCEPTION) );
+  tabulateTable("10XXXX0101X", Thumb32CoprocessorInstructions, executeFloatingPointDataProcessing , createTableException(NO_EXCEPTION) );
+  tabulateTable("0XXXX0X101X", Thumb32CoprocessorInstructions, executeFloatingPointFPLoadStore , createTableException(1, 0b11101000000,0b0 ) );
+  tabulateTable("0XXXX1XXXXX", Thumb32CoprocessorInstructions, executeFloatingPointFPLoadStore , createTableException(1, 0b11101000000,0b0 ) );
 }
+
+
+// T == 1
+void initThumb32bitsCoprocessorInstructions2()
+{
+  tabulateTable("10XXXX0101X", Thumb32CoprocessorInstructions, executeFloatingPointDataProcessing , createTableException(NO_EXCEPTION) );
+}
+
 
 void initThumb32bitsMoveRegisterAndImmediateShift()
 {
@@ -410,9 +421,22 @@ void initFloatingPoint32bitsTransfer()
 }
 
 
+void initFloatingPoint32DataProcessing()
+{
+  tabulateTable("00X00XXXXXX", FloatingPointDataProcessing, VMLAandVMLS ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X01XXXXXX", FloatingPointDataProcessing, VNMLAandVNMLSandVNMULT1 ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X10XXXXX1", FloatingPointDataProcessing, VNMLAandVNMLSandVNMULT2 ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X10XXXXX0", FloatingPointDataProcessing, VMUL ,  createTableException(NO_EXCEPTION) );
+}
 
 
-
+void initFloatingPoint32FPLoadStore()
+{
+  tabulateTable("01X00XXXX", FloatingPointLoadStore, VSTM ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X10XXXX", FloatingPointLoadStore, VSTM ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("10X10XXXX", FloatingPointLoadStore, VSTM ,  createTableException(1, 0b000001111, 0b1101) );
+  tabulateTable("1XX00XXXX", FloatingPointLoadStore, VSTR ,  createTableException(NO_EXCEPTION) );
+}
 
 
 

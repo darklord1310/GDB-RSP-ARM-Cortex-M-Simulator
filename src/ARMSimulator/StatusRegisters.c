@@ -189,6 +189,17 @@ void updateNegativeFlag(uint32_t value)
 }
 
 
+/* This function will determine whether data accesses are big-endian or little-endian 
+
+   return 1       if big-endian
+   return 0       if little-endian
+ */
+int bigEndian()
+{
+  return(getBits(systemReg[AIRCR],15,15));
+}
+
+
 /* This will update the carry flag based on the addition result
    of value1 and value2
 
@@ -319,4 +330,23 @@ void executeFPUChecking()
 }
 
 
+/*  This function will determine and return the correct value for d/n/m based on the dp_operation
+
+    register Name       can be either D/N/M
+    Vx                  can be either Vd/Vn/Vm
+    
+    
+    d = if dp_operation then UInt(D:Vd) else UInt(Vd:D);
+    n = if dp_operation then UInt(N:Vn) else UInt(Vn:N);
+    m = if dp_operation then UInt(M:Vm) else UInt(Vm:M);
+*/
+uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation)
+{
+  assert(Vx <= 0b1111);
+  
+  if(dpOperation)
+    return ( (registerName << 4) | Vx);
+  else
+    return ( (Vx << 1) | registerName);
+}
 

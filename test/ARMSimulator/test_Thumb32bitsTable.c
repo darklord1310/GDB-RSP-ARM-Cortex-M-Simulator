@@ -89,6 +89,18 @@
 #include "VMOV.h"
 #include "VMSR.h"
 #include "VMRS.h"
+#include "VMLAandVMLS.h"
+#include "VMUL.h"
+#include "VNMLAandVNMLSandVNMUL.h"
+#include "VMLAandVMLS.h"
+#include "VMUL.h"
+#include "VNMLAandVNMLSandVNMUL.h"
+#include "VSTM.h"
+#include "VSTR.h"
+#include "VPUSH.h"
+#include "VLDM.h"
+#include "VLDR.h"
+#include "VPOP.h"
 
 
 void setUp(void)

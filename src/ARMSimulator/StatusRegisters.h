@@ -38,6 +38,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+typedef enum {FPTYPE_NONZERO, FPTYPE_ZERO, FPTYPE_INFINITY, FPTYPE_QNAN, FPTYPE_SNAN} FPType;
+typedef struct FPInfo FPInfo;
+
+
+struct FPInfo
+{
+  FPType type;
+  uint32_t signBit;
+  double realNumber;
+};
 
 bool isNegative();
 bool isZero();
@@ -60,10 +70,13 @@ void updateCarryFlagSubtraction(uint32_t value1, uint32_t value2);
 void updateOverflowFlagAddition(uint32_t value1, uint32_t value2, uint32_t result);
 void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t result);
 void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign);
+int  bigEndian();
 int inITBlock();
 uint32_t getITCond();
 void shiftITState();
 int isLastInITBlock();
 void executeFPUChecking();
+uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation);
+
 
 #endif // StatusRegisters_H

@@ -1,3 +1,0 @@
-2) breakpoint, SVC and some instructions inside ITandHints
-4) Complete the halfword group and load dual group
-5) Complete the signed and unsigned divide

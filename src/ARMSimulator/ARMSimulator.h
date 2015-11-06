@@ -55,7 +55,9 @@ void executeLoadByteMemoryHints(uint32_t instruction);
 void executeLoadStoreDualTableBranch(uint32_t instruction);
 void executeLoadHalfword(uint32_t instruction);
 void executeCoprocessorInstructions(uint32_t instruction);
+void executeCoprocessorInstructions2(uint32_t instruction);
 void executeFloatingPoint32bitsTransfer(uint32_t instruction);
-
+void executeFloatingPointDataProcessing(uint32_t instruction);
+void executeFloatingPointFPLoadStore(uint32_t instruction);
 
 #endif // ARMSimulator_H
