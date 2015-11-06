@@ -32,11 +32,8 @@
 #include "ARMRegisters.h"
 #include "Thumb16bitsTable.h"
 #include "Thumb32bitsTable.h"
-#include "ConditionalExecution.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"
-#include "ADDSPImmediate.h"
-#include "ADR.h"
 
 
 void initializeSimulator()
@@ -73,7 +70,14 @@ void initializeAllTable()
   initThumb32LoadByteMemoryHints();
   initThumb32bitsLoadStoreDualTableBranch();
   initThumb32bitsLoadHalfword();
+  initThumb32bitsCoprocessorInstructions();
+  initThumb32bitsCoprocessorInstructions2();
   initThumb32Table();
+  
+  //Floating Point Instructions
+  initFloatingPoint32bitsTransfer();
+  initFloatingPoint32DataProcessing();
+  initFloatingPoint32FPLoadStore();
 }
 
 
@@ -219,7 +223,7 @@ void executeHintInstructions(uint32_t instruction)
   uint32_t op2 = getBits(instruction, 7, 0);
   uint32_t opcode = (op1 << 7) | op2;
 
-  (*Thumb32HintInstructions[opcode])();
+  (*Thumb32HintInstructions[opcode])(instruction);
 }
 
 
@@ -315,6 +319,59 @@ void executeLoadHalfword(uint32_t instruction)
   (*Thumb32LoadHalfword[opcode])(instruction);
 }
 
+
+void executeCoprocessorInstructions(uint32_t instruction)
+{ 
+  uint32_t op1 = getBits(instruction,25,20);
+  uint32_t coproc = getBits(instruction,11,8);
+  uint32_t op = getBits(instruction,4,4);
+  uint32_t opcode = ( ( (op1 << 1) | op) << 4) | coproc;
+  
+  (*Thumb32CoprocessorInstructions[opcode])(instruction);
+}
+
+
+void executeCoprocessorInstructions2(uint32_t instruction)
+{ 
+  uint32_t op1 = getBits(instruction,25,20);
+  uint32_t coproc = getBits(instruction,11,8);
+  uint32_t op = getBits(instruction,4,4);
+  uint32_t opcode = ( ( (op1 << 1) | op) << 4) | coproc;
+  
+  (*Thumb32CoprocessorInstructions2[opcode])(instruction);
+}
+
+
+void executeFloatingPoint32bitsTransfer(uint32_t instruction)
+{
+  uint32_t L = getBits(instruction,20,20);
+  uint32_t C = getBits(instruction,8,8);
+  uint32_t A = getBits(instruction,23,21);
+  uint32_t B = getBits(instruction,6,5);
+  uint32_t opcode = (((((L << 1) | C) << 3) | A) << 2) | B;
+
+  (*FloatingPoint32bitsTransfer[opcode])(instruction);
+}
+
+void executeFloatingPointDataProcessing(uint32_t instruction)
+{
+  uint32_t T = getBits(instruction,28,28);
+  uint32_t opc1 = getBits(instruction,23,20);
+  uint32_t opc2 = getBits(instruction,19,16);
+  uint32_t opc3 = getBits(instruction,7,6);
+  uint32_t opcode = ( ( ( ( (T << 4) | opc1) << 4) | opc2) << 2 ) | opc3;
+  
+  (*FloatingPointDataProcessing[opcode])(instruction);
+}
+
+void executeFloatingPointFPLoadStore(uint32_t instruction)
+{
+  uint32_t opc = getBits(instruction,24,20);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t opcode = (opc << 4) | Rn;
+  
+  (*FloatingPointLoadStore[opcode])(instruction);
+}
 
 void executeInstructionFrom16bitsTable(uint32_t opcode1, uint32_t instruction)
 {

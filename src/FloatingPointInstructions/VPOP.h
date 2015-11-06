@@ -21,12 +21,19 @@
 */
 
 
-#ifndef SUBSPRegister_H
-#define SUBSPRegister_H
+#ifndef VPOP_H
+#define VPOP_H
 
 #include <stdint.h>
+#include "ConditionalExecution.h"
+#include "ITandHints.h"
+#include "StatusRegisters.h"
+#include "ARMRegisters.h"
+#include "getAndSetBits.h"
+#include "getMask.h"
+#include <assert.h>
+#include <stdio.h>
 
-void SUBSPRegisterT1(uint32_t instruction);
-void executeSUBSPRegister(uint32_t Rd, uint32_t Rm, uint32_t S, uint32_t shiftType, uint32_t shiftImmediate);
+void VPOP(uint32_t instruction);
 
-#endif // SUBSPRegister_H
+#endif // VPOP_H

@@ -34,7 +34,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-void VMOV(uint32_t instruction);
-
+void VMOVBetweenCoreRegAndfpuSReg(uint32_t instruction);
+void VMOVBetweenCoreRegAndDoubleFpuReg(uint32_t instruction);
+void VMOVBetweenScalarAndCoreReg(uint32_t instruction);
 
 #endif // VMOV_H

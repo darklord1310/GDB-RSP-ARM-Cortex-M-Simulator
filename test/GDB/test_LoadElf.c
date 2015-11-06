@@ -54,6 +54,7 @@ Section Headers:
   [19] .shstrtab         STRTAB          00000000 010810 0000e6 00      0   0  1
   [20] .symtab           SYMTAB          00000000 010c68 000dd0 10     21  91  4
   [21] .strtab           STRTAB          00000000 011a38 000be3 00      0   0  1
+
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings)
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)

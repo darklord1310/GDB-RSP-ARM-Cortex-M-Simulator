@@ -173,8 +173,7 @@ void initThumb16bitsOpcode010001()
   Thumb16Opcode010001[0b1001] = MOVRegisterToRegisterT1;
   Thumb16Opcode010001[0b1010] = MOVRegisterToRegisterT1;
   Thumb16Opcode010001[0b1011] = MOVRegisterToRegisterT1;
-
-  
+ 
 }
 
 

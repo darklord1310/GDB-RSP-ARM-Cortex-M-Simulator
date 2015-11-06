@@ -3,7 +3,6 @@
 #include <malloc.h>
 #include "FileOperation.h"
 
-
 char *readFile(FILE *file, char *filename)
 {
   char buffer[1024] = "", *str;

@@ -1,7 +1,7 @@
 #include <string.h>
 #include <malloc.h>
 #include "unity.h"
-#include "StateRSP.h"
+#include "stateRSP.h"
 #include "ServeRSP.h"
 #include "Packet.h"
 #include "RemoteSerialProtocol.h"

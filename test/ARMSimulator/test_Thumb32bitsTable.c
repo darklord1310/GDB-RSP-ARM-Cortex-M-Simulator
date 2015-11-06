@@ -18,7 +18,6 @@
 #include "SUBImmediate.h"
 #include "ADDRegister.h"
 #include "SUBRegister.h"
-#include "ADDSPRegister.h"
 #include "ITandHints.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
@@ -79,7 +78,6 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
-#include "SUBSPRegister.h"
 #include "BL.h"
 #include "NOP.h"
 #include "MLA.h"
@@ -88,6 +86,22 @@
 #include "ExceptionObject.h"
 #include "BKPT.h"
 #include <math.h>
+#include "VMOV.h"
+#include "VMSR.h"
+#include "VMRS.h"
+#include "VMLAandVMLS.h"
+#include "VMUL.h"
+#include "VNMLAandVNMLSandVNMUL.h"
+#include "VMLAandVMLS.h"
+#include "VMUL.h"
+#include "VNMLAandVNMLSandVNMUL.h"
+#include "VSTM.h"
+#include "VSTR.h"
+#include "VPUSH.h"
+#include "VLDM.h"
+#include "VLDR.h"
+#include "VPOP.h"
+
 
 void setUp(void)
 {

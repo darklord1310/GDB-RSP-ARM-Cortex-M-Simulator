@@ -33,7 +33,6 @@
 #include "SUBImmediate.h"
 #include "ADDRegister.h"
 #include "SUBRegister.h"
-#include "ADDSPRegister.h"
 #include "ITandHints.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"

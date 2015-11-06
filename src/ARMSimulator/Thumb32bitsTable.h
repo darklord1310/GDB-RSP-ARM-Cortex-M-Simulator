@@ -34,7 +34,6 @@
 #include "SUBImmediate.h"
 #include "ADDRegister.h"
 #include "SUBRegister.h"
-#include "ADDSPRegister.h"
 #include "ITandHints.h"
 #include "ANDRegister.h"
 #include "LSLRegister.h"
@@ -98,10 +97,21 @@
 #include "TEQRegister.h"
 #include "RSBRegister.h"
 #include "CLZ.h"
-#include "SUBSPRegister.h"
 #include "BL.h"
 #include "NOP.h"
 #include "SignedUnsignedLongMultiplyDivide.h"
+#include "VMOV.h"
+#include "VMSR.h"
+#include "VMRS.h"
+#include "VMLAandVMLS.h"
+#include "VMUL.h"
+#include "VNMLAandVNMLSandVNMUL.h"
+#include "VSTM.h"
+#include "VSTR.h"
+#include "VPUSH.h"
+#include "VLDM.h"
+#include "VLDR.h"
+#include "VPOP.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;
@@ -140,7 +150,7 @@ void (*Thumb32DataProcessingShiftedRegister[8192])(uint32_t instruction);
 void (*Thumb32MoveRegisterAndImmediateShift[128])(uint32_t instruction);
 void (*Thumb32DataProcessingRegister[256])(uint32_t instruction);
 void (*Thumb32BranchesAndMiscellaneousControl[1024])(uint32_t instruction);
-void (*Thumb32HintInstructions[2048])();
+void (*Thumb32HintInstructions[2048])(uint32_t instruction);
 void (*Thumb32LoadWord[4096])(uint32_t instruction);
 void (*Thumb32MultiplyAccumulate[512])(uint32_t instruction);
 void (*Thumb32LongMultiplyAccumulateDivide[128])(uint32_t instruction);
@@ -149,7 +159,12 @@ void (*Thumb32StoreSingleDataItem[512])(uint32_t instruction);
 void (*Thumb32LoadByteMemoryHints[65536])(uint32_t instruction);
 void (*Thumb32LoadStoreDualTableBranch[256])(uint32_t instruction);
 void (*Thumb32LoadHalfword[65536])(uint32_t instruction);
-void (*Thumb32Table[1024])(uint32_t instruction);
+void (*Thumb32CoprocessorInstructions[65536])(uint32_t instruction);
+void (*Thumb32CoprocessorInstructions2[65536])(uint32_t instruction);
+void (*FloatingPoint32bitsTransfer[128])(uint32_t instruction);
+void (*FloatingPointDataProcessing[2048])(uint32_t instruction);
+void (*FloatingPointLoadStore[512])(uint32_t instruction);
+void (*Thumb32Table[2048])(uint32_t instruction);
 
 
 void initThumb32bitsDataProcessingModifiedImmediate();
@@ -167,6 +182,11 @@ void initThumb32StoreSingleDataItem();
 void initThumb32LoadByteMemoryHints();
 void initThumb32bitsLoadStoreDualTableBranch();
 void initThumb32bitsLoadHalfword();
+void initThumb32bitsCoprocessorInstructions();
+void initThumb32bitsCoprocessorInstructions2();
+void initFloatingPoint32bitsTransfer();
+void initFloatingPoint32DataProcessing();
+void initFloatingPoint32FPLoadStore();
 void initThumb32Table();
 
 void determineMoveRegisterAndImmediateShifts(uint32_t instruction);

@@ -189,6 +189,17 @@ void updateNegativeFlag(uint32_t value)
 }
 
 
+/* This function will determine whether data accesses are big-endian or little-endian 
+
+   return 1       if big-endian
+   return 0       if little-endian
+ */
+int bigEndian()
+{
+  return(getBits(systemReg[AIRCR],15,15));
+}
+
+
 /* This will update the carry flag based on the addition result
    of value1 and value2
 
@@ -263,15 +274,6 @@ void updateOverflowFlagSubtraction(uint32_t value1, uint32_t value2, uint32_t re
 }
 
 
-void ALUWritePC(uint32_t address)
-{
-  coreReg[PC] = setBits(address, 0b0, 0, 0);
-
-  if(getBits(address, 31, 28) >= 0xa)
-    coreReg[PC] = 0x00fff05e;
-}
-
-
 bool isQSet()
 {
   if( getBits(coreReg[xPSR], 27, 27) )
@@ -309,3 +311,42 @@ void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign)
       setQFlag();
   }
 }
+
+
+
+/*
+  This function actually should not be included here, it should be included in
+  a separate module, but due to the troublesome to include the module header 
+  to all the test files, it is place here instead
+  
+  This function will check whether the FPU is enable or not
+  If FPU is not enable but is trying to use it, then throw error
+             
+*/
+void executeFPUChecking()
+{
+  
+  
+}
+
+
+/*  This function will determine and return the correct value for d/n/m based on the dp_operation
+
+    register Name       can be either D/N/M
+    Vx                  can be either Vd/Vn/Vm
+    
+    
+    d = if dp_operation then UInt(D:Vd) else UInt(Vd:D);
+    n = if dp_operation then UInt(N:Vn) else UInt(Vn:N);
+    m = if dp_operation then UInt(M:Vm) else UInt(Vm:M);
+*/
+uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation)
+{
+  assert(Vx <= 0b1111);
+  
+  if(dpOperation)
+    return ( (registerName << 4) | Vx);
+  else
+    return ( (Vx << 1) | registerName);
+}
+

@@ -47,8 +47,6 @@ void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
   char *sectionName;
   ElfSection *elfSection;
 
-  FILE *ff = fopen("C:/CooCox/CoIDE_V2Beta/bin/Here.txt", "w");
-
   for(i = 0; i < getTotalSectionHeader(elfData); i++)
   {
     physAddr = getSectionLma(elfData, i);
@@ -62,16 +60,12 @@ void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
       simulatorCopyBlock(physAddr, elfSection->dataAddress, elfSection->size);
 
       printf("Loading section %s, size 0x%x lma 0x%x\n", sectionName, elfSection->size, physAddr);
-      fprintf(ff, "Loading section %s, size 0x%x lma 0x%x\n", sectionName, elfSection->size, physAddr);
     }
   }
 
   closeElfSection(elfSection);
   writeToCoreRegisters(PC, getStartAddress(elfData));
   printf("Start address 0x%x, load size %d\n", coreReg[PC], loadSize);
-  fprintf(ff, "Start address 0x%x, load size %d\n", coreReg[PC], loadSize);
-
-  fclose(ff);
 }
 
 uint32_t getSectionLma(ElfData *elfData, int sectionIndex)
