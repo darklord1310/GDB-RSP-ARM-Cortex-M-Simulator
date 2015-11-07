@@ -4,3 +4,5 @@ data/*
 data/*.o
 data/*.elf
 data/*.map
+TEST1.txt
+TEST2.txt

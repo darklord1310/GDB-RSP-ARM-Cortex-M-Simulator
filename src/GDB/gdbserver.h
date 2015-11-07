@@ -26,8 +26,6 @@
 #define LOCAL_HOST_ADD  "127.0.0.1"
 #define DEFAULT_PORT    2010
 #define PACKET_SIZE     0x3fff
-#define ELF_TEXT_FILE   "C:/CooCox/CoIDE_V2Beta/bin/ElfLocation.txt"
-// #define ELF_TEXT_FILE   "C:/ElfLocation.txt"
 
 #ifdef  __MINGW32__
 

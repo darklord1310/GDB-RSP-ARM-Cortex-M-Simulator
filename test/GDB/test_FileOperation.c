@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <malloc.h>
 #include "unity.h"
 #include "FileOperation.h"
 
@@ -62,6 +65,17 @@ void test_readConfigfile_given_device_STM32F429YI_should_read_the_info(void)
   TEST_ASSERT_EQUAL(0, configInfo.ramSize);
 }
 
+void test_readGdbServerConfigFile_should_return_port_number(void)
+{
+  FILE file;
+  char *filename = "GDBServerConfig.ini";
+  int ret;
+
+	ret = readGdbServerConfigFile(&file, filename);
+
+  TEST_ASSERT_EQUAL(2009, ret);
+}
+
 void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
 {
   FILE *file;
@@ -113,4 +127,34 @@ void test_writeFile_should_write_a_string_to_a_text(void)
 
   // Close the file
   fclose(file);
+}
+
+void test_getDirectoryName_given_a_path_name_should_return_the_directory(void)
+{
+  char buf[] = "C:/CooCox/CoIDE_V2Beta/bin\\coflash.exe", *str;
+
+  str = getDirectoryName(buf);
+
+  TEST_ASSERT_EQUAL_STRING("C:/CooCox/CoIDE_V2Beta/bin", str);
+
+  free(str);
+}
+
+void xtest_getDirectoryName_given_a_non_path_string_should_return_the_null(void)
+{
+  char buf[] = "hello word", *str;
+
+  str = getDirectoryName(buf);
+
+  TEST_ASSERT_EQUAL_STRING(NULL, str);
+}
+
+void test_backwardToForwardSlash_given_string_with_backslash_should_to_forward_slash(void)
+{
+  char buffer[1024], *str;
+
+  str = getcwd(buffer, 1024);
+  backwardToForwardSlash(str);
+
+  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator", str);
 }

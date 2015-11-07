@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <unistd.h>
 #include "ServeRSP.h"
 #include "ARMRegisters.h"
 #include "MemoryBlock.h"
@@ -158,7 +159,7 @@ void displayErrorMsg(char *errorMsg)
 int main(int argc, const char * argv[])
 {
     int i, portNumber = DEFAULT_PORT;
-    char *configFile = "config", *str, elfPath[100], device[100];
+    char *str, elfPath[100], device[100], *dir, buf[1024];
     SOCKET sock;
     FILE file;
     ElfData *elfData;
@@ -178,6 +179,15 @@ int main(int argc, const char * argv[])
     initializeSimulator();
     initializeWatchpoint();
 
+    // Retrieve the port number from a self created config file
+    dir = getDirectoryName((char *)argv[0]);
+    strcpy(buf, dir);
+    strcat(buf, "/GDBServerConfig.ini");
+    portNumber = readGdbServerConfigFile(&file, buf);
+
+    if(portNumber == -1)
+      portNumber = DEFAULT_PORT;        // use default port if no return -1
+
 #ifdef  __MINGW32__
     winsockInit();
 #endif
@@ -185,12 +195,19 @@ int main(int argc, const char * argv[])
     bindSocket(&rspData.sock, portNumber);
     listenSocket(&rspData.sock);
     waitingForConnection(&rspData.sock, portNumber);
-    
-    // Retrieve data from file
-    str = readFile(&file, ELF_TEXT_FILE);
+
+    // Retrieve location of elf file
+    strcpy(buf, dir);
+    strcat(buf, "/ElfLocation.txt");
+
+    str = readFile(&file, buf);
     sscanf(str, "%s %s", elfPath, device);
+
+    // Retrieve the data from elf file
     elfData = openElfFile(elfPath);
-    readConfigfile(&file, configFile, &configInfo, device);
+    strcpy(buf, dir);
+    strcat(buf, "/config");
+    readConfigfile(&file, buf, &configInfo, device);
     loadElf(elfData, configInfo.flashOrigin, configInfo.flashSize);
 
     int bytesSent;

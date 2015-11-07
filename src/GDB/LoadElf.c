@@ -33,6 +33,7 @@
 #include "elf.h"
 #include "CException.h"
 #include "ErrorCode.h"
+#include "FileOperation.h"
 
 extern ElfData *elfData;
 extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
@@ -63,8 +64,8 @@ void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
   }
 
   closeElfSection(elfSection);
-  coreReg[PC] = getStartAddress(elfData);
-  printf("Start address 0x%x, load size %d\n\n", coreReg[PC], loadSize);
+  writeToCoreRegisters(PC, getStartAddress(elfData));
+  printf("Start address 0x%x, load size %d\n", coreReg[PC], loadSize);
 }
 
 uint32_t getSectionLma(ElfData *elfData, int sectionIndex)
