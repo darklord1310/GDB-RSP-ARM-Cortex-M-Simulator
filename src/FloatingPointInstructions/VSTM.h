@@ -35,7 +35,7 @@
 #include <stdio.h>
 
 void VSTM(uint32_t instruction);
-void executeIAorDB(uint32_t P, uint32_t U, uint32_t W, uint32_t baseRegisterToWrite, uint32_t singleReg, uint32_t registerList, uint32_t imm32, uint32_t Rn);
+void executeIAorDBForStore(uint32_t P, uint32_t U, uint32_t W, uint32_t baseRegisterToWrite, uint32_t singleReg, uint32_t registerList, uint32_t imm32, uint32_t Rn);
 void storeFPMultiple(uint32_t address, uint32_t d, uint32_t regs, uint32_t singleReg);
 
 #endif // VSTM_H

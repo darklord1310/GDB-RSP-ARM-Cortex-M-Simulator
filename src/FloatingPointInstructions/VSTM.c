@@ -95,19 +95,19 @@ void VSTM(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      executeIAorDB(P, U, W, d, !singleOrDoublePrecision, regs, imm32, Rn);
+      executeIAorDBForStore(P, U, W, d, !singleOrDoublePrecision, regs, imm32, Rn);
     
     shiftITState();
   }
   else
-    executeIAorDB(P, U, W, d, !singleOrDoublePrecision, regs, imm32, Rn);
+    executeIAorDBForStore(P, U, W, d, !singleOrDoublePrecision, regs, imm32, Rn);
 
   coreReg[PC] += 4;
 }
 
 
 
-void executeIAorDB(uint32_t P, uint32_t U, uint32_t W, uint32_t baseRegisterToWrite, uint32_t singleReg, uint32_t registerList, uint32_t imm32, uint32_t Rn)
+void executeIAorDBForStore(uint32_t P, uint32_t U, uint32_t W, uint32_t baseRegisterToWrite, uint32_t singleReg, uint32_t registerList, uint32_t imm32, uint32_t Rn)
 {
   if(P == 0 && U == 1 && W == 0)
     storeFPMultiple(coreReg[Rn], baseRegisterToWrite, registerList, singleReg);

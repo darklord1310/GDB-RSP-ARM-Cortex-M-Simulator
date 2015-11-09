@@ -35,5 +35,7 @@
 #include <stdio.h>
 
 void VLDM(uint32_t instruction);
+void loadFPMultiple(uint32_t address, uint32_t d, uint32_t regs, uint32_t singleReg);
+void executeIAorDBForLoad(uint32_t P, uint32_t U, uint32_t W, uint32_t baseRegisterToWrite, uint32_t singleReg, uint32_t registerList, uint32_t imm32, uint32_t Rn);
 
 #endif // VLDM_H

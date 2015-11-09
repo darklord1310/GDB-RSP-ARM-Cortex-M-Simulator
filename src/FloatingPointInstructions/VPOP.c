@@ -22,63 +22,61 @@
 
 
 #include "VPOP.h"
+#include "VLDM.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 
 
-/* VSTM Encoding T1 and T2
+/* VPOP Encoding T1 and T2
     
-      Floating-point Store Register stores a single extension register to memory, using an address from an ARM core
-      register, with an optional offset.
+      Floating-point Pop Registers loads multiple consecutive floating-point registers from the stack.
   
-    VSTR<c> <Dd>, [<Rn>{, #+/-<imm>}]
-    VSTR<c> <Sd>, [<Rn>{, #+/-<imm>}]
+    VPOP <list>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  0  1| U  D  0  0|     Rn    |     Vd    | 1  0 1 X|      imm8     |
+|1  1  1  0| 1  1  0  0  1  D  1  1| 1  1  0  1|     Vd    | 1  0 1 X|      imm8     |
 
 where :
-          .32, .64                    Optional data size specifiers.
-          
-          <Dd>                        The source floating-point register for a doubleword store.
-          
-          <Sd>                        The source floating-point register for a singleword store.
-          
-          <Rn>                        The base register. The SP can be used.
-          
-          +/-                         Is + or omitted if the immediate offset is to be added to the base register value (add == TRUE), or – if
-                                      it is to be subtracted (add == FALSE). #0 and #-0 generate different instructions.
-                                      
-          <imm>                       The immediate offset used to form the address. Values are multiples of 4 in the range 0-1020. <imm>
-                                      can be omitted, meaning an offset of +0.
+          <size>              An optional data size specifier. If present, it must be equal to the size in bits, 32 or 64, of the
+                              floating-point registers in <list>.
+                              
+          <list>              The extension registers to be loaded, as a list of consecutively numbered doubleword or
+                              single-precision floating-point registers, separated by commas and surrounded by brackets.
+                              <list> must contain at least one floating-point register, and not more than sixteen.
 */
 void VPOP(uint32_t instruction)
 { 
-  uint32_t U = getBits(instruction,23,23);
   uint32_t D = getBits(instruction,22,22);
-  uint32_t Rn = getBits(instruction,19,16);
   uint32_t Vd = getBits(instruction,15,12);
   uint32_t imm8 = getBits(instruction,7,0);
   uint32_t imm32 = imm8 << 2;
   uint32_t singleOrDoublePrecision = getBits(instruction,8,8);
-  uint32_t d;
+  uint32_t d, regs;
+  uint32_t address = coreReg[SP];
+  coreReg[SP]+=imm32;
   
   executeFPUChecking();
   
   if(singleOrDoublePrecision == 1)
+  {
     d = (D << 4) | Vd;
+    regs = imm8 / 2;
+  }
   else
+  {
     d = (Vd << 1) | D;
+    regs = imm8;
+  }
   
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      executeFPStore(U, d, !singleOrDoublePrecision, imm32, Rn);
+      loadFPMultiple(address, d, regs, !singleOrDoublePrecision);
     
     shiftITState();
   }
   else
-    executeFPStore(U, d, !singleOrDoublePrecision, imm32, Rn);
+    loadFPMultiple(address, d, regs, !singleOrDoublePrecision);
 
   coreReg[PC] += 4;
 }

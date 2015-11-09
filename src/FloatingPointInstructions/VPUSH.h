@@ -25,6 +25,7 @@
 #define VPUSH_H
 
 #include <stdint.h>
+#include "VSTM.h"
 #include "ConditionalExecution.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"

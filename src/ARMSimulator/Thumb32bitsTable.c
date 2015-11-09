@@ -436,6 +436,11 @@ void initFloatingPoint32FPLoadStore()
   tabulateTable("01X10XXXX", FloatingPointLoadStore, VSTM ,  createTableException(NO_EXCEPTION) );
   tabulateTable("10X10XXXX", FloatingPointLoadStore, VSTM ,  createTableException(1, 0b000001111, 0b1101) );
   tabulateTable("1XX00XXXX", FloatingPointLoadStore, VSTR ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("10X101101", FloatingPointLoadStore, VPUSH ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X01XXXX", FloatingPointLoadStore, VLDM ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X11XXXX", FloatingPointLoadStore, VLDM ,  createTableException(1, 0b000001111, 0b1101) );
+  tabulateTable("10X11XXXX", FloatingPointLoadStore, VLDM ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X111101", FloatingPointLoadStore, VPOP ,  createTableException(NO_EXCEPTION) );
 }
 
 
