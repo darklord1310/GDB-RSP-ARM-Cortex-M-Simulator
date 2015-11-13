@@ -21,8 +21,8 @@
 */
 
 
-#ifndef VMOV_H
-#define VMOV_H
+#ifndef VNEG_H
+#define VNEG_H
 
 #include <stdint.h>
 #include "ConditionalExecution.h"
@@ -34,10 +34,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-void VMOVBetweenCoreRegAndfpuSReg(uint32_t instruction);
-void VMOVBetweenCoreRegAndDoubleFpuReg(uint32_t instruction);
-void VMOVBetweenScalarAndCoreReg(uint32_t instruction);
-void VMOVImmediate(uint32_t instruction);
-void VMOVRegister(uint32_t instruction);
+void VNEG(uint32_t instruction);
 
-#endif // VMOV_H
+#endif // VNEG_H

@@ -105,6 +105,7 @@
 #include "VLDM.h"
 #include "VLDR.h"
 #include "VPOP.h"
+#include "VNEG.h"
 
 
 extern char *targetCortexM4_XML;

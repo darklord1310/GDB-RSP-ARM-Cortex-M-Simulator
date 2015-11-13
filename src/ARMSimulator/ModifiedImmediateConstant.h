@@ -32,5 +32,6 @@ unsigned int ModifyControlLessThan6(unsigned int input_value);
 unsigned int ModifyControlLessThan8(unsigned int input_value);
 unsigned int SetFirstBitAndShiftRight(unsigned int input_value, unsigned int timesOfShifting);
 uint32_t ModifyImmediateConstant(uint32_t ModifyControl, uint32_t input_value, uint32_t carryStatus);
+uint64_t ModifyFPImmediateConstant(uint32_t ModifyControl, uint32_t bitSize);
 
 #endif // ModifiedImmediateConstant_H

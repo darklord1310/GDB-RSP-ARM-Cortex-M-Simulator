@@ -350,3 +350,35 @@ uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t
     return ( (Vx << 1) | registerName);
 }
 
+
+uint64_t FPNeg(uint64_t value, int size)
+{
+  uint32_t signBit = getBits(value,size-1,size-1);
+  
+  if(signBit)
+    value = setBits(value,0b0,size-1,size-1);
+  else
+    value = setBits(value,0b1,size-1,size-1);
+}
+
+
+uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2)
+{
+  // printf("value1: %x\n", value1);
+  // printf("value2: %x\n", value2);
+  float v1 = *(float *)&value1;
+  float v2 = *(float *)&value2;
+  // printf("v1: %x\n", v1);
+  float ans = v1 * v2;
+  // printf("%x\n", *(uint32_t *)&ans);
+  return ( *(uint32_t *)&ans );
+}
+
+uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2)
+{
+  float v1 = *(float *)&value1;
+  float v2 = *(float *)&value2;
+  float ans = v1 + v2;
+
+  return ( *(uint32_t *)&ans );
+}

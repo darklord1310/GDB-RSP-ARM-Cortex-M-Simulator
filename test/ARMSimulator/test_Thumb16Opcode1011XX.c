@@ -100,6 +100,7 @@
 #include "VLDM.h"
 #include "VLDR.h"
 #include "VPOP.h"
+#include "VNEG.h"
 
 
 void setUp(void)

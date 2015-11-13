@@ -112,6 +112,7 @@
 #include "VLDM.h"
 #include "VLDR.h"
 #include "VPOP.h"
+#include "VNEG.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;

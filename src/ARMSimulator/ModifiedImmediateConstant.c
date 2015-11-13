@@ -138,3 +138,73 @@ uint32_t ModifyControlLessThan4(uint32_t input_value)
   input_value = ( input_value << 16 ) | dummy;
   return input_value;
 }
+
+
+/* This function will return the modified immediate constants in floating point instructions
+   Details can be view at page 164, section A6.4.1, document is in the link below:
+   https://trello.com/c/JVVQ8Sdr/13-quick-reference-card-for-thumb2-instruction-set
+   
+   bits(N) VFPExpandImm(bits(8) imm8, integer N)
+          assert N IN {32,64};
+            if N == 32 then
+                E = 8;
+            else
+                E = 11;
+              
+            F = N - E - 1;
+            sign = imm8<7>;
+            exp = NOT(imm8<6>):Replicate(imm8<6>,E-3):imm8<5:4>;
+            frac = imm8<3:0>:Zeros(F-4);
+            return sign:exp:frac;
+   
+*/
+uint64_t ModifyFPImmediateConstant(uint32_t ModifyControl, uint32_t bitSize)
+{
+  uint64_t E,F, returnValue;
+  uint32_t sign = 0;
+  uint32_t exp = 0;
+  uint32_t frac = 0;
+  
+  if(bitSize == 32)
+    E = 8;
+  else
+    E = 11;
+  
+  F = bitSize - E - 1;
+  sign = getBits(ModifyControl,7,7);
+  exp = setBits(exp, getBits(ModifyControl,5,4) , 1 , 0);    //set the bits 5:4 of ModifyControl as 1:0 of exp
+  
+  int j = 2;
+  int i;
+  for(i = 0; i < E-3; i++ )
+  {
+    exp = setBits( exp, getBits(ModifyControl,6,6), j,j);   //set the bits 6 of ModifyControl for E-3 times starting from bit 2 of exp
+    j++;
+  }
+  
+  exp = setBits( exp, !getBits(ModifyControl,6,6) , j, j); //set the invert of bits 6 of ModifyControl as the MSB of the exp
+  frac = getBits(ModifyControl,3,0) << (F-4) ;
+  
+  if(bitSize == 32)
+    returnValue = ( ( ( (sign << 8) | exp) << 23) | frac );
+  else
+    returnValue = ( ( ( (sign << 11) | exp) << 52) | frac );
+
+  return returnValue; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
