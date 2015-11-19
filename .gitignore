@@ -4,5 +4,6 @@ data/*
 data/*.o
 data/*.elf
 data/*.map
+mkmf.log
 TEST1.txt
 TEST2.txt
