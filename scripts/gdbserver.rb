@@ -1,4 +1,5 @@
-COIDE_PATH = "C:/CooCox/CoIDE_V2Beta/bin"
+# This will be the default path if auto-locate fails
+coide_gdbserver_path = "C:/CooCox/CoIDE_V2Beta/bin"
 
 # Load build script to help build C program
 load "scripts/cbuild.rb"
@@ -27,16 +28,31 @@ config = {
 GDBSERVER_FILE = "build/release/gdbserver.exe"
 MYFLASH_FILE   = "build/release/myFlash.exe"
 
+def auto_locate_coide_gdbserver_path
+  name = 'coflash'
+  program = `sh -c "which #{name}"`
+  if !program.empty?
+    return File.dirname program
+  else
+    raise ArgumentError,                                                  \
+          "Error: Can't locate CoIDE gdbserver path"                      \
+                if File.exists? coide_gdbserver_path
+  end
+  return coide_gdbserver_path
+end
+
 namespace :gdbserver do
-  gdb_target = "#{COIDE_PATH}/gdbserver.exe"
-  flash_target = "#{COIDE_PATH}/coflash.exe"
+  coide_gdbserver_path = auto_locate_coide_gdbserver_path
 
-  original_gdb = "#{COIDE_PATH}/gdbserverOriginal.exe"
-  original_flash = "#{COIDE_PATH}/coflashOriginal.exe"
+  gdb_target = File.join(coide_gdbserver_path, 'gdbserver.exe')
+  flash_target = File.join(coide_gdbserver_path, 'coflash.exe')
 
-  config_file =  "#{COIDE_PATH}/config"
-  gdb_config_file =  "#{COIDE_PATH}/GDBServerConfig.ini"
-  elfLocation_file = "#{COIDE_PATH}/ElfLocation.txt"
+  original_gdb = File.join(coide_gdbserver_path, 'gdbserverOriginal.exe')
+  original_flash = File.join(coide_gdbserver_path, 'coflashOriginal.exe')
+
+  config_file =  File.join(coide_gdbserver_path, 'config')
+  gdb_config_file = File.join(coide_gdbserver_path, 'GDBServerConfig.ini')
+  elfLocation_file = File.join(coide_gdbserver_path, 'ElfLocation.txt')
 
   desc 'Release gdbserver'
   task :release do
