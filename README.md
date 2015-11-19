@@ -1,6 +1,6 @@
 GDB Server and ARM Simulator
 ============================
-This project allow you to use the gdbserver and ARM simulator with CoIDE application. Description below is the explanation for the available `rake` commands using gitbash you can use to release and depoy the gdbserver and coflash then debug using the ARM simulator. (Please make sure the CoIDE is installed in C: drive directory)
+This project allow you to use the gdbserver and ARM simulator with CoIDE application. Description below is the explanation for the available `rake` commands using gitbash to release and depoy the gdbserver and coflash then debug using the ARM simulator. (Please make sure the CoIDE is installed in C: drive directory)
 
 Commands
 ========
