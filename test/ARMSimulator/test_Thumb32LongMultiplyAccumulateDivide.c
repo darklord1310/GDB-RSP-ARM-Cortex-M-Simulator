@@ -292,6 +292,28 @@ void test_instruction_given_0xfbe12300_should_get_R2_is_0x2b3332e4_R3_0x4c444493
   TEST_ASSERT_EQUAL(0x4c444493, coreReg[3]);
 }
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //UDIV
+
+
+void test_UDIV_given_0xfbe12300_should_get_R2_is_0x2b3332e4_R3_0x4c444493()
+{
+  //create test fixture
+  coreReg[0] = 0x0800004F;
+  coreReg[1] = 0xffffffff;
+  coreReg[2] = 0x33333333;
+  coreReg[3] = 0x44444444;
+  writeInstructionToMemoryGivenByAddress(0xfbe12300, 0x08000040);  // UMLAL  r2,r3,r1,r0
+  coreReg[PC] = 0x08000040;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x2b3332e4, coreReg[2]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+  TEST_ASSERT_EQUAL(0x4c444493, coreReg[3]);
+}
 
 
 

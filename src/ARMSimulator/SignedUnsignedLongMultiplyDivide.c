@@ -83,7 +83,7 @@ void SMULLT1(uint32_t instruction)
     SDIV<c> <Rd>,<Rn>,<Rm>
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |1   1  1  1  1| 0  1  1  1| 0  0  1|     Rn    | 1  1  1  1|   RdHi  |1 1 1 1|   Rm  |
+  |1   1  1  1  1| 0  1  1  1| 0  0  1|     Rn    | 1  1  1  1|    Rd   |1 1 1 1|   Rm  |
 
 where:
         <c><q>        See Standard assembler syntax fields on page A6-7.
@@ -98,24 +98,37 @@ void SDIVT1(uint32_t instruction)
 {
   uint32_t Rm = getBits(instruction,3,0);
   uint32_t Rn = getBits(instruction,19,16);
-  uint32_t RdLo = getBits(instruction,15,12);
-  uint32_t RdHi = getBits(instruction,11,8);
-  long long int result = (long int)coreReg[Rn] * (long int)coreReg[Rm];
+  uint32_t Rd = getBits(instruction,11,8);
+  long long int result = (long int)coreReg[Rn] / (long int)coreReg[Rm];
 
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      writeToCoreRegisters(RdLo , getBits(result,31,0) );
-      writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
+      if(coreReg[Rm] == 0)
+      {
+        if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
+          ThrowError();
+        else
+          coreReg[Rd] = 0;
+      }
+      else
+        writeToCoreRegisters(Rd , getBits(result,31,0) ); 
     }
 
     shiftITState();
   }
   else
   {
-    writeToCoreRegisters(RdLo , getBits(result,31,0) );
-    writeToCoreRegisters(RdHi , (uint32_t)(result >> 32) );
+    if(coreReg[Rm] == 0)
+    {
+      if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
+        ThrowError();
+      else
+        coreReg[Rd] = 0;
+    }
+    else
+      writeToCoreRegisters(Rd , getBits(result,31,0) ); 
   }
 
   coreReg[PC] += 4;
@@ -169,11 +182,12 @@ void UMULLT1(uint32_t instruction)
 
 
 
-/*Signed Divide Encoding T1
-    SDIV<c> <Rd>,<Rn>,<Rm>
+/*Unsigned Divide Encoding T1
+
+    UDIV<c> <Rd>,<Rn>,<Rm>
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |1   1  1  1  1| 0  1  1  1  0  0| 1|     Rn    | 1  1  1  1|    Rd   |1 1 1 1|   Rm  |
+  |1   1  1  1  1| 0  1  1  1  0  1| 1|     Rn    | 1  1  1  1|    Rd   |1 1 1 1|   Rm  |
 
 where:
         <c><q>        See Standard assembler syntax fields on page A6-7.
