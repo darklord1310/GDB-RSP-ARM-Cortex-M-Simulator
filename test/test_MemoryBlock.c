@@ -72,6 +72,26 @@ void test_virtualMemToPhysicalMem_given_0x40001020_should_convert_the_mem_addr_i
     TEST_ASSERT_EQUAL(0xffffffff, virtMemAddr);
 }
 
+void test_virtualMemToPhysicalMem_given_0xe0003024_should_convert_the_mem_addr_into_physical_mem_addr(void)
+{
+    int i;
+    uint32_t virtMemAddr, phyMemAddr = 0xe0003024;
+
+    virtMemAddr = virtualMemToPhysicalMem(phyMemAddr);
+
+    TEST_ASSERT_EQUAL(0x103025, virtMemAddr);
+}
+
+void test_virtualMemToPhysicalMem_given_0xe0100000_should_convert_the_mem_addr_into_physical_mem_addr(void)
+{
+    int i;
+    uint32_t virtMemAddr, phyMemAddr = 0xe0100000;
+
+    virtMemAddr = virtualMemToPhysicalMem(phyMemAddr);
+
+    TEST_ASSERT_EQUAL(0xffffffff, virtMemAddr);
+}
+
 void test_simulatorCopyBlock_given_source_and_dest_addr_and_size_should_copy_the_data_from_dest_addr_to_source_addr(void)
 {
     int i;
