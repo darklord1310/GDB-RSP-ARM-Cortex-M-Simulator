@@ -85,3 +85,14 @@ void test_simulatorCopyBlock_given_source_and_dest_addr_and_size_should_copy_the
     TEST_ASSERT_EQUAL(0x77, memoryBlock[virtualMemToPhysicalMem(sourceAddr + 2)]);
     TEST_ASSERT_EQUAL(0x88, memoryBlock[virtualMemToPhysicalMem(sourceAddr + 3)]);
 }
+
+void xtest_simulatorReadMemory_given_addr_should_return_the_data_in_that_addr(void)
+{
+    int i;
+    uint32_t addr = 0x8000450;
+    uint8_t destAddr[] = {0x55};
+
+    simulatorCopyBlock(addr, destAddr, 1);
+    
+    TEST_ASSERT_EQUAL(0x55, simulatorReadMemory(addr));
+}

@@ -133,14 +133,3 @@ char *getDirectoryName(char *pathname)
 
   return directoryPath;
 }
-
-void backwardToForwardSlash(char *path)
-{
-  int i;
-
-  for(i = 0; path[i] != '\0'; i++)
-  {
-    if(path[i] == '\\')
-      path[i] = '/';
-  }
-}

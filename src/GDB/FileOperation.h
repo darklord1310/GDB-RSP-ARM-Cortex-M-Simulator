@@ -11,6 +11,5 @@ int readGdbServerConfigFile(FILE *file, char *filename);
 void writeFile(FILE *file, char *filename, char *mode, char *str);
 
 char *getDirectoryName(char *pathname);
-void backwardToForwardSlash(char *path);
 
 #endif // FileOperation_H

@@ -21,17 +21,6 @@ void writeFile(FILE *file, char *filename, char *mode, char *str)
   fclose(file);
 }
 
-void backwardToForwardSlash(char *path)
-{
-  int i;
-
-  for(i = 0; path[i] != '\0'; i++)
-  {
-    if(path[i] == '\\')
-      path[i] = '/';
-  }
-}
-
 char *getDirectoryName(char *pathname)
 {
   char *tempStr = NULL, *directoryPath = NULL;
