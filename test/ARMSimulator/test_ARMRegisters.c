@@ -1,8 +1,10 @@
 #include "unity.h"
 #include "ARMRegisters.h"
 #include <stdint.h>
+#include "LoadAndWriteMemory.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "MemoryBlock.h"
 
 void setUp(void)
 {
@@ -39,6 +41,12 @@ void test_initCoreRegister_reset_the_coreReg_correctly(void)
   {
     TEST_ASSERT_EQUAL(0, fpuSinglePrecision[i]);
   }
+  
+  TEST_ASSERT_EQUAL(0xC0000000, loadByteFromMemory(FPCCR, 4) );
+  TEST_ASSERT_EQUAL(0x00000000, loadByteFromMemory(CPACR, 4) );
+  TEST_ASSERT_EQUAL(0x00000000, loadByteFromMemory(FPDSCR, 4) );
+  TEST_ASSERT_EQUAL(0xfa050000, loadByteFromMemory(AIRCR, 4) );
+  TEST_ASSERT_EQUAL(0x00000200, loadByteFromMemory(CCR, 4) );
 }
 
 
@@ -75,7 +83,6 @@ void test_writeSinglePrecision_should_write_value_into_fpuDoublePrecision_correc
     writeSinglePrecision(i, valueToWrite++);
   }
 
-
   TEST_ASSERT_EQUAL( 0x0000000100000000, fpuDoublePrecision[0]);
   TEST_ASSERT_EQUAL( 0x0000000300000002, fpuDoublePrecision[1]);
   TEST_ASSERT_EQUAL( 0x0000000500000004, fpuDoublePrecision[2]);
@@ -92,7 +99,6 @@ void test_writeSinglePrecision_should_write_value_into_fpuDoublePrecision_correc
   TEST_ASSERT_EQUAL( 0x0000001b0000001a, fpuDoublePrecision[13]);
   TEST_ASSERT_EQUAL( 0x0000001d0000001c, fpuDoublePrecision[14]);
   TEST_ASSERT_EQUAL( 0x0000001f0000001e, fpuDoublePrecision[15]);
-
 }
 
 
@@ -143,6 +149,5 @@ void test_writeDoublePrecision_should_write_value_into_fpuSinglePrecision_correc
   {
     TEST_ASSERT_EQUAL(valueToWrite++, fpuSinglePrecision[i]);
   }
-
 }
 

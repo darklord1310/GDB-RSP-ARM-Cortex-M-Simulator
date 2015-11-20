@@ -105,6 +105,7 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
 
 void setUp(void)
 {
@@ -129,6 +130,7 @@ void test_VMLA_given_s1_0x2DE12E13_and_s2_0x2D893814_should_get_s0_0x1BF165F8()
   writeInstructionToMemoryGivenByAddress(0xee000a81, 0x08000046);  // VMLA.F32 s0, s1, s2
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x2de12e131bf165f8, fpuDoublePrecision[0]);
@@ -148,6 +150,7 @@ void test_VMLS_given_s1_0x2DE12E13_and_s2_0x2D893814_should_get_s0_0x9BF165F8()
   writeInstructionToMemoryGivenByAddress(0xee000ac1, 0x08000046);  // VMLS.F32 s0, s1, s2
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x9BF165F8, fpuSinglePrecision[0] );
@@ -167,6 +170,7 @@ void test_VMOVImmediate_should_load_0xBFF80000_into_s5()
   writeInstructionToMemoryGivenByAddress(0xeeff2a0f, 0x08000046);  // VMOV.F32 s5, #0xbff80000
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0xBFF80000, fpuSinglePrecision[5] );
@@ -181,6 +185,7 @@ void test_VMOVImmediate_should_load_0x40000000_into_s5()
   writeInstructionToMemoryGivenByAddress(0xeef02a00, 0x08000046);  // VMOV.F32 s5, #0x40000000
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x40000000, fpuSinglePrecision[5] );
@@ -200,6 +205,7 @@ void test_VMOVRegister_should_load_value_of_s2_into_s6()
   writeInstructionToMemoryGivenByAddress(0xeeb03a41, 0x08000046);  // VMOV.F32 s6, s2
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x2D893814, fpuSinglePrecision[6] );
@@ -219,6 +225,7 @@ void test_VNEG_should_negate_the_value_of_s2_and_put_into_s7()
   writeInstructionToMemoryGivenByAddress(0xeef13a41, 0x08000046);  // VNEG.F32 s7, s2
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0xAD893814, fpuSinglePrecision[7] );
@@ -235,6 +242,7 @@ void test_VNEG_should_negate_the_value_of_s1_and_put_into_s7()
   writeInstructionToMemoryGivenByAddress(0xeef13a60, 0x08000046);  // VNEG.F32 s7, s1
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x8DE12E13, fpuSinglePrecision[7] );
@@ -254,6 +262,7 @@ void test_VABS_given_s7_is_0x8DE12E13_should_get_s8_0x0DE12E13()
   writeInstructionToMemoryGivenByAddress(0xeeb04ae3, 0x08000046);  // VABS.F32 s8, s7
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x0DE12E13, fpuSinglePrecision[8] );
@@ -274,6 +283,7 @@ void test_VSQRT_given_s0_is_0x2E0CBCCC_should_get_s8_0x36BDD002()
   writeInstructionToMemoryGivenByAddress(0xeeb14ac0, 0x08000046);  // VSQRT.F32 s8, s0
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x36BDD002, fpuSinglePrecision[8] );

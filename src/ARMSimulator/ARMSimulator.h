@@ -50,6 +50,7 @@ void executeLoadWord(uint32_t instruction);
 void executeMultiplyAccumulate(uint32_t instruction);
 void executeLongMultiplyAccumulateDivide(uint32_t instruction);
 void executeLoadStoreMultiple(uint32_t instruction);
+void executeMiscellaneousInstructions(uint32_t instruction);
 void executeStoreSingleDataItem(uint32_t instruction);
 void executeLoadByteMemoryHints(uint32_t instruction);
 void executeLoadStoreDualTableBranch(uint32_t instruction);

@@ -13,6 +13,7 @@
 #include "ErrorCode.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "LoadAndWriteMemory.h"
 
 #define ELF_FILE          "TestElfFile.elf"
 

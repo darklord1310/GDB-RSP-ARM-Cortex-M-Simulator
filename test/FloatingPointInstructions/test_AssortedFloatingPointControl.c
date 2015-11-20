@@ -1,5 +1,7 @@
 #include "unity.h"
+#include <stdint.h>
 #include "ExceptionObject.h"
+#include "CException.h"
 #include "CMNImmediate.h"
 #include "ADCImmediate.h"
 #include "SBCImmediate.h"
@@ -49,6 +51,8 @@
 #include "ADCRegister.h"
 #include "BX.h"
 #include "BLXRegister.h"
+#include "MOVRegister.h"
+#include "CMPRegister.h"
 #include "MULRegister.h"
 #include "TSTRegister.h"
 #include "RSBImmediate.h"
@@ -59,10 +63,9 @@
 #include "MemoryBlock.h"
 #include "LDRLiteral.h"
 #include "ErrorSignal.h"
-#include "CException.h"
 #include "SVC.h"
-#include "ADDSPImmediate.h"
 #include "ADR.h"
+#include "ADDSPImmediate.h"
 #include "STRImmediate.h"
 #include "LDRRegister.h"
 #include "REV.h"
@@ -71,8 +74,8 @@
 #include "PUSH.h"
 #include "POP.h"
 #include "SUBSPImmediate.h"
-#include "LoadAndWriteMemory.h"
 #include "Thumb32bitsTable.h"
+#include "LoadAndWriteMemory.h"
 #include "ShiftOperation.h"
 #include "ANDImmediate.h"
 #include "TSTImmediate.h"
@@ -105,44 +108,56 @@
 #include "VSQRT.h"
 #include "MiscellaneousInstructions.h"
 
-
 void setUp(void)
 {
   initializeSimulator();
 }
-
 
 void tearDown(void)
 {
 }
 
 
-/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-  //ADD (SP plus immediate)
-  
-// test ADD r0,SP,#0x20
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r0_is_0x20001020_xPSR_unchanged(void)
+void test_executeFPUChecking_given_FPU_is_enable_should_not_throw_error()
 {
-  uint32_t instruction = 0xa8080000;
-  
-  coreReg[SP] = 0x20001000;
-  ARMSimulator(instruction);
+  CEXCEPTION_T err;
+  writeByteToMemory(0x080000ac, 0xe000ed88, 4);
 
-  TEST_ASSERT_EQUAL(0x20001020, coreReg[0]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  //Instructions to enable the floating point
+  writeInstructionToMemoryGivenByAddress(0xf8df0060, 0x08000048);  // LDR.W  R0, =0xE000ED88
+  writeInstructionToMemoryGivenByAddress(0x68010000, 0x0800004c);  // LDR     R1, [R0]
+  writeInstructionToMemoryGivenByAddress(0xf4410170, 0x0800004e);  // ORR     R1, R1, #(0xF << 20)
+  writeInstructionToMemoryGivenByAddress(0x60010000, 0x08000052);  // STR     R1, [R0]
+  writeInstructionToMemoryGivenByAddress(0xf3bf8f4f, 0x08000054);  // DSB
+  writeInstructionToMemoryGivenByAddress(0xf3bf8f6f, 0x08000058);  // ISB
+  
+  coreReg[PC] = 0x08000048;
+ 
+  Try
+  {
+    armStep();
+  }
+  Catch(err)
+  {
+    TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  }
 }
 
 
-// test ADD r7,SP,#0x20
-void test_ADDSPImmediateT1_given_SP_0x20001000_should_get_r7_is_0x20001020_xPSR_unchanged(void)
+void test_executeFPUChecking_given_FPU_is_not_enabled_should_throw_error()
 {
-  uint32_t instruction = 0xaf080000;
+  CEXCEPTION_T err;
   
-  coreReg[SP] = 0x20001000;
-  ARMSimulator(instruction);
-
-  TEST_ASSERT_EQUAL(0x20001020, coreReg[7]);
-  TEST_ASSERT_EQUAL(0x01000000,coreReg[xPSR]);
+  coreReg[PC] = 0x08000048;
+  writeInstructionToMemoryGivenByAddress(0xeef13a60, 0x08000048);  //testing with VNEG.F32 s7, s1
+ 
+  Try
+  {
+    armStep();    //will throw error when attempt to execute VNEG since FPU is not enabled
+  }
+  Catch(err)
+  {
+    TEST_ASSERT_EQUAL(vectorTable+USAGEFAULT,coreReg[PC]);
+    TEST_ASSERT_EQUAL(UsageFault,err);
+  }
 }
-
-

@@ -72,6 +72,7 @@ void initializeAllTable()
   initThumb32bitsLoadHalfword();
   initThumb32bitsCoprocessorInstructions();
   initThumb32bitsCoprocessorInstructions2();
+  initThumb32bitsMiscellaneousInstructions();
   initThumb32Table();
   
   //Floating Point Instructions
@@ -319,6 +320,12 @@ void executeLoadHalfword(uint32_t instruction)
   (*Thumb32LoadHalfword[opcode])(instruction);
 }
 
+void executeMiscellaneousInstructions(uint32_t instruction)
+{
+  uint32_t opcode = getBits(instruction,7,4);
+  
+  (*Thumb32MiscellaneousInstructions[opcode])(instruction);
+}
 
 void executeCoprocessorInstructions(uint32_t instruction)
 { 

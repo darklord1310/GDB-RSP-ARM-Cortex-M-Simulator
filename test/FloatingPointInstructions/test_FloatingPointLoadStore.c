@@ -105,7 +105,7 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
-
+#include "MiscellaneousInstructions.h"
 
 void setUp(void)
 {
@@ -146,6 +146,7 @@ void test_VSTMIA_and_no_writeback_with_singlePrecision_should_write_the_correct_
   writeInstructionToMemoryGivenByAddress(0xecc20a02, 0x08000046);  // VSTMIA  r2, {s1,s2} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x13, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -196,6 +197,7 @@ void test_VSTMIA_and_no_writeback_with_doublePrecision_should_write_the_correct_
   writeInstructionToMemoryGivenByAddress(0xec821b04, 0x08000046);  // VSTMIA  r2, {d1,d2}
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -246,6 +248,7 @@ void test_VSTMIA_and_with_writeback_with_singlePrecision_should_write_the_correc
   writeInstructionToMemoryGivenByAddress(0xece20a02, 0x08000046);  // VSTMIA  r2!, {s1,s2} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x13, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -296,6 +299,7 @@ void test_VSTMIA_and_with_writeback_with_doublePrecision_should_write_the_correc
   writeInstructionToMemoryGivenByAddress(0xeca21b04, 0x08000046);  // VSTMIA  r2!, {d1,d2}
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -353,6 +357,7 @@ void test_VSTMDB_and_with_writeback_with_doublePrecision_should_write_the_correc
   writeInstructionToMemoryGivenByAddress(0xed221b04, 0x08000046);  // VSTMDB  r2!, {d1,d2}
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -397,6 +402,7 @@ void test_VSTR_given_single_precision_positive_index_should_store_the_correct_va
   writeInstructionToMemoryGivenByAddress(0xed830a03, 0x08000046);  // VSTR.32 s0, [r3,#12]
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x66, memoryBlock[ virtualMemToPhysicalMem(0x2000100c) ] );
@@ -425,6 +431,7 @@ void test_VSTR_given_single_precision_negative_index_should_store_the_correct_va
   writeInstructionToMemoryGivenByAddress(0xed030a03, 0x08000046);  // VSTR.32 s0, [r3,#-12]
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x66, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -457,6 +464,7 @@ void test_VSTR_given_double_precision_positive_index_should_store_the_correct_va
   writeInstructionToMemoryGivenByAddress(0xed830b03, 0x08000046);  // VSTR.64 d0, [r3,#12]
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x66, memoryBlock[ virtualMemToPhysicalMem(0x2000100c) ] );
@@ -493,6 +501,7 @@ void test_VSTR_given_double_precision_negative_index_should_store_the_correct_va
   writeInstructionToMemoryGivenByAddress(0xed030b03, 0x08000046);  // VSTR.64 d0, [r3,#-12]
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x66, memoryBlock[ virtualMemToPhysicalMem(0x20001000) ] );
@@ -535,6 +544,7 @@ void test_VPUSH_with_singlePrecision_should_write_the_correct_values()
   writeInstructionToMemoryGivenByAddress(0xed2d0a02, 0x08000046);  // VPUSH {s0-s1} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x13, memoryBlock[ virtualMemToPhysicalMem(0x20001030) ] );
@@ -586,6 +596,7 @@ void test_VPUSH_and_doublePrecision_should_write_the_correct_values()
   writeInstructionToMemoryGivenByAddress(0xed2d1b04, 0x08000046);  // VPUSH  {d1,d2}
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00, memoryBlock[ virtualMemToPhysicalMem(0x20001028) ] );
@@ -661,6 +672,7 @@ void test_VLDMIA_and_no_writeback_with_singlePrecision_should_load_the_correct_v
   writeInstructionToMemoryGivenByAddress(0xecd20a02, 0x08000046);  // VLDMIA  r2, {s1,s2} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x80000000, fpuSinglePrecision[1]  );
@@ -720,6 +732,7 @@ void test_VLDMIA_and_no_writeback_with_doublePrecision_should_load_the_correct_v
   writeInstructionToMemoryGivenByAddress(0xec921b04, 0x08000046);  // VLDMIA  r2, {d1,d2}  
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x9999999980000000, fpuDoublePrecision[1]  );
@@ -778,6 +791,7 @@ void test_VLDMIA_and_with_writeback_with_singlePrecision_should_load_the_correct
   writeInstructionToMemoryGivenByAddress(0xecf20a02, 0x08000046);  // VLDMIA  r2!, {s1,s2} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x80000000, fpuSinglePrecision[1]  );
@@ -838,6 +852,7 @@ void test_VLDMIA_and_with_writeback_with_doublePrecision_should_load_the_correct
   writeInstructionToMemoryGivenByAddress(0xecb21b04, 0x08000046);  // VLDMIA  r2!, {d1,d2}  
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x9999999980000000, fpuDoublePrecision[1]  );
@@ -898,6 +913,7 @@ void test_VLDMDB_and_with_writeback_with_singlePrecision_should_load_the_correct
   writeInstructionToMemoryGivenByAddress(0xed720a02, 0x08000046);  // VLDMDB  r2!, {s1,s2}  
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x66666666, fpuSinglePrecision[1]  );
@@ -958,6 +974,7 @@ void test_VLDMDB_and_with_writeback_with_doublePrecision_should_load_the_correct
   writeInstructionToMemoryGivenByAddress(0xed321b04, 0x08000046);  // VLDMDB  r2!, {d1,d2}   
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x9999999980000000, fpuDoublePrecision[1]  );
@@ -1020,6 +1037,7 @@ void test_VPOP_with_singlePrecision_should_load_the_correct_values()
   writeInstructionToMemoryGivenByAddress(0xecfd0a02, 0x08000046);  // VPOP {s1,s2} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x80000000, fpuSinglePrecision[1]  );
@@ -1079,6 +1097,7 @@ void test_VPOP_with_doublePrecision_should_load_the_correct_values()
   writeInstructionToMemoryGivenByAddress(0xecbd1b04, 0x08000046);  // VPOP {d1,d2} 
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x9999999980000000, fpuDoublePrecision[1]  );

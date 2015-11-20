@@ -289,6 +289,7 @@ void initThumb32bitsBranchesAndMiscellaneousControl()
   // tabulateTable("XXXXXXXXXX", Thumb32BranchesAndMiscellaneousControl, invalidInstruction , createTableException(NO_EXCEPTION) );
   tabulateTable("0X0XXXXXXX", Thumb32BranchesAndMiscellaneousControl, ConditionalBranchT2 , createTableException(1,0b0000111000, 0b111000) );
   tabulateTable("0X00111010", Thumb32BranchesAndMiscellaneousControl, executeHintInstructions , createTableException(NO_EXCEPTION) );
+  tabulateTable("0X00111011", Thumb32BranchesAndMiscellaneousControl, executeMiscellaneousInstructions , createTableException(NO_EXCEPTION) );
   tabulateTable("0X1XXXXXXX", Thumb32BranchesAndMiscellaneousControl, UnconditionalBranchT2 , createTableException(NO_EXCEPTION) );
   tabulateTable("1X1XXXXXXX", Thumb32BranchesAndMiscellaneousControl, BLT1 , createTableException(NO_EXCEPTION) );
 }
@@ -386,6 +387,11 @@ void initThumb32bitsHintInstructions()
   tabulateTable("00000000000", Thumb32HintInstructions, NOPT2 , createTableException(NO_EXCEPTION) ); 
 }
 
+void initThumb32bitsMiscellaneousInstructions()
+{
+  tabulateTable("0100", Thumb32MiscellaneousInstructions, DSB , createTableException(NO_EXCEPTION) ); 
+  tabulateTable("0110", Thumb32MiscellaneousInstructions, ISB , createTableException(NO_EXCEPTION) ); 
+}
 
 
 void initThumb32bitsMultiplyAccumulate()

@@ -108,6 +108,7 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
 
 
 extern char *targetCortexM4_XML;
