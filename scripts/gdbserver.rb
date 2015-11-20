@@ -50,7 +50,7 @@ def auto_locate_coide_gdbserver_path(default)
 end
 
 namespace :gdbserver do
-  coide_gdbserver_path = auto_locate_coide_gdbserver_path(coide_gdbserver_path)
+# coide_gdbserver_path = auto_locate_coide_gdbserver_path(coide_gdbserver_path)
 
   gdb_target = File.join(coide_gdbserver_path, 'gdbserver.exe')
   flash_target = File.join(coide_gdbserver_path, 'coflash.exe')

@@ -10,6 +10,5 @@ int main(int argc, const char * argv[]);
 
 void writeFile(FILE *file, char *filename, char *mode, char *str);
 char *getDirectoryName(char *pathname);
-void backwardToForwardSlash(char *path);
 
 #endif // MyFlash_H

@@ -68,13 +68,3 @@ void test_coflash_given_argv_with_different_arrangement_should_write_elf_path_to
   // Close the file
   fclose(file);
 }
-
-void test_backwardToForwardSlash_given_string_with_backslash_should_to_forward_slash(void)
-{
-  char *str, buffer[1024];
-
-  str = getcwd(buffer, 1024);
-  backwardToForwardSlash(str);
-
-  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator", buffer);
-}

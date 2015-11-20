@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -81,14 +81,19 @@ uint32_t virtualMemToPhysicalMem(uint32_t virtualMem)
 void simulatorCopyBlock(uint32_t sourceAddr, uint8_t *destAddr, uint32_t size)
 {
   int i = 0;
-  
+
   for(i = 0; i < size; i++)
   {
     memoryBlock[virtualMemToPhysicalMem(sourceAddr + i)] = destAddr[i];
   }
 }
 
-void copySingleBlock(uint32_t sourceAddr, uint8_t data)
+void simulatorWriteMemory(uint32_t data, uint32_t addr)
 {
-  memoryBlock[virtualMemToPhysicalMem(sourceAddr)] = data;
+
+}
+
+int simulatorReadMemory(uint32_t addr)
+{
+  return memoryBlock[virtualMemToPhysicalMem(addr)];
 }
