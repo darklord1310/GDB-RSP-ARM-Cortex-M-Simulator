@@ -38,6 +38,11 @@ void initVirtualMemory()
   // memoryMap(0x40020000, 0x400203FF - 0x40020000, initGPIOs);
 }
 
+uint32_t handler(readWrite, data, size)
+{
+  
+}
+
 void initDirectory()
 {
   int i;

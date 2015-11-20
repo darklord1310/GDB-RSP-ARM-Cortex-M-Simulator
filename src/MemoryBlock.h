@@ -27,10 +27,12 @@
 #include <stdint.h>
 
 #define KILO_BYTE               1024
+#define MEM_SIZE                KILO_BYTE * KILO_BYTE * 2
 #define ROM_BASE_ADDR           0x00000    //500kb of virtual memory
 #define RAM_BASE_ADDR           0x80000    //500kb of virtual memory
+#define PBP_BASE_ADDR           0x100000   //500kb of virtual memory
 
-uint8_t memoryBlock[KILO_BYTE * KILO_BYTE];
+uint8_t memoryBlock[MEM_SIZE];
 
 void resetMemoryBlock();
 uint32_t virtualMemToPhysicalMem(uint32_t virtualMem);

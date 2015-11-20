@@ -72,6 +72,8 @@ uint32_t virtualMemToPhysicalMem(uint32_t virtualMem)
     }
     else if(virtualMem < 0x40000000)
         virtualAddr = ((virtualMem - 0x40000000) & 0x000fffff) + RAM_BASE_ADDR;
+    else if(virtualMem < 0xe00fffff && virtualMem >= 0xe0000000)
+        virtualAddr = ((virtualMem - 0xe00fffff) & 0x000fffff) + PBP_BASE_ADDR;
     else
         printf("Memory exceeded\n");
 
