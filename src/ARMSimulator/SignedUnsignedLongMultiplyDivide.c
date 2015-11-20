@@ -95,41 +95,31 @@ where:
         <Rm>          Specifies the register that contains the divisor.
 */
 void SDIVT1(uint32_t instruction)
-{
+{ 
   uint32_t Rm = getBits(instruction,3,0);
   uint32_t Rn = getBits(instruction,19,16);
   uint32_t Rd = getBits(instruction,11,8);
-  long long int result = (long int)coreReg[Rn] / (long int)coreReg[Rm];
-
+  long int result;
+  
+  if(coreReg[Rm] == 0)
+  {
+    if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
+      ThrowError();
+    else
+      result = 0;
+  }
+  else
+    result = (long int)coreReg[Rn] / (long int)coreReg[Rm];
+  
   if(inITBlock())
   {
     if( checkCondition(cond) )
-    {
-      if(coreReg[Rm] == 0)
-      {
-        if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
-          ThrowError();
-        else
-          coreReg[Rd] = 0;
-      }
-      else
-        writeToCoreRegisters(Rd , getBits(result,31,0) ); 
-    }
+      writeToCoreRegisters(Rd , result ); 
 
     shiftITState();
   }
   else
-  {
-    if(coreReg[Rm] == 0)
-    {
-      if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
-        ThrowError();
-      else
-        coreReg[Rd] = 0;
-    }
-    else
-      writeToCoreRegisters(Rd , getBits(result,31,0) ); 
-  }
+    writeToCoreRegisters(Rd , result ); 
 
   coreReg[PC] += 4;
 }
@@ -200,7 +190,32 @@ where:
 */
 void UDIVT1(uint32_t instruction)
 {
+  uint32_t Rm = getBits(instruction,3,0);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rd = getBits(instruction,11,8);
+  long int result;
 
+  if(coreReg[Rm] == 0)
+  {
+    if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
+      ThrowError();
+    else
+      result = 0;
+  }
+  else
+    result = convertToUnsigned(coreReg[Rn],32) / convertToUnsigned(coreReg[Rm],32);
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      writeToCoreRegisters(Rd , result ); 
+
+    shiftITState();
+  }
+  else
+    writeToCoreRegisters(Rd , result ); 
+
+  coreReg[PC] += 4;
 }
 
 
