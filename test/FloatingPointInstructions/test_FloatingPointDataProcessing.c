@@ -101,7 +101,10 @@
 #include "VLDR.h"
 #include "VPOP.h"
 #include "VNEG.h"
-
+#include "VCMP.h"
+#include "VABS.h"
+#include "VCVT.h"
+#include "VSQRT.h"
 
 void setUp(void)
 {
@@ -205,7 +208,79 @@ void test_VMOVRegister_should_load_value_of_s2_into_s6()
 }    
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-    //VNeg
+    //VNEG
+
+    
+// VNEG.F32 s7, s2
+void test_VNEG_should_negate_the_value_of_s2_and_put_into_s7()
+{
+  writeSinglePrecision(2, 0x2D893814);
+  
+  writeInstructionToMemoryGivenByAddress(0xeef13a41, 0x08000046);  // VNEG.F32 s7, s2
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xAD893814, fpuSinglePrecision[7] );
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+// VNEG.F32 s7, s1
+void test_VNEG_should_negate_the_value_of_s1_and_put_into_s7()
+{
+  writeSinglePrecision(1, 0x0DE12E13);
+  
+  writeInstructionToMemoryGivenByAddress(0xeef13a60, 0x08000046);  // VNEG.F32 s7, s1
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x8DE12E13, fpuSinglePrecision[7] );
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VABS
+    
+// VABS.F32 s8, s7
+void test_VABS_given_s7_is_0x8DE12E13_should_get_s8_0x0DE12E13()
+{
+  writeSinglePrecision(7, 0x8DE12E13);
+  
+  writeInstructionToMemoryGivenByAddress(0xeeb04ae3, 0x08000046);  // VABS.F32 s8, s7
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x0DE12E13, fpuSinglePrecision[8] );
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VSQRT
+    
+//test positive value
+// VSQRT.F32 s8, s0
+void test_VSQRT_given_s0_is_0x2E0CBCCC_should_get_s8_0x36BDD002()
+{
+  writeSinglePrecision(0, 0x2E0CBCCC);
+  
+  writeInstructionToMemoryGivenByAddress(0xeeb14ac0, 0x08000046);  // VSQRT.F32 s8, s0
+  coreReg[PC] = 0x08000046;
+  
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x36BDD002, fpuSinglePrecision[8] );
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
 
 
 /*

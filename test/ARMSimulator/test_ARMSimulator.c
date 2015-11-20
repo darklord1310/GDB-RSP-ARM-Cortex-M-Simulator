@@ -98,7 +98,10 @@
 #include "VLDR.h"
 #include "VPOP.h"
 #include "VNEG.h"
-
+#include "VCMP.h"
+#include "VABS.h"
+#include "VCVT.h"
+#include "VSQRT.h"
 
 
 void setUp(void)

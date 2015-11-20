@@ -77,8 +77,10 @@ void shiftITState();
 int isLastInITBlock();
 void executeFPUChecking();
 uint64_t FPNeg(uint64_t value, int size);
+uint64_t FPAbs(uint64_t value, int size);
 uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2);
 uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2);
+uint32_t FPSqrtSinglePrecision(uint32_t value);
 uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation);
 
 
