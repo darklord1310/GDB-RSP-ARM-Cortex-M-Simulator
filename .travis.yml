@@ -1,6 +1,5 @@
 language: c
 compiler:
-  - gcc
+  - gcc -lm
   - clang
-  - lm
 script: rake test:all
