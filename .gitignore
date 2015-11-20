@@ -1,4 +1,5 @@
 build/*
+documents/*
 !build/README.txt
 data/*
 data/*.o

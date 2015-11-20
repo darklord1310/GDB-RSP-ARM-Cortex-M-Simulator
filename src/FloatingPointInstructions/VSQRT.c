@@ -21,31 +21,32 @@
 */
 
 
-#include "VNEG.h"
+#include "VSQRT.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 
 
 
-/* VNEG
+/* VSQRT
     
-    Floating-point Negate inverts the sign bit of a single-precision register, and places the results in a second
-    single-precision register.
+      Floating-point Square Root calculates the square root of a floating-point register value and writes the result to
+      another floating-point register.
   
-    VNEG<c>.F32 <Sd>, <Sm>
+    VSQRT<c>.F32 <Sd>, <Sm>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 0 1 M 0|   Vm  |
+|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 1 1 M 0|   Vm  |
 
 where :
         <c>, <q>          See Standard assembler syntax fields on page A7-175.
         
         <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
         
-        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
+        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register, for a
+                          double-precision operation.
 */
-void VNEG(uint32_t instruction)
-{
+void VSQRT(uint32_t instruction)
+{ 
   uint32_t Vd = getBits(instruction,15,12);
   uint32_t Vm = getBits(instruction,3,0);
   uint32_t sz = getBits(instruction,8,8);
@@ -64,7 +65,7 @@ void VNEG(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-        writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
+        writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m]) );
     }
     
     shiftITState();
@@ -74,7 +75,7 @@ void VNEG(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-      writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
+      writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m]) );
   }
 
   coreReg[PC] += 4;  

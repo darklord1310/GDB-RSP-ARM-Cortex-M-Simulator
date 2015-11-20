@@ -28,7 +28,7 @@
 #include <assert.h>
 #include "ARMRegisters.h"
 #include "ConditionalExecution.h"
-
+#include <math.h>
 
 /*
   To check if it is in IT block or not
@@ -359,18 +359,17 @@ uint64_t FPNeg(uint64_t value, int size)
     value = setBits(value,0b0,size-1,size-1);
   else
     value = setBits(value,0b1,size-1,size-1);
+  
+  return value;
 }
 
 
 uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2)
 {
-  // printf("value1: %x\n", value1);
-  // printf("value2: %x\n", value2);
   float v1 = *(float *)&value1;
   float v2 = *(float *)&value2;
-  // printf("v1: %x\n", v1);
   float ans = v1 * v2;
-  // printf("%x\n", *(uint32_t *)&ans);
+
   return ( *(uint32_t *)&ans );
 }
 
@@ -382,3 +381,20 @@ uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2)
 
   return ( *(uint32_t *)&ans );
 }
+
+uint64_t FPAbs(uint64_t value, int size)
+{
+  value = setBits(value,0b0,size-1,size-1);       //set the sign bit to 0 (which means makes it a positive value)
+  
+  return value;
+}
+
+uint32_t FPSqrtSinglePrecision(uint32_t value)
+{
+  float v1 = *(float *)&value;
+  float ans = sqrt(v1);
+
+  return ( *(uint32_t *)&ans );
+}
+
+

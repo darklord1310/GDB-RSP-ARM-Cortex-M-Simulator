@@ -21,13 +21,13 @@
 */
 
 
-#include "VNEG.h"
+#include "VCVT.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 
 
 
-/* VNEG
+/* VCVT
     
     Floating-point Negate inverts the sign bit of a single-precision register, and places the results in a second
     single-precision register.
@@ -44,7 +44,7 @@ where :
         
         <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
 */
-void VNEG(uint32_t instruction)
+void VCVT(uint32_t instruction)
 {
   uint32_t Vd = getBits(instruction,15,12);
   uint32_t Vm = getBits(instruction,3,0);

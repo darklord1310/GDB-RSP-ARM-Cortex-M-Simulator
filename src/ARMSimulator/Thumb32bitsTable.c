@@ -429,7 +429,9 @@ void initFloatingPoint32DataProcessing()
   tabulateTable("00X10XXXXX0", FloatingPointDataProcessing, VMUL ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11XXXXX0", FloatingPointDataProcessing, VMOVImmediate ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11000001", FloatingPointDataProcessing, VMOVRegister ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X11000011", FloatingPointDataProcessing, VABS ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11000101", FloatingPointDataProcessing, VNEG ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X11000111", FloatingPointDataProcessing, VSQRT ,  createTableException(NO_EXCEPTION) );
 }
 
 
