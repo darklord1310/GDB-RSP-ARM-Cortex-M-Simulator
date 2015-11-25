@@ -256,3 +256,8 @@ void writeToCoreRegisters(int regNum, uint32_t valueToWrite)
     coreReg[regNum] = valueToWrite;
 }
 
+
+uint32_t readSCBRegisters(uint32_t registerName)
+{
+  return loadByteFromMemory(registerName, 4);
+}

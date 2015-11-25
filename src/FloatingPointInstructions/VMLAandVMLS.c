@@ -87,6 +87,7 @@ void VMLAandVMLS(uint32_t instruction)
         else
           addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]), 64);
         
+        setFPException();
         writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32) );
       }
     }
@@ -103,7 +104,8 @@ void VMLAandVMLS(uint32_t instruction)
         addend32 = FPMulSinglePrecision( (fpuSinglePrecision[n]), (fpuSinglePrecision[m]) );
       else
         addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]), 32);
-
+      
+      setFPException();
       writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32) );
     }
   }

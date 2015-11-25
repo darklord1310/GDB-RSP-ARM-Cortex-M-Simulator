@@ -22,6 +22,7 @@
 
 
 #include "StatusRegisters.h"
+#include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdio.h>
@@ -210,7 +211,7 @@ void updateNegativeFlag(uint32_t value)
  */
 int bigEndian()
 {
-  return(getBits(loadByteFromMemory(AIRCR, 4) ,15,15) );
+  return(getBits(readSCBRegisters(AIRCR) ,15,15) );
 }
 
 
@@ -393,11 +394,29 @@ uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2)
   return ( *(uint32_t *)&ans );
 }
 
+uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2)
+{
+  float v1 = *(float *)&value1;
+  float v2 = *(float *)&value2;
+  float ans = v1 / v2;
+
+  return ( *(uint32_t *)&ans );
+}
+
 uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2)
 {
   float v1 = *(float *)&value1;
   float v2 = *(float *)&value2;
   float ans = v1 + v2;
+
+  return ( *(uint32_t *)&ans );
+}
+
+uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2)
+{
+  float v1 = *(float *)&value1;
+  float v2 = *(float *)&value2;
+  float ans = v1 - v2;
 
   return ( *(uint32_t *)&ans );
 }
@@ -418,7 +437,22 @@ uint32_t FPSqrtSinglePrecision(uint32_t value)
 }
 
 
-void generateFPException()
+/*
+    This function will raise the corresponding FP exceptions
+    Once the exception is raised, it is not going to overwrite by 0b0
+*/
+void setFPException()
 {
-  
+  int fe = fetestexcept (FE_ALL_EXCEPT);
+
+  if (fe & FE_DIVBYZERO) 
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 1, 1);
+  if (fe & FE_INEXACT)   
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 4, 4);
+  if (fe & FE_INVALID)   
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 0, 0);
+  if (fe & FE_OVERFLOW)  
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 2, 2);
+  if (fe & FE_UNDERFLOW) 
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 3, 3);
 }

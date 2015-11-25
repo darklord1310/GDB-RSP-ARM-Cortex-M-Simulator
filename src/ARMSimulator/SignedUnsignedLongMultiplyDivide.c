@@ -197,7 +197,7 @@ void UDIVT1(uint32_t instruction)
 
   if(coreReg[Rm] == 0)
   {
-    if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
+    if( getBits(readSCBRegisters(CCR) , 4, 4) == 1 )
       ThrowError();
     else
       result = 0;

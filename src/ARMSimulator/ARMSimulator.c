@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+#include "fenv.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include "StatusRegisters.h"
@@ -42,6 +43,7 @@ void initializeSimulator()
   initializeAllTable();
   resetMemoryBlock();
   resetVectorTableAddress();
+  feclearexcept (FE_ALL_EXCEPT);
 }
 
 void initializeAllTable()

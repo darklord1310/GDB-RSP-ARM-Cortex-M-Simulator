@@ -430,14 +430,20 @@ void initFloatingPoint32bitsTransfer()
 void initFloatingPoint32DataProcessing()
 {
   tabulateTable("00X00XXXXXX", FloatingPointDataProcessing, VMLAandVMLS ,  createTableException(NO_EXCEPTION) );
-  tabulateTable("00X01XXXXXX", FloatingPointDataProcessing, VNMLAandVNMLSandVNMULT1 ,  createTableException(NO_EXCEPTION) );
-  tabulateTable("00X10XXXXX1", FloatingPointDataProcessing, VNMLAandVNMLSandVNMULT2 ,  createTableException(NO_EXCEPTION) );
-  tabulateTable("00X10XXXXX0", FloatingPointDataProcessing, VMUL ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X01XXXXXX", FloatingPointDataProcessing, VNMLAandVNMLS ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X10XXXXX1", FloatingPointDataProcessing, VNMUL ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X10XXXXX0", FloatingPointDataProcessing, VMUL,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11XXXXX0", FloatingPointDataProcessing, VMOVImmediate ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11000001", FloatingPointDataProcessing, VMOVRegister ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11000011", FloatingPointDataProcessing, VABS ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11000101", FloatingPointDataProcessing, VNEG ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11000111", FloatingPointDataProcessing, VSQRT ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X11XXXXX0", FloatingPointDataProcessing, VADD ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("00X11XXXXX1", FloatingPointDataProcessing, VSUB ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X00XXXXX0", FloatingPointDataProcessing, VDIV ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X11001XX1", FloatingPointDataProcessing, VCVTBandVCVTT ,  createTableException(NO_EXCEPTION) );
+  //tabulateTable("01X11010XX1", FloatingPointDataProcessing, VCMP ,  createTableException(NO_EXCEPTION) );
+  //tabulateTable("01X111000X1", FloatingPointDataProcessing, VCVTandVCVTR ,  createTableException(NO_EXCEPTION) );
 }
 
 

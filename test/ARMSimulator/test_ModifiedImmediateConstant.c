@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "ARMRegisters.h"
 #include "ModifiedImmediateConstant.h"
 #include "MemoryBlock.h"
 #include "ErrorSignal.h"

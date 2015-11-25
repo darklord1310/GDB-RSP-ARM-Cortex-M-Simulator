@@ -37,6 +37,7 @@
                   
 #include <stdbool.h>
 #include <stdint.h>
+#include "fenv.h"
 
 typedef enum {FPTYPE_NONZERO, FPTYPE_ZERO, FPTYPE_INFINITY, FPTYPE_QNAN, FPTYPE_SNAN} FPType;
 typedef struct FPInfo FPInfo;
@@ -79,9 +80,11 @@ void executeFPUChecking();
 uint64_t FPNeg(uint64_t value, int size);
 uint64_t FPAbs(uint64_t value, int size);
 uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2);
+uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2);
 uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2);
+uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2);
 uint32_t FPSqrtSinglePrecision(uint32_t value);
 uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation);
-
+void setFPException();
 
 #endif // StatusRegisters_H

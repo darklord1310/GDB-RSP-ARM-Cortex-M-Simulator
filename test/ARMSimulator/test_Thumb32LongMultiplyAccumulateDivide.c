@@ -104,6 +104,13 @@
 #include "VCVT.h"
 #include "VSQRT.h"
 #include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
+
 
 void setUp(void)
 {
@@ -389,6 +396,17 @@ void test_UDIV_given_divide_0xffffffff_with_2_should_get_R4_0x7FFFFFFF()
 
   //test
   armStep();
+
+  // char *out; 
+  // int invalid, division, overflow, underflow, inexact; 
+  // code = ieee_flags("get", "exception", "", &out); 
+  // printf ("out is %s, code is %d, in hex: 0x%08X\n", out, code, code); 
+  // inexact	 =	 (code >> fp_inexact)	 & 0x1; 
+  // division	 =	 (code >> fp_division)	 & 0x1; 
+  // underflow	 =	 (code >> fp_underflow)	 & 0x1; 
+  // overflow	 =	 (code >> fp_overflow)	 & 0x1; 
+  // invalid	 =	 (code >> fp_invalid)	 & 0x1; 
+  // printf("%d %d %d %d %d \n", invalid, division, overflow, underflow, inexact); 
 
   TEST_ASSERT_EQUAL(0x7FFFFFFF, coreReg[4]);
   TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
