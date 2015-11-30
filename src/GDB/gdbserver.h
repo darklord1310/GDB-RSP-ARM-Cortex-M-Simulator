@@ -57,4 +57,7 @@ int sendBuffer(SOCKET *sock, char *sendbuf);
 int receiveBuffer(SOCKET *sock, char *recvbuf);
 void displayErrorMsg(char *errorMsg);
 
+void initSimulator();
+
+
 #endif // gdbserver_H

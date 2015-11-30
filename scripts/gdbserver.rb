@@ -18,7 +18,7 @@ config = {
                     'src/MyFlash'],
   # :user_define  => ['CEXCEPTION_USE_CONFIG_FILE'],
 #  :library_path => 'lib',
-  :library => ['ws2_32'],
+  :library => ['ws2_32', 'm'],
 #  :linker_script => 'MyLinkerScript.ld',
 #  :compiler_options => ['-DOK'],                 # Other compiler options
  :linker_options => ['-g'],                       # Other linker options

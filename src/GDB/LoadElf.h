@@ -39,7 +39,7 @@
 #define getProgramType(elfData, i)              (elfData->ph[i].p_type)
 
 
-void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize);
+void loadElf(char *elfPath, uint32_t flashStartAddr, uint32_t flashSize);
 uint32_t getSectionLma(ElfData *elfData, int sectionIndex);
 int isWithinRange(uint32_t address, uint32_t startAddr, uint32_t size);
 int isProgramLoadType(ElfData *elfData, int index);

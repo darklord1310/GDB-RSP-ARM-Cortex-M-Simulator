@@ -107,6 +107,13 @@ void listenSocket(SOCKET *sock)
 /****************Accept connections.****************/
 void waitingForConnection(SOCKET *sock, int port)
 {
+#ifdef  __MINGW32__
+    winsockInit();
+#endif
+    createSocket(sock);
+    bindSocket(sock, port);
+    listenSocket(sock);
+
     printf( "5. Waiting on %s:%d..........", LOCAL_HOST_ADD, port );
     SOCKET acceptSocket;
     while (1)
@@ -147,6 +154,12 @@ int receiveBuffer(SOCKET *sock, char *recvbuf)
     return bytesRecv;
 }
 
+void initSimulator()
+{
+    initializeSimulator();
+    initializeWatchpoint();
+}
+
 void displayErrorMsg(char *errorMsg)
 {
 #ifdef  __MINGW32__
@@ -159,16 +172,15 @@ void displayErrorMsg(char *errorMsg)
 int main(int argc, const char * argv[])
 {
     int i, portNumber = DEFAULT_PORT;
-    char *str, elfPath[100], device[100], *dir, buf[1024];
+    char *str, elfPath[100], device[100], *parentDirName, *dirName;
     SOCKET sock;
-    FILE file;
-    ElfData *elfData;
     RspData rspData = {INITIAL, sock};
     ConfigInfo configInfo = {.flashOrigin = 0,
                              .flashSize = 0,
                              .ramOrigin = 0,
                              .ramSize = 0
                             };
+    GdbServerInfo *gdbServerInfo;
 
     for(i = 0; i < argc; i++)
     {
@@ -176,39 +188,30 @@ int main(int argc, const char * argv[])
           sscanf(argv[i], ":%d", &portNumber);
     }
 
-    initializeSimulator();
-    initializeWatchpoint();
+    initSimulator();
 
-    // Retrieve the port number from a self created config file
-    dir = getDirectoryName((char *)argv[0]);
-    strcpy(buf, dir);
-    strcat(buf, "/GDBServerConfig.ini");
-    portNumber = readGdbServerConfigFile(&file, buf);
+    // Get the directory name
+    parentDirName = getDirectoryName((char *)argv[0]);
+    
+    // Retrieve the port number from a self created gdb config file
+    dirName = appendString(parentDirName, "/GDBServerConfig.ini");
+    gdbServerInfo = readGdbServerConfigFile(dirName, "r");
 
-    if(portNumber == -1)
-      portNumber = DEFAULT_PORT;        // use default port if no return -1
+    if(gdbServerInfo->port != -1)
+      portNumber = gdbServerInfo->port;        // use default port if port unable to retrieve from GDBServerConfig
 
-#ifdef  __MINGW32__
-    winsockInit();
-#endif
-    createSocket(&rspData.sock);
-    bindSocket(&rspData.sock, portNumber);
-    listenSocket(&rspData.sock);
+    // Connection from client
     waitingForConnection(&rspData.sock, portNumber);
 
     // Retrieve location of elf file
-    strcpy(buf, dir);
-    strcat(buf, "/ElfLocation.txt");
-
-    str = readFile(&file, buf);
+    dirName = appendString(parentDirName, "/ElfLocation.txt");
+    str = readFile(dirName, "r");
     sscanf(str, "%s %s", elfPath, device);
 
     // Retrieve the data from elf file
-    elfData = openElfFile(elfPath);
-    strcpy(buf, dir);
-    strcat(buf, "/config");
-    readConfigfile(&file, buf, &configInfo, device);
-    loadElf(elfData, configInfo.flashOrigin, configInfo.flashSize);
+    dirName = appendString(parentDirName, "/config");
+    readConfigfile(dirName, "r", &configInfo, device);
+    loadElf(elfPath, configInfo.flashOrigin, configInfo.flashSize);
 
     int bytesSent;
     int bytesRecv;

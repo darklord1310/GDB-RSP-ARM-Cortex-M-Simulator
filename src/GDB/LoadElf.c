@@ -35,17 +35,16 @@
 #include "ErrorCode.h"
 #include "FileOperation.h"
 
-extern ElfData *elfData;
-extern ElfSection *isr, *text, *initArray, *rodata, *data, *finiArray;
-extern uint32_t entryAddress;
-extern int fileStatus;
 
-void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
+void loadElf(char *elfPath, uint32_t flashStartAddr, uint32_t flashSize)
 {
   int i, j;
   uint32_t physAddr, loadSize = 0;
   char *sectionName;
+  ElfData *elfData;
   ElfSection *elfSection;
+
+  elfData = openElfFile(elfPath);
 
   for(i = 0; i < getTotalSectionHeader(elfData); i++)
   {
@@ -63,7 +62,8 @@ void loadElf(ElfData *elfData, uint32_t flashStartAddr, uint32_t flashSize)
     }
   }
 
-  closeElfSection(elfSection);
+  // closeElfSection(elfSection);
+  closeElfFile();
   writeToCoreRegisters(PC, getStartAddress(elfData));
   printf("Start address 0x%x, load size %d\n", coreReg[PC], loadSize);
 }

@@ -3,11 +3,21 @@
 #include <malloc.h>
 #include "FileOperation.h"
 
-char *readFile(FILE *file, char *filename)
+/*
+  r   open for reading (file must exist)
+  w   open for writing (overwrite file, file created if not exist)
+  a   open for appending (file created if not exist)
+  r+  open for reading and writing, start at beginning (file must exist)
+  w+  open for reading and writing (overwrite file, file created if not exist)
+  a+  open for appending and reading (file created if not exist)
+*/
+
+char *readFile(char *filename, char *mode)
 {
+  FILE *file;
   char buffer[1024] = "", *str;
 
-  file = fopen(filename, "r");
+  file = fopen(filename, mode);
 
   if(file == NULL)
   {
@@ -23,11 +33,12 @@ char *readFile(FILE *file, char *filename)
   return str;
 }
 
-void readConfigfile(FILE *file, char *filename, ConfigInfo *configInfo, char *device)
+void readConfigfile(char *filename, char *mode, ConfigInfo *configInfo, char *device)
 {
   assert(device != NULL);
+  FILE *file;
   char *str = NULL, buffer[1024], prefix;
-  file = fopen(filename, "r");
+  file = fopen(filename, mode);
   uint32_t flashOrigin, flashSize, ramOrigin, ramSize;
 
   if(file == NULL)
@@ -69,16 +80,36 @@ void readConfigfile(FILE *file, char *filename, ConfigInfo *configInfo, char *de
   fclose(file);
 }
 
-int readGdbServerConfigFile(FILE *file, char *filename)
+GdbServerInfo *createGdbServerInfo(char *host, int port)
 {
-  char *str = NULL, buffer[1024], prefix;
+  GdbServerInfo *gdbServerInfo;
+
+  gdbServerInfo = malloc(sizeof(GdbServerInfo));
+  gdbServerInfo->host = host;
+  gdbServerInfo->port = port;
+
+  return gdbServerInfo;
+}
+
+void *destroyGdbServerInfo(GdbServerInfo *gdbServerInfo)
+{
+  if(gdbServerInfo)
+    free(gdbServerInfo);
+}
+
+GdbServerInfo *readGdbServerConfigFile(char *filename, char *mode)
+{
+  FILE *file;
+  GdbServerInfo *gdbServerInfo;
+  char host[15] = "", *str = NULL, buffer[1024];
   int portNumber = -1;
+
   file = fopen(filename, "r");
 
   if(file == NULL)
   {
     printf("error: cannot open the file %s\n", filename);
-    return -1;
+    return NULL;
   }
 
   str = fgets(buffer, 100, file);
@@ -88,19 +119,25 @@ int readGdbServerConfigFile(FILE *file, char *filename)
     if(strncmp(str, "[GDBServer]", strlen("[GDBServer]")) == 0)
     {
       str = fgets(buffer, 100, file);     // get IP
+      if(strncmp(str, "IP", strlen("IP")) == 0)
+        sscanf(str, "IP=%s", &host);
       str = fgets(buffer, 100, file);     // get Port number
-      sscanf(str, "Port=%d", &portNumber);
+      if(strncmp(str, "Port", strlen("Port")) == 0)
+        sscanf(str, "Port=%d", &portNumber);
     }
   }
+
+  gdbServerInfo = createGdbServerInfo(host, portNumber);
 
   // Close the file
   fclose(file);
 
-  return portNumber;
+  return gdbServerInfo;
 }
 
-void writeFile(FILE *file, char *filename, char *mode, char *str)
+void writeFile(char *filename, char *mode, char *str)
 {
+  FILE *file;
   file = fopen(filename, mode);
 
   if(file == NULL)
@@ -132,4 +169,22 @@ char *getDirectoryName(char *pathname)
   }
 
   return directoryPath;
+}
+
+char *appendString(char *destStr, char *srcStr)
+{
+  char *newStr;
+
+  newStr = malloc(strlen(destStr) + strlen(srcStr) + 1);
+  newStr[0] = '\0';   // ensures the memory is an empty string
+  strcat(newStr, destStr);
+  strcat(newStr, srcStr);
+
+  return newStr;
+}
+
+void destroyStr(char *newStr)
+{
+  if(newStr)
+    free(newStr);
 }

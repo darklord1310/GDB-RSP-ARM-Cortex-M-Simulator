@@ -8,7 +8,7 @@ int coflash(int argc, const char * argv[]);
 int main(int argc, const char * argv[]);
 #endif
 
-void writeFile(FILE *file, char *filename, char *mode, char *str);
+void writeFile(char *filename, char *mode, char *str);
 char *getDirectoryName(char *pathname);
 
 #endif // MyFlash_H
