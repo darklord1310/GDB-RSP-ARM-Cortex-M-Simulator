@@ -103,6 +103,14 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
+
 
 void setUp(void)
 {
@@ -291,6 +299,116 @@ void test_instruction_given_0xfbe12300_should_get_R2_is_0x2b3332e4_R3_0x4c444493
   TEST_ASSERT_EQUAL(0x4c444493, coreReg[3]);
 }
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //SDIV
+
+// SDIV    R4, R0, R1
+void test_SDIV_given_divide_0x0000ffff_with_2_should_get_R4_0x00007FFF()
+{
+  //create test fixture
+  coreReg[0] = 0x0000ffff;
+  coreReg[1] = 2;
+
+  writeInstructionToMemoryGivenByAddress(0xfb90f4f1, 0x08000040);  // SDIV    R4, R0, R1
+  coreReg[PC] = 0x08000040;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x00007FFF, coreReg[4]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+//neg divide neg
+// SDIV    R4, R0, R1
+void test_SDIV_given_divide_0xffffffff_with_0xffffffff_should_get_R4_0x00000001()
+{
+  //create test fixture
+  coreReg[0] = 0xffffffff;
+  coreReg[1] = 0xffffffff;
+
+  writeInstructionToMemoryGivenByAddress(0xfb90f4f1, 0x08000040);  // SDIV    R4, R0, R1
+  coreReg[PC] = 0x08000040;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x00000001, coreReg[4]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
 
 
+//neg divide pos
+// SDIV    R4, R0, R1
+void test_SDIV_given_divide_0xfffffffd_with_2_should_get_R4_0xFFFFFFFF()
+{
+  //create test fixture
+  coreReg[0] = 0xfffffffd;
+  coreReg[1] = 2;
 
+  writeInstructionToMemoryGivenByAddress(0xfb90f4f1, 0x08000040);  // SDIV    R4, R0, R1
+  coreReg[PC] = 0x08000040;
+
+  //test
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xFFFFFFFF, coreReg[4]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+
+//divide by 0, DIV_0_TRP is not set
+// SDIV    R4, R0, R1
+void test_SDIV_given_divide_0xfffffffd_with_0_DIV_0_TRP_not_set_should_get_R4_0x0()
+{
+  CEXCEPTION_T err;
+  //create test fixture
+  coreReg[0] = 0xfffffffd;
+  coreReg[1] = 0;
+
+  writeInstructionToMemoryGivenByAddress(0xfb90f4f1, 0x08000040);  // SDIV    R4, R0, R1
+  coreReg[PC] = 0x08000040;
+
+  //test
+
+  armStep();
+  TEST_ASSERT_EQUAL(0x0, coreReg[4]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+  //UDIV
+
+// UDIV    R4, R0, R1
+void test_UDIV_given_divide_0xffffffff_with_2_should_get_R4_0x7FFFFFFF()
+{
+  //create test fixture
+  coreReg[0] = 0xffffffff;
+  coreReg[1] = 2;
+
+  writeInstructionToMemoryGivenByAddress(0xfbb0f4f1, 0x08000040);  // UDIV    R4, R0, R1
+  coreReg[PC] = 0x08000040;
+
+  //test
+  armStep();
+
+  // char *out; 
+  // int invalid, division, overflow, underflow, inexact; 
+  // code = ieee_flags("get", "exception", "", &out); 
+  // printf ("out is %s, code is %d, in hex: 0x%08X\n", out, code, code); 
+  // inexact	 =	 (code >> fp_inexact)	 & 0x1; 
+  // division	 =	 (code >> fp_division)	 & 0x1; 
+  // underflow	 =	 (code >> fp_underflow)	 & 0x1; 
+  // overflow	 =	 (code >> fp_overflow)	 & 0x1; 
+  // invalid	 =	 (code >> fp_invalid)	 & 0x1; 
+  // printf("%d %d %d %d %d \n", invalid, division, overflow, underflow, inexact); 
+
+  TEST_ASSERT_EQUAL(0x7FFFFFFF, coreReg[4]);
+  TEST_ASSERT_EQUAL(0x08000044, coreReg[PC]);
+  TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
+}

@@ -21,32 +21,47 @@
 */
 
 
-#include "VSQRT.h"
+#include "VCVTBandVCVTT.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 
 
 
-/* VSQRT
+/* VCVTB, VCVTT
     
-      Floating-point Square Root calculates the square root of a floating-point register value and writes the result to
-      another floating-point register.
+    Floating-point Convert Bottom and Floating-point Convert Top do one of the following:
+    
+      • Convert the half-precision value in the top or bottom half of a single-precision register to single-precision
+        and write the result to a single-precision register.
+        
+      • Convert the value in a single-precision register to half-precision and write the result into the top or bottom
+        half of a single-precision register, preserving the other half of the target register.
+        
+      • Convert the half-precision value in the top or bottom half of a single-precision register to double-precision
+        and write the result to a double-precision register, without intermediate rounding.
+        
+      • Convert the value in the double-precision register to half-precision and write the result into the top or bottom
+        half of a double-precision register, preserving the other half of the target register, without intermediate
+        rounding.
   
-    VSQRT<c>.F32 <Sd>, <Sm>
+  
+    VCVTB<c>.F32.F16 <Sd>, <Sm>
+    VCVTT<c>.F32.F16 <Sd>, <Sm>
+    VCVTB<c>.F16.F32 <Sd>, <Sm>
+    VCVTT<c>.F16.F32 <Sd>, <Sm>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 1 1 M 0|   Vm  |
+|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 0 1 M 0|   Vm  |
 
 where :
         <c>, <q>          See Standard assembler syntax fields on page A7-175.
         
         <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
         
-        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register, for a
-                          double-precision operation.
+        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
 */
-void VSQRT(uint32_t instruction)
-{ 
+void VCVTBandVCVTT(uint32_t instruction)
+{
   uint32_t Vd = getBits(instruction,15,12);
   uint32_t Vm = getBits(instruction,3,0);
   uint32_t sz = getBits(instruction,8,8);
@@ -65,9 +80,7 @@ void VSQRT(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-        writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m]) );
-      
-      setFPException();
+        writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
     }
     
     shiftITState();
@@ -77,9 +90,7 @@ void VSQRT(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-      writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m]) );
-    
-    setFPException();
+      writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
   }
 
   coreReg[PC] += 4;  

@@ -1,8 +1,10 @@
 #include "unity.h"
 #include "ErrorSignal.h"
 #include "ARMRegisters.h"
+#include "LoadAndWriteMemory.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "MemoryBlock.h"
 
 void setUp(void)
 {

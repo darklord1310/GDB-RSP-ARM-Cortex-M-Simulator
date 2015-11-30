@@ -22,11 +22,13 @@
 
 
 #include "StatusRegisters.h"
+#include "ARMRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include <stdio.h>
 #include <assert.h>
 #include "ARMRegisters.h"
+#include "ErrorSignal.h"
 #include "ConditionalExecution.h"
 #include <math.h>
 
@@ -190,14 +192,28 @@ void updateNegativeFlag(uint32_t value)
 
 
 /* This function will determine whether data accesses are big-endian or little-endian 
+   
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
+  |                 VECTKEY VECTKEYSTAT           |||                                    |
+                                                   |
+                                                   |
+                                                ENDIANNESS
+                                                 
+   ENDIANNESS, bit[15]        Indicates the memory system endianness:
+                                  0 Little endian.
+                                  1 Big endian.
+
+  This bit is static or configured by a hardware input on reset.
+  This bit is read only.
 
    return 1       if big-endian
    return 0       if little-endian
  */
 int bigEndian()
 {
-  return(getBits(systemReg[AIRCR],15,15));
+  return(getBits(readSCBRegisters(AIRCR) ,15,15) );
 }
+
 
 
 /* This will update the carry flag based on the addition result
@@ -321,12 +337,16 @@ void updateQFlag(int32_t max, int32_t min, int32_t result, int32_t sign)
   
   This function will check whether the FPU is enable or not
   If FPU is not enable but is trying to use it, then throw error
-             
+  
+  31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
+  |        Reserved      |CP11| CP10|                      Reserved                     |
+
+
 */
 void executeFPUChecking()
 {
-  
-  
+  if(getBits( loadByteFromMemory(0xE000ED88, 4) , 23,20) != 0b1111)
+    ThrowError();
 }
 
 
@@ -351,6 +371,7 @@ uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t
 }
 
 
+
 uint64_t FPNeg(uint64_t value, int size)
 {
   uint32_t signBit = getBits(value,size-1,size-1);
@@ -373,11 +394,29 @@ uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2)
   return ( *(uint32_t *)&ans );
 }
 
+uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2)
+{
+  float v1 = *(float *)&value1;
+  float v2 = *(float *)&value2;
+  float ans = v1 / v2;
+
+  return ( *(uint32_t *)&ans );
+}
+
 uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2)
 {
   float v1 = *(float *)&value1;
   float v2 = *(float *)&value2;
   float ans = v1 + v2;
+
+  return ( *(uint32_t *)&ans );
+}
+
+uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2)
+{
+  float v1 = *(float *)&value1;
+  float v2 = *(float *)&value2;
+  float ans = v1 - v2;
 
   return ( *(uint32_t *)&ans );
 }
@@ -398,3 +437,22 @@ uint32_t FPSqrtSinglePrecision(uint32_t value)
 }
 
 
+/*
+    This function will raise the corresponding FP exceptions
+    Once the exception is raised, it is not going to overwrite by 0b0
+*/
+void setFPException()
+{
+  int fe = fetestexcept (FE_ALL_EXCEPT);
+
+  if (fe & FE_DIVBYZERO) 
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 1, 1);
+  if (fe & FE_INEXACT)   
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 4, 4);
+  if (fe & FE_INVALID)   
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 0, 0);
+  if (fe & FE_OVERFLOW)  
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 2, 2);
+  if (fe & FE_UNDERFLOW) 
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 3, 3);
+}

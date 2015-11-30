@@ -105,6 +105,13 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
 
 
 void setUp(void)
@@ -128,6 +135,7 @@ void test_VMOV_should_move_the_correct_value_from_r10_into_s3()
   writeInstructionToMemoryGivenByAddress(0xee01aa90, 0x08000046);  // VMOV s3, r10
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0xbbbbbbbb00000000, fpuDoublePrecision[1]);
@@ -145,6 +153,7 @@ void test_VMOV_should_move_the_correct_value_from_s3_into_r10()
   writeInstructionToMemoryGivenByAddress(0xee11aa90, 0x08000046);  // VMOV r10, s3
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0xbbbbbbbb, coreReg[10] );
@@ -164,6 +173,7 @@ void test_VMOV_should_move_the_correct_value_from_r9_into_lower16bits_of_d3()
   writeInstructionToMemoryGivenByAddress(0xee039b10, 0x08000046);  // VMOV.32 d3[0], r9
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00000000aaaaaaaa, fpuDoublePrecision[3]);
@@ -181,6 +191,7 @@ void test_VMOV_should_move_the_correct_value_from_r9_into_upper16bits_of_d3()
   writeInstructionToMemoryGivenByAddress(0xee239b10, 0x08000046);  // VMOV.32 d3[1], r9
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0xaaaaaaaa00000000, fpuDoublePrecision[3]);
@@ -199,6 +210,7 @@ void test_VMSR_given_r0_0xe000ed88_should_get_FPSCR_0xe0000088()
   writeInstructionToMemoryGivenByAddress(0xeee10a10, 0x08000046);  // VMSR 	FPSCR, r0
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0xe0000088, coreReg[fPSCR]);
@@ -217,6 +229,7 @@ void test_VMRS_given_FPSCR_is_0x20000009f_should_get_r0_is_0x2000009f()
   writeInstructionToMemoryGivenByAddress(0xeef10a10, 0x08000046);  // VMSR 	r0, FPSCR
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x2000009f, coreReg[0]);
@@ -233,6 +246,7 @@ void test_VMRS_given_FPSCR_is_0x20000009f_should_get_xPSR_is_0x21000000()
   writeInstructionToMemoryGivenByAddress(0xeef1fa10, 0x08000046);  // VMSR 	r15, FPSCR
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x21000000, coreReg[xPSR]);

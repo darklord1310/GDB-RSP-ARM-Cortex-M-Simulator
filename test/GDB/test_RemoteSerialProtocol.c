@@ -4,6 +4,7 @@
 #include "unity.h"
 #include <string.h>
 #include "ARMRegisters.h"
+#include "LoadAndWriteMemory.h"
 #include "MemoryBlock.h"
 #include "RemoteSerialProtocol.h"
 #include "mock_Packet.h"

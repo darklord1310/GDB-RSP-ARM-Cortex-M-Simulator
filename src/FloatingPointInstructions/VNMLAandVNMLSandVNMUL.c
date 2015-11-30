@@ -27,39 +27,63 @@
 
 
 
-/* VMRS
-    
-   Move to ARM core register from floating-point Special Register moves the value of the FPSCR to a
-   general-purpose register, or the values of the FCSR flags to the APSR
-  
-    VMSR<c> FPSCR, <Rt>
-    VMRS<c> <Rt>, FPSCR
+/* VNMLAandVNMLS
 
-31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0| 1  1  1  1| 0  0  0  1|     Rt    | 1  0 1 0|0 0 0 1|0 0 0 0|
+    Floating-point Multiply Accumulate and Negate multiplies two floating-point register values, adds the negation of
+    the floating-point value in the destination register to the negation of the product, and writes the result back to the
+    destination register.
+    
+    Floating-point Multiply Subtract and Negate multiplies two floating-point register values, adds the negation of the
+    floating-point value in the destination register to the product, and writes the result back to the destination register
+  
+    VNMLA<c>.F32 <Sd>, <Sn>, <Sm>
+    VNMLS<c>.F32 <Sd>, <Sn>, <Sm>
+
+31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7  6 5 4 3 2 1 0
+|1  1  1  0| 1  1  1  0  0|D|  0  1|      Vn   |     Vd    | 1  0 1|sz|N op M 0|  Vm  |
 
 where :
-          <Rt>      The destination ARM core register. This register can be R0-R14 or APSR_nzcv. APSR_nzcv is
-                    encoded as Rt = ’1111’, and the instruction transfers the FPSCR N, Z, C, and V flags to the APSR
-                    N, Z, C, and V flags.
+          <y>                 The operation. It must be one of:
+                                    A     Vector Negate Multiply Accumulate, encoded as op=1.
+                                    S     Vector Negate Multiply Subtract, encoded as op=0.
+                                    
+          <c>, <q>            See Standard assembler syntax fields on page A7-175.
+          
+          <Sd>, <Sn>, <Sm>    The destination single-precision register and the operand single-precision registers.
+          
+          <Dd>, <Dn>, <Dm>    The destination double-precision register and the operand double-precision registers.
 */
-void VNMLAandVNMLSandVNMULT1(uint32_t instruction)
+void VNMLAandVNMLS(uint32_t instruction)
 {
-  uint32_t Rt = getBits(instruction,15,12);
-  uint32_t NZCVbits;
+  uint32_t sz = getBits(instruction,8,8);
+  uint32_t op = getBits(instruction,6,6);
+  uint32_t Vm = getBits(instruction,3,0);
+  uint32_t Vn = getBits(instruction,19,16);
+  uint32_t Vd = getBits(instruction,15,12);
+  uint32_t D = getBits(instruction,22,22);
+  uint32_t N = getBits(instruction,7,7);
+  uint32_t M = getBits(instruction,5,5);
+  uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
+  uint32_t n = determineRegisterBasedOnSZ(N, Vn, sz);
+  uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
   
+  uint64_t product32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]);
   executeFPUChecking();
   
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      if(Rt != 0b1111)
-        writeToCoreRegisters(Rt, coreReg[fPSCR]);
+      if(sz == 1)
+        ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
       {
-        NZCVbits = getBits(coreReg[fPSCR],31,28);
-        coreReg[xPSR] = setBits(coreReg[xPSR], NZCVbits, 31,28);
+        if(op == 1)
+          writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) ) );
+        else
+          writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 ) );
+        
+        setFPException();  
       }
     }
     
@@ -67,23 +91,86 @@ void VNMLAandVNMLSandVNMULT1(uint32_t instruction)
   }
   else
   {
-    if(Rt != 0b1111)
-      writeToCoreRegisters(Rt, coreReg[fPSCR]);
+    if(sz == 1)
+      ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
     {
-      NZCVbits = getBits(coreReg[fPSCR],31,28);
-      coreReg[xPSR] = setBits(coreReg[xPSR], NZCVbits, 31,28);
+      if(op == 1)
+        writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) ) );
+      else
+        writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 ) );
     }
+    setFPException();
   }
 
   coreReg[PC] += 4;  
-  
 }
 
 
 
-
-void VNMLAandVNMLSandVNMULT2(uint32_t instruction)
-{
+/* VNMUL
+    
+    Floating-point Multiply and Negate multiplies two floating-point register values, and writes the negation of the
+    result to the destination register.
   
+    VNMUL<c>.F32 <Sd>, <Sn>, <Sm>
+    VNMUL<c>.F64 <Dd>, <Dn>, <Dm>
+
+31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7  6 5 4 3 2 1 0
+|1  1  1  0| 1  1  1  0  0|D|  1  0|      Vn   |     Vd    | 1  0 1|sz|N  1 M 0|  Vm  |
+
+where :
+          <y>                 The operation. It must be one of:
+                                    A     Vector Negate Multiply Accumulate, encoded as op=1.
+                                    S     Vector Negate Multiply Subtract, encoded as op=0.
+                                    
+          <c>, <q>            See Standard assembler syntax fields on page A7-175.
+          
+          <Sd>, <Sn>, <Sm>    The destination single-precision register and the operand single-precision registers.
+          
+          <Dd>, <Dn>, <Dm>    The destination double-precision register and the operand double-precision registers.
+*/
+void VNMUL(uint32_t instruction)
+{ 
+  uint32_t sz = getBits(instruction,8,8);
+  uint32_t Vm = getBits(instruction,3,0);
+  uint32_t Vn = getBits(instruction,19,16);
+  uint32_t Vd = getBits(instruction,15,12);
+  uint32_t D = getBits(instruction,22,22);
+  uint32_t N = getBits(instruction,7,7);
+  uint32_t M = getBits(instruction,5,5);
+  uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
+  uint32_t n = determineRegisterBasedOnSZ(N, Vn, sz);
+  uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
+  
+  uint64_t product32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]);
+  executeFPUChecking();
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(sz == 1)
+        ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+      else
+      {
+        writeSinglePrecision(d, FPNeg(product32,32) );
+        setFPException();  
+      }
+    }
+    
+    shiftITState();
+  }
+  else
+  {
+    if(sz == 1)
+      ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+    else
+    {
+      writeSinglePrecision(d, FPNeg(product32,32) );
+      setFPException();
+    }
+  }
+
+  coreReg[PC] += 4;  
 }

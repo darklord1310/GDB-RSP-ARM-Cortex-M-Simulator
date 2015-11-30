@@ -107,6 +107,4 @@ int checkCondition(uint32_t condition)
                 return 0;
     case AL : return 1;         
   }
-  
-  
 }

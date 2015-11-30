@@ -21,34 +21,32 @@
 */
 
 
-#include "VMUL.h"
+#include "VSUB.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 
 
 
-/* VMUL
+/* VSUB
     
-    Floating-point Multiply multiplies two floating-point register values, and places the result in the destination
-    floating-point register.
+        Floating-point Subtract subtracts one floating-point register value from another floating-point register value, and
+        places the results in the destination floating-point register.
   
-    VMUL<c>.F32 <Sd>, <Sn>, <Sm>
-    VMUL<c>.F64 <Dd>, <Dn>, <Dm>
+    VSUB<c>.F32 <Sd>, <Sm>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0  0|D|  1  0|     Vn    |    Vd     | 1  0 1|sz|N 0 M 0|   Vm  |
+|1  1  1  0| 1  1  1  0  0| D| 1  1|      Vn   |     Vd    | 1  0 1 sz N 1 M 0|   Vm  |
 
 where :
-          <c>, <q>            See Standard assembler syntax fields on page A7-175.
-          
-          <Sd>, <Sn>, <Sm>    The destination single-precision register and the operand single-precision registers.
-          
-          <Dd>, <Dn>, <Dm>    The destination double-precision register and the operand double-precision registers.
+        <c>, <q>          See Standard assembler syntax fields on page A7-175.
+        
+        <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
+        
+        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
 */
-void VMUL(uint32_t instruction)
+void VSUB(uint32_t instruction)
 {
   uint32_t sz = getBits(instruction,8,8);
-  uint32_t op = getBits(instruction,6,6);
   uint32_t Vm = getBits(instruction,3,0);
   uint32_t Vn = getBits(instruction,19,16);
   uint32_t Vd = getBits(instruction,15,12);
@@ -68,10 +66,9 @@ void VMUL(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-      {
-        writeSinglePrecision(d, FPMulSinglePrecision( fpuSinglePrecision[d], fpuSinglePrecision[m]) );
-        setFPException();  
-      }
+        writeSinglePrecision(d, FPSubSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m]) );
+      
+      setFPException();
     }
     
     shiftITState();
@@ -81,10 +78,9 @@ void VMUL(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-    {
-      writeSinglePrecision(d, FPMulSinglePrecision( fpuSinglePrecision[d], fpuSinglePrecision[m]) );
-      setFPException();  
-    }
+      writeSinglePrecision(d, FPSubSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m]) );
+      
+    setFPException();
   }
 
   coreReg[PC] += 4;  

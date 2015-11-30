@@ -24,6 +24,7 @@
 
 #include "ARMRegisters.h"
 #include "getAndSetBits.h"
+#include "LoadAndWriteMemory.h"
 #include "assert.h"
 #include "getMask.h"
 
@@ -162,6 +163,8 @@
 void initCoreRegister()
 {
   int i;
+  
+  //initialize ARM Core registers which are R0-R15 and APSCR and FPSCR
   for(i = 0; i < NUM_OF_CORE_Register; i++)
   {
     if(i == SP)
@@ -171,19 +174,27 @@ void initCoreRegister()
     else if(i == xPSR)
       coreReg[i] = 0x01000000;
     else
-      coreReg[i] = 0x0;
+      coreReg[i] = 0x0;   //FPSCR
   }
-
+  
+  //initialize floating point double precision registers
   for(i = 0; i < NUM_OF_FPUD_Register; i++)
   {
     fpuDoublePrecision[i] = 0;
   }
-
+  
+  //initialize floating point single precision registers
   for(i = 0; i < NUM_OF_FPUS_Register; i++)
   {
     fpuSinglePrecision[i] = 0;
   }
-
+  
+  //initialize system control block (SCB) registers (initialize values refer to ARMRegisters.h)
+  writeByteToMemory(FPCCR, 0xC0000000, 4);
+  writeByteToMemory(CPACR, 0x00000000, 4);
+  writeByteToMemory(FPDSCR, 0x00000000, 4);
+  writeByteToMemory(AIRCR, 0xfa050000, 4);     //this value is confirmed with Keil
+  writeByteToMemory(CCR, 0x00000200, 4);       //this value is confirmed with Keil
 }
 
 
@@ -245,3 +256,8 @@ void writeToCoreRegisters(int regNum, uint32_t valueToWrite)
     coreReg[regNum] = valueToWrite;
 }
 
+
+uint32_t readSCBRegisters(uint32_t registerName)
+{
+  return loadByteFromMemory(registerName, 4);
+}

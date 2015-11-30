@@ -7,6 +7,7 @@
 #include "RemoteSerialProtocol.h"
 #include "ARMRegisters.h"
 #include "MemoryBlock.h"
+#include "LoadAndWriteMemory.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include "CException.h"

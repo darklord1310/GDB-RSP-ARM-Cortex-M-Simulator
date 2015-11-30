@@ -78,9 +78,50 @@ void SMULLT1(uint32_t instruction)
 
 
 
-void SDIVT1(uint32_t instruction)
-{
+/*SDIV Encoding T1
 
+    SDIV<c> <Rd>,<Rn>,<Rm>
+      
+   31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+  |1   1  1  1  1| 0  1  1  1| 0  0  1|     Rn    | 1  1  1  1|    Rd   |1 1 1 1|   Rm  |
+
+where:
+        <c><q>        See Standard assembler syntax fields on page A6-7.
+        
+        <Rd>          Specifies the destination register. If <Rd> is omitted, this register is the same as <Rn>.
+        
+        <Rn>          Specifies the register that contains the dividend.
+        
+        <Rm>          Specifies the register that contains the divisor.
+*/
+void SDIVT1(uint32_t instruction)
+{ 
+  uint32_t Rm = getBits(instruction,3,0);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rd = getBits(instruction,11,8);
+  long int result;
+  
+  if(coreReg[Rm] == 0)
+  {
+    if( getBits(loadByteFromMemory(CCR, 4) , 4, 4) == 1 )
+      ThrowError();
+    else
+      result = 0;
+  }
+  else
+    result = (long int)coreReg[Rn] / (long int)coreReg[Rm];
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      writeToCoreRegisters(Rd , result ); 
+
+    shiftITState();
+  }
+  else
+    writeToCoreRegisters(Rd , result ); 
+
+  coreReg[PC] += 4;
 }
 
 
@@ -131,11 +172,12 @@ void UMULLT1(uint32_t instruction)
 
 
 
-/*Signed Divide Encoding T1
-    SDIV<c> <Rd>,<Rn>,<Rm>
+/*Unsigned Divide Encoding T1
+
+    UDIV<c> <Rd>,<Rn>,<Rm>
       
    31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-  |1   1  1  1  1| 0  1  1  1  0  0| 1|     Rn    | 1  1  1  1|    Rd   |1 1 1 1|   Rm  |
+  |1   1  1  1  1| 0  1  1  1  0  1| 1|     Rn    | 1  1  1  1|    Rd   |1 1 1 1|   Rm  |
 
 where:
         <c><q>        See Standard assembler syntax fields on page A6-7.
@@ -148,7 +190,32 @@ where:
 */
 void UDIVT1(uint32_t instruction)
 {
+  uint32_t Rm = getBits(instruction,3,0);
+  uint32_t Rn = getBits(instruction,19,16);
+  uint32_t Rd = getBits(instruction,11,8);
+  long int result;
 
+  if(coreReg[Rm] == 0)
+  {
+    if( getBits(readSCBRegisters(CCR) , 4, 4) == 1 )
+      ThrowError();
+    else
+      result = 0;
+  }
+  else
+    result = convertToUnsigned(coreReg[Rn],32) / convertToUnsigned(coreReg[Rm],32);
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+      writeToCoreRegisters(Rd , result ); 
+
+    shiftITState();
+  }
+  else
+    writeToCoreRegisters(Rd , result ); 
+
+  coreReg[PC] += 4;
 }
 
 

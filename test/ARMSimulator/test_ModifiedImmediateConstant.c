@@ -1,9 +1,15 @@
 #include "unity.h"
+#include "ARMRegisters.h"
 #include "ModifiedImmediateConstant.h"
+#include "MemoryBlock.h"
+#include "ErrorSignal.h"
+#include "ExceptionObject.h"
+#include "LoadAndWriteMemory.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
 #include "StatusRegisters.h"
-
+#include "ConditionalExecution.h"
+#include "NOP.h"
 
 void setUp(void)
 {

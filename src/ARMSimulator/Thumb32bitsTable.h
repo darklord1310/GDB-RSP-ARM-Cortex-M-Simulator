@@ -117,6 +117,13 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;
@@ -164,6 +171,7 @@ void (*Thumb32StoreSingleDataItem[512])(uint32_t instruction);
 void (*Thumb32LoadByteMemoryHints[65536])(uint32_t instruction);
 void (*Thumb32LoadStoreDualTableBranch[256])(uint32_t instruction);
 void (*Thumb32LoadHalfword[65536])(uint32_t instruction);
+void (*Thumb32MiscellaneousInstructions[16])(uint32_t instruction);
 void (*Thumb32CoprocessorInstructions[65536])(uint32_t instruction);
 void (*Thumb32CoprocessorInstructions2[65536])(uint32_t instruction);
 void (*FloatingPoint32bitsTransfer[128])(uint32_t instruction);
@@ -187,6 +195,7 @@ void initThumb32StoreSingleDataItem();
 void initThumb32LoadByteMemoryHints();
 void initThumb32bitsLoadStoreDualTableBranch();
 void initThumb32bitsLoadHalfword();
+void initThumb32bitsMiscellaneousInstructions();
 void initThumb32bitsCoprocessorInstructions();
 void initThumb32bitsCoprocessorInstructions2();
 void initFloatingPoint32bitsTransfer();

@@ -21,8 +21,8 @@
 */
 
 
-#ifndef VNMLAandVNMLSandVNMUL_H
-#define VNMLAandVNMLSandVNMUL_H
+#ifndef VADD_H
+#define VADD_H
 
 #include <stdint.h>
 #include "ConditionalExecution.h"
@@ -34,7 +34,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-void VNMLAandVNMLS(uint32_t instruction);
-void VNMUL(uint32_t instruction);
+void VADD(uint32_t instruction);
 
-#endif // VNMLAandVNMLSandVNMUL_H
+#endif // VADD_H

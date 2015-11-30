@@ -108,7 +108,13 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
-
+#include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
 
 extern char *targetCortexM4_XML;
 extern char *arm_m_profile;

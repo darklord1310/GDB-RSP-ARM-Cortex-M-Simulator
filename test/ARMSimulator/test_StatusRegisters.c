@@ -5,10 +5,13 @@
 #include "getMask.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "MemoryBlock.h"
+#include "ErrorSignal.h"
+#include "ExceptionObject.h"
+#include "LoadAndWriteMemory.h"
 #include "ITandHints.h"
 #include "ConditionalExecution.h"
 #include "NOP.h"
-
 
 void setUp(void)
 {

@@ -103,6 +103,13 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
 
 
 void setUp(void)
@@ -133,6 +140,7 @@ void test_LDRHImmediateT2_given_0xf8b10000_should_get_R0_is_0xbeef()
   coreReg[PC] = 0x08000040;
 
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0xbeef, coreReg[0]);
@@ -156,6 +164,7 @@ void test_LDRHImmediateT2_given_0xf8b10fff_should_get_R0_is_0xbeef()
   coreReg[PC] = 0x08000040;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0xbeef, coreReg[0]);
@@ -184,6 +193,7 @@ void test_LDRHImmediateT3_given_offindex_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf83c0cff, 0x0800003e);  //ldrh r0, [r12,#-255]
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
  
   TEST_ASSERT_EQUAL( 0x77f0, coreReg[0]);
@@ -210,6 +220,7 @@ void test_LDRHImmediateT3_given_preindex_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf83c0dff, 0x0800003e);  //ldrh r0, [r12,#-255]!
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
  
   TEST_ASSERT_EQUAL( 0x77f0, coreReg[0]);
@@ -236,6 +247,7 @@ void test_LDRHImmediateT3_given_postindex_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf83c0bff, 0x08000040);  //ldrh r0, [r12] , #255
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
  
   TEST_ASSERT_EQUAL( 0x77f0, coreReg[0]);
@@ -265,6 +277,7 @@ void test_LDRHT_given_maximum_index_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf83c0eff, 0x08000040);  //ldrht r0, [r12, #255]
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
  
   TEST_ASSERT_EQUAL( 0x77f0, coreReg[0]);
@@ -290,6 +303,7 @@ void test_LDRHT_given_minimum_index_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf83c0e00, 0x08000040);  //ldrht r0, [r12, #0]
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
  
   TEST_ASSERT_EQUAL( 0x3677, coreReg[0]);
@@ -316,6 +330,7 @@ void test_LDRHLiteral_given_positive_index_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf8bf0008, 0x0800003e);  //LDRH r0,[PC,#8]
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
  
   TEST_ASSERT_EQUAL( 0x44fd, coreReg[0]);
@@ -340,6 +355,7 @@ void test_LDRHLiteral_given_negative_index_should_get_expected_result(void)
   writeInstructionToMemoryGivenByAddress(0xf83f001a, 0x0800003e);  //LDRH r0,[PC,#-26]
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL( 0xf04f, coreReg[0]);
@@ -366,6 +382,7 @@ void test_LDRHRegisterT2_given_instruction_0xf8145001_should_load_0x0800004f_int
   coreReg[PC] = 0x0800003e;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00000060, coreReg[5]);
@@ -389,6 +406,7 @@ void test_LDRHRegisterT2_given_instruction_0xf8145031_should_load_0x0800004f_int
   coreReg[PC] = 0x0800003c;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x0000000c, coreReg[5]);
@@ -414,6 +432,7 @@ void test_LDRSHImmediateT1_given_instruction_0xf9901fff_should_load_0x08000007_i
   coreReg[PC] = 0x08000040;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x00001000, coreReg[1]);
@@ -439,6 +458,7 @@ void test_LDRSHImmediateT2_given_instruction_0xf9301c14_should_load_0x3eee_into_
   coreReg[PC] = 0x0800003c;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x3eee, coreReg[1]);
@@ -462,6 +482,7 @@ void test_LDRSHImmediateT2_given_instruction_0xf9301d14_should_load_0xffffccee_i
   coreReg[PC] = 0x0800003c;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0xffffccee, coreReg[1]);
@@ -486,6 +507,7 @@ void test_LDRSHImmediateT2_given_instruction_0xf9301b14_should_load_0x4414_into_
   coreReg[PC] = 0x0800003c;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0x4414, coreReg[1]);
@@ -511,6 +533,7 @@ void test_LDRSHT_given_instruction_0xf9301eff_should_load_0x11ef_into_R1()
   coreReg[PC] = 0x08000040;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL(0xffffe1ef, coreReg[1]);
@@ -537,6 +560,7 @@ void test_LDRSHLiteral_given_instruction_0xf99f0008_should_get_expected_result(v
   writeInstructionToMemoryGivenByAddress(0xf9bf0008, 0x0800003e);  //LDRSH r0,[PC,#8]
 
   //execute
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
   TEST_ASSERT_EQUAL( 0x44fd, coreReg[0]);
@@ -562,6 +586,7 @@ void test_LDRSHRegisterT2_given_instruction_0xf9345001_should_load_0xffffcfef_in
   coreReg[PC] = 0x08000040;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0xffffcfef, coreReg[5]);
@@ -585,6 +610,7 @@ void test_LDRSHRegisterT2_given_instruction_0xf9345031_should_load_0x00ef_into_r
   coreReg[PC] = 0x0800003c;
   
   //test
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00ef, coreReg[5]);

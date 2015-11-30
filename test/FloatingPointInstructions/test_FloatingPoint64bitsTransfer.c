@@ -105,6 +105,13 @@
 #include "VABS.h"
 #include "VCVT.h"
 #include "VSQRT.h"
+#include "MiscellaneousInstructions.h"
+#include "VADD.h"
+#include "VSUB.h"
+#include "VDIV.h"
+#include "VCVTBandVCVTT.h"
+#include "VCVTandVCVTR.h"
+#include "VDIV.h"
 
 
 void setUp(void)
@@ -122,7 +129,8 @@ void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_values_from_
 {
   writeToCoreRegisters(0, 0xe000ed88);
   writeToCoreRegisters(1, 0x00f00000);
-
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  
   writeInstructionToMemoryGivenByAddress(0xec410a10, 0x08000046);  // VMOV    s0, s1, r0, r1
   coreReg[PC] = 0x08000046;
   
@@ -141,6 +149,7 @@ void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_values_from_
 {
   writeDoublePrecision(0, 0x00f00000e000ed88);
   writeInstructionToMemoryGivenByAddress(0xec565a10, 0x0800002a);  // VMOV    r5, r6, s0, s1
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   coreReg[PC] = 0x0800002a;
   
   armStep();
@@ -160,6 +169,7 @@ void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_value_from_r
   writeInstructionToMemoryGivenByAddress(0xec410b11, 0x08000046);  // VMOV    d1, r0, r1
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0x00f00000e000ed88, fpuDoublePrecision[1]);
@@ -178,6 +188,7 @@ void test_VMOVBetweenCoreRegAndDoubleFpuReg_should_move_the_correct_values_from_
   writeInstructionToMemoryGivenByAddress(0xec565b11, 0x08000046);  // VMOV    r5, r6, d1
   coreReg[PC] = 0x08000046;
   
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
   
   TEST_ASSERT_EQUAL(0xe000ed88, coreReg[5] );

@@ -21,20 +21,14 @@
 */
 
 
-#ifndef VNMLAandVNMLSandVNMUL_H
-#define VNMLAandVNMLSandVNMUL_H
+#ifndef MiscellaneousInstructions_H
+#define MiscellaneousInstructions_H
+
 
 #include <stdint.h>
-#include "ConditionalExecution.h"
-#include "ITandHints.h"
-#include "StatusRegisters.h"
-#include "ARMRegisters.h"
-#include "getAndSetBits.h"
-#include "getMask.h"
-#include <assert.h>
-#include <stdio.h>
 
-void VNMLAandVNMLS(uint32_t instruction);
-void VNMUL(uint32_t instruction);
 
-#endif // VNMLAandVNMLSandVNMUL_H
+void DSB(uint32_t instruction);
+void ISB(uint32_t instruction);
+
+#endif // MiscellaneousInstructions_H
