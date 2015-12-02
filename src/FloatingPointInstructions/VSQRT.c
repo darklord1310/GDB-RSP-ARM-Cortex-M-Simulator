@@ -55,7 +55,7 @@ void VSQRT(uint32_t instruction)
 
   uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
   uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
-  
+    
   executeFPUChecking();
   
   if(inITBlock())
@@ -65,9 +65,14 @@ void VSQRT(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-        writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m]) );
-      
-      setFPException();
+      {
+        if(getBits(fpuSinglePrecision[m],31,31))
+          writeSinglePrecision(d, FPNeg(FPSqrtSinglePrecision(fpuSinglePrecision[m], fPSCR),32) );
+        else
+          writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m], fPSCR) );
+      }
+        
+      handleFPException();
     }
     
     shiftITState();
@@ -77,9 +82,14 @@ void VSQRT(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-      writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m]) );
+    {
+      if(getBits(fpuSinglePrecision[m],31,31))                                                    //if the sign Bit is 1, then qNaN value will be generated, but the value generated in C does not invert the sign bit, so have to invert manually
+        writeSinglePrecision(d, FPNeg(FPSqrtSinglePrecision(fpuSinglePrecision[m], fPSCR),32) );
+      else
+        writeSinglePrecision(d, FPSqrtSinglePrecision(fpuSinglePrecision[m], fPSCR) );
+    }
     
-    setFPException();
+    handleFPException();
   }
 
   coreReg[PC] += 4;  

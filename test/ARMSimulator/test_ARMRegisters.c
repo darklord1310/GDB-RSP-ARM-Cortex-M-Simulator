@@ -44,7 +44,7 @@ void test_initCoreRegister_reset_the_coreReg_correctly(void)
   
   TEST_ASSERT_EQUAL(0xC0000000, loadByteFromMemory(FPCCR, 4) );
   TEST_ASSERT_EQUAL(0x00000000, loadByteFromMemory(CPACR, 4) );
-  TEST_ASSERT_EQUAL(0x00000000, loadByteFromMemory(FPDSCR, 4) );
+  TEST_ASSERT_EQUAL(0x03000000, loadByteFromMemory(FPDSCR, 4) );
   TEST_ASSERT_EQUAL(0xfa050000, loadByteFromMemory(AIRCR, 4) );
   TEST_ASSERT_EQUAL(0x00000200, loadByteFromMemory(CCR, 4) );
 }

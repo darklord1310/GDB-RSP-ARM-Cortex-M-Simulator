@@ -83,12 +83,12 @@ void VMLAandVMLS(uint32_t instruction)
       else
       {
         if(op == 0)
-          addend32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]);
+          addend32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR);
         else
-          addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]), 64);
+          addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR), 64);
         
-        setFPException();
-        writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32) );
+        handleFPException();
+        writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32, fPSCR) );
       }
     }
     
@@ -101,12 +101,12 @@ void VMLAandVMLS(uint32_t instruction)
     else
     {
       if(op == 0)
-        addend32 = FPMulSinglePrecision( (fpuSinglePrecision[n]), (fpuSinglePrecision[m]) );
+        addend32 = FPMulSinglePrecision( (fpuSinglePrecision[n]), fpuSinglePrecision[m], fPSCR) ;
       else
-        addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]), 32);
+        addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR), 32);
       
-      setFPException();
-      writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32) );
+      handleFPException();
+      writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32, fPSCR) );
     }
   }
 

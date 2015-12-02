@@ -385,38 +385,42 @@ uint64_t FPNeg(uint64_t value, int size)
 }
 
 
-uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2)
+uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  float v1 = *(float *)&value1;
-  float v2 = *(float *)&value2;
-  float ans = v1 * v2;
+  FPInfo v1 = FPUnpack(value1, FPControl);
+  FPInfo v2 = FPUnpack(value2, FPControl);
+  
+  float ans = v1.realNumber * v2.realNumber;
 
   return ( *(uint32_t *)&ans );
 }
 
-uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2)
+uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  float v1 = *(float *)&value1;
-  float v2 = *(float *)&value2;
-  float ans = v1 / v2;
+  FPInfo v1 = FPUnpack(value1, FPControl);
+  FPInfo v2 = FPUnpack(value2, FPControl);
+  
+  float ans = v1.realNumber / v2.realNumber;
 
   return ( *(uint32_t *)&ans );
 }
 
-uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2)
+uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  float v1 = *(float *)&value1;
-  float v2 = *(float *)&value2;
-  float ans = v1 + v2;
+  FPInfo v1 = FPUnpack(value1, FPControl);
+  FPInfo v2 = FPUnpack(value2, FPControl);
+  
+  float ans = v1.realNumber + v2.realNumber;
 
   return ( *(uint32_t *)&ans );
 }
 
-uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2)
+uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  float v1 = *(float *)&value1;
-  float v2 = *(float *)&value2;
-  float ans = v1 - v2;
+  FPInfo v1 = FPUnpack(value1, FPControl);
+  FPInfo v2 = FPUnpack(value2, FPControl);
+  
+  float ans = v1.realNumber - v2.realNumber;
 
   return ( *(uint32_t *)&ans );
 }
@@ -428,20 +432,100 @@ uint64_t FPAbs(uint64_t value, int size)
   return value;
 }
 
-uint32_t FPSqrtSinglePrecision(uint32_t value)
+uint32_t FPSqrtSinglePrecision(uint32_t value, uint32_t FPControl)
 {
-  float v1 = *(float *)&value;
-  float ans = sqrt(v1);
+  FPInfo v1 = FPUnpack(value, FPControl);
+  
+  float ans = sqrt(v1.realNumber);
 
   return ( *(uint32_t *)&ans );
 }
 
 
+/*  This function will raise the FPDIVZero exception
+ *  FPStatusRegisterSelection      : To select either the FPSCR or FPDSCR is used  
+ */
+void raiseFPDIVZeroException(uint32_t FPStatusRegisterSelection)
+{
+  if(FPStatusRegisterSelection == fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 1, 1);
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), 0b1, 1, 1));     
+}
+
+
+/*  This function will raise the FPInexact exception
+ *  FPStatusRegisterSelection      : To select either the FPSCR or FPDSCR is used  
+ */
+void raiseFPInexactException(uint32_t FPStatusRegisterSelection)
+{
+  if(FPStatusRegisterSelection == fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 4, 4);
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), 0b1, 4, 4)); 
+}
+
+
+/*  This function will raise the FPInvalid exception
+ *  FPStatusRegisterSelection      : To select either the FPSCR or FPDSCR is used  
+ */
+void raiseFPInvalidException(uint32_t FPStatusRegisterSelection)
+{
+  if(FPStatusRegisterSelection == fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 0, 0);
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), 0b1, 0, 0));  
+}
+
+
+/*  This function will raise the FPOverflow exception
+ *  FPStatusRegisterSelection      : To select either the FPSCR or FPDSCR is used  
+ */
+void raiseFPOverflowException(uint32_t FPStatusRegisterSelection)
+{
+  if(FPStatusRegisterSelection == fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 2, 2);
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), 0b1, 2, 2)); 
+}
+
+
+/*  This function will raise the FPInputDenormalize exception
+ *  FPStatusRegisterSelection      : To select either the FPSCR or FPDSCR is used  
+ */
+void raiseFPInputDenormalizeException(uint32_t FPStatusRegisterSelection)
+{
+  if(FPStatusRegisterSelection == fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 7, 7); 
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), 0b1, 7, 7));
+}
+
+/*  This function will raise the FPUnderflow exception
+ *  FPStatusRegisterSelection      : To select either the FPSCR or FPDSCR is used  
+ */
+void raiseFPUnderflowException(uint32_t FPStatusRegisterSelection)
+{
+  if(FPStatusRegisterSelection == fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 3, 3);
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), 0b1, 3, 3)); 
+}
+
+
+void modifyFPSCRorFPDSCR(uint32_t FPControl, uint32_t bitsToSet, int upperLimit, int lowerLimit)
+{
+  if(fPSCR)
+    coreReg[fPSCR] = setBits(coreReg[fPSCR], bitsToSet, upperLimit, lowerLimit);
+  else
+    writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), bitsToSet, upperLimit, lowerLimit));
+}
+
 /*
     This function will raise the corresponding FP exceptions
     Once the exception is raised, it is not going to overwrite by 0b0
 */
-void setFPException()
+void handleFPException()
 {
   int fe = fetestexcept (FE_ALL_EXCEPT);
 
@@ -456,3 +540,309 @@ void setFPException()
   if (fe & FE_UNDERFLOW) 
     coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 3, 3);
 }
+
+
+uint32_t FPInfinity(uint32_t signBit, int noOfBits)
+{
+  int E,F,N;
+  uint32_t exp,frac,result;
+  
+  if( noOfBits == 16 )
+    E = 5;
+  else if(N == 32)
+    E = 8;
+  
+  F = N - E - 1;
+  
+  if(noOfBits == 16)
+    result = ( (signBit << E) | 0b11111 ) << F;
+  else
+    result = ( (signBit << E) | 0b11111111 ) << F;
+  
+  return result; 
+}
+
+
+uint32_t FPMaxNormal(uint32_t signBit, int noOfBits)
+{
+  int E,F,N;
+  uint32_t exp,frac,result;
+  
+  if( noOfBits == 16 )
+    E = 5;
+  else if(N == 32)
+    E = 8;
+  
+  F = N - E - 1;
+  
+  if(noOfBits == 16)
+    result = ( (signBit << E-1) | 0b1111 ) << F+1;
+  else
+    result = ( (signBit << E-1) | 0b1111111 ) << F+1;
+  
+  return result;
+}
+
+
+uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl)
+{
+  uint32_t result;
+  FPInfo v1 = FPUnpack(value, coreReg[fPSCR]);
+  if(v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN)
+  {
+    if( getBits(coreReg[fPSCR],25,25) == 1)
+      result = 0xFF800000;
+    else
+      result = ( ( ( (v1.signBit << 9) | 0b111111111 ) << 9) | getBits(value,8,0) ) << 13;
+    if(v1.type == FPTYPE_SNAN)
+      raiseFPInvalidException(FPControl);      //raise invalid op exception  
+  }
+  else if(v1.type == FPTYPE_INFINITY)
+    result = FPInfinity(v1.signBit,32);
+  else if(v1.type == FPTYPE_ZERO)
+    result = (v1.signBit) << 31;
+  else
+    result = FPRound(value, 32, FPControl);
+  
+  return result;
+}
+
+
+uint16_t FPSingleToHalf(uint32_t value)
+{
+
+}
+
+
+
+/* This function will compare the 2 values and update the 
+   FPSCR accordingly.
+   
+        Comparison result     N   Z   C   V
+              Equal           0   1   1   0
+            Less than         1   0   0   0
+            Greater than      0   0   1   0
+             Unordered        0   0   1   1
+             
+    Note:
+    If instruction is VCMPE, either NaN operand will causes an Invalid Operation exception 
+    If instruction is VCMP,  raise Invalid Operation Exception if only either operand is a signaling NaN.
+    
+*/
+void FPCompare(uint32_t value1, uint32_t value2, int compareInstructionType, uint32_t FPControl)
+{
+  FPInfo v1, v2;
+
+  v1 = FPUnpack(value1, coreReg[fPSCR]);
+  v2 = FPUnpack(value2, coreReg[fPSCR]);
+  if(v1.type == FPTYPE_QNAN || v1.type == FPTYPE_SNAN || v2.type == FPTYPE_QNAN || v2.type == FPTYPE_SNAN)
+  {
+    modifyFPSCRorFPDSCR(FPControl, 0b0011, 31, 28);
+    if(v1.type == FPTYPE_SNAN || v2.type == FPTYPE_SNAN || compareInstructionType == VCMPE)
+      raiseFPInvalidException(FPControl);
+  }
+  else
+  {
+    if(v1.realNumber == v2.realNumber)
+      modifyFPSCRorFPDSCR(FPControl, 0b0110, 31, 28);
+    else if(v1.realNumber < v2.realNumber)
+      modifyFPSCRorFPDSCR(FPControl, 0b1000, 31, 28);
+    else
+      modifyFPSCRorFPDSCR(FPControl, 0b0010, 31, 28);
+  }
+}
+
+
+FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl)
+{
+  FPInfo info;
+  uint32_t sign;
+  uint32_t exp32;
+  uint32_t frac32;
+  
+  sign = getBits(FPValue,31,31);
+  exp32 = getBits(FPValue,30,23);
+  frac32 = getBits(FPValue,22,0);
+  
+  if(exp32 == 0)
+  {
+    if(frac32 == 0 || getBits(FPValue,24,24) == 1)
+    {
+      info.type = FPTYPE_ZERO;
+      info.realNumber = 0.0;
+      if(frac32 != 0)
+      {
+        if(FPControl == 1)
+          raiseFPInputDenormalizeException(FPControl);          // Raise Input denormalize exception
+      }
+    }
+    else
+    {
+      info.type = FPTYPE_NONZERO;
+      info.realNumber = *(float *)&FPValue;
+    }
+  }
+  else if(exp32 == 0b11111111)
+  {
+    if(frac32 == 0)
+    {
+      info.type = FPTYPE_INFINITY;
+      info.realNumber = pow(2.0,1000000);
+    }
+    else
+    {
+      if(getBits(frac32,22,22) == 1)
+        info.type = FPTYPE_QNAN;
+      else
+        info.type = FPTYPE_SNAN;
+      info.realNumber = 0.0;
+    }
+  }
+  else
+  {
+    info.type = FPTYPE_NONZERO;
+    info.realNumber = *(float *)&FPValue;
+  }
+  
+  info.signBit = sign;
+  
+  return info;
+}
+
+
+
+
+uint32_t FPRound(uint32_t value, uint32_t noOfBits, uint32_t FPControl)
+{
+  int E,F,sign,roundUp, overflowToInf;
+  float mantissa, exponent, biasedExp, intMant, error;
+  uint32_t result;
+  
+  if(noOfBits == 16)
+    E = 5;
+  else if(noOfBits == 32)
+    E = 8;
+  
+  float minimumExp = 2 - pow(2,(E-1));
+  F = noOfBits -E - 1;
+
+  if(value < 0.0)
+  {
+    sign = 1;
+    mantissa = value * -1;
+  }
+  else
+  {
+    sign = 0;
+    mantissa = value;
+  }
+  exponent = 0;
+  
+  while(mantissa < 1.0)
+  {
+    mantissa = mantissa * 2.0;
+    exponent - exponent - 1;
+  }
+  
+  while(mantissa >= 2.0)
+  {
+    mantissa = mantissa / 2.0;
+    exponent = exponent + 1;
+  }
+  
+  //deal with flush to zero
+  if( getBits(coreReg[fPSCR],24,24) == 1 && exponent < minimumExp && noOfBits != 16)
+  {
+    result = sign << 31;
+    coreReg[fPSCR] = setBits(coreReg[fPSCR],0b1,3,3);
+  }
+  else
+  {
+    printf("here\n");
+    biasedExp = (exponent - minimumExp + 1, 0) ? 1 : 0;
+    if(biasedExp == 0)
+      mantissa = mantissa / pow(2, (minimumExp - exponent) );
+    
+    intMant = floor (mantissa * pow(2,F) );
+    error = mantissa * pow(2,F) - intMant;
+    
+    if(biasedExp == 0 && (error != 0.0 || getBits(coreReg[fPSCR],11,11) == 1) )
+      raiseFPUnderflowException(FPControl);
+    
+    switch( getBits(coreReg[fPSCR],23,22) )
+    {
+      case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits(intMant,0,0) == 1) );
+                  overflowToInf = 1;
+                  break;
+                  
+      case 0b01 : roundUp = (error != 0.0 && sign == 0);
+                  overflowToInf = (sign == 0);
+                  break;
+                  
+      case 0b10 : roundUp = (error != 0.0 && sign == 1);
+                  overflowToInf = (sign == 1);
+                  break;
+                  
+      case 0b11 : roundUp = 0;
+                  overflowToInf = 0;  
+                  break;
+    }
+    
+    if(roundUp == 1)
+    {
+      intMant += 1;
+      if(intMant == pow(2,F) )
+        biasedExp = 1;
+      if(intMant == pow(2,F+1) )
+      {
+        biasedExp += 1;
+        intMant = intMant / 2;
+      }
+    }
+    
+    if(noOfBits != 16 || getBits(coreReg[fPSCR],26,26) == 0)
+    {
+      if(biasedExp >= pow(2,E-1))
+      {
+        result = (overflowToInf == 1) ? FPInfinity(sign,noOfBits) : FPMaxNormal(sign,noOfBits);
+        raiseFPOverflowException(FPControl);
+        error = 1.0;
+      }
+      else
+        result = ( ( (sign << E ) | getBits( (*(uint32_t *)&biasedExp ) ,E-1,0) ) << F ) | getBits( (*(uint32_t *)&intMant ) ,F-1,0) ;
+    }
+    else
+    {
+      if(biasedExp >= pow(2,E-1))
+      {
+        result = (sign << 15) | 0b111111111111111;
+        raiseFPInvalidException(FPControl);
+        error = 0.0;
+      }
+      else
+        result = ( ( (sign << E ) | getBits( (*(uint32_t *)&biasedExp ) ,E-1,0) ) << F ) | getBits( (*(uint32_t *)&intMant ) ,F-1,0) ;
+    }
+    
+    if(error != 0.0)
+      raiseFPInexactException(FPControl);
+
+  }
+  printf("result : %e\n", result);
+  return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

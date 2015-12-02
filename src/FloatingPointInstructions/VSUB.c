@@ -66,9 +66,9 @@ void VSUB(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-        writeSinglePrecision(d, FPSubSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m]) );
+        writeSinglePrecision(d, FPSubSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR) );
       
-      setFPException();
+      handleFPException();
     }
     
     shiftITState();
@@ -78,9 +78,9 @@ void VSUB(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-      writeSinglePrecision(d, FPSubSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m]) );
+      writeSinglePrecision(d, FPSubSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR) );
       
-    setFPException();
+    handleFPException();
   }
 
   coreReg[PC] += 4;  

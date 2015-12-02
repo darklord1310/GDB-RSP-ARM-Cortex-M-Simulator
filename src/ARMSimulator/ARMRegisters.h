@@ -120,6 +120,7 @@ void initCoreRegister();
 void writeSinglePrecision(int regNum, uint32_t valueToWrite);
 void writeDoublePrecision(int regNum, uint64_t valueToWrite);
 void writeToCoreRegisters(int regNum, uint32_t valueToWrite);
+void writeSCBRegisters(uint32_t registerName, uint32_t valueToWrite);
 uint32_t readSCBRegisters(uint32_t registerName);
 
 #endif // ARMRegisters_H
