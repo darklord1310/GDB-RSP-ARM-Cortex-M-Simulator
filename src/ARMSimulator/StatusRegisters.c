@@ -521,6 +521,15 @@ void modifyFPSCRorFPDSCR(uint32_t FPControl, uint32_t bitsToSet, int upperLimit,
     writeSCBRegisters(FPDSCR, setBits(readSCBRegisters(FPDSCR), bitsToSet, upperLimit, lowerLimit));
 }
 
+
+uint32_t readFPSCRorFPDSCR(uint32_t FPControl, int upperLimit, int lowerLimit)
+{
+  if(fPSCR)
+    return getBits(coreReg[fPSCR], upperLimit, lowerLimit);
+  else
+    return getBits(readSCBRegisters(FPDSCR) ,upperLimit, lowerLimit );
+}
+
 /*
     This function will raise the corresponding FP exceptions
     Once the exception is raised, it is not going to overwrite by 0b0
@@ -544,20 +553,15 @@ void handleFPException()
 
 uint32_t FPInfinity(uint32_t signBit, int noOfBits)
 {
-  int E,F,N;
+  uint32_t E,F;
   uint32_t exp,frac,result;
   
-  if( noOfBits == 16 )
-    E = 5;
-  else if(N == 32)
-    E = 8;
-  
-  F = N - E - 1;
+  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
   
   if(noOfBits == 16)
-    result = ( (signBit << E) | 0b11111 ) << F;
+    result = ( ( (signBit << E) | 0b11111 ) << F );
   else
-    result = ( (signBit << E) | 0b11111111 ) << F;
+    result = ( ( (signBit << E) | 0b11111111 ) << F );
   
   return result; 
 }
@@ -565,33 +569,56 @@ uint32_t FPInfinity(uint32_t signBit, int noOfBits)
 
 uint32_t FPMaxNormal(uint32_t signBit, int noOfBits)
 {
-  int E,F,N;
+  uint32_t E,F;
   uint32_t exp,frac,result;
   
-  if( noOfBits == 16 )
-    E = 5;
-  else if(N == 32)
-    E = 8;
-  
-  F = N - E - 1;
+  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
   
   if(noOfBits == 16)
-    result = ( (signBit << E-1) | 0b1111 ) << F+1;
+    result = ( ( ( ( (signBit << E-1) | 0b1111 ) << 1 ) | 0b0 ) << F ) | 0b1111111111;
   else
-    result = ( (signBit << E-1) | 0b1111111 ) << F+1;
+    result = ( ( ( ( (signBit << E-1) | 0b1111111 ) << 1) | 0b0 ) << F ) | 0b11111111111111111111111;
   
   return result;
 }
 
 
+uint32_t FPDefaultNaN(int noOfBits)
+{
+  uint32_t E,F;
+  uint32_t sign,exp,frac,result;
+  
+  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
+
+  sign = 0b0;
+  
+  if(noOfBits == 16)
+    return ( ( (sign << 5) | 0b111111 ) << F-1) ;
+  else
+    return ( ( (sign << 8) | 0b111111111 ) << F-1) ;
+}
+
+
+uint32_t FPZero(uint32_t sign, int noOfBits)
+{
+  uint32_t E,F;
+  
+  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
+
+  return ( sign << E+F ) ;
+}
+
+
+
+
 uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl)
 {
   uint32_t result;
-  FPInfo v1 = FPUnpack(value, coreReg[fPSCR]);
+  FPInfo v1 = FPUnpack(value, FPControl);
   if(v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN)
   {
-    if( getBits(coreReg[fPSCR],25,25) == 1)
-      result = 0xFF800000;
+    if( readFPSCRorFPDSCR(FPControl, 25, 25) == 1)
+      result = FPDefaultNaN(32);
     else
       result = ( ( ( (v1.signBit << 9) | 0b111111111 ) << 9) | getBits(value,8,0) ) << 13;
     if(v1.type == FPTYPE_SNAN)
@@ -608,9 +635,44 @@ uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl)
 }
 
 
-uint16_t FPSingleToHalf(uint32_t value)
-{
 
+/*
+ *  The format is assumed to have an implicit lead bit with value 1 unless the exponent field is stored with all zeros.
+ *  Thus only 10 bits of the significand appear in the memory format but the total precision is 11 bits. 
+ */
+uint16_t FPSingleToHalf(uint32_t value, uint32_t FPControl)
+{
+  uint16_t result;
+  FPInfo v1 = FPUnpack(value, FPControl);
+
+  if (v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN )
+  {
+    if( readFPSCRorFPDSCR(FPControl, 26, 26) == 1) // AH bit set
+      result = v1.signBit << 16;
+    else if( readFPSCRorFPDSCR(FPControl, 25, 25) == 1) // DN bit set
+      result = FPDefaultNaN(16);
+    else
+      result = ( ( (v1.signBit << 6) | 0b111111) << 9) | getBits(value,21,13);
+    
+    if(v1.type == FPTYPE_SNAN || readFPSCRorFPDSCR(FPControl, 26, 26) == 1 ) 
+      raiseFPInvalidException(FPControl);
+  }
+  else if( v1.type == FPTYPE_INFINITY )
+  { 
+    if( readFPSCRorFPDSCR(FPControl, 26, 26) == 1)    // AH bit set
+    {
+      result = (v1.signBit << 15) | 0b111111111111111;
+      raiseFPInvalidException(FPControl);
+    }
+    else
+      result = FPInfinity(v1.signBit, 16);
+  }
+  else if(v1.type == FPTYPE_ZERO)
+    result = v1.signBit << 15;
+  else
+    result = FPRound(v1.realNumber, 16, FPControl);
+  
+  return result;
 }
 
 
@@ -633,8 +695,8 @@ void FPCompare(uint32_t value1, uint32_t value2, int compareInstructionType, uin
 {
   FPInfo v1, v2;
 
-  v1 = FPUnpack(value1, coreReg[fPSCR]);
-  v2 = FPUnpack(value2, coreReg[fPSCR]);
+  v1 = FPUnpack(value1, FPControl);
+  v2 = FPUnpack(value2, FPControl);
   if(v1.type == FPTYPE_QNAN || v1.type == FPTYPE_SNAN || v2.type == FPTYPE_QNAN || v2.type == FPTYPE_SNAN)
   {
     modifyFPSCRorFPDSCR(FPControl, 0b0011, 31, 28);
@@ -671,10 +733,7 @@ FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl)
       info.type = FPTYPE_ZERO;
       info.realNumber = 0.0;
       if(frac32 != 0)
-      {
-        if(FPControl == 1)
-          raiseFPInputDenormalizeException(FPControl);          // Raise Input denormalize exception
-      }
+        raiseFPInputDenormalizeException(FPControl);          // Raise Input denormalize exception
     }
     else
     {
@@ -711,67 +770,85 @@ FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl)
 
 
 
-
-uint32_t FPRound(uint32_t value, uint32_t noOfBits, uint32_t FPControl)
+uint32_t FPToFixed(uint32_t value, int M, int fractionBits, int signOrUnsigned, int roundTowardsZero, uint32_t FPControl)
 {
-  int E,F,sign,roundUp, overflowToInf;
-  float mantissa, exponent, biasedExp, intMant, error;
-  uint32_t result;
+  FPInfo v1;
+  float intResult, error;
+  bool roundUp;
   
-  if(noOfBits == 16)
-    E = 5;
-  else if(noOfBits == 32)
-    E = 8;
+  if(roundTowardsZero == 1)
+    modifyFPSCRorFPDSCR(FPControl,0b11,23,22);
   
-  float minimumExp = 2 - pow(2,(E-1));
-  F = noOfBits -E - 1;
+  v1 = FPUnpack(value, FPControl);
+  
+  if(v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN)
+    raiseFPInvalidException(FPControl);
+  
+  v1.realNumber = v1.realNumber * pow(2,fractionBits);
+  intResult = floor(v1.realNumber);
+  error = v1.realNumber - intResult;
+  
+  switch( readFPSCRorFPDSCR(FPControl, 23, 22) )
+  {
+    case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits( *(uint32_t *)&intResult,0,0) == 1) );
+                break;
+                  
+    case 0b01 : roundUp = (error != 0.0);
+                break;
+                  
+    case 0b10 : roundUp = 0;
+                break;
+                  
+    case 0b11 : roundUp = (error != 0.0 && intResult < 0);
+                break;
+  }
+  
+  if(roundUp == true)
+    intResult += 1;
+  
+  
+  
+}
 
-  if(value < 0.0)
-  {
-    sign = 1;
-    mantissa = value * -1;
-  }
-  else
-  {
-    sign = 0;
-    mantissa = value;
-  }
-  exponent = 0;
+
+
+
+uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl)
+{
+  int roundUp, overflowToInf,E,F;
+  float mantissa, exponent, biasedExp, intMant, error,minimumExp;
+  uint32_t result, valueInUint32, sign;
+  valueInUint32 = *(uint32_t *)&value;
   
-  while(mantissa < 1.0)
-  {
-    mantissa = mantissa * 2.0;
-    exponent - exponent - 1;
-  }
-  
-  while(mantissa >= 2.0)
-  {
-    mantissa = mantissa / 2.0;
-    exponent = exponent + 1;
-  }
-  
+  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
+  minimumExp = determineMinimumExp(E);
+  getFloatingPointNumberData(value, &sign, &exponent ,&mantissa);
+
   //deal with flush to zero
-  if( getBits(coreReg[fPSCR],24,24) == 1 && exponent < minimumExp && noOfBits != 16)
+  if( readFPSCRorFPDSCR(FPControl, 24, 24) == 1 && (exponent < minimumExp) && noOfBits != 16)
   {
-    result = sign << 31;
+    result = FPZero(sign, noOfBits);
     coreReg[fPSCR] = setBits(coreReg[fPSCR],0b1,3,3);
   }
   else
   {
-    printf("here\n");
-    biasedExp = (exponent - minimumExp + 1, 0) ? 1 : 0;
+    if( (exponent - minimumExp + 1) < 0)
+      biasedExp = 0;
+    else
+      biasedExp = exponent - minimumExp + 1;
+
     if(biasedExp == 0)
       mantissa = mantissa / pow(2, (minimumExp - exponent) );
     
-    intMant = floor (mantissa * pow(2,F) );
+    intMant = floor(mantissa * pow(2,F) );
     error = mantissa * pow(2,F) - intMant;
-    
-    if(biasedExp == 0 && (error != 0.0 || getBits(coreReg[fPSCR],11,11) == 1) )
+
+    if(biasedExp == 0 && (error != 0.0 || readFPSCRorFPDSCR(FPControl, 11, 11) == 1) )
       raiseFPUnderflowException(FPControl);
-    
-    switch( getBits(coreReg[fPSCR],23,22) )
+
+    switch( readFPSCRorFPDSCR(FPControl, 23, 22) )
     {
-      case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits(intMant,0,0) == 1) );
+      case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits( *(uint32_t *)&intMant,0,0) == 1) );
                   overflowToInf = 1;
                   break;
                   
@@ -787,7 +864,7 @@ uint32_t FPRound(uint32_t value, uint32_t noOfBits, uint32_t FPControl)
                   overflowToInf = 0;  
                   break;
     }
-    
+    printf("roundUp: %x\n", roundUp);
     if(roundUp == 1)
     {
       intMant += 1;
@@ -799,17 +876,26 @@ uint32_t FPRound(uint32_t value, uint32_t noOfBits, uint32_t FPControl)
         intMant = intMant / 2;
       }
     }
-    
-    if(noOfBits != 16 || getBits(coreReg[fPSCR],26,26) == 0)
-    {
-      if(biasedExp >= pow(2,E-1))
+    printf("biasedExp: %f\n", biasedExp);
+    printf("intMant: %f\n", intMant);
+    if(noOfBits != 16 || readFPSCRorFPDSCR(FPControl, 26, 26) == 0)
+    { 
+      if(biasedExp >= (pow(2,E) - 1) )
       {
         result = (overflowToInf == 1) ? FPInfinity(sign,noOfBits) : FPMaxNormal(sign,noOfBits);
         raiseFPOverflowException(FPControl);
         error = 1.0;
       }
       else
-        result = ( ( (sign << E ) | getBits( (*(uint32_t *)&biasedExp ) ,E-1,0) ) << F ) | getBits( (*(uint32_t *)&intMant ) ,F-1,0) ;
+      {
+        uint32_t ex = *(uint32_t *)&biasedExp;
+        uint32_t mant = *(uint32_t *)&intMant;
+        result = ( ( ( sign << E ) | getBits(ex,E-1,0) ) << F) | getBits(mant,F-1,0);
+        // if( getBits(valueInUint32,30,23) )
+          // result = setBits( ( ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13) ) , 0b1, 0 ,0 );     //set the leading 1
+        // else
+          // result = ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13); 
+      }
     }
     else
     {
@@ -820,25 +906,74 @@ uint32_t FPRound(uint32_t value, uint32_t noOfBits, uint32_t FPControl)
         error = 0.0;
       }
       else
-        result = ( ( (sign << E ) | getBits( (*(uint32_t *)&biasedExp ) ,E-1,0) ) << F ) | getBits( (*(uint32_t *)&intMant ) ,F-1,0) ;
+      {
+        if( getBits(valueInUint32,30,23) )
+          result = setBits( ( ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13) ) , 0b1, 0 ,0 );     //set the leading 1
+        else
+          result = ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13); 
+      }
     }
-    
+
     if(error != 0.0)
       raiseFPInexactException(FPControl);
-
   }
-  printf("result : %e\n", result);
+
   return result;
 }
 
 
 
 
+//this function will return the numbers of exponent and fraction bits based on the
+//number of bits passing in
+void getNumbersOfExponentAndFractionBits(int noOfBits, int *E, int *F)
+{
+  if(noOfBits == 16)
+    *E = 5;
+  else if(noOfBits == 32)
+    *E = 8;
+  else
+    *E = 11;
+  
+  *F = noOfBits - *E - 1;
+}
 
 
+// return the minimum exponent based on the number of exponent bits passing in
+float determineMinimumExp(int E)
+{
+  return (2 - pow(2,(E-1)) );
+}
 
 
-
+//get the values of sign, unrounded mantissa and exponent from the float passing in
+void getFloatingPointNumberData(float value, uint32_t *sign, float *exponent ,float *mantissa)
+{
+  if(value < 0.0)
+  {
+    *sign = 1;
+    *mantissa = value * -1;
+  }
+  else
+  {
+    *sign = 0;
+    *mantissa = value;
+  }
+  
+  *exponent = 0;
+  
+  while(*mantissa < 1.0)
+  {
+    *mantissa = *mantissa * 2.0;
+    *exponent = *exponent - 1;
+  }
+  
+  while(*mantissa >= 2.0)
+  {
+    *mantissa = *mantissa / 2.0;
+    *exponent = *exponent + 1;
+  }
+}
 
 
 

@@ -27,22 +27,34 @@
 
 
 
-/* VNEG
+/* VCVT, VCVTR (between floating-point and integer)
     
-    Floating-point Negate inverts the sign bit of a single-precision register, and places the results in a second
-    single-precision register.
+    Floating-point Convert (between floating-point and integer) converts a value in a register from floating-point to a
+    32-bit integer, or from a 32-bit integer to floating-point, and places the result in a second register.
   
-    VNEG<c>.F32 <Sd>, <Sm>
+    VCVT{R}<c>.S32.F32 <Sd>, <Sm>
+    VCVT{R}<c>.U32.F32 <Sd>, <Sm>
+    VCVT<c>.F32.<Tm> <Sd>, <Sm>
 
-31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 0 1 M 0|   Vm  |
+31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7  6 5 4 3 2 1 0
+|1  1  1  1| 1  1  1  0  1| D| 1  1  1  1|  RM |     Vd    | 1  0 1|sz op 1 M 0|   Vm  |
 
 where :
-        <c>, <q>          See Standard assembler syntax fields on page A7-175.
-        
-        <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
-        
-        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
+          R             If R is specified, the operation uses the rounding mode specified by the FPSCR. Encoded as op = 0.
+                        If R is omitted. the operation uses the Round towards Zero rounding mode. For syntaxes in which R
+                        is optional, op is encoded as 1 if R is omitted.
+                        
+          <c>, <q>      See Standard assembler syntax fields on page A7-175.
+          
+          <Tm>          The data type for the operand. It must be one of:
+                            S32 Encoded as op = 1.
+                            U32 Encoded as op = 0.
+                            
+          <Sd>, <Sm>    The destination register and the operand register, for a single-precision operand or result.
+          
+          <Sd>, <Dm>    The destination register and the operand register, for a double-precision operand.
+          
+          <Dd>, <Sm>    The destination register and the operand register, for a double-precision result.
 */
 void VCVTandVCVTR(uint32_t instruction)
 {
@@ -51,7 +63,8 @@ void VCVTandVCVTR(uint32_t instruction)
   uint32_t sz = getBits(instruction,8,8);
   uint32_t M = getBits(instruction,5,5);
   uint32_t D = getBits(instruction,22,22);
-
+  uint32_t op = getBits(instruction,7,7);
+  uint32_t RM = getBits(instruction,17,16);
   uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
   uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
   

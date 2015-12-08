@@ -444,7 +444,8 @@ void initFloatingPoint32DataProcessing()
   tabulateTable("01X11001XX1", FloatingPointDataProcessing, VCVTBandVCVTT ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X110100X1", FloatingPointDataProcessing, VCMPT1 ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X110101X1", FloatingPointDataProcessing, VCMPT2 ,  createTableException(NO_EXCEPTION) );
-  //tabulateTable("01X111000X1", FloatingPointDataProcessing, VCVTandVCVTR ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X111000X1", FloatingPointDataProcessing, VCVTandVCVTR ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("01X11110XX1", FloatingPointDataProcessing, VCVTandVCVTR ,  createTableException(NO_EXCEPTION) );
 }
 
 
