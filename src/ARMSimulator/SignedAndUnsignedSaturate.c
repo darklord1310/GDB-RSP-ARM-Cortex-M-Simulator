@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -22,6 +22,7 @@
 
 
 #include "SignedAndUnsignedSaturate.h"
+#include "SaturateOperation.h"
 
 
 /* Signed Saturate Encoding T1
@@ -84,19 +85,18 @@ void executeSSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDir
   int32_t shiftRn, temp, max, min, sign = 1;       // max indicate max range of saturated value
                                                    // min indicate min range of saturated value
                                                    // sign indicate sign or unsigned
-
-  max = (int32_t)(pow(2, immediate + 1) / 2) - 1;
-  min = -(max + 1);
+  uint32_t saturated;
 
   if(shiftDirection)
     shiftRn = executeASR(shiftImmediate, coreReg[Rn], 0);
   else
     shiftRn = coreReg[Rn] << shiftImmediate;
 
-  temp = (shiftRn < min) ? min: (shiftRn > max ? max: shiftRn);
+  temp = saturationQ(sign, shiftRn, immediate, &saturated);
   writeToCoreRegisters(Rd , temp );
-
-  updateQFlag(max, min, shiftRn, sign);
+  
+  if(saturated)
+    setQFlag();
 }
 
 
@@ -157,20 +157,19 @@ void USATT1(uint32_t instruction)
 */
 void executeUSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDirection, uint32_t shiftImmediate)
 {
-  int32_t shiftRn, temp, max, min, sign = 1;       // max indicate max range of saturated value
+  int32_t shiftRn, temp, max, min, sign = 0;       // max indicate max range of saturated value
                                                    // min indicate min range of saturated value
                                                    // sign indicate sign or unsigned
-
-  max = (int32_t)(pow(2, immediate + 1) / 2) - 1;
-  min = 0;
+  uint32_t saturated;
 
   if(shiftDirection)
     shiftRn = executeASR(shiftImmediate, coreReg[Rn], 0);
   else
     shiftRn = coreReg[Rn] << shiftImmediate;
 
-  temp = (shiftRn > max) ? max: (shiftRn < 0 ? 0: shiftRn);
+  temp = saturationQ(sign, shiftRn, immediate, &saturated);
   writeToCoreRegisters(Rd , temp );
 
-  updateQFlag(max, min, shiftRn, sign);
+  if(saturated)
+    setQFlag();
 }

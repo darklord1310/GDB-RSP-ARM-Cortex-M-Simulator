@@ -112,6 +112,7 @@
 #include "VCVTBandVCVTT.h"
 #include "VCVTandVCVTR.h"
 #include "VDIV.h"
+#include "SaturateOperation.h"
 
 
 void setUp(void)

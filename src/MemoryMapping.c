@@ -26,8 +26,8 @@ void memoryMap(uint32_t startAddress, uint32_t range, void (*funcPtr)())
 
   // for(i = 0; i < range; i++)
   // {
-    directory[directoryIndex] = (uint32_t)page;         // map page to the directory
-    page[pageIndex] = (uint32_t)funcPtr;
+    directory[directoryIndex] = (unsigned int)page;         // map page to the directory
+    page[pageIndex] = funcPtr;
     // directory[directoryIndex] = &(*page);
     // page[pageIndex] = funcPtr;
   // }
@@ -38,7 +38,7 @@ void initVirtualMemory()
   // memoryMap(0x40020000, 0x400203FF - 0x40020000, initGPIOs);
 }
 
-uint32_t handler(readWrite, data, size)
+uint32_t handler(Operation readWrite, uint32_t data, uint32_t size)
 {
   
 }
