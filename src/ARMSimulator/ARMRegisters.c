@@ -30,7 +30,12 @@
 
 #define   SP_INIT_VALUE   0x2001fffc    // for Coocox, keil is init to 0x20001000
 #define   LR_INIT_VALUE   0xffffffff
-
+#define   FPCCR_INIT_VALUE   0xC0000000   
+#define   CPACR_INIT_VALUE   0x00000000
+#define   FPDSCR_INIT_VALUE   0x03000000 //according to datasheet page 53
+#define   AIRCR_INIT_VALUE   0xfa050000 //this value is confirmed with Keil
+#define   CCR_INIT_VALUE   0x00000200   //this value is confirmed with Keil
+       
 /*
   This function will initialize the general status register, floating point status register and all the other core
   registers.
@@ -190,11 +195,11 @@ void initCoreRegister()
   }
   
   //initialize system control block (SCB) registers (initialize values refer to ARMRegisters.h)
-  writeByteToMemory(FPCCR, 0xC0000000, 4);
-  writeByteToMemory(CPACR, 0x00000000, 4);
-  writeByteToMemory(FPDSCR, 0x00000000, 4);
-  writeByteToMemory(AIRCR, 0xfa050000, 4);     //this value is confirmed with Keil
-  writeByteToMemory(CCR, 0x00000200, 4);       //this value is confirmed with Keil
+  writeByteToMemory(FPCCR, FPCCR_INIT_VALUE, 4);
+  writeByteToMemory(CPACR, CPACR_INIT_VALUE, 4);
+  writeByteToMemory(FPDSCR, FPDSCR_INIT_VALUE, 4);    
+  writeByteToMemory(AIRCR, AIRCR_INIT_VALUE, 4);     
+  writeByteToMemory(CCR, CCR_INIT_VALUE, 4);
 }
 
 
@@ -257,7 +262,21 @@ void writeToCoreRegisters(int regNum, uint32_t valueToWrite)
 }
 
 
+/* StandardFPSCRValue()
+// ====================
+  bits(32) StandardFPSCRValue()
+      return ‘00000’ : FPSCR<26> : ‘11000000000000000000000000’;
+*/
 uint32_t readSCBRegisters(uint32_t registerName)
 {
-  return loadByteFromMemory(registerName, 4);
+  if(registerName == FPDSCR)
+    return setBits(FPDSCR_INIT_VALUE, getBits(coreReg[fPSCR],26,26), 26,26);
+  else
+    return loadByteFromMemory(registerName, 4);
+}
+
+
+void writeSCBRegisters(uint32_t registerName, uint32_t valueToWrite)
+{
+  return writeByteToMemory(registerName, valueToWrite, 4);
 }

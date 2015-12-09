@@ -34,6 +34,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-void VCMP(uint32_t instruction);
+void VCMPT1(uint32_t instruction);
+void VCMPT2(uint32_t instruction);
 
 #endif // VCMP_H

@@ -27,31 +27,47 @@
 
 
 
-/* VCMP
+/* VCMP, VCMPE
     
-    Floating-point Negate inverts the sign bit of a single-precision register, and places the results in a second
-    single-precision register.
+      Floating-point Compare compares two registers, or one register and zero. It writes the result to the FPSCR flags.
+      These are normally transferred to the ARM flags by a subsequent VMRS instruction.
+      
+      It can optionally raise an Invalid Operation exception if either operand is any type of NaN. It always raises an Invalid
+      Operation exception if either operand is a signaling NaN.
   
-    VNEG<c>.F32 <Sd>, <Sm>
+      VCMP{E}<c>.F32 <Sd>, <Sm> 
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 0 1 M 0|   Vm  |
+|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  1  0  0|     Vd    | 1  0 1 sz E 1 M 0|   Vm  |
 
 where :
         <c>, <q>          See Standard assembler syntax fields on page A7-175.
         
+        E                 If present, any NaN operand causes an Invalid Operation exception. Encoded as E = 1.
+                          Otherwise, only a signaling NaN causes the exception. Encoded as E = 0.
+        
         <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
         
         <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
+        
+              
+        Comparison result     N   Z   C   V
+              Equal           0   1   1   0
+            Less than         1   0   0   0
+            Greater than      0   0   1   0
+             Unordered        0   0   1   1
+             
+        *Comparing Sd with Sm
+             
 */
-void VCMP(uint32_t instruction)
+void VCMPT1(uint32_t instruction)
 {
   uint32_t Vd = getBits(instruction,15,12);
   uint32_t Vm = getBits(instruction,3,0);
   uint32_t sz = getBits(instruction,8,8);
   uint32_t M = getBits(instruction,5,5);
   uint32_t D = getBits(instruction,22,22);
-
+  uint32_t E = getBits(instruction,7,7);
   uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
   uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
   
@@ -64,7 +80,12 @@ void VCMP(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-        writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
+      {
+        if(E == 0)
+          FPCompare(fpuSinglePrecision[d], fpuSinglePrecision[m], VCMP, fPSCR);
+        else
+          FPCompare(fpuSinglePrecision[d], fpuSinglePrecision[m], VCMPE, fPSCR);
+      }
     }
     
     shiftITState();
@@ -74,8 +95,83 @@ void VCMP(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-      writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
+    {
+      if(E == 0)
+        FPCompare(fpuSinglePrecision[d], fpuSinglePrecision[m], VCMP, fPSCR);
+      else
+        FPCompare(fpuSinglePrecision[d], fpuSinglePrecision[m], VCMPE, fPSCR);
+    }
   }
 
   coreReg[PC] += 4;  
 }
+
+
+
+
+/* VCMP, VCMPE
+    
+      Floating-point Compare compares two registers, or one register and zero. It writes the result to the FPSCR flags.
+      These are normally transferred to the ARM flags by a subsequent VMRS instruction.
+      
+      It can optionally raise an Invalid Operation exception if either operand is any type of NaN. It always raises an Invalid
+      Operation exception if either operand is a signaling NaN.
+  
+      VCMP{E}<c>.F32 <Sd>, #0.0
+
+31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
+|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  1  0  1|     Vd    | 1  0 1 sz E 1 0 0 0 0 0 0|
+
+where :
+        <c>, <q>          See Standard assembler syntax fields on page A7-175.
+        
+        E                 If present, any NaN operand causes an Invalid Operation exception. Encoded as E = 1.
+                          Otherwise, only a signaling NaN causes the exception. Encoded as E = 0.
+        
+        <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
+        
+        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
+*/
+void VCMPT2(uint32_t instruction)
+{
+  uint32_t Vd = getBits(instruction,15,12);
+  uint32_t sz = getBits(instruction,8,8);
+  uint32_t D = getBits(instruction,22,22);
+  uint32_t E = getBits(instruction,7,7);
+  uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
+  executeFPUChecking();
+  
+  if(inITBlock())
+  {
+    if( checkCondition(cond) )
+    {
+      if(sz == 1)
+        ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+      else
+      {
+        if(E == 0)
+          FPCompare(fpuSinglePrecision[d], 0, VCMP, fPSCR);
+        else
+          FPCompare(fpuSinglePrecision[d], 0, VCMPE, fPSCR);
+      }
+    }
+    
+    shiftITState();
+  }
+  else
+  {
+    if(sz == 1)
+      ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+    else
+    {
+      if(E == 0)
+        FPCompare(fpuSinglePrecision[d], 0, VCMP, fPSCR);
+      else
+        FPCompare(fpuSinglePrecision[d], 0, VCMPE, fPSCR);
+    }
+  }
+
+  coreReg[PC] += 4;  
+}
+
+

@@ -51,46 +51,122 @@
     VCVTT<c>.F16.F32 <Sd>, <Sm>
 
 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 9  8 7 6 5 4 3 2 1 0
-|1  1  1  0| 1  1  1  0  1| D| 1  1| 0  0  0  1|     Vd    | 1  0 1 sz 0 1 M 0|   Vm  |
+|1  1  1  0| 1  1  1  0  1| D| 1  1  0  0  1 op|     Vd    | 1  0 1 sz T 1 M 0|   Vm  |
 
 where :
-        <c>, <q>          See Standard assembler syntax fields on page A7-175.
+        <y>           Specifies which half of the operand register <Sm> or destination register <Sd> is used for the operand
+                      or destination:
+                          B     VCVTB. Encoded as T = 0. Instruction uses the bottom half of the register, bits[15:0].
+                          T     VCVTT. Encoded as T = 1. Instruction uses the top half of the register, bits[31:16].
+                      
+        <c>, <q>      See Standard assembler syntax fields on page A7-175.
         
-        <Sd>, <Sm>        The destination single-precision register and the operand single-precision register.
+        <Sd>          The single-precision destination register.
         
-        <Dd>, <Dm>        The destination double-precision register and the operand double-precision register.
+        <Sm>          The single-precision operand register.
+        
+        <Dd>          The double-precision destination register.
+        
+        <Dm>          The double-precision operand register
 */
 void VCVTBandVCVTT(uint32_t instruction)
 {
   uint32_t Vd = getBits(instruction,15,12);
   uint32_t Vm = getBits(instruction,3,0);
+  uint32_t op = getBits(instruction,16,16);
   uint32_t sz = getBits(instruction,8,8);
   uint32_t M = getBits(instruction,5,5);
   uint32_t D = getBits(instruction,22,22);
-
-  uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
-  uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
+  uint32_t T = getBits(instruction,7,7);  
+  uint32_t d, m, temp;
+  int lowBit;
   
+  if(sz == 1)
+  {
+    if(op == 0)
+    {
+      d = (D << 4) | Vd;
+      m = (Vm << 1) | M;
+    }
+    else
+    {
+      d = (Vd << 1) | D;
+      m = (M << 4) | Vm;
+    }
+  }
+  else
+  {
+    d = (Vd << 1) | D;
+    m = (Vm << 1) | M;
+  }
+  
+  if(T == 1)
+    lowBit = 16;
+  else 
+    lowBit = 0;
+
   executeFPUChecking();
   
   if(inITBlock())
   {
     if( checkCondition(cond) )
     {
-      if(sz == 1)
-        ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+      if(op == 0)   // convert from half precision
+      {
+        if(sz == 1)
+          ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+        else
+          writeSinglePrecision(d, FPHalfToSingle((uint16_t)getBits(fpuSinglePrecision[m],lowBit+15,lowBit), 32) );
+      }
       else
-        writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
+      {
+        if(sz == 1)
+          ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+        else
+        {
+          if(lowBit == 0)
+          {
+            temp = FPSingleToHalf(fpuSinglePrecision[m], fPSCR);    //use a 32bits temp to store the 16bits converted value                                                               
+            writeSinglePrecision(d, setBits(temp, 0x7FFF, 31,16) ); //and make the upper 16bits becomes 0x7FFF
+          }
+          else
+          {
+            temp = FPSingleToHalf(fpuSinglePrecision[m], fPSCR);            //use a 32bits temp to store the 16bits converted value
+            writeSinglePrecision(d, setBits( temp << 16, 0xFFFF, 15, 0) );  //and make the lower 16bits becomes 0xFFFF
+          }
+        }
+      }
     }
     
     shiftITState();
   }
   else
   {
-    if(sz == 1)
-      ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+    if(op == 0)   // convert from half precision
+    {
+      if(sz == 1)
+        ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+      else
+        writeSinglePrecision(d, FPHalfToSingle((uint16_t)getBits(fpuSinglePrecision[m],lowBit+15,lowBit), 32) );
+    }
     else
-      writeSinglePrecision(d, FPNeg(fpuSinglePrecision[m], 32 ) );
+    {
+      if(sz == 1)
+        ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
+      else
+      {
+        if(lowBit == 0)
+        {
+          temp = FPSingleToHalf(fpuSinglePrecision[m], fPSCR);    //use a 32bits temp to store the 16bits converted value    
+          writeSinglePrecision(d, setBits(temp, 0x7FFF, 31,16) ); //and make the upper 16bits becomes 0x7FFF
+        }
+        else
+        {
+          temp = FPSingleToHalf(fpuSinglePrecision[m], fPSCR);            //use a 32bits temp to store the 16bits converted value
+          writeSinglePrecision(d, setBits( temp << 16, 0xFFFF, 15, 0) );  //and make the lower 16bits becomes 0xFFFF
+        }
+      }
+    }
   }
 
   coreReg[PC] += 4;  

@@ -40,15 +40,16 @@
 #include "fenv.h"
 
 typedef enum {FPTYPE_NONZERO, FPTYPE_ZERO, FPTYPE_INFINITY, FPTYPE_QNAN, FPTYPE_SNAN} FPType;
+typedef enum {VCMP, VCMPE} compareType;
 typedef struct FPInfo FPInfo;
-
 
 struct FPInfo
 {
   FPType type;
   uint32_t signBit;
-  double realNumber;
+  float realNumber;
 };
+
 
 bool isNegative();
 bool isZero();
@@ -77,14 +78,36 @@ uint32_t getITCond();
 void shiftITState();
 int isLastInITBlock();
 void executeFPUChecking();
+uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation);
+void handleFPException();
 uint64_t FPNeg(uint64_t value, int size);
 uint64_t FPAbs(uint64_t value, int size);
-uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2);
-uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2);
-uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2);
-uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2);
-uint32_t FPSqrtSinglePrecision(uint32_t value);
-uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation);
-void setFPException();
+uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl);
+uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl);
+uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl);
+uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl);
+uint32_t FPSqrtSinglePrecision(uint32_t value, uint32_t FPControl);
+uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl);
+uint16_t FPSingleToHalf(uint32_t value, uint32_t FPControl);
+uint32_t FPMaxNormal(uint32_t signBit, int noOfBits);
+uint32_t FPInfinity(uint32_t signBit, int noOfBits);
+uint32_t FPZero(uint32_t sign, int noOfBits);
+uint32_t FPDefaultNaN(int noOfBits);
+FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl);
+uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl);
+void FPCompare(uint32_t value1, uint32_t value2, int compareInstructionType, uint32_t FPControl);
+void raiseFPUnderflowException(uint32_t FPStatusRegisterSelection);
+void raiseFPDIVZeroException(uint32_t FPStatusRegisterSelection);
+void raiseFPInexactException(uint32_t FPStatusRegisterSelection);
+void raiseFPInvalidException(uint32_t FPStatusRegisterSelection);
+void raiseFPOverflowException(uint32_t FPStatusRegisterSelection);
+void raiseFPInputDenormalizeException(uint32_t FPStatusRegisterSelection);
+uint32_t readFPSCRorFPDSCR(uint32_t FPControl, int upperLimit, int lowerLimit);
+void modifyFPSCRorFPDSCR(uint32_t FPControl, uint32_t bitsToSet, int upperLimit, int lowerLimit);
+
+void getNumbersOfExponentAndFractionBits(int noOfBits, int *E, int *F);
+float determineMinimumExp(int E);
+void getFloatingPointNumberData(float value, uint32_t *sign, float *exponent ,float *mantissa);
+
 
 #endif // StatusRegisters_H

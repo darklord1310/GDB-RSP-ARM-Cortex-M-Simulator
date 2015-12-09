@@ -169,3 +169,149 @@ void test_executeFPUChecking_given_FPU_is_not_enabled_should_throw_error()
     TEST_ASSERT_EQUAL(UsageFault,err);
   }
 }
+
+
+
+void test_FPInfinity_given_signBit_1_and_16_bits_should_return_0xFC00()
+{
+  uint32_t signBit = 1;
+  int noOfBits = 16;
+  
+  uint32_t result = FPInfinity(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0x0000FC00,result);
+}
+
+
+void test_FPInfinity_given_signBit_0_and_16_bits_should_return_0x7C00()
+{
+  uint32_t signBit = 0;
+  int noOfBits = 16;
+  
+  uint32_t result = FPInfinity(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0x00007C00,result);
+}
+
+
+void test_FPInfinity_given_signBit_1_and_32_bits_should_return_0xff800000()
+{
+  uint32_t signBit = 1;
+  int noOfBits = 32;
+  
+  uint32_t result = FPInfinity(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0xff800000,result);
+}
+
+
+void test_FPInfinity_given_signBit_0_and_32_bits_should_return_0x7f800000()
+{
+  uint32_t signBit = 0;
+  int noOfBits = 32;
+  
+  uint32_t result = FPInfinity(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0x7f800000,result);
+}
+
+
+void test_FPDefaultNaN_given_32_bits_should_return_0x7fc0000()
+{
+  int noOfBits = 32;
+  
+  uint32_t result = FPDefaultNaN(noOfBits);
+  TEST_ASSERT_EQUAL(0x7fc00000,result);
+}
+
+
+void test_FPDefaultNaN_given_16_bits_should_return_0x7e00()
+{
+  int noOfBits = 16;
+  
+  uint32_t result = FPDefaultNaN(noOfBits);
+  TEST_ASSERT_EQUAL(0x7e00,result);
+}
+
+
+void test_FPMaxNormal_given_signBit_1_and_16_bits_should_return_0xfbff()
+{
+  uint32_t signBit = 1;
+  int noOfBits = 16;
+  
+  uint32_t result = FPMaxNormal(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0xfbff,result);
+}
+
+
+void test_FPMaxNormal_given_signBit_0_and_16_bits_should_return_0x7bff()
+{
+  uint32_t signBit = 0;
+  int noOfBits = 16;
+  
+  uint32_t result = FPMaxNormal(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0x7bff,result);
+}
+
+
+void test_FPMaxNormal_given_signBit_1_and_32_bits_should_return_0xff7fffff()
+{
+  uint32_t signBit = 1;
+  int noOfBits = 32;
+  
+  uint32_t result = FPMaxNormal(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0xff7fffff,result);
+}
+
+
+void test_FPMaxNormal_given_signBit_0_and_32_bits_should_return_0x7f7fffff()
+{
+  uint32_t signBit = 0;
+  int noOfBits = 32;
+  
+  uint32_t result = FPMaxNormal(signBit,noOfBits);
+  TEST_ASSERT_EQUAL(0x7f7fffff,result);
+}
+
+
+void test_determineMinimumExp_given_E_is_8_should_get_neg_126()
+{
+  int E = 8;
+  
+  int result = determineMinimumExp(E);
+  TEST_ASSERT_EQUAL(-126,result);
+}
+
+
+void test_determineMinimumExp_given_E_is_5_should_get_neg_14()
+{
+  int E = 5;
+  
+  int result = determineMinimumExp(E);
+  TEST_ASSERT_EQUAL(-14,result);
+}
+
+/*  value = 3.22E-22
+ *  
+ *  Expected:  sign     =  +1
+ *             exponent =  -72
+ *             mantissa =  1.5206019878387451
+ */
+void test_getFloatingPointNumberData_given_value_as_above_should_return_the_expected_result()
+{
+  float value = 3.22E-22;
+  float exponent,mantissa;
+  uint32_t sign;
+  
+  getFloatingPointNumberData(value,&sign,&exponent,&mantissa);
+  TEST_ASSERT_EQUAL(0,sign);
+  TEST_ASSERT_EQUAL(-72,exponent);
+  TEST_ASSERT_EQUAL(1.5206019878387451,mantissa);
+}
+
+
+void test_FPRound_given_floating_point_value_above_should_get_()
+{
+  uint16_t result = FPSingleToHalf(0xbf99999a, fPSCR);
+  // uint32_t result = FPRound(3.213E-14, 16, fPSCR);
+  
+  printf("result : %x\n", result);
+  printf("fPSCR: %x\n", coreReg[fPSCR]);
+  TEST_ASSERT_EQUAL(0x00000018, coreReg[fPSCR]);
+}

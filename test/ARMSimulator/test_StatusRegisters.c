@@ -442,3 +442,5 @@ void test_updateQFlag_given_signedRange_is_0x7fff_sign_is_0_and_value_is_0xffff8
 
   TEST_ASSERT_EQUAL(0x01000000, coreReg[xPSR]);
 }
+
+

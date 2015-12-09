@@ -31,7 +31,7 @@
 #include "RemoteSerialProtocol.h"
 #include "ARMSimulator.h"
 #include "State.h"
-#include "StateRSP.h"
+#include "stateRSP.h"
 #include "FileOperation.h"
 #include "ConfigurationDetail.h"
 #include "LoadElf.h"
@@ -192,7 +192,7 @@ int main(int argc, const char * argv[])
 
     // Get the directory name
     parentDirName = getDirectoryName((char *)argv[0]);
-    
+
     // Retrieve the port number from a self created gdb config file
     dirName = appendString(parentDirName, "/GDBServerConfig.ini");
     gdbServerInfo = readGdbServerConfigFile(dirName, "r");

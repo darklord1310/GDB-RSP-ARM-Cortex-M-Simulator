@@ -67,7 +67,7 @@ void VNMLAandVNMLS(uint32_t instruction)
   uint32_t n = determineRegisterBasedOnSZ(N, Vn, sz);
   uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
   
-  uint64_t product32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]);
+  uint64_t product32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR);
   executeFPUChecking();
   
   if(inITBlock())
@@ -79,11 +79,11 @@ void VNMLAandVNMLS(uint32_t instruction)
       else
       {
         if(op == 1)
-          writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) ) );
+          writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) , fPSCR) );
         else
-          writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 ) );
+          writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 , fPSCR) );
         
-        setFPException();  
+        handleFPException();  
       }
     }
     
@@ -96,11 +96,11 @@ void VNMLAandVNMLS(uint32_t instruction)
     else
     {
       if(op == 1)
-        writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) ) );
+        writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) , fPSCR) );
       else
-        writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 ) );
+        writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 , fPSCR) );
     }
-    setFPException();
+    handleFPException();
   }
 
   coreReg[PC] += 4;  
@@ -143,7 +143,7 @@ void VNMUL(uint32_t instruction)
   uint32_t n = determineRegisterBasedOnSZ(N, Vn, sz);
   uint32_t m = determineRegisterBasedOnSZ(M, Vm, sz);
   
-  uint64_t product32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m]);
+  uint64_t product32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR);
   executeFPUChecking();
   
   if(inITBlock())
@@ -155,7 +155,7 @@ void VNMUL(uint32_t instruction)
       else
       {
         writeSinglePrecision(d, FPNeg(product32,32) );
-        setFPException();  
+        handleFPException();  
       }
     }
     
@@ -168,7 +168,7 @@ void VNMUL(uint32_t instruction)
     else
     {
       writeSinglePrecision(d, FPNeg(product32,32) );
-      setFPException();
+      handleFPException();
     }
   }
 
