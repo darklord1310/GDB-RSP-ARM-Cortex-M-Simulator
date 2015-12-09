@@ -15,10 +15,10 @@ void test_coflash_given_argv_should_write_elf_path_to_the_text(void)
 {
   FILE *file;
   char *filename = "TEST1.txt", *str, buffer[1024], str1[100], str2[100];
-  const char *argv[] = {"C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator\\myFlash.exe",
-                        "program",
-                        "STM32F429ZI",
-                        "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf"};
+  const char *argv[] = { "myFlash.exe",
+                         "program",
+                         "STM32F429ZI",
+                         "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf" };
 
 	coflash(4, argv);
 
@@ -44,7 +44,7 @@ void test_coflash_given_argv_with_different_arrangement_should_write_elf_path_to
 {
   FILE *file;
   char *filename = "TEST1.txt", *str, buffer[1024], str1[100], str2[100];
-  const char *argv[] = {"C:/Users/Asus/Desktop/TDD/Project/GDB-RSP-ARM-Cortex-M-Simulator\\myFlash.exe",
+  const char *argv[] = {"myFlash.exe",
                         "STM32F429ZI",
                         "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf",
                         "program"};

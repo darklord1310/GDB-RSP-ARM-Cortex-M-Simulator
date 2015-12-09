@@ -213,6 +213,10 @@ int main(int argc, const char * argv[])
     readConfigfile(dirName, "r", &configInfo, device);
     loadElf(elfPath, configInfo.flashOrigin, configInfo.flashSize);
 
+    destroyStr(dirName);
+    destroyStr(parentDirName);
+    destroyGdbServerInfo(gdbServerInfo);
+
     int bytesSent;
     int bytesRecv;
     char *reply = NULL;

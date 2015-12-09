@@ -164,10 +164,36 @@ void test_appendString_given_default_string_and_another_string_should_append_the
   char *defaultStr = "Hello ";
   char *strToAppend = "and Welcome";
   char *retStr = NULL;
-  
+
   retStr = appendString(defaultStr, strToAppend);
-  
+
   TEST_ASSERT_EQUAL_STRING("Hello and Welcome", retStr);
+
+  destroyStr(retStr);
+}
+
+void test_appendString_given_default_null_string_and_another_string_should_append_the_string(void)
+{
+  char *defaultStr = NULL;
+  char *strToAppend = "Welcome";
+  char *retStr = NULL;
+
+  retStr = appendString(defaultStr, strToAppend);
+
+  TEST_ASSERT_EQUAL_STRING("Welcome", retStr);
+
+  destroyStr(retStr);
+}
+
+void test_appendString_given_default_null_string_and_another_null_string_return_null(void)
+{
+  char *defaultStr = NULL;
+  char *strToAppend = NULL;
+  char *retStr = NULL;
+
+  retStr = appendString(defaultStr, strToAppend);
+
+  TEST_ASSERT_EQUAL_STRING(NULL, retStr);
 
   destroyStr(retStr);
 }

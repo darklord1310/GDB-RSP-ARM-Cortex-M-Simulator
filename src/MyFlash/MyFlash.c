@@ -40,6 +40,35 @@ char *getDirectoryName(char *pathname)
   return directoryPath;
 }
 
+char *appendString(char *destStr, char *srcStr)
+{
+  char *newStr;
+  int destLen = 0;
+
+  if(srcStr != NULL)
+  {
+    if(destStr != NULL)
+      destLen = strlen(destStr);
+      
+    newStr = malloc(destLen + strlen(srcStr) + 1);
+    newStr[0] = '\0';   // ensures the memory is an empty string
+    
+    if(destStr != NULL)
+      strcat(newStr, destStr);
+    strcat(newStr, srcStr);
+  }
+  else
+    return NULL;
+
+  return newStr;
+}
+
+void destroyStr(char *newStr)
+{
+  if(newStr)
+    free(newStr);
+}
+
 #if defined (TEST)
 int coflash(int argc, const char * argv[])
 #else
@@ -47,7 +76,7 @@ int main(int argc, const char * argv[])
 #endif
 {
   int i;
-  char elfPath[1024] = "", device[100]= "", *ret1, *ret2, *dir = NULL, dir2[1024];
+  char elfPath[1024] = "", device[100]= "", *ret1, *ret2, *parentDirName = NULL, *dirName = NULL;
 
   for(i = 0; i < argc; i++)
   {
@@ -64,23 +93,25 @@ int main(int argc, const char * argv[])
       strcpy(device, argv[i]);
   }
 
-  dir = getDirectoryName((char *)argv[0]);
+  
+  parentDirName = getDirectoryName((char *)argv[0]);
 
-  if(dir != NULL)
-  {
-     strcpy(dir2, dir);
 #if defined (TEST)
-    strcat(dir2, "/TEST1.txt");
+    dirName = appendString(parentDirName, "TEST1.txt");     // different dir when test in other machine 
 #else
-    strcat(dir2, "/ElfLocation.txt");
+  if(parentDirName != NULL)
+    dirName = appendString(parentDirName, "/ElfLocation.txt");
+  else
+  {
+    printf("Unable to get directoy\n");
+    return 0;
+  }
 #endif
 
-    writeFile(dir2, "w", elfPath);
-    writeFile(dir2, "a", device);
-  }
-  else
-    printf("Unable to get directoy\n");
+  writeFile(dirName, "w", elfPath);
+  writeFile(dirName, "a", device);
 
-  free(dir);
+  destroyStr(parentDirName);
+  destroyStr(dirName);
   return 0;
 }

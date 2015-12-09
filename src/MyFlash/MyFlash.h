@@ -9,6 +9,8 @@ int main(int argc, const char * argv[]);
 #endif
 
 void writeFile(char *filename, char *mode, char *str);
+char *appendString(char *destStr, char *srcStr);
+void destroyStr(char *newStr);
 char *getDirectoryName(char *pathname);
 
 #endif // MyFlash_H

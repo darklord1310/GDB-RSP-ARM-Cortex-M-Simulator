@@ -174,11 +174,22 @@ char *getDirectoryName(char *pathname)
 char *appendString(char *destStr, char *srcStr)
 {
   char *newStr;
+  int destLen = 0;
 
-  newStr = malloc(strlen(destStr) + strlen(srcStr) + 1);
-  newStr[0] = '\0';   // ensures the memory is an empty string
-  strcat(newStr, destStr);
-  strcat(newStr, srcStr);
+  if(srcStr != NULL)
+  {
+    if(destStr != NULL)
+      destLen = strlen(destStr);
+      
+    newStr = malloc(destLen + strlen(srcStr) + 1);
+    newStr[0] = '\0';   // ensures the memory is an empty string
+    
+    if(destStr != NULL)
+      strcat(newStr, destStr);
+    strcat(newStr, srcStr);
+  }
+  else
+    return NULL;
 
   return newStr;
 }
