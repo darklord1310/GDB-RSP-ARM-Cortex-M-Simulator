@@ -4,8 +4,9 @@
 #include <malloc.h>
 #include "MyFlash.h"
 
-void writeFile(FILE *file, char *filename, char *mode, char *str)
+void writeFile(char *filename, char *mode, char *str)
 {
+  FILE *file;
   file = fopen(filename, mode);
 
   if(file == NULL)
@@ -47,7 +48,6 @@ int main(int argc, const char * argv[])
 {
   int i;
   char elfPath[1024] = "", device[100]= "", *ret1, *ret2, *dir = NULL, dir2[1024];
-  FILE file;
 
   for(i = 0; i < argc; i++)
   {
@@ -75,8 +75,8 @@ int main(int argc, const char * argv[])
     strcat(dir2, "/ElfLocation.txt");
 #endif
 
-    writeFile(&file, dir2, "w", elfPath);
-    writeFile(&file, dir2, "a", device);
+    writeFile(dir2, "w", elfPath);
+    writeFile(dir2, "a", device);
   }
   else
     printf("Unable to get directoy\n");

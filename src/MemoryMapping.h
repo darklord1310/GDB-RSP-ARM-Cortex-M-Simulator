@@ -7,10 +7,15 @@
 #define PAGE_SIZE     1024
 #define OFFSET_SIZE   1024
 
+typedef enum {READ, WRITE} Operation;
 
-uint32_t directory[DIR_SIZE];
-uint32_t page[PAGE_SIZE];
-uint32_t offset[OFFSET_SIZE];
+uint32_t (*(*directory[DIR_SIZE]))();
+
+
+uint32_t (*page[PAGE_SIZE])();
+
+
+uint32_t (*offset[OFFSET_SIZE])();
 
 void memoryMap(uint32_t startAddress, uint32_t range, void (*funcPtr)());
 void initVirtualMemory();
@@ -19,9 +24,7 @@ void initDirectory();
 void initPage();
 void initOffset();
 
-uint32_t handler(readWrite, data, size);
-
-
+uint32_t handler(Operation readWrite, uint32_t data, uint32_t size);
 
 
 

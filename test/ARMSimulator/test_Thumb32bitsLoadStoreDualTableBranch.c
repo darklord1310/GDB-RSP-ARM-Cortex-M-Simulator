@@ -4,6 +4,7 @@
 #include "MOVT.h"
 #include "SignedAndUnsignedSaturate.h"
 #include "SignedAndUnsignedBitFieldExtract.h"
+#include "SaturateOperation.h"
 #include "BFIandBFC.h"
 #include "RRX.h"
 #include "RORImmediate.h"

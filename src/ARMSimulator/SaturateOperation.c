@@ -1,4 +1,4 @@
-/*  
+/*
     GDB RSP and ARM Simulator
 
     Copyright (C) 2015 Wong Yan Yin, <jet_wong@hotmail.com>,
@@ -20,23 +20,32 @@
     along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#ifndef SignedAndUnsignedSaturate_H
-#define SignedAndUnsignedSaturate_H
-
-#include "ARMRegisters.h"
-#include "getAndSetBits.h"
-#include "ITandHints.h"
-#include "StatusRegisters.h"
-#include "ConditionalExecution.h"
-#include "ShiftOperation.h"
-#include <stdint.h>
+#include "SaturateOperation.h"
+#include <math.h>
 #include <stdio.h>
-#include <assert.h>
 
-void SSATT1(uint32_t instruction);
-void USATT1(uint32_t instruction);
-void executeSSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDirection, uint32_t shiftImmediate);
-void executeUSAT(uint32_t Rd, uint32_t Rn, uint32_t immediate, uint32_t shiftDirection, uint32_t shiftImmediate);
 
-#endif // SignedAndUnsignedSaturate_H
+int32_t saturationQ(int32_t sign, int32_t operand, uint32_t saturatedTo, uint32_t *saturated)
+{
+  int32_t result, max, min;
+
+  if(sign)
+  {
+    max = (int32_t)(pow(2, saturatedTo + 1) / 2) - 1;
+    min = -(max + 1);
+  }
+  else
+  {
+    max = (int32_t)(pow(2, saturatedTo + 1) / 2) - 1;
+    min = 0;
+  }
+
+  if(operand > max)
+  { result = max; *saturated = 1; }
+  else if(operand < min)
+  { result = min; *saturated = 1; }
+  else
+  { result = operand; *saturated = 0; }
+
+  return result;
+}

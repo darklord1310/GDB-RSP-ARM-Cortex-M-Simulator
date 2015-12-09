@@ -53,4 +53,4 @@ struct RspData
 // char *rspState(RspData *rspData, char *data);
 void rspState(RspData *rspData, char *data);
 
-#endif // StateRSP_H
+#endif // stateRSP_H

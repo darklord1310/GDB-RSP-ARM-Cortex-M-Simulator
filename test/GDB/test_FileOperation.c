@@ -15,18 +15,16 @@ void tearDown(void)
 
 void test_readFile_should_obtain_all_the_data_from_the_file(void)
 {
-  FILE file;
-  ConfigInfo configInfo = {0, 0, 0, 0};
   char *filename = "TEST1.txt", *str, str1[100], str2[100];
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
   char device[] = "STM32F429ZI";
 
   // write file to the text
-  writeFile(&file, filename, "w", elfPath);
-  writeFile(&file, filename, "a", device);
+  // writeFile(&file, filename, "w", elfPath);
+  // writeFile(&file, filename, "a", device);
 
   // read file from the text that was written
-	str = readFile(&file, filename);
+	str = readFile(filename, "r");
   sscanf(str, "%s %s", str1, str2);
 
   TEST_ASSERT_EQUAL_STRING(elfPath, str1);
@@ -35,12 +33,11 @@ void test_readFile_should_obtain_all_the_data_from_the_file(void)
 
 void test_readConfigfile_given_device_STM32F429ZI_should_read_the_info(void)
 {
-  FILE file;
   ConfigInfo configInfo = {0, 0, 0, 0};
   char *filename = "config";
   char device[] = "STM32F429ZI";
 
-	readConfigfile(&file, filename, &configInfo, device);
+	readConfigfile(filename, "r", &configInfo, device);
 
   // TEST_ASSERT_EQUAL_STRING("STM32F429ZI", configInfo.device);
   TEST_ASSERT_EQUAL(0x8000000, configInfo.flashOrigin);
@@ -51,12 +48,11 @@ void test_readConfigfile_given_device_STM32F429ZI_should_read_the_info(void)
 
 void test_readConfigfile_given_device_STM32F429YI_should_read_the_info(void)
 {
-  FILE file;
   ConfigInfo configInfo = {0, 0, 0, 0};
   char *filename = "config";
   char device[] = "STM32F429YI";
 
-	readConfigfile(&file, filename, &configInfo, device);
+	readConfigfile(filename, "r", &configInfo, device);
 
   // TEST_ASSERT_EQUAL_STRING("", configInfo.device);
   TEST_ASSERT_EQUAL(0, configInfo.flashOrigin);
@@ -65,15 +61,29 @@ void test_readConfigfile_given_device_STM32F429YI_should_read_the_info(void)
   TEST_ASSERT_EQUAL(0, configInfo.ramSize);
 }
 
+void test_createGdbServerInfo_given_host_and_port_should_create_GdbServerInfo_object(void)
+{
+  GdbServerInfo *gdbServerInfo;
+
+  gdbServerInfo = createGdbServerInfo("127.0.1", 2058);
+
+  TEST_ASSERT_EQUAL_STRING("127.0.1", gdbServerInfo->host);
+  TEST_ASSERT_EQUAL(2058, gdbServerInfo->port);
+
+  destroyGdbServerInfo(gdbServerInfo);
+}
+
 void test_readGdbServerConfigFile_should_return_port_number(void)
 {
-  FILE file;
+  GdbServerInfo *gdbServerInfo;
   char *filename = "GDBServerConfig.ini";
-  int ret;
 
-	ret = readGdbServerConfigFile(&file, filename);
+	gdbServerInfo = readGdbServerConfigFile(filename, "r");
 
-  TEST_ASSERT_EQUAL(2009, ret);
+  TEST_ASSERT_EQUAL_STRING("127.0.0.1", gdbServerInfo->host);
+  TEST_ASSERT_EQUAL(2009, gdbServerInfo->port);
+
+  destroyGdbServerInfo(gdbServerInfo);
 }
 
 void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
@@ -83,7 +93,7 @@ void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
   char buffer[1024] = "";
 
-	writeFile(file, filename, "w", elfPath);
+	writeFile(filename, "w", elfPath);
 
   file = fopen(filename, "r");
 
@@ -109,7 +119,7 @@ void test_writeFile_should_write_a_string_to_a_text(void)
   char strToWrite[] = "HelloJackson";
   char buffer[1024] = "";
 
-	writeFile(file, filename, "a", strToWrite);
+	writeFile(filename, "a", strToWrite);
 
   file = fopen(filename, "r");
 
@@ -147,4 +157,17 @@ void test_getDirectoryName_given_a_non_path_string_should_return_the_null(void)
   str = getDirectoryName(buf);
 
   TEST_ASSERT_EQUAL_STRING(NULL, str);
+}
+
+void test_appendString_given_default_string_and_another_string_should_append_the_string(void)
+{
+  char *defaultStr = "Hello ";
+  char *strToAppend = "and Welcome";
+  char *retStr = NULL;
+  
+  retStr = appendString(defaultStr, strToAppend);
+  
+  TEST_ASSERT_EQUAL_STRING("Hello and Welcome", retStr);
+
+  destroyStr(retStr);
 }

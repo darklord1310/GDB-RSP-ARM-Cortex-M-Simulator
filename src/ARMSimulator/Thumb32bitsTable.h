@@ -124,6 +124,7 @@
 #include "VCVTBandVCVTT.h"
 #include "VCVTandVCVTR.h"
 #include "VDIV.h"
+#include "SaturateOperation.h"
 #include <stdint.h>
 
 typedef struct BitsInfo_t BitsInfo;
