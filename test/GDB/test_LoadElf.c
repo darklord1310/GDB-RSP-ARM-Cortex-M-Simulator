@@ -201,6 +201,4 @@ void test_loadElf()
   loadElf(ELF_FILE, 0x8000000, 2048*1024);
 
   TEST_ASSERT_EQUAL(0x8000760, coreReg[PC]);
-
-  closeElfFile();
 }

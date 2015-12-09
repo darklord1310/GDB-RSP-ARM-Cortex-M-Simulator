@@ -59,10 +59,10 @@ void loadElf(char *elfPath, uint32_t flashStartAddr, uint32_t flashSize)
       simulatorCopyBlock(physAddr, elfSection->dataAddress, elfSection->size);
 
       printf("Loading section %s, size 0x%x lma 0x%x\n", sectionName, elfSection->size, physAddr);
+      closeElfSection(elfSection);
     }
   }
 
-  // closeElfSection(elfSection);
   closeElfFile();
   writeToCoreRegisters(PC, getStartAddress(elfData));
   printf("Start address 0x%x, load size %d\n", coreReg[PC], loadSize);
