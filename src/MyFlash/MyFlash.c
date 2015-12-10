@@ -11,7 +11,7 @@ void writeFile(char *filename, char *mode, char *str)
 
   if(file == NULL)
   {
-    printf("error: cannot open the file %s\n", filename);
+    printf("11error: cannot open the file %s\n", filename);
     return;
   }
 
@@ -71,6 +71,7 @@ int main(int argc, const char * argv[])
      strcpy(dir2, dir);
 #if defined (TEST)
     strcat(dir2, "/TEST1.txt");
+    puts(dir2);
 #else
     strcat(dir2, "/ElfLocation.txt");
 #endif

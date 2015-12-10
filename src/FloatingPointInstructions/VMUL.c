@@ -68,10 +68,7 @@ void VMUL(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-      {
         writeSinglePrecision(d, FPMulSinglePrecision( fpuSinglePrecision[d], fpuSinglePrecision[m], fPSCR) );
-        handleFPException();  
-      }
     }
     
     shiftITState();
@@ -81,10 +78,7 @@ void VMUL(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-    {
-      writeSinglePrecision(d, FPMulSinglePrecision( fpuSinglePrecision[d], fpuSinglePrecision[m], fPSCR) );
-      handleFPException();  
-    }
+      writeSinglePrecision(d, FPMulSinglePrecision( fpuSinglePrecision[d], fpuSinglePrecision[m], fPSCR) );  
   }
 
   coreReg[PC] += 4;  

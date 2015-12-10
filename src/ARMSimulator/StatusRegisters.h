@@ -37,6 +37,7 @@
                   
 #include <stdbool.h>
 #include <stdint.h>
+#include "SaturateOperation.h"
 #include "fenv.h"
 
 typedef enum {FPTYPE_NONZERO, FPTYPE_ZERO, FPTYPE_INFINITY, FPTYPE_QNAN, FPTYPE_SNAN} FPType;
@@ -93,7 +94,9 @@ uint32_t FPMaxNormal(uint32_t signBit, int noOfBits);
 uint32_t FPInfinity(uint32_t signBit, int noOfBits);
 uint32_t FPZero(uint32_t sign, int noOfBits);
 uint32_t FPDefaultNaN(int noOfBits);
-FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl);
+uint32_t FPProcessNaN(FPType type, uint32_t operand, uint32_t FPControl);
+uint32_t FPProcessNaNs(FPType type1, FPType type2, uint32_t v1, uint32_t v2, uint32_t FPControl, bool *done);
+FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl, uint32_t noOfBits);
 uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl);
 void FPCompare(uint32_t value1, uint32_t value2, int compareInstructionType, uint32_t FPControl);
 void raiseFPUnderflowException(uint32_t FPStatusRegisterSelection);
@@ -104,10 +107,10 @@ void raiseFPOverflowException(uint32_t FPStatusRegisterSelection);
 void raiseFPInputDenormalizeException(uint32_t FPStatusRegisterSelection);
 uint32_t readFPSCRorFPDSCR(uint32_t FPControl, int upperLimit, int lowerLimit);
 void modifyFPSCRorFPDSCR(uint32_t FPControl, uint32_t bitsToSet, int upperLimit, int lowerLimit);
-
 void getNumbersOfExponentAndFractionBits(int noOfBits, int *E, int *F);
-float determineMinimumExp(int E);
-void getFloatingPointNumberData(float value, uint32_t *sign, float *exponent ,float *mantissa);
+int determineMinimumExp(int E);
+void getFloatingPointNumberData(float value, uint32_t *sign, uint32_t *exponent ,double *mantissa);
+void unpackFloatData(uint32_t value, uint32_t *sign, uint32_t *exp, uint32_t *frac, uint32_t noOfBits);
 
 
 #endif // StatusRegisters_H

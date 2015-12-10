@@ -116,7 +116,7 @@ void VCVTBandVCVTT(uint32_t instruction)
         if(sz == 1)
           ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
         else
-          writeSinglePrecision(d, FPHalfToSingle((uint16_t)getBits(fpuSinglePrecision[m],lowBit+15,lowBit), 32) );
+          writeSinglePrecision(d, FPHalfToSingle((uint16_t)getBits(fpuSinglePrecision[m],lowBit+15,lowBit), fPSCR) );
       }
       else
       {
@@ -147,7 +147,7 @@ void VCVTBandVCVTT(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-        writeSinglePrecision(d, FPHalfToSingle((uint16_t)getBits(fpuSinglePrecision[m],lowBit+15,lowBit), 32) );
+        writeSinglePrecision(d, FPHalfToSingle((uint16_t)getBits(fpuSinglePrecision[m],lowBit+15,lowBit), fPSCR) );
     }
     else
     {

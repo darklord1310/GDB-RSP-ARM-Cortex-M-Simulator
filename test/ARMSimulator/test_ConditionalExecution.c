@@ -8,6 +8,8 @@
 #include "StatusRegisters.h"
 #include "getAndSetBits.h"
 #include "getMask.h"
+#include "SaturateOperation.h"
+
 
 void setUp(void)
 {
