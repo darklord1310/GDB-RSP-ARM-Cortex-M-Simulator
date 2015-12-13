@@ -32,7 +32,6 @@
 #include "ARMSimulator.h"
 #include "State.h"
 #include "stateRSP.h"
-#include "FileOperation.h"
 #include "ConfigurationDetail.h"
 #include "LoadElf.h"
 
@@ -169,17 +168,56 @@ void displayErrorMsg(char *errorMsg)
 #endif
 }
 
-int main(int argc, const char * argv[])
+void *retrieveData(char *dir, TypeOfDataToRetrieve dataToRetrieve)
 {
-    int i, portNumber = DEFAULT_PORT;
-    char *str, elfPath[100], device[100], *parentDirName, *dirName;
-    SOCKET sock;
-    RspData rspData = {INITIAL, sock};
+    char *dirName, *str, elfPath[100], device[100];
+    GdbServerInfo *gdbServerInfo;
     ConfigInfo configInfo = {.flashOrigin = 0,
                              .flashSize = 0,
                              .ramOrigin = 0,
                              .ramSize = 0
                             };
+
+    if(dataToRetrieve == GDB_SERVER_INFO)
+    {
+        dirName = appendString(dir, "/GDBServerConfig.ini");
+        gdbServerInfo = readGdbServerConfigFile(dirName, "r");
+        destroyStr(dirName);
+
+        return gdbServerInfo;
+    }
+    else if(dataToRetrieve == ELF_PATH)
+    {
+        dirName = appendString(dir, "/ElfLocation.txt");
+        str = readFile(dirName, "r");
+        destroyStr(dirName);
+
+      return str;
+    }
+    else if(dataToRetrieve == ELF_DATA)
+    {
+        // Retrieve location of elf file
+        str = (char *)retrieveData(dir, ELF_PATH);
+        sscanf(str, "%s %s", elfPath, device);
+
+        dirName = appendString(dir, "/config");
+        readConfigfile(dirName, "r", &configInfo, device);
+
+        loadElf(elfPath, configInfo.flashOrigin, configInfo.flashSize);
+        destroyStr(dirName);
+        destroyStr(str);
+
+        return NULL;
+    }
+}
+
+// void gdbserverMain(int argc, const char * argv[])
+GDBSERVER_MAIN int GDBSERVER_CALL main(int argc, const char * argv[])
+{
+    int i, portNumber = DEFAULT_PORT;
+    char *str, *parentDirName;
+    SOCKET sock;
+    RspData rspData = {INITIAL, sock};
     GdbServerInfo *gdbServerInfo;
 
     for(i = 0; i < argc; i++)
@@ -190,12 +228,11 @@ int main(int argc, const char * argv[])
 
     initSimulator();
 
-    // Get the directory name
+    // Get the parent directory name
     parentDirName = getDirectoryName((char *)argv[0]);
 
-    // Retrieve the port number from a self created gdb config file
-    dirName = appendString(parentDirName, "/GDBServerConfig.ini");
-    gdbServerInfo = readGdbServerConfigFile(dirName, "r");
+    // Retrieve the host and port from a self created gdb config file
+    gdbServerInfo = (GdbServerInfo *)retrieveData(parentDirName, GDB_SERVER_INFO);
 
     if(gdbServerInfo->port != -1)
       portNumber = gdbServerInfo->port;        // use default port if port unable to retrieve from GDBServerConfig
@@ -203,15 +240,11 @@ int main(int argc, const char * argv[])
     // Connection from client
     waitingForConnection(&rspData.sock, portNumber);
 
-    // Retrieve location of elf file
-    dirName = appendString(parentDirName, "/ElfLocation.txt");
-    str = readFile(dirName, "r");
-    sscanf(str, "%s %s", elfPath, device);
-
     // Retrieve the data from elf file
-    dirName = appendString(parentDirName, "/config");
-    readConfigfile(dirName, "r", &configInfo, device);
-    loadElf(elfPath, configInfo.flashOrigin, configInfo.flashSize);
+    retrieveData(parentDirName, ELF_DATA);
+
+    destroyStr(parentDirName);
+    destroyGdbServerInfo(gdbServerInfo);
 
     int bytesSent;
     int bytesRecv;
