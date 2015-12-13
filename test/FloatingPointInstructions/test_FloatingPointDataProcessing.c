@@ -152,6 +152,7 @@ void test_VMLA_given_s1_0x2DE12E13_and_s2_0x2D893814_should_get_s0_0x2e0cbccc()
 // VMLS.F32 s0, s1, s2
 void test_VMLS_given_s1_0x2DE12E13_and_s2_0x2D893814_should_get_s0_0x9BF165F8()
 {
+  writeSinglePrecision(0, 0x00000000);
   writeSinglePrecision(1, 0x2DE12E13);
   writeSinglePrecision(2, 0x2D893814);
   
@@ -293,7 +294,7 @@ void test_VSQRT_given_s0_is_0x2E0CBCCC_should_get_s8_0x36BDD002()
   
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
-  
+
   TEST_ASSERT_EQUAL(0x36BDD002, fpuSinglePrecision[8] );
   TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
@@ -311,7 +312,7 @@ void test_VSQRT_given_s0_is_0x9BC16D9A_should_get_s8_0x7FC00000()
   
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
-
+  
   TEST_ASSERT_EQUAL(0x7FC00000, fpuSinglePrecision[8] );
   TEST_ASSERT_EQUAL(0x0000001, coreReg[fPSCR] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
@@ -470,12 +471,12 @@ void test_VCVTB_given_s2_is_0xbf99999a_should_get_s0_0xBCCDFFFF()
 {
   writeSinglePrecision(2, 0xbf99999a);
   
-  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTT.F16.F32 s0, s2
+  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTB.F16.F32 s0, s2
   coreReg[PC] = 0x08000046;
-  
+  printf("starts here\n");
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
-
+  printf("FPSCR: %x\n", coreReg[fPSCR]);
   TEST_ASSERT_EQUAL(0x7FFFBCCD, fpuSinglePrecision[0] );
   TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
@@ -488,7 +489,7 @@ void test_VCVTB_given_s2_is_0xff800000_should_get_s0_0x7FFFFC00()
 {
   writeSinglePrecision(2, 0xff800000);
   uint32_t value = fpuSinglePrecision[2];
-  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTT.F16.F32 s0, s2
+  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTB.F16.F32 s0, s2
   coreReg[PC] = 0x08000046;
   
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
@@ -506,7 +507,7 @@ void test_VCVTB_given_s2_is_0x7f800000_should_get_s0_0x7FFF7C00()
 {
   writeSinglePrecision(2, 0x7f800000);
   
-  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTT.F16.F32 s0, s2
+  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTB.F16.F32 s0, s2
   coreReg[PC] = 0x08000046;
   
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
@@ -524,7 +525,7 @@ void test_VCVTB_given_s2_is_0x7fffffff_should_get_s0_0x7FFF7FFF()
 {
   writeSinglePrecision(2, 0x7fffffff);
   
-  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTT.F16.F32 s0, s2
+  writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTB.F16.F32 s0, s2
   coreReg[PC] = 0x08000046;
   
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
@@ -627,7 +628,7 @@ void test_VCVTB_given_s2_is_0xbf99999a_should_get_s0_0xBB334000()
   armStep();
 
   TEST_ASSERT_EQUAL(0xBB334000, fpuSinglePrecision[0] );
-  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[fPSCR] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
 
@@ -637,7 +638,7 @@ void test_VCVTB_given_s2_is_0xbf99999a_should_get_s0_0xBB334000()
 void test_VCVTB_given_s2_is_0xff80fc00_should_get_s0_0xFF800000()
 {
   writeSinglePrecision(2, 0xff80fc00);
-  uint32_t value = fpuSinglePrecision[2];
+
   writeInstructionToMemoryGivenByAddress(0xeeb20a41, 0x08000046);  // VCVTB.F32.F16 s0, s2
   coreReg[PC] = 0x08000046;
   
@@ -673,7 +674,7 @@ void test_VCVTB_given_s2_is_0x7f807C00_should_get_s0_0x7F800000()
 
 //testing upper 16 bits, normal value
 // VCVTT.F32.F16 s0, s2
-void test_VCVTB_given_s2_is_0x09bcdb2d_should_get_s0_0xBFF32000()
+void test_VCVTT_given_s2_is_0x09bcdb2d_should_get_s0_0xBFF32000()
 {
   writeSinglePrecision(2, 0x09bcdb2d);
   
@@ -683,15 +684,15 @@ void test_VCVTB_given_s2_is_0x09bcdb2d_should_get_s0_0xBFF32000()
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
 
-  TEST_ASSERT_EQUAL(0xBFF32000, fpuSinglePrecision[0] );
-  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x39378000, fpuSinglePrecision[0] );
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[fPSCR] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
 
 
 //testing upper 16 bits, -infinity
 // VCVTT.F32.F16 s0, s2
-void test_VCVTB_given_s2_is_0xfc00ff80_should_get_s0_0xFF800000()
+void test_VCVTT_given_s2_is_0xfc00ff80_should_get_s0_0xFF800000()
 {
   writeSinglePrecision(2, 0xfc00ff80);
 
@@ -709,7 +710,7 @@ void test_VCVTB_given_s2_is_0xfc00ff80_should_get_s0_0xFF800000()
 
 //testing upper 16 bits, +infinity
 // VCVTT.F32.F16 s0, s2
-void test_VCVTB_given_s2_is_0x7C007f80_should_get_s0_0x7F800000()
+void test_VCVTT_given_s2_is_0x7C007f80_should_get_s0_0x7F800000()
 {
   writeSinglePrecision(2, 0x7C007f80);
   

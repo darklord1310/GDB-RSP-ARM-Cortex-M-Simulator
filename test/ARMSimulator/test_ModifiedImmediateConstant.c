@@ -10,6 +10,7 @@
 #include "StatusRegisters.h"
 #include "ConditionalExecution.h"
 #include "NOP.h"
+#include "SaturateOperation.h"
 
 void setUp(void)
 {

@@ -296,8 +296,8 @@ void test_determineMinimumExp_given_E_is_5_should_get_neg_14()
 void test_getFloatingPointNumberData_given_value_as_above_should_return_the_expected_result()
 {
   float value = 3.22E-22;
-  float exponent,mantissa;
-  uint32_t sign;
+  double mantissa;
+  uint32_t exponent,sign;
   
   getFloatingPointNumberData(value,&sign,&exponent,&mantissa);
   TEST_ASSERT_EQUAL(0,sign);
@@ -306,12 +306,75 @@ void test_getFloatingPointNumberData_given_value_as_above_should_return_the_expe
 }
 
 
+/*  value = 0x6aff994c
+ *  
+ *  Expected:  sign     =  0
+ *             exponent =  213
+ *             mantissa =  8362316
+ */
+void test_unpackFloatData_given_0x6aff994c_and_noOfBits_32_should_return_the_expected_result()
+{
+  uint32_t sign;
+  uint32_t exp;
+  uint32_t frac;
+  uint32_t value = 0x6aff994c;
+  
+  unpackFloatData(value, &sign, &exp, &frac, 32);
+  
+  TEST_ASSERT_EQUAL(0,sign);
+  TEST_ASSERT_EQUAL(213,exp);
+  TEST_ASSERT_EQUAL(8362316,frac);
+}
+
+
+/*  value = 0x6aff994c
+ *  
+ *  Expected:  sign     =  0
+ *             exponent =  0b1101
+ *             mantissa =  0b0101010101
+ */
+void test_unpackFloatData_given_0x3555_and_noOfBits_16_should_return_the_expected_result()
+{
+  uint32_t sign;
+  uint32_t exp;
+  uint32_t frac;
+  uint32_t value = 0x3555;
+  
+  unpackFloatData(value, &sign, &exp, &frac, 16);
+  
+  TEST_ASSERT_EQUAL(sign,0);
+  TEST_ASSERT_EQUAL(exp, 0b1101);
+  TEST_ASSERT_EQUAL(frac,0b0101010101);
+}
+
+
+
+void test_FPUnpack_given_noOfBits_16_should_get_expected_result()
+{
+  uint16_t value = 0x1;
+  FPInfo info = FPUnpack(value, fPSCR, 16);
+  TEST_ASSERT_EQUAL(info.realNumber,5.96046e-8);
+}
+
+
+void test_FPUnpack_given_noOfBits_32_should_get_expected_result()
+{
+  uint32_t value = 0xd258301b;
+  FPInfo info = FPUnpack(value, fPSCR, 32);
+
+  TEST_ASSERT_EQUAL(info.realNumber,-2.32130003E11);
+}
+
+
 void test_FPRound_given_floating_point_value_above_should_get_()
 {
-  uint16_t result = FPSingleToHalf(0xbf99999a, fPSCR);
+  // uint16_t result = FPSingleToHalf(0xbf99999a, fPSCR);
   // uint32_t result = FPRound(3.213E-14, 16, fPSCR);
-  
-  printf("result : %x\n", result);
-  printf("fPSCR: %x\n", coreReg[fPSCR]);
-  TEST_ASSERT_EQUAL(0x00000018, coreReg[fPSCR]);
+  FPInfo info = FPUnpack(0x999a, fPSCR, 16);
+  printf("%e\n", info.realNumber );
+  //-0.002735138
+  // uint32_t result = FPHalfToSingle(0x999a, fPSCR);
+  // printf("result : %x\n", result);
+  // printf("fPSCR: %x\n", coreReg[fPSCR]);
+  // TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR]);
 }

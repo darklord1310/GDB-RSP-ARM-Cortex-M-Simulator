@@ -82,8 +82,6 @@ void VNMLAandVNMLS(uint32_t instruction)
           writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), FPNeg(product32,32) , fPSCR) );
         else
           writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 , fPSCR) );
-        
-        handleFPException();  
       }
     }
     
@@ -100,7 +98,6 @@ void VNMLAandVNMLS(uint32_t instruction)
       else
         writeSinglePrecision(d, FPAddSinglePrecision( FPNeg(fpuSinglePrecision[d],32), product32 , fPSCR) );
     }
-    handleFPException();
   }
 
   coreReg[PC] += 4;  

@@ -67,8 +67,6 @@ void VDIV(uint32_t instruction)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
         writeSinglePrecision(d, FPDivSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR) );
-      
-      handleFPException();
     }
     
     shiftITState();
@@ -79,8 +77,6 @@ void VDIV(uint32_t instruction)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
       writeSinglePrecision(d, FPDivSinglePrecision(fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR) );
-      
-    handleFPException();
   }
 
   coreReg[PC] += 4;  

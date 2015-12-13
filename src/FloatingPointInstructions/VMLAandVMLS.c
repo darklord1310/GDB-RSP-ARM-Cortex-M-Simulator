@@ -65,7 +65,6 @@ void VMLAandVMLS(uint32_t instruction)
   uint32_t op = getBits(instruction,6,6);
   uint32_t M = getBits(instruction,5,5);
   uint32_t D = getBits(instruction,22,22);
-  uint64_t addend64;
   uint32_t addend32;
 
   uint32_t d = determineRegisterBasedOnSZ(D, Vd, sz);
@@ -85,9 +84,8 @@ void VMLAandVMLS(uint32_t instruction)
         if(op == 0)
           addend32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR);
         else
-          addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR), 64);
-        
-        handleFPException();
+          addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR), 32);
+
         writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32, fPSCR) );
       }
     }
@@ -101,11 +99,10 @@ void VMLAandVMLS(uint32_t instruction)
     else
     {
       if(op == 0)
-        addend32 = FPMulSinglePrecision( (fpuSinglePrecision[n]), fpuSinglePrecision[m], fPSCR) ;
+        addend32 = FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR) ;
       else
         addend32 = FPNeg( FPMulSinglePrecision( fpuSinglePrecision[n], fpuSinglePrecision[m], fPSCR), 32);
-      
-      handleFPException();
+
       writeSinglePrecision(d, FPAddSinglePrecision(fpuSinglePrecision[d], addend32, fPSCR) );
     }
   }

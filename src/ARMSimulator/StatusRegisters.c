@@ -387,42 +387,237 @@ uint64_t FPNeg(uint64_t value, int size)
 
 uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  FPInfo v1 = FPUnpack(value1, FPControl);
-  FPInfo v2 = FPUnpack(value2, FPControl);
+  int sign, fe;
+  uint32_t result;
+  float temp;
+  bool done,inf1,inf2,zero1,zero2;
   
-  float ans = v1.realNumber * v2.realNumber;
+  FPInfo v1 = FPUnpack(value1, FPControl,32);
+  FPInfo v2 = FPUnpack(value2, FPControl,32);
+  result = FPProcessNaNs(v1.type, v2.type, value1, value2, FPControl, &done);
+  
+  if(!done)
+  {
+    inf1 = (v1.type == FPTYPE_INFINITY);
+    inf2 = (v2.type == FPTYPE_INFINITY);
+    zero1 = (v1.type == FPTYPE_ZERO);
+    zero2 = (v2.type == FPTYPE_ZERO);
+    if( (inf1 && zero2) || (zero1 && inf2) )
+    {
+      result = FPDefaultNaN(32);
+      raiseFPInvalidException(FPControl);
+    }
+    else if( inf1 || inf2 )
+    {
+      if(v1.signBit == v2.signBit)
+        sign = 0;
+      else
+        sign = 1;
+      result = FPInfinity(sign,32);
+    }
+    else if( zero1 || zero2 )
+      result = FPInfinity(1,32);
+    else if( zero1 && zero2 && (v1.signBit == v2.signBit) )
+    {
+      if(v1.signBit == v2.signBit)
+        sign = 0;
+      else
+        sign = 1;
+      result = FPZero(sign,32);
+    }
+    else
+    {
+      feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+      
+      temp = v1.realNumber + v2.realNumber;
+      
+      if (fetestexcept(FE_INEXACT))            //test for Inexact Flag after the operation
+        raiseFPInexactException(FPControl);
 
-  return ( *(uint32_t *)&ans );
+      if( temp == 0.0)
+      {
+        if( readFPSCRorFPDSCR(FPControl,23,22) == 0b10 )
+          sign = 1;
+        else  
+          sign = 0;
+        
+        result = FPZero(sign,32);
+      }
+      else
+      {
+        feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+        temp = v1.realNumber * v2.realNumber;
+      
+        if (fetestexcept(FE_INEXACT))            //test for Inexact Flag after the operation
+          raiseFPInexactException(FPControl);
+          
+        result = FPRound(temp,32,FPControl);
+      }
+    }
+  }
+  
+  return result;
 }
 
 uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  FPInfo v1 = FPUnpack(value1, FPControl);
-  FPInfo v2 = FPUnpack(value2, FPControl);
+  int sign, fe;
+  uint32_t result;
+  float temp;
+  bool done,inf1,inf2,zero1,zero2;
   
-  float ans = v1.realNumber / v2.realNumber;
-
-  return ( *(uint32_t *)&ans );
+  FPInfo v1 = FPUnpack(value1, FPControl,32);
+  FPInfo v2 = FPUnpack(value2, FPControl,32);
+  result = FPProcessNaNs(v1.type, v2.type, value1, value2, FPControl, &done);
+  
+  if(!done)
+  {
+    inf1 = (v1.type == FPTYPE_INFINITY);
+    inf2 = (v2.type == FPTYPE_INFINITY);
+    zero1 = (v1.type == FPTYPE_ZERO);
+    zero2 = (v2.type == FPTYPE_ZERO);
+    if( (inf1 && inf2) || (zero1 && zero2) )
+    {
+      result = FPDefaultNaN(32);
+      raiseFPInvalidException(FPControl);
+    }
+    else if( inf1 || zero2 )
+    {
+      if(v1.signBit == v2.signBit)
+        sign = 0;
+      else
+        sign = 1;
+      result = FPInfinity(sign,32);
+      if(!inf1)
+        raiseFPDIVZeroException(FPControl);
+    }
+    else if( zero1 || inf2 )
+    {
+      if(v1.signBit == v2.signBit)
+        sign = 0;
+      else
+        sign = 1;
+      result = FPZero(sign,32);
+    }
+    else
+    {
+      feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+      temp = v1.realNumber / v2.realNumber;
+      if (fetestexcept(FE_INEXACT))            //test for Inexact Flag after the operation
+        raiseFPInexactException(FPControl);
+        
+      result = FPRound(temp,32,FPControl);
+    }
+  }
+  
+  return result;
 }
 
 uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  FPInfo v1 = FPUnpack(value1, FPControl);
-  FPInfo v2 = FPUnpack(value2, FPControl);
+  int sign, fe;
+  uint32_t result;
+  float temp;
+  bool done,inf1,inf2,zero1,zero2;
   
-  float ans = v1.realNumber + v2.realNumber;
+  FPInfo v1 = FPUnpack(value1, FPControl,32);
+  FPInfo v2 = FPUnpack(value2, FPControl,32);
+  result = FPProcessNaNs(v1.type, v2.type, value1, value2, FPControl, &done);
+  
+  if(!done)
+  {
+    inf1 = (v1.type == FPTYPE_INFINITY);
+    inf2 = (v2.type == FPTYPE_INFINITY);
+    zero1 = (v1.type == FPTYPE_ZERO);
+    zero2 = (v2.type == FPTYPE_ZERO);
+    if(inf1 && inf2 && (v1.signBit == !v2.signBit) )
+    {
+      result = FPDefaultNaN(32);
+      raiseFPInvalidException(FPControl);
+    }
+    else if( (inf1 && (v1.signBit == 0) ) || (inf2 && (v2.signBit == 0) ) )
+      result = FPInfinity(0,32);
+    else if( (inf1 && (v1.signBit == 1) ) || (inf2 && (v2.signBit == 1) ) )
+      result = FPInfinity(1,32);
+    else if( zero1 && zero2 && (v1.signBit == v2.signBit) )
+      result = FPZero(v1.signBit,32);
+    else
+    {
+      feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+      
+      temp = v1.realNumber + v2.realNumber;
+      
+      if (fetestexcept(FE_INEXACT))            //test for Inexact Flag after the operation
+        raiseFPInexactException(FPControl);
 
-  return ( *(uint32_t *)&ans );
+      if( temp == 0.0)
+      {
+        if( readFPSCRorFPDSCR(FPControl,23,22) == 0b10 )
+          sign = 1;
+        else  
+          sign = 0;
+        
+        result = FPZero(sign,32);
+      }
+      else
+        result = FPRound(temp,32,FPControl);
+    }
+  }
+  
+  return result;
 }
+
 
 uint32_t FPSubSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  FPInfo v1 = FPUnpack(value1, FPControl);
-  FPInfo v2 = FPUnpack(value2, FPControl);
+  int sign, fe;
+  uint32_t result;
+  float temp;
+  bool done,inf1,inf2,zero1,zero2;
   
-  float ans = v1.realNumber - v2.realNumber;
-
-  return ( *(uint32_t *)&ans );
+  FPInfo v1 = FPUnpack(value1, FPControl,32);
+  FPInfo v2 = FPUnpack(value2, FPControl,32);
+  result = FPProcessNaNs(v1.type, v2.type, value1, value2, FPControl, &done);
+  
+  if(!done)
+  {
+    inf1 = (v1.type == FPTYPE_INFINITY);
+    inf2 = (v2.type == FPTYPE_INFINITY);
+    zero1 = (v1.type == FPTYPE_ZERO);
+    zero2 = (v2.type == FPTYPE_ZERO);
+    if(inf1 && inf2 && (v1.signBit == v2.signBit) )
+    {
+      result = FPDefaultNaN(32);
+      raiseFPInvalidException(FPControl);
+    }
+    else if( (inf1 && (v1.signBit == 0) ) || (inf2 && (v2.signBit == 1) ) )
+      result = FPInfinity(0,32);
+    else if( (inf1 && (v1.signBit == 1) ) || (inf2 && (v2.signBit == 0) ) )
+      result = FPInfinity(1,32);
+    else if( zero1 && zero2 && (v1.signBit == !v2.signBit) )
+      result = FPZero(v1.signBit,32);
+    else
+    {
+      feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+      temp = v1.realNumber - v2.realNumber;
+      if (fetestexcept(FE_INEXACT))            //test for Inexact Flag after the operation
+        raiseFPInexactException(FPControl);
+        
+      if( temp == 0.0)
+      {
+        if( readFPSCRorFPDSCR(FPControl,23,22) == 0b10 )
+          sign = 1;
+        else  
+          sign = 0;
+        
+        result = FPZero(sign,32);
+      }
+      else
+        result = FPRound(temp,32,FPControl);
+    }
+  }
+  
+  return result;
 }
 
 uint64_t FPAbs(uint64_t value, int size)
@@ -434,11 +629,34 @@ uint64_t FPAbs(uint64_t value, int size)
 
 uint32_t FPSqrtSinglePrecision(uint32_t value, uint32_t FPControl)
 {
-  FPInfo v1 = FPUnpack(value, FPControl);
+  int fe;
+  float temp;
+  FPInfo v1 = FPUnpack(value, FPControl,32);
+  uint32_t result;
   
-  float ans = sqrt(v1.realNumber);
-
-  return ( *(uint32_t *)&ans );
+  if (v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN )
+    result = FPProcessNaN(v1.type,value,FPControl);
+  else if( v1.type == FPTYPE_ZERO )
+    result = FPZero(v1.signBit,32);
+  else if(v1.type == FPTYPE_INFINITY && v1.signBit == 0)
+    result = FPInfinity(v1.signBit,32);
+  else if(v1.signBit == 1)
+  {
+    result = FPDefaultNaN(32);
+    raiseFPInvalidException(FPControl);
+  }
+  else
+  {
+    feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+    temp = sqrt(v1.realNumber);
+    
+    if (fetestexcept(FE_INEXACT))            //test for Inexact Flag after the operation
+        raiseFPInexactException(FPControl);
+        
+    result = FPRound( temp, 32, FPControl);
+  }
+    
+  return result;
 }
 
 
@@ -608,13 +826,73 @@ uint32_t FPZero(uint32_t sign, int noOfBits)
   return ( sign << E+F ) ;
 }
 
+//this function processes a NaN operand and producing the correct result value and generate Invalid Exception if necessary
+uint32_t FPProcessNaN(FPType type, uint32_t operand, uint32_t FPControl)
+{
+  uint32_t topFrac = 22;
+  uint32_t result = operand;
+  
+  if(type == FPTYPE_SNAN)
+  {
+    result = setBits(result,0b1,topFrac,topFrac);
+    raiseFPInvalidException(FPControl);
+  }
+  if(readFPSCRorFPDSCR(FPControl,25,25) == 1)
+    result = FPDefaultNaN(32);
+  
+  return result;
+}
 
+/*
+  if type1 == FPType_SNaN then
+      done = TRUE; result = FPProcessNaN(type1, op1, fpscr_val);
+  elsif type2 == FPType_SNaN then
+      done = TRUE; result = FPProcessNaN(type2, op2, fpscr_val);
+  elsif type1 == FPType_QNaN then
+      done = TRUE; result = FPProcessNaN(type1, op1, fpscr_val);
+  elsif type2 == FPType_QNaN then
+      done = TRUE; result = FPProcessNaN(type2, op2, fpscr_val);
+  else
+      done = FALSE; result = Zeros(N); // ‘Don’t care’ result
+  return (done, result);
+*/
+uint32_t FPProcessNaNs(FPType type1, FPType type2, uint32_t v1, uint32_t v2, uint32_t FPControl, bool *done)
+{
+  uint32_t result;
+  if(type1 == FPTYPE_SNAN)
+  {
+    *done = true;
+    result = FPProcessNaN(type1,v1,FPControl);
+  }
+  else if(type2 == FPTYPE_SNAN)
+  {
+    *done = true;
+    result = FPProcessNaN(type2,v2,FPControl);
+  }
+  else if(type1 == FPTYPE_QNAN)
+  {
+    *done = true;
+    result = FPProcessNaN(type1,v1,FPControl);
+  }
+  else if(type2 == FPTYPE_QNAN)
+  {
+    *done = true;
+    result = FPProcessNaN(type2,v2,FPControl);
+  }
+  else
+  {
+    *done = false;
+    result = 0;
+  }
+  return result;
+}
 
 
 uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl)
 {
   uint32_t result;
-  FPInfo v1 = FPUnpack(value, FPControl);
+  FPInfo v1 = FPUnpack(value, FPControl,16);
+  
   if(v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN)
   {
     if( readFPSCRorFPDSCR(FPControl, 25, 25) == 1)
@@ -629,7 +907,7 @@ uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl)
   else if(v1.type == FPTYPE_ZERO)
     result = (v1.signBit) << 31;
   else
-    result = FPRound(value, 32, FPControl);
+    result = FPRound(v1.realNumber, 32, FPControl);
   
   return result;
 }
@@ -643,7 +921,7 @@ uint32_t FPHalfToSingle(uint16_t value, uint32_t FPControl)
 uint16_t FPSingleToHalf(uint32_t value, uint32_t FPControl)
 {
   uint16_t result;
-  FPInfo v1 = FPUnpack(value, FPControl);
+  FPInfo v1 = FPUnpack(value, FPControl,32);
 
   if (v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN )
   {
@@ -695,8 +973,8 @@ void FPCompare(uint32_t value1, uint32_t value2, int compareInstructionType, uin
 {
   FPInfo v1, v2;
 
-  v1 = FPUnpack(value1, FPControl);
-  v2 = FPUnpack(value2, FPControl);
+  v1 = FPUnpack(value1, FPControl,32);
+  v2 = FPUnpack(value2, FPControl,32);
   if(v1.type == FPTYPE_QNAN || v1.type == FPTYPE_SNAN || v2.type == FPTYPE_QNAN || v2.type == FPTYPE_SNAN)
   {
     modifyFPSCRorFPDSCR(FPControl, 0b0011, 31, 28);
@@ -715,53 +993,96 @@ void FPCompare(uint32_t value1, uint32_t value2, int compareInstructionType, uin
 }
 
 
-FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl)
+//only support single and half precision
+FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl, uint32_t noOfBits)
 {
   FPInfo info;
-  uint32_t sign;
-  uint32_t exp32;
-  uint32_t frac32;
+  uint32_t sign, exp, frac;
+  int powerTo;
   
-  sign = getBits(FPValue,31,31);
-  exp32 = getBits(FPValue,30,23);
-  frac32 = getBits(FPValue,22,0);
+  unpackFloatData(FPValue, &sign, &exp, &frac, noOfBits);
   
-  if(exp32 == 0)
+  if(noOfBits == 32)
   {
-    if(frac32 == 0 || getBits(FPValue,24,24) == 1)
+    if(exp == 0)
     {
-      info.type = FPTYPE_ZERO;
-      info.realNumber = 0.0;
-      if(frac32 != 0)
-        raiseFPInputDenormalizeException(FPControl);          // Raise Input denormalize exception
+      if(frac == 0 || readFPSCRorFPDSCR(FPControl,24,24) == 1)
+      {
+        info.type = FPTYPE_ZERO;
+        info.realNumber = 0.0;
+        if(frac != 0)
+          raiseFPInputDenormalizeException(FPControl);          // Raise Input denormalize exception
+      }
+      else
+      {
+        info.type = FPTYPE_NONZERO;
+        info.realNumber = pow(2.0,-126) * (frac * pow(2.0,-23));;
+      }
+    }
+    else if(exp == 0b11111111)
+    {
+      if(frac == 0)
+      {
+        info.type = FPTYPE_INFINITY;
+        info.realNumber = pow(2.0,1000000);
+      }
+      else
+      {
+        if(getBits(frac,22,22) == 1)
+          info.type = FPTYPE_QNAN;
+        else
+          info.type = FPTYPE_SNAN;
+        info.realNumber = 0.0;
+      }
     }
     else
     {
       info.type = FPTYPE_NONZERO;
-      info.realNumber = *(float *)&FPValue;
+      powerTo = exp - 127;
+      info.realNumber = pow(2, powerTo) * (1.0 + frac * pow(2,-23) );
     }
   }
-  else if(exp32 == 0b11111111)
+  else if(noOfBits == 16)
   {
-    if(frac32 == 0)
+    if(exp == 0)
     {
-      info.type = FPTYPE_INFINITY;
-      info.realNumber = pow(2.0,1000000);
+      if(frac == 0)
+      {
+        info.type = FPTYPE_ZERO;
+        info.realNumber = 0.0;
+      }
+      else
+      {
+        info.type = FPTYPE_NONZERO;
+        info.realNumber = pow(2.0,-14) * (frac * pow(2.0,-10));
+      }
+    }
+    else if(exp == 0b11111 && readFPSCRorFPDSCR(FPControl,26,26) == 0)
+    {
+      if(frac == 0)
+      {
+        info.type = FPTYPE_INFINITY;
+        info.realNumber = pow(2.0,1000000);
+      }
+      else
+      {
+        if(getBits(frac,9,9) == 1)
+          info.type = FPTYPE_QNAN;
+        else
+          info.type = FPTYPE_SNAN;
+        info.realNumber = 0.0;
+      }
     }
     else
     {
-      if(getBits(frac32,22,22) == 1)
-        info.type = FPTYPE_QNAN;
-      else
-        info.type = FPTYPE_SNAN;
-      info.realNumber = 0.0;
+      info.type = FPTYPE_NONZERO;
+      powerTo = exp - 15;
+      info.realNumber = pow(2, powerTo) * (1.0 + frac * pow(2,-10) );
     }
   }
-  else
-  {
-    info.type = FPTYPE_NONZERO;
-    info.realNumber = *(float *)&FPValue;
-  }
+  
+  if(sign == 1)
+    info.realNumber = info.realNumber * -1.0;
   
   info.signBit = sign;
   
@@ -770,16 +1091,129 @@ FPInfo FPUnpack(uint32_t FPValue, uint32_t FPControl)
 
 
 
-uint32_t FPToFixed(uint32_t value, int M, int fractionBits, int signOrUnsigned, int roundTowardsZero, uint32_t FPControl)
+
+
+uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl)
+{
+  int roundUp, overflowToInf,E,F,minimumExp, fe;
+  double mantissa;
+  double error;
+  uint32_t result, valueInUint32, sign,intMant,exponent;
+  int32_t biasedExp;
+  
+  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
+  minimumExp = determineMinimumExp(E);
+  getFloatingPointNumberData(value, &sign, &exponent ,&mantissa);
+
+  //deal with flush to zero
+  if( readFPSCRorFPDSCR(FPControl, 24, 24) == 1 && (exponent < minimumExp) && noOfBits != 16)
+  {
+    result = FPZero(sign, noOfBits);
+    coreReg[fPSCR] = setBits(coreReg[fPSCR],0b1,3,3);
+  }
+  else
+  {
+    biasedExp = exponent - minimumExp + 1;
+
+    if(biasedExp == 0)
+      mantissa = mantissa / pow(2, (minimumExp - exponent) );
+    
+    // feclearexcept (FE_ALL_EXCEPT);            // clear the exception flag to prevent any interfere
+    double temp = mantissa * pow(2,F);        // perform the operation
+    // fe = fetestexcept (FE_INEXACT);           // check for Inexact Exception
+    // if(fe & FE_INEXACT)                       
+
+    intMant = floor(mantissa * pow(2,F) );
+    error = temp - intMant;                   // there is problem with the code starting from intMant, these lines of code actually checking whether 
+                                              // the value has been rounded or not by looking at the difference between the rounded value, intMant  
+                                              // and unrounded value, temp. But in C, the temp is automatically rounded, so the error will be 0b0
+                                              // Confirmed with the case of :   
+                                              //                                value    = 0x36bdd002 / 5.6568542E-6
+                                              //                                mantissa = 1.482910394668579
+                                              //                                intMant  = 12439554
+                                              // By right we should get decimal places value with temp by mantissa*(2^F) which is 
+                                              // 1.482910394668579 * (2^23) but we only can get 12439554 in temp so turns out error is 0 which it
+                                              // should not. The workaround here is to used the flag given by C to trace the Inexact FP Exception
+                                              // instead of looking at the rounding error.
+
+    if(biasedExp == 0 && (error != 0.0 || readFPSCRorFPDSCR(FPControl, 11, 11) == 1) )
+      raiseFPUnderflowException(FPControl);
+
+    switch( readFPSCRorFPDSCR(FPControl, 23, 22) )
+    {
+      case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits(intMant,0,0) == 1) );
+                  overflowToInf = 1;
+                  break;
+                  
+      case 0b01 : roundUp = (error != 0.0 && sign == 0);
+                  overflowToInf = (sign == 0);
+                  break;
+                  
+      case 0b10 : roundUp = (error != 0.0 && sign == 1);
+                  overflowToInf = (sign == 1);
+                  break;
+                  
+      case 0b11 : roundUp = 0;
+                  overflowToInf = 0;  
+                  break;
+    }
+
+    if(roundUp == 1)
+    {
+      intMant += 1;
+      if(intMant == pow(2,F) )
+        biasedExp = 1;
+      if(intMant == pow(2,F+1) )
+      {
+        biasedExp += 1;
+        intMant = intMant / 2;
+      }
+    }
+
+    if(noOfBits != 16 || readFPSCRorFPDSCR(FPControl, 26, 26) == 0)
+    { 
+      if(biasedExp >= (pow(2,E) - 1) )
+      {
+        result = (overflowToInf == 1) ? FPInfinity(sign,noOfBits) : FPMaxNormal(sign,noOfBits);
+        raiseFPOverflowException(FPControl);
+        error = 1.0;
+      }
+      else
+        result = ( ( ( sign << E ) | getBits(biasedExp,E-1,0) ) << F) | getBits(intMant,F-1,0); 
+    }
+    else
+    {
+      if(biasedExp >= pow(2,E-1))
+      {
+        result = (sign << 15) | 0b111111111111111;
+        raiseFPInvalidException(FPControl);
+        error = 0.0;
+      }
+      else
+        result = ( ( ( sign << E ) | getBits(biasedExp,E-1,0) ) << F) | getBits(intMant,F-1,0);
+    }
+  }
+  
+  if(error != 0.0)
+    raiseFPInexactException(FPControl);
+  
+  return result;
+}
+
+
+
+uint32_t FPToFixed(uint32_t value, uint32_t M, int fractionBits, int signOrUnsigned, int roundTowardsZero, uint32_t FPControl)
 {
   FPInfo v1;
-  float intResult, error;
+  float error;
   bool roundUp;
+  uint32_t result, saturated;
+  int32_t intResult;
   
   if(roundTowardsZero == 1)
     modifyFPSCRorFPDSCR(FPControl,0b11,23,22);
   
-  v1 = FPUnpack(value, FPControl);
+  // v1 = FPUnpack(value, FPControl);
   
   if(v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN)
     raiseFPInvalidException(FPControl);
@@ -805,122 +1239,16 @@ uint32_t FPToFixed(uint32_t value, int M, int fractionBits, int signOrUnsigned, 
   
   if(roundUp == true)
     intResult += 1;
+
+  result = saturationQ(v1.signBit, intResult, M, &saturated);
   
+  if(saturated == 1)
+    raiseFPInvalidException(FPControl);
+  else if(error != 0.0)
+    raiseFPInexactException(FPControl);
   
-  
-}
-
-
-
-
-uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl)
-{
-  int roundUp, overflowToInf,E,F;
-  float mantissa, exponent, biasedExp, intMant, error,minimumExp;
-  uint32_t result, valueInUint32, sign;
-  valueInUint32 = *(uint32_t *)&value;
-  
-  getNumbersOfExponentAndFractionBits(noOfBits, &E, &F);
-  minimumExp = determineMinimumExp(E);
-  getFloatingPointNumberData(value, &sign, &exponent ,&mantissa);
-
-  //deal with flush to zero
-  if( readFPSCRorFPDSCR(FPControl, 24, 24) == 1 && (exponent < minimumExp) && noOfBits != 16)
-  {
-    result = FPZero(sign, noOfBits);
-    coreReg[fPSCR] = setBits(coreReg[fPSCR],0b1,3,3);
-  }
-  else
-  {
-    if( (exponent - minimumExp + 1) < 0)
-      biasedExp = 0;
-    else
-      biasedExp = exponent - minimumExp + 1;
-
-    if(biasedExp == 0)
-      mantissa = mantissa / pow(2, (minimumExp - exponent) );
-    
-    intMant = floor(mantissa * pow(2,F) );
-    error = mantissa * pow(2,F) - intMant;
-
-    if(biasedExp == 0 && (error != 0.0 || readFPSCRorFPDSCR(FPControl, 11, 11) == 1) )
-      raiseFPUnderflowException(FPControl);
-
-    switch( readFPSCRorFPDSCR(FPControl, 23, 22) )
-    {
-      case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits( *(uint32_t *)&intMant,0,0) == 1) );
-                  overflowToInf = 1;
-                  break;
-                  
-      case 0b01 : roundUp = (error != 0.0 && sign == 0);
-                  overflowToInf = (sign == 0);
-                  break;
-                  
-      case 0b10 : roundUp = (error != 0.0 && sign == 1);
-                  overflowToInf = (sign == 1);
-                  break;
-                  
-      case 0b11 : roundUp = 0;
-                  overflowToInf = 0;  
-                  break;
-    }
-    printf("roundUp: %x\n", roundUp);
-    if(roundUp == 1)
-    {
-      intMant += 1;
-      if(intMant == pow(2,F) )
-        biasedExp = 1;
-      if(intMant == pow(2,F+1) )
-      {
-        biasedExp += 1;
-        intMant = intMant / 2;
-      }
-    }
-    printf("biasedExp: %f\n", biasedExp);
-    printf("intMant: %f\n", intMant);
-    if(noOfBits != 16 || readFPSCRorFPDSCR(FPControl, 26, 26) == 0)
-    { 
-      if(biasedExp >= (pow(2,E) - 1) )
-      {
-        result = (overflowToInf == 1) ? FPInfinity(sign,noOfBits) : FPMaxNormal(sign,noOfBits);
-        raiseFPOverflowException(FPControl);
-        error = 1.0;
-      }
-      else
-      {
-        uint32_t ex = *(uint32_t *)&biasedExp;
-        uint32_t mant = *(uint32_t *)&intMant;
-        result = ( ( ( sign << E ) | getBits(ex,E-1,0) ) << F) | getBits(mant,F-1,0);
-        // if( getBits(valueInUint32,30,23) )
-          // result = setBits( ( ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13) ) , 0b1, 0 ,0 );     //set the leading 1
-        // else
-          // result = ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13); 
-      }
-    }
-    else
-    {
-      if(biasedExp >= pow(2,E-1))
-      {
-        result = (sign << 15) | 0b111111111111111;
-        raiseFPInvalidException(FPControl);
-        error = 0.0;
-      }
-      else
-      {
-        if( getBits(valueInUint32,30,23) )
-          result = setBits( ( ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13) ) , 0b1, 0 ,0 );     //set the leading 1
-        else
-          result = ( ( ( (sign) << 5) | getBits(valueInUint32,30,26) ) << 10 ) | getBits(valueInUint32,22,13); 
-      }
-    }
-
-    if(error != 0.0)
-      raiseFPInexactException(FPControl);
-  }
-
   return result;
 }
-
 
 
 
@@ -940,19 +1268,20 @@ void getNumbersOfExponentAndFractionBits(int noOfBits, int *E, int *F)
 
 
 // return the minimum exponent based on the number of exponent bits passing in
-float determineMinimumExp(int E)
+int determineMinimumExp(int E)
 {
-  return (2 - pow(2,(E-1)) );
+  int powerTo = E - 1;
+  return (2 - pow(2,powerTo) );
 }
 
 
 //get the values of sign, unrounded mantissa and exponent from the float passing in
-void getFloatingPointNumberData(float value, uint32_t *sign, float *exponent ,float *mantissa)
+void getFloatingPointNumberData(float value, uint32_t *sign, uint32_t *exponent ,double *mantissa)
 {
   if(value < 0.0)
   {
     *sign = 1;
-    *mantissa = value * -1;
+    *mantissa = value * -1.0;
   }
   else
   {
@@ -976,7 +1305,22 @@ void getFloatingPointNumberData(float value, uint32_t *sign, float *exponent ,fl
 }
 
 
-
+//this function is used in FPUnpack
+void unpackFloatData(uint32_t value, uint32_t *sign, uint32_t *exp, uint32_t *frac, uint32_t noOfBits)
+{
+  if(noOfBits == 16)
+  {
+    *sign = getBits(value,15,15);
+    *exp = getBits(value,14,10);
+    *frac = getBits(value,9,0);
+  }
+  else if(noOfBits == 32)
+  {
+    *sign = getBits(value,31,31);
+    *exp = getBits(value,30,23);
+    *frac = getBits(value,22,0);
+  }
+}
 
 
 

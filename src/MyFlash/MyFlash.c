@@ -11,7 +11,7 @@ void writeFile(char *filename, char *mode, char *str)
 
   if(file == NULL)
   {
-    printf("error: cannot open the file %s\n", filename);
+    printf("11error: cannot open the file %s\n", filename);
     return;
   }
 
