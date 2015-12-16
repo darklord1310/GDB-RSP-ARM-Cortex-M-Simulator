@@ -327,6 +327,7 @@ long long int convertToUnsigned(uint64_t value, uint32_t numberOfBits)
     
     value = (value >> 1);
   }
+  
   return result;
 }
 

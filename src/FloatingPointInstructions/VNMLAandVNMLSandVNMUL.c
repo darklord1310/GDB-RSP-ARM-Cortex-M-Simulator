@@ -150,10 +150,7 @@ void VNMUL(uint32_t instruction)
       if(sz == 1)
         ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
       else
-      {
         writeSinglePrecision(d, FPNeg(product32,32) );
-        handleFPException();  
-      }
     }
     
     shiftITState();
@@ -163,10 +160,7 @@ void VNMUL(uint32_t instruction)
     if(sz == 1)
       ThrowError();                           //undefined instruction if sz == 1 in FPv4-SP architecture
     else
-    {
       writeSinglePrecision(d, FPNeg(product32,32) );
-      handleFPException();
-    }
   }
 
   coreReg[PC] += 4;  

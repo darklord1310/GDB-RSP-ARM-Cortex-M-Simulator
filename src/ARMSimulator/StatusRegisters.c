@@ -30,7 +30,6 @@
 #include "ARMRegisters.h"
 #include "ErrorSignal.h"
 #include "ConditionalExecution.h"
-#include <math.h>
 
 /*
   To check if it is in IT block or not
@@ -387,7 +386,7 @@ uint64_t FPNeg(uint64_t value, int size)
 
 uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  int sign, fe;
+  int sign;
   uint32_t result;
   float temp;
   bool done,inf1,inf2,zero1,zero2;
@@ -461,7 +460,7 @@ uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPContr
 
 uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  int sign, fe;
+  int sign;
   uint32_t result;
   float temp;
   bool done,inf1,inf2,zero1,zero2;
@@ -515,7 +514,7 @@ uint32_t FPDivSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPContr
 
 uint32_t FPAddSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl)
 {
-  int sign, fe;
+  int sign;
   uint32_t result;
   float temp;
   bool done,inf1,inf2,zero1,zero2;
@@ -629,7 +628,6 @@ uint64_t FPAbs(uint64_t value, int size)
 
 uint32_t FPSqrtSinglePrecision(uint32_t value, uint32_t FPControl)
 {
-  int fe;
   float temp;
   FPInfo v1 = FPUnpack(value, FPControl,32);
   uint32_t result;
@@ -748,25 +746,6 @@ uint32_t readFPSCRorFPDSCR(uint32_t FPControl, int upperLimit, int lowerLimit)
     return getBits(readSCBRegisters(FPDSCR) ,upperLimit, lowerLimit );
 }
 
-/*
-    This function will raise the corresponding FP exceptions
-    Once the exception is raised, it is not going to overwrite by 0b0
-*/
-void handleFPException()
-{
-  int fe = fetestexcept (FE_ALL_EXCEPT);
-
-  if (fe & FE_DIVBYZERO) 
-    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 1, 1);
-  if (fe & FE_INEXACT)   
-    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 4, 4);
-  if (fe & FE_INVALID)   
-    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 0, 0);
-  if (fe & FE_OVERFLOW)  
-    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 2, 2);
-  if (fe & FE_UNDERFLOW) 
-    coreReg[fPSCR] = setBits(coreReg[fPSCR], 0b1, 3, 3);
-}
 
 
 uint32_t FPInfinity(uint32_t signBit, int noOfBits)
@@ -1118,19 +1097,18 @@ uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl)
     if(biasedExp == 0)
       mantissa = mantissa / pow(2, (minimumExp - exponent) );
     
-    // feclearexcept (FE_ALL_EXCEPT);            // clear the exception flag to prevent any interfere
     double temp = mantissa * pow(2,F);        // perform the operation
-    // fe = fetestexcept (FE_INEXACT);           // check for Inexact Exception
-    // if(fe & FE_INEXACT)                       
-
-    intMant = floor(mantissa * pow(2,F) );
+    int saveRoundingState = fegetround();     //save the current rounding state
+    fesetround(FE_DOWNWARD);                  //set to round down
+    intMant = rint( mantissa * pow(2,F) );
+    fesetround(saveRoundingState);            //restore the previous rounding state after operation
     error = temp - intMant;                   // there is problem with the code starting from intMant, these lines of code actually checking whether 
                                               // the value has been rounded or not by looking at the difference between the rounded value, intMant  
                                               // and unrounded value, temp. But in C, the temp is automatically rounded, so the error will be 0b0
                                               // Confirmed with the case of :   
-                                              //                                value    = 0x36bdd002 / 5.6568542E-6
-                                              //                                mantissa = 1.482910394668579
-                                              //                                intMant  = 12439554
+                                                                             // value    = 0x36bdd002 / 5.6568542E-6
+                                                                             // mantissa = 1.482910394668579
+                                                                             // intMant  = 12439554
                                               // By right we should get decimal places value with temp by mantissa*(2^F) which is 
                                               // 1.482910394668579 * (2^23) but we only can get 12439554 in temp so turns out error is 0 which it
                                               // should not. The workaround here is to used the flag given by C to trace the Inexact FP Exception
@@ -1202,54 +1180,89 @@ uint32_t FPRound(float value, uint32_t noOfBits, uint32_t FPControl)
 
 
 
-uint32_t FPToFixed(uint32_t value, uint32_t M, int fractionBits, int signOrUnsigned, int roundTowardsZero, uint32_t FPControl)
+uint32_t FPToFixed(uint32_t value, uint32_t M, int fractionBits, bool signOrUnsigned, bool roundTowardsZero, uint32_t FPControl)
 {
-  FPInfo v1;
-  float error;
-  bool roundUp;
-  uint32_t result, saturated;
-  int32_t intResult;
+  uint32_t saturated, intResult, result;
   
   if(roundTowardsZero == 1)
     modifyFPSCRorFPDSCR(FPControl,0b11,23,22);
   
-  // v1 = FPUnpack(value, FPControl);
+  FPInfo v1 = FPUnpack(value, FPControl,32);
   
   if(v1.type == FPTYPE_SNAN || v1.type == FPTYPE_QNAN)
     raiseFPInvalidException(FPControl);
   
-  v1.realNumber = v1.realNumber * pow(2,fractionBits);
-  intResult = floor(v1.realNumber);
-  error = v1.realNumber - intResult;
+  feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+  selectRoundingMethodAccordingly(FPControl);
+
+  float mulResult = rint(v1.realNumber * pow(2,fractionBits) );
   
-  switch( readFPSCRorFPDSCR(FPControl, 23, 22) )
+  if (fetestexcept(FE_INEXACT))             //test for Inexact Flag after the operation
+    raiseFPInexactException(FPControl);
+
+  if(signOrUnsigned == true)                //prevent saturation from occur
   {
-    case 0b00 : roundUp = (error > 0.5 || (error == 0.5 && getBits( *(uint32_t *)&intResult,0,0) == 1) );
-                break;
-                  
-    case 0b01 : roundUp = (error != 0.0);
-                break;
-                  
-    case 0b10 : roundUp = 0;
-                break;
-                  
-    case 0b11 : roundUp = (error != 0.0 && intResult < 0);
-                break;
+    if(mulResult > 4294967295.0) //unsigned case
+    {
+      intResult = 0xffffffff;
+      raiseFPInvalidException(FPControl);
+    }
+    else
+      intResult = (uint32_t)mulResult;
+  }
+  else
+  {
+    if(mulResult < -2147483648.0 ) //signed case
+    {
+      intResult = 0x80000000;
+      raiseFPInvalidException(FPControl);
+    }
+    else if(mulResult > 2147483647.0)
+    {
+      intResult = 0x7FFFFFFF;
+      raiseFPInvalidException(FPControl);
+    }
+    else
+      intResult = (uint32_t)mulResult;
   }
   
-  if(roundUp == true)
-    intResult += 1;
-
-  result = saturationQ(v1.signBit, intResult, M, &saturated);
+  modifyFPSCRorFPDSCR(FPControl,0b00,23,22);                  //revert back to the default
+  fesetround(FE_TONEAREST);
   
-  if(saturated == 1)
-    raiseFPInvalidException(FPControl);
-  else if(error != 0.0)
+  return intResult;
+}
+
+
+
+uint32_t FixedToFP(uint32_t value, uint32_t N, int fractionBits, bool signOrUnsigned, bool roundToNearest, uint32_t FPControl)
+{
+  uint32_t result;
+  float realOperand;
+
+  if(roundToNearest)
+    modifyFPSCRorFPDSCR(FPControl,0b00,23,22);
+  
+  feclearexcept (FE_ALL_EXCEPT);            //clear the exception flag first to prevent any interfere
+  selectRoundingMethodAccordingly(FPControl);
+  
+  if(signOrUnsigned == true)
+    realOperand = rint( value / pow(2,fractionBits) );
+  else
+    realOperand = rint( (int32_t)value / pow(2,fractionBits) );
+
+  if (fetestexcept(FE_INEXACT))             //test for Inexact Flag after the operation
     raiseFPInexactException(FPControl);
+    
+  if(realOperand == 0.0)
+    result = FPZero(0,N);
+  else 
+    result = FPRound(realOperand,N,fPSCR);
+  
+  modifyFPSCRorFPDSCR(FPControl,0b00,23,22);                  //revert back to the default
+  fesetround(FE_TONEAREST);
   
   return result;
 }
-
 
 
 //this function will return the numbers of exponent and fraction bits based on the
@@ -1323,5 +1336,22 @@ void unpackFloatData(uint32_t value, uint32_t *sign, uint32_t *exp, uint32_t *fr
 }
 
 
+void selectRoundingMethodAccordingly(uint32_t FPControl)
+{
+  switch( readFPSCRorFPDSCR(FPControl, 23, 22) )
+  {
+    case 0b00 : fesetround(FE_TONEAREST);
+                break;
+                  
+    case 0b01 : fesetround(FE_UPWARD);
+                break;
+                  
+    case 0b10 : fesetround(FE_DOWNWARD);
+                break;
+                  
+    case 0b11 : fesetround(FE_TOWARDZERO);
+                break;
+  }
+}
 
 

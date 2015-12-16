@@ -15,6 +15,7 @@
  * |<------12 bits------>|<----10 bits---->|<----10 bits---->|
  *
  */
+ //int (*handler) (int,int,int,int)
 void memoryMap(uint32_t startAddress, uint32_t range, void (*funcPtr)())
 {
   int i;
@@ -32,6 +33,10 @@ void memoryMap(uint32_t startAddress, uint32_t range, void (*funcPtr)())
     // page[pageIndex] = funcPtr;
   // }
 }
+
+
+
+
 
 void initVirtualMemory()
 {

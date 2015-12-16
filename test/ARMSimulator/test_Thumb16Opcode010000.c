@@ -103,7 +103,6 @@
 #include "VNEG.h"
 #include "VCMP.h"
 #include "VABS.h"
-#include "VCVT.h"
 #include "VSQRT.h"
 #include "MiscellaneousInstructions.h"
 #include "VADD.h"
