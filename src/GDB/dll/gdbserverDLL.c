@@ -25,6 +25,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "gdbserverDLL.h"
+#include "PipeOperation.h"
 
 GDBSERVER_EX void GDBSERVER_CALL gdbserverMain(RspData *rspData, char *data)
 {
