@@ -24,6 +24,7 @@
 #define SaturateOperation_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 int32_t saturationQ(int32_t sign, int32_t operand, uint32_t saturatedTo, uint32_t *saturated);
 

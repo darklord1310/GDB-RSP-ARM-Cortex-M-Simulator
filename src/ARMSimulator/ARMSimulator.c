@@ -152,7 +152,6 @@ void armSimulate32(uint32_t instruction)
   uint32_t op2 = getBits(instruction,26,20);
   uint32_t op = getBits(instruction,15,15);
   uint32_t opcode = ( ( (op1 << 7) | op2 ) << 1 ) | op;
-
   (*Thumb32Table[opcode])(instruction);
 }
 

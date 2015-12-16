@@ -32,7 +32,7 @@ int32_t saturationQ(int32_t sign, int32_t operand, uint32_t saturatedTo, uint32_
   if(sign)
   {
     max = (int32_t)(pow(2, saturatedTo + 1) / 2) - 1;
-    min = -(max + 1);
+    min = (max + 1) * -1;
   }
   else
   {

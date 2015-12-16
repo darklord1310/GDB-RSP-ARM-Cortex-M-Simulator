@@ -25,6 +25,7 @@
 #define VCVTandVCVTR_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "ConditionalExecution.h"
 #include "ITandHints.h"
 #include "StatusRegisters.h"
@@ -34,6 +35,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-void VCVTandVCVTR(uint32_t instruction);
+void VCVTR(uint32_t instruction);
+void VCVT(uint32_t instruction);
+void VCVTT2(uint32_t instruction);
 
 #endif // VCVTandVCVTR_H

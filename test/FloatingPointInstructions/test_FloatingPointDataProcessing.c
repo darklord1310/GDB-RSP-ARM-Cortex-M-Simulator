@@ -103,7 +103,6 @@
 #include "VNEG.h"
 #include "VCMP.h"
 #include "VABS.h"
-#include "VCVT.h"
 #include "VSQRT.h"
 #include "MiscellaneousInstructions.h"
 #include "VADD.h"
@@ -113,7 +112,7 @@
 #include "VCVTandVCVTR.h"
 #include "VDIV.h"
 #include "SaturateOperation.h"
-
+#include "CException.h"
 
 void setUp(void)
 {
@@ -473,10 +472,10 @@ void test_VCVTB_given_s2_is_0xbf99999a_should_get_s0_0xBCCDFFFF()
   
   writeInstructionToMemoryGivenByAddress(0xeeb30a41, 0x08000046);  // VCVTB.F16.F32 s0, s2
   coreReg[PC] = 0x08000046;
-  printf("starts here\n");
+
   writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
   armStep();
-  printf("FPSCR: %x\n", coreReg[fPSCR]);
+
   TEST_ASSERT_EQUAL(0x7FFFBCCD, fpuSinglePrecision[0] );
   TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
@@ -959,4 +958,287 @@ void test_VCMPT2_given_unordered_case_should_get_fPSCR_0x30000001()
 
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
-    //VCMPT2
+    //VCVTR  (unsigned cases)
+
+//VCVTR.U32.F32 s0, s2
+/*  Expected result:     s0 = 0x01
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVTR_unsigned_cases_given_s2_is_0x3F99999A_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0x3F99999A);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebc0a41, 0x08000046);  // VCVTR.U32.F32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x01,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+//VCVTR.U32.F32 s0, s2 (boundary case, value is larger than maximum 32bits value)
+/*  Expected result:     s0 = 0xFFFFFFFF
+ *                       fPSCR = 0x00000001
+ *
+ */
+void test_VCVTR_unsigned_cases_given_s2_is_0x64F08EAF_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0x64F08EAF);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebc0a41, 0x08000046);  // VCVTR.U32.F32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xFFFFFFFF,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000001, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+//VCVTR.U32.F32 s0, s2 (boundary case, value is slightly smaller than maximum 32bits value)
+/*  Expected result:     s0 = 0xFFFFFF00
+ *                       fPSCR = 0x00000000
+ *
+ */
+void test_VCVTR_unsigned_cases_given_s2_is_0x40633333_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0x4F7FFFFF);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebc0a41, 0x08000046);  // VCVTR.U32.F32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xFFFFFF00,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000000, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VCVTR  (signed cases)
+    
+//VCVTR.S32.F32 s0, s2 (boundary case, value is smaller than negative 32bits value)
+/*  Expected result:     s0 = 0x80000000
+ *                       fPSCR = 0x00000001
+ *
+ */
+void test_VCVTR_signed_cases_given_s2_is_0xcf3a2714_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0xcf3a2714);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebd0a41, 0x08000046);  // VCVTR.S32.F32 s0, s2
+  coreReg[PC] = 0x08000046;
+
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x80000000,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000001, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+//VCVTR.S32.F32 s0, s2 (boundary case, value is larger than maximum 32bits value)
+/*  Expected result:     s0 = 0x7FFFFFFF
+ *                       fPSCR = 0x00000001
+ *
+ */
+void test_VCVTR_signed_cases_given_s2_is_0x75765ef8_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0x75765ef8);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebd0a41, 0x08000046);  // VCVTR.S32.F32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x7FFFFFFF,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000001, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+//VCVTR.S32.F32 s0, s2 
+/*  Expected result:     s0 = 0xFFFFFB31
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVTR_signed_cases_given_s2_is_0xc499e9fe_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0xc499e9fe);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebd0a41, 0x08000046);  // VCVTR.S32.F32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xFFFFFB31,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+    
+    
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VCVT (unsigned cases)
+
+//VCVT.F32.U32 s0, s2 
+/*  Expected result:     s0 = 0x4F4499EA
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVT_unsigned_cases_given_s2_is_0xc499e9fe_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0xc499e9fe);
+  
+  writeInstructionToMemoryGivenByAddress(0xeeb80a41, 0x08000046);  // VCVT.F32.U32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x4F4499EA,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VCVT (signed cases)
+    
+//VCVT.F32.S32 s0, s2 
+/*  Expected result:     s0 = 0xCE6D9858
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVT_signed_cases_given_s2_is_0xc499e9fe_should_get_the_expected_result()
+{
+  writeSinglePrecision(2, 0xc499e9fe);
+  
+  writeInstructionToMemoryGivenByAddress(0xeeb80ac1, 0x08000046);  // VCVT.F32.S32 s0, s2
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0xCE6D9858,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VCVT (with frac bits, unsigned cases)
+    
+//VCVT.U32.F32 s0, s0, #6
+/*  Expected result:     s0 = 0x000000C9
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVT_unsigned_cases_to_integer_given_s0_is_0x40491687_should_get_the_expected_result()
+{
+  writeSinglePrecision(0, 0x40491687);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebf0acd, 0x08000046);  // VCVT.U32.F32 s0, s0, #6
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x000000C9,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+//VCVT.F32.U32 s0, s0, #6
+/*  Expected result:     s0 = 0x4C489779
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVT_unsigned_cases_to_floating_point_given_s0_is_0x40491687_should_get_the_expected_result()
+{
+  writeSinglePrecision(0, 0xc89778f0);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebb0acd, 0x08000046);  // VCVT.F32.U32 s0, s0, #6
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0x4C489779,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+    //VCVT (with frac bits, signed cases)
+
+//VCVT.S32.F32 s0, s0, #6
+/*  Expected result:     s0 = 0xFED10E20
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVT_signed_cases_to_integer_given_s0_is_0xc89778f0_should_get_the_expected_result()
+{
+  writeSinglePrecision(0, 0xc89778f0);
+  
+  writeInstructionToMemoryGivenByAddress(0xeebe0acd, 0x08000046);  // VCVT.S32.F32 s0, s0, #6
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xFED10E20,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+//VCVT.F32.S32 s0, s0, #6
+/*  Expected result:     s0 = 0xCB5DA21C
+ *                       fPSCR = 0x00000010
+ *
+ */
+void test_VCVT_signed_cases_to_floating_point_given_s0_is_0xc89778f0_should_get_the_expected_result()
+{
+  writeSinglePrecision(0, 0xc89778f0);
+  
+  writeInstructionToMemoryGivenByAddress(0xeeba0acd, 0x08000046);  // VCVT.F32.S32 s0, s0, #6
+  coreReg[PC] = 0x08000046;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+
+  TEST_ASSERT_EQUAL(0xCB5DA21C,fpuSinglePrecision[0]);
+  TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR] );
+  TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
+}
+
+
+// void test()
+// {
+  // CEXCEPTION_T err;
+  // printf("start\n");
+  // Try
+  // {
+    // writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+    // (*Thumb32Table[0x1d6])(0xeebe0acd);
+    //ARMSimulator(0xeebe0acd);
+  // }
+  // Catch(err)
+  // {
+    // printf("err: %i\n", err);
+    // TEST_FAIL_MESSAGE("Not expect error to be throw\n");
+  // }
+  
+// }

@@ -104,7 +104,6 @@
 #include "VNEG.h"
 #include "VCMP.h"
 #include "VABS.h"
-#include "VCVT.h"
 #include "VSQRT.h"
 #include "MiscellaneousInstructions.h"
 #include "VADD.h"
@@ -365,16 +364,3 @@ void test_FPUnpack_given_noOfBits_32_should_get_expected_result()
   TEST_ASSERT_EQUAL(info.realNumber,-2.32130003E11);
 }
 
-
-void test_FPRound_given_floating_point_value_above_should_get_()
-{
-  // uint16_t result = FPSingleToHalf(0xbf99999a, fPSCR);
-  // uint32_t result = FPRound(3.213E-14, 16, fPSCR);
-  FPInfo info = FPUnpack(0x999a, fPSCR, 16);
-  printf("%e\n", info.realNumber );
-  //-0.002735138
-  // uint32_t result = FPHalfToSingle(0x999a, fPSCR);
-  // printf("result : %x\n", result);
-  // printf("fPSCR: %x\n", coreReg[fPSCR]);
-  // TEST_ASSERT_EQUAL(0x00000010, coreReg[fPSCR]);
-}

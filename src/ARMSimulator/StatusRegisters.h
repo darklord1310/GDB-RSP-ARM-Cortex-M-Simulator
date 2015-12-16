@@ -37,8 +37,11 @@
                   
 #include <stdbool.h>
 #include <stdint.h>
+#include <math.h>
 #include "SaturateOperation.h"
 #include "fenv.h"
+#pragma STDC FENV_ACCESS on
+
 
 typedef enum {FPTYPE_NONZERO, FPTYPE_ZERO, FPTYPE_INFINITY, FPTYPE_QNAN, FPTYPE_SNAN} FPType;
 typedef enum {VCMP, VCMPE} compareType;
@@ -80,7 +83,6 @@ void shiftITState();
 int isLastInITBlock();
 void executeFPUChecking();
 uint32_t determineRegisterBasedOnSZ(uint32_t registerName, uint32_t Vx, uint32_t dpOperation);
-void handleFPException();
 uint64_t FPNeg(uint64_t value, int size);
 uint64_t FPAbs(uint64_t value, int size);
 uint32_t FPMulSinglePrecision(uint32_t value1, uint32_t value2, uint32_t FPControl);
@@ -111,6 +113,9 @@ void getNumbersOfExponentAndFractionBits(int noOfBits, int *E, int *F);
 int determineMinimumExp(int E);
 void getFloatingPointNumberData(float value, uint32_t *sign, uint32_t *exponent ,double *mantissa);
 void unpackFloatData(uint32_t value, uint32_t *sign, uint32_t *exp, uint32_t *frac, uint32_t noOfBits);
+uint32_t FixedToFP(uint32_t value, uint32_t N, int fractionBits, bool signOrUnsigned, bool roundToNearest, uint32_t FPControl);
+uint32_t FPToFixed(uint32_t value, uint32_t M, int fractionBits, bool signOrUnsigned, bool roundTowardsZero, uint32_t FPControl);
+void selectRoundingMethodAccordingly(uint32_t FPControl);
 
 
 #endif // StatusRegisters_H

@@ -73,7 +73,6 @@ uint32_t setBits(uint32_t setTarget, uint32_t input_value, int higherRange, int 
   int i,bitValue;
   int count = 0;                                  //start from 0
   uint32_t mask;
-  assert(higherRange >= lowerRange);
   assert(higherRange < 32);
   
   for(i = lowerRange; i < higherRange + 1; i++)

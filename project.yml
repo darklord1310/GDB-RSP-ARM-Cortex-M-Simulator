@@ -108,6 +108,7 @@
       - -I src/FloatingPointInstructions
       - -I src
       - -D TEST=
+      - -g2
 
   :test_linker:
     :executable: gcc                  #absolute file path
