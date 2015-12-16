@@ -50,7 +50,6 @@ struct RspData
     SOCKET sock;
 };
 
-// char *rspState(RspData *rspData, char *data);
 void rspState(RspData *rspData, char *data);
 
 #endif // stateRSP_H

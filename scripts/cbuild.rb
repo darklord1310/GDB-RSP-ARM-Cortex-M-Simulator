@@ -1,4 +1,4 @@
-# Build script for C (ver 0.11)
+# Build script for C (ver 0.12)
 # Copyright (C) 2015-2016 Poh Tze Ven <pohtv@acd.tarc.edu.my>
 #
 # This file is part of C Compiler & Interpreter project.
@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with C Compiler & Interpreter.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'pathname'
 require 'rake/clean' if !(defined? CLEAN)
 require 'rexml/document'
 include REXML
@@ -35,7 +34,7 @@ end
 def prependProperPathToFilename(filename, src_path, obj_path, exe_path)
   if filename =~ /.+\.o$/i
     obj_path != '' ? File.join(obj_path, filename) : filename
-  elsif filename =~ /.+\.(?:exe|bin|hex|elf)$/i
+  elsif filename =~ /.+\.(?:exe|bin|hex|elf|dll)$/i
     exe_path != '' ? File.join(exe_path, filename) : filename
   else
     src_path != '' ? File.join(src_path, filename) : filename
@@ -151,7 +150,7 @@ def compile_list(list, src_path, obj_path, exe_path, config)
         CLEAN.include(depender)
 #        CLOBBER << depender
 
-      when /.+\.(?:exe|bin|hex|elf)$/i        # Handle executable file
+      when /.+\.(?:exe|bin|hex|elf|dll)$/i        # Handle executable file
         file depender => dependees do |n|
           # Gather only dependee files (exclude directories)
           dependees = n.prerequisites.select { |f| !(File.directory? f) }

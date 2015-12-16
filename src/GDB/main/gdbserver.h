@@ -20,34 +20,9 @@
     along with This program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 #ifndef gdbserver_H
 #define gdbserver_H
-
-#ifdef _WIN32
-
-#ifdef GDBSERVER_MAIN_EXPORTS
-  #define GDBSERVER_MAIN __declspec(dllexport)
-#else
-  #define GDBSERVER_MAIN __declspec(dllimport)
-#endif
-
-/* Define calling convention in one place, for convenience. */
-#define GDBSERVER_CALL __cdecl
-
-#else /* _WIN32 not defined. */
-
-  /* Define with no value on non-Windows OSes. */
-  #define GDBSERVER_MAIN
-  #define GDBSERVER_CALL
-
-#endif
-
-/* Make sure functions are exported with C linkage under C++ compilers. */
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 
 #define LOCAL_HOST_ADD  "127.0.0.1"
 #define DEFAULT_PORT    2010
@@ -77,10 +52,7 @@ typedef u_int           SOCKET;
 
 typedef enum {GDB_SERVER_INFO, ELF_PATH, ELF_DATA} TypeOfDataToRetrieve;
 
-/* Declare our Add function using the above definitions. */
-GDBSERVER_MAIN int GDBSERVER_CALL main(int argc, const char * argv[]);
 
-// void gdbserverMain(int argc, const char * argv[]);
 void winsockInit();
 void createSocket(SOCKET *sock);
 void bindSocket(SOCKET *sock, int port);
@@ -92,9 +64,5 @@ void displayErrorMsg(char *errorMsg);
 
 void initSimulator();
 void *retrieveData(char *dir, TypeOfDataToRetrieve dataToRetrieve);
-
-#ifdef __cplusplus
-} // __cplusplus defined.
-#endif
 
 #endif // gdbserver_H

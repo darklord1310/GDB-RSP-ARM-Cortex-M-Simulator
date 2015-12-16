@@ -16,12 +16,12 @@ config = {
                     'src/ElfReader',
                     'src/FloatingPointInstructions',
                     'src/MyFlash'],
-  :user_define  => ['GDBSERVER_MAIN_EXPORTS'],      #['CEXCEPTION_USE_CONFIG_FILE'],
+#  :user_define  => ['GDBSERVER_MAIN_EXPORTS'],      #['CEXCEPTION_USE_CONFIG_FILE'],
 # :library_path => 'lib',
   :library => ['ws2_32', 'm'],
 # :linker_script => 'MyLinkerScript.ld',
 # :compiler_options => ['-DOK'],                  # Other compiler options
-  :linker_options => ['-g', '-s', '-shared', '-Wl,--subsystem,windows'],    # Other linker options
+  :linker_options => ['-g'],    # Other linker options
   :option_keys  => {:library => '-l',
                     :library_path => '-L',
                     :include_path => '-I',
@@ -31,7 +31,55 @@ config = {
                     :define => '-D'}
 }
 
-configDll = {
+config_myflash = {
+  :verbose      => :yes,
+  :compiler     => 'gcc',
+  :linker       => 'gcc',
+  :include_path => ['src'],
+#  :user_define  => ['GDBSERVER_MAIN_EXPORTS'],      #['CEXCEPTION_USE_CONFIG_FILE'],
+#  :library_path => 'lib',
+#  :library => [''],
+#  :linker_script => 'MyLinkerScript.ld',
+#  :compiler_options => ['-DOK'],                  # Other compiler options
+#  :linker_options => [''],    # Other linker options
+  :option_keys  => {:library => '-l',
+                    :library_path => '-L',
+                    :include_path => '-I',
+                    :output_file => '-o',
+                    :compile => '-c',
+                    :linker_script => '-T',
+                    :define => '-D'}
+}
+
+# config_dll = {
+  # :verbose      => :no,
+  # :compiler     => 'gcc',
+  # :linker       => 'gcc',
+  # :include_path => ['src',
+                    # 'src/GDB',
+                    # 'src/ARMSimulator',
+                    # 'src/ElfReader',
+                    # 'src/FloatingPointInstructions',
+                    # 'src/MyFlash'],
+  # :user_define  => ['GDBSERVER_MAIN_EXPORTS'],    #['CEXCEPTION_USE_CONFIG_FILE'],
+  # :library_path => 'lib',
+  # :library => ['ws2_32', 'm'],
+  # :linker_script => 'MyLinkerScript.ld',
+  # :compiler_options => ['-DOK'],                  # Other compiler options
+  # :linker_options => ['-g',
+                      # '-s',
+                      # '-shared',
+                      # '-Wl,--subsystem,windows'], # Other linker options
+  # :option_keys  => {:library => '-l',
+                    # :library_path => '-L',
+                    # :include_path => '-I',
+                    # :output_file => '-o',
+                    # :compile => '-c',
+                    # :linker_script => '-T',
+                    # :define => '-D'}
+# }
+
+config_dll = {
   :verbose      => :yes,
   :compiler     => 'gcc',
   :linker       => 'gcc',
@@ -41,12 +89,14 @@ configDll = {
                     'src/ElfReader',
                     'src/FloatingPointInstructions',
                     'src/MyFlash'],
-  :user_define  => ['GDBSERVER_MAIN_EXPORTS'],    #['CEXCEPTION_USE_CONFIG_FILE'],
-# :library_path => 'lib',
-# :library => ['ws2_32', 'm'],
-# :linker_script => 'MyLinkerScript.ld',
-# :compiler_options => ['-DOK'],                  # Other compiler options
-  :linker_options => ['-s', '-shared', '-Wl,--subsystem,windows'],    # Other linker options
+#  :user_define  => ['GDBSERVER_MAIN_EXPORTS'],    #['CEXCEPTION_USE_CONFIG_FILE'],
+#  :library_path => 'lib',
+  :library => ['ws2_32', 'm'],
+#  :linker_script => 'MyLinkerScript.ld',
+#  :compiler_options => ['-DOK'],                  # Other compiler options
+  :linker_options => ['-g',
+                      '-shared',
+                      '-Wl,--add-stdcall-alias'], # Other linker options
   :option_keys  => {:library => '-l',
                     :library_path => '-L',
                     :include_path => '-I',
@@ -86,28 +136,25 @@ namespace :gdbserver do
   config_file =  File.join(coide_gdbserver_path, 'config')
   gdb_config_file = File.join(coide_gdbserver_path, 'GDBServerConfig.ini')
   elfLocation_file = File.join(coide_gdbserver_path, 'ElfLocation.txt')
+  dll_file = File.join(coide_gdbserver_path, 'gdbserver.dll')
 
   desc 'Release gdbserver'
   task :release do
-    dep_list = compile_all(['src/GDB', 'src/ARMSimulator', 'src/ElfReader', 'src/FloatingPointInstructions', 'src'], 'build/release/host/c', config)
+    dep_list = compile_all(['src/GDB',
+                            'src/GDB/main',
+                            'src/GDB/dll',
+                            'src/ARMSimulator',
+                            'src/ElfReader',
+                            'src/FloatingPointInstructions',
+                            'src'],
+                            'build/release/host/c',
+                            config)
     link_all(getDependers(dep_list), GDBSERVER_FILE, config)
     Rake::Task[GDBSERVER_FILE].invoke
 
-    dep_list = compile_all(['src/MyFlash'], 'build/release/host/c', config)
-    link_all(getDependers(dep_list), MYFLASH_FILE, config)
+    dep_list = compile_all(['src/MyFlash'], 'build/release/host/c', config_myflash)
+    link_all(getDependers(dep_list), MYFLASH_FILE, config_myflash)
     Rake::Task[MYFLASH_FILE].invoke
-  end
-
-  desc 'Release gdbserver dll'
-  task :dll do
-    dep_list = compile_all(['src/GDB', 'src/ARMSimulator', 'src/ElfReader', 'src/FloatingPointInstructions', 'src'], 'build/release/host/c', config)
-    link_all(getDependers(dep_list), GDBSERVER_FILE, configDll)
-    Rake::Task[GDBSERVER_FILE].invoke
-
-    if File.exists? GDBSERVER_FILE
-        puts "renaming gdbserver.exe to gdbserver.dll..."
-        sh "cp #{GDBSERVER_FILE} build/release/gdbserver.dll"
-    end
   end
 
   desc 'Build and deploy gdbserver + coflash'
@@ -130,6 +177,7 @@ namespace :gdbserver do
 
     sh "cp config #{config_file}"
     sh "cp GDBServerConfig.ini #{gdb_config_file}"
+    sh "cp build/release/dll/gdbserver.dll #{dll_file}"
   end
 
   desc 'Revert to original gdbserver + coflash'
@@ -151,5 +199,26 @@ namespace :gdbserver do
     if File.exists? elfLocation_file
       sh "rm #{elfLocation_file}"
     end
+    if File.exists? dll_file
+      sh "rm #{dll_file}"
+    end
+  end
+end
+
+namespace :build do
+  dll_library = "build/release/dll/gdbserver.dll"
+  desc 'Release gdbserver DLL'
+  task :dll do
+    dep_list = compile_all(['src/GDB',
+                            'src/GDB/dll',
+                            'src/GDB/main',
+                            'src/ARMSimulator', 
+                            'src/ElfReader',
+                            'src/FloatingPointInstructions',
+                            'src'],
+                            'build/release/dll',
+                            config_dll)
+    link_all(getDependers(dep_list), dll_library, config_dll)
+    Rake::Task[dll_library].invoke
   end
 end

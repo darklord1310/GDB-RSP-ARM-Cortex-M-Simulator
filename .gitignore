@@ -7,3 +7,8 @@ data/*.map
 mkmf.log
 TEST1.txt
 TEST2.txt
+CircuitSimulator/build/classes/*.class
+CircuitSimulator/dist/*
+!CircuitSimulator/dist/README.txt
+CircuitSimulator/nbproject/*
+CircuitSimulator.jar

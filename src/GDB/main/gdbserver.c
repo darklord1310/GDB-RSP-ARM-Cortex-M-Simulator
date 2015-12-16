@@ -28,6 +28,7 @@
 #include "ARMRegisters.h"
 #include "MemoryBlock.h"
 #include "gdbserver.h"
+#include "dll/gdbserverDLL.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMSimulator.h"
 #include "State.h"
@@ -211,8 +212,7 @@ void *retrieveData(char *dir, TypeOfDataToRetrieve dataToRetrieve)
     }
 }
 
-// void gdbserverMain(int argc, const char * argv[])
-GDBSERVER_MAIN int GDBSERVER_CALL main(int argc, const char * argv[])
+int main(int argc, const char * argv[])
 {
     int i, portNumber = DEFAULT_PORT;
     char *str, *parentDirName;
@@ -267,7 +267,8 @@ GDBSERVER_MAIN int GDBSERVER_CALL main(int argc, const char * argv[])
             recvbuf[0] = '\0';
         }
 
-        rspState(&rspData, recvbuf);
+        // rspState(&rspData, recvbuf);
+        gdbserverMain(&rspData, recvbuf);
 
         if(rspData.state == KILL)
         {
