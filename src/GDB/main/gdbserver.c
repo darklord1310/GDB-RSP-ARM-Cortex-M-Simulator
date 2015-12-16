@@ -28,7 +28,7 @@
 #include "ARMRegisters.h"
 #include "MemoryBlock.h"
 #include "gdbserver.h"
-// #include "dll/gdbserverDLL.h"
+#include "dll/gdbserverDLL.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMSimulator.h"
 #include "State.h"
