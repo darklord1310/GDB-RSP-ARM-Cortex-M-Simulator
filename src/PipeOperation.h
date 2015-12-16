@@ -29,12 +29,8 @@
 #define BUFFER_SIZE 1024 //1k
 
 //Name given to the pipe
-#define g_serverPipeName "\\\\.\\Pipe\\MyNamedPipe"
+#define g_szPipeName "\\\\.\\Pipe\\MyNamedPipe"
 //Pipe name format - \\.\pipe\pipename
-
-//Name given to the pipe
-#define g_clientPipeName "\\\\.\\Pipe\\MyNamedPipe"
-//Pipe name format - \\servername\pipe\pipename
 //This pipe is for server on the same computer,
 //however, pipes can be used to
 //connect to a remote server

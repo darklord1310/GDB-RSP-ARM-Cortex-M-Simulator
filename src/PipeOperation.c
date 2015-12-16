@@ -28,7 +28,7 @@
 int createServerPipe(HANDLE *hPipe)
 {
   *hPipe = CreateNamedPipe(
-          g_serverPipeName,         // pipe name
+          g_szPipeName,             // pipe name
           PIPE_ACCESS_DUPLEX,       // read/write access
           PIPE_TYPE_MESSAGE |       // message type pipe
           PIPE_READMODE_MESSAGE |   // message-read mode
@@ -55,7 +55,7 @@ int createServerPipe(HANDLE *hPipe)
 int createClientPipe(HANDLE *hPipe)
 {
   *hPipe = CreateFile(
-          g_clientPipeName, // pipe name
+          g_szPipeName,     // pipe name
           GENERIC_READ |    // read and write access
           GENERIC_WRITE,
           0,                // no sharing
@@ -108,11 +108,11 @@ int readMessage(BOOL *bResult, HANDLE hPipe, DWORD *cbBytes, char *msg)
   char szBuffer[BUFFER_SIZE];
 
   *bResult = ReadFile(
-          hPipe,                 // handle to pipe
-          szBuffer,                   // buffer to receive data
-          sizeof(szBuffer),           // size of buffer
-          cbBytes,               // number of bytes read
-          NULL);                 // not overlapped I/O
+          hPipe,                  // handle to pipe
+          szBuffer,               // buffer to receive data
+          sizeof(szBuffer),       // size of buffer
+          cbBytes,                // number of bytes read
+          NULL);                  // not overlapped I/O
 
   if ( (!*bResult) || (0 == *cbBytes))
   {
