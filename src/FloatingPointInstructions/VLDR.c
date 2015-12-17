@@ -73,21 +73,41 @@ void VLDR(uint32_t instruction)
   if(inITBlock())
   {
     if( checkCondition(cond) )
-      executeFPStore(U, d, !singleOrDoublePrecision, imm32, Rn);
+      executeFPLoad(U, d, !singleOrDoublePrecision, imm32, Rn);
     
     shiftITState();
   }
   else
-    executeFPStore(U, d, !singleOrDoublePrecision, imm32, Rn);
+    executeFPLoad(U, d, !singleOrDoublePrecision, imm32, Rn);
 
   coreReg[PC] += 4;
 }
 
 
 
+void executeFPLoad(uint32_t U, uint32_t d, uint32_t singleReg, uint32_t imm32, uint32_t Rn)
+{
+  uint64_t word1, word2;
+  uint32_t address;
+  
+  if(U == 1)
+    address = coreReg[Rn] + imm32;
+  else
+    address = coreReg[Rn] - imm32;
 
-
-
+  if(singleReg == 1)
+    fpuSinglePrecision[d] = loadByteFromMemory(address, 4);
+  else
+  {
+    word1 = loadByteFromMemory(address, 4);
+    word2 = loadByteFromMemory(address+4, 4);
+    
+    if( bigEndian() )
+      fpuDoublePrecision[d] = (word1 << 32) | word2;
+    else
+      fpuDoublePrecision[d] = (word2 << 32) | word1;
+  }
+}
 
 
 

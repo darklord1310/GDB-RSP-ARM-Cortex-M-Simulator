@@ -44,6 +44,7 @@ void initializeSimulator()
   resetMemoryBlock();
   resetVectorTableAddress();
   feclearexcept (FE_ALL_EXCEPT);
+  selectRoundingMethodAccordingly(fPSCR);
 }
 
 void initializeAllTable()
@@ -454,6 +455,7 @@ void ARMSimulator(uint32_t instruction)
   {
     armSimulate32(instruction);
   }
+  // printRegister();
 }
 
 
@@ -492,7 +494,26 @@ void armStep()
 
 }
 
+//only for testing purposes
+void simulate()
+{
+  uint32_t instruction;
+  char input;
+  
+  while(input != 'n' || input != 'N')
+  {
+    printRegister();
+    printf("Instruction: ");
+    scanf("%i", &instruction);
+    ARMSimulator(instruction);
+    system("cls");
+    printRegister();
+    printf("Instruction: %i\n", instruction);
+    printf("Next instruction? : ");
+    scanf("%c", &input);
+  }
 
+}
 
 //this function is only used for testing purposes
 void printRegister()
@@ -501,6 +522,14 @@ void printRegister()
   for(i = 0; i < 15; i++)
   {
     printf("r%d : %x\n", i, coreReg[i]);
+  }
+  for(i = 0; i < 15; i++)
+  {
+    printf("r%d : %x\n", i, fpuSinglePrecision[i]);
+  }
+  for(i = 0; i < 32; i++)
+  {
+    printf("r%d : %x\n", i, fpuDoublePrecision[i]);
   }
 
   if( isCarry() )

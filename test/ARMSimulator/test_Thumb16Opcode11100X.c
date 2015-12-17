@@ -287,5 +287,3 @@ void test_ConditionalBranch_given_inside_IT_block_should_throw_error(void)
     TEST_ASSERT_EQUAL(UsageFault,err);
   }
 }
-
-

@@ -53,7 +53,7 @@ int checkCondition(uint32_t condition)
                 return 1;
               else
                 return 0;
-    case NE : if( !isZero() )
+    case NE : if( isZero() == 0 )
                 return 1;
               else
                 return 0;
