@@ -1113,3 +1113,21 @@ void test_VPOP_with_doublePrecision_should_load_the_correct_values()
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
 
+
+
+void test()
+{
+  memoryBlock[ virtualMemToPhysicalMem(0x080006d0)] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x080006d1)] = 0x00;
+  memoryBlock[ virtualMemToPhysicalMem(0x080006d2)] = 0xb0;
+  memoryBlock[ virtualMemToPhysicalMem(0x080006d3)] = 0x40;
+  
+  writeInstructionToMemoryGivenByAddress(0xed9f0a15, 0x08000678);  
+  coreReg[PC] = 0x08000678;
+  
+  writeByteToMemory(CPACR, 0x00F00000, 4);  // enable floating point
+  armStep();
+  
+  TEST_ASSERT_EQUAL(0x40b00000, fpuSinglePrecision[0]  );
+  TEST_ASSERT_EQUAL(0x800067C, coreReg[PC]);
+}
