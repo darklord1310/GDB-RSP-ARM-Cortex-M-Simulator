@@ -1112,3 +1112,4 @@ void test_VPOP_with_doublePrecision_should_load_the_correct_values()
   TEST_ASSERT_EQUAL(0x20001038, coreReg[SP] );
   TEST_ASSERT_EQUAL(0x0800004a, coreReg[PC]);
 }
+

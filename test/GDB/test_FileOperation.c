@@ -19,10 +19,6 @@ void test_readFile_should_obtain_all_the_data_from_the_file(void)
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
   char device[] = "STM32F429ZI";
 
-  // write file to the text
-  // writeFile(&file, filename, "w", elfPath);
-  // writeFile(&file, filename, "a", device);
-
   // read file from the text that was written
 	str = readFile(filename, "r");
   sscanf(str, "%s %s", str1, str2);
