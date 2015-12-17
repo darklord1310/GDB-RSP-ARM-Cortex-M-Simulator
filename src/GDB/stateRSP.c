@@ -26,7 +26,7 @@
 #include "stateRSP.h"
 #include "ServeRSP.h"
 #include "Packet.h"
-#include "gdbserver.h"
+#include "main/gdbserver.h"
 
 /***********************************************************************
  * State machine to handle communication between gdb client and server.
@@ -37,7 +37,6 @@
  * Return:
  *      packet      string of data reply to gdb
  ***********************************************************************/
-// char *rspState(RspData *rspData, char *data)
 void rspState(RspData *rspData, char *data)
 {
     static int nack = 0;
