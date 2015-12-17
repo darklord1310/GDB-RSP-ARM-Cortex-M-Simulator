@@ -104,6 +104,7 @@
       - -I test/support
       - -I src/ElfReader
       - -I src/GDB
+      - -I src/GDB/main
       - -I src/ARMSimulator
       - -I src/MyFlash
       - -I src/FloatingPointInstructions

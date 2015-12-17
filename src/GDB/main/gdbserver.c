@@ -28,7 +28,7 @@
 #include "ARMRegisters.h"
 #include "MemoryBlock.h"
 #include "gdbserver.h"
-#include "dll/gdbserverDLL.h"
+// #include "dll/gdbserverDLL.h"
 #include "RemoteSerialProtocol.h"
 #include "ARMSimulator.h"
 #include "State.h"
@@ -267,8 +267,8 @@ int main(int argc, const char * argv[])
             recvbuf[0] = '\0';
         }
 
-        // rspState(&rspData, recvbuf);
-        gdbserverMain(&rspData, recvbuf);
+        rspState(&rspData, recvbuf);
+        // gdbserverMain(&rspData, recvbuf);
 
         if(rspData.state == KILL)
         {

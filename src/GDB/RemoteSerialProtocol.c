@@ -537,6 +537,7 @@ char *cont(char *data)
         sprintf(asciiString, "S%02d", GDB_SIGNAL_TRAP);
 
     packet = gdbCreateMsgPacket(asciiString);
+    puts(packet);
 
     return packet;
 }
@@ -558,13 +559,7 @@ int hitBreakpoint(Breakpoint *breakpoint)
         if(coreReg[PC] == breakpoint->addr)
             return 1;
         else
-        {
-            if(breakpoint->next != NULL)
-            {
-                if(coreReg[PC] > breakpoint->addr)
-                    hitBreakpoint(breakpoint->next);
-            }
-        }
+          hitBreakpoint(breakpoint->next);
     }
 
     return 0;
