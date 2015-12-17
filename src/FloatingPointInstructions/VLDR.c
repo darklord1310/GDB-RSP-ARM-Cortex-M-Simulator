@@ -87,13 +87,19 @@ void VLDR(uint32_t instruction)
 
 void executeFPLoad(uint32_t U, uint32_t d, uint32_t singleReg, uint32_t imm32, uint32_t Rn)
 {
+  uint32_t base;
   uint64_t word1, word2;
   uint32_t address;
   
-  if(U == 1)
-    address = coreReg[Rn] + imm32;
+  if(Rn == PC)
+    base = alignPC(coreReg[Rn], 4);
   else
-    address = coreReg[Rn] - imm32;
+    base = coreReg[Rn];
+  
+  if(U == 1)
+    address = base + imm32;
+  else
+    address = base - imm32;
 
   if(singleReg == 1)
     fpuSinglePrecision[d] = loadByteFromMemory(address, 4);
