@@ -92,7 +92,7 @@ void executeFPLoad(uint32_t U, uint32_t d, uint32_t singleReg, uint32_t imm32, u
   uint32_t address;
   
   if(Rn == PC)
-    base = alignPC(coreReg[Rn], 4);
+    base = alignPC(coreReg[Rn]+4, 4);
   else
     base = coreReg[Rn];
   
@@ -100,7 +100,7 @@ void executeFPLoad(uint32_t U, uint32_t d, uint32_t singleReg, uint32_t imm32, u
     address = base + imm32;
   else
     address = base - imm32;
-
+  
   if(singleReg == 1)
     fpuSinglePrecision[d] = loadByteFromMemory(address, 4);
   else
