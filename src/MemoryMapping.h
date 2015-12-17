@@ -8,24 +8,22 @@
 #define OFFSET_SIZE   1024
 
 typedef enum {READ, WRITE} Operation;
-
-uint32_t (*(*directory[DIR_SIZE]))();
-
-
-uint32_t (*page[PAGE_SIZE])();
+typedef uint32_t (*page)(int RW, int sizeOfData, uint32_t address, uint32_t data);
 
 
-uint32_t (*offset[OFFSET_SIZE])();
+uint32_t (*(*directory[DIR_SIZE]))(int RW, int sizeOfData, uint32_t address, uint32_t data);
+// uint32_t (*page[PAGE_SIZE])(int RW, int sizeOfData, uint32_t address, uint32_t data);
 
-void memoryMap(uint32_t startAddress, uint32_t range, void (*funcPtr)());
+
+void mapPageToDirectory(uint32_t (*(*dir[]))(int, int, uint32_t, uint32_t), uint32_t startAddress, uint32_t range);
+void mapHandlerToPage(uint32_t (*page[])(int, int, uint32_t, uint32_t), uint32_t (*handler)(int, int, uint32_t, uint32_t), uint32_t startAddress, uint32_t range);
 void initVirtualMemory();
-
 void initDirectory();
 void initPage();
 void initOffset();
 
-uint32_t handler(Operation readWrite, uint32_t data, uint32_t size);
-
+uint32_t memoryHandler(int RW, int sizeOfData, uint32_t address, uint32_t data);
+uint32_t gpioHandler(int RW, int sizeOfData, uint32_t address, uint32_t data);
 
 
 // #define PAGE_TABLE_MAP          0xFFF00000

@@ -190,7 +190,7 @@ void ConditionalBranchT1(uint32_t instruction)
   {
     if(condition != 0b1111 )
     {
-      if( checkCondition(condition) )
+      if( checkCondition(condition) == 1)
         writeToCoreRegisters(PC,  coreReg[PC] + afterSignExtend + 4);
       else
         writeToCoreRegisters(PC,  coreReg[PC] + 2);

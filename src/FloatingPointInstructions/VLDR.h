@@ -35,5 +35,6 @@
 #include <stdio.h>
 
 void VLDR(uint32_t instruction);
+void executeFPLoad(uint32_t U, uint32_t d, uint32_t singleReg, uint32_t imm32, uint32_t Rn);
 
 #endif // VLDR_H

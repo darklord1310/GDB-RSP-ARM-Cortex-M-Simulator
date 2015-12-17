@@ -238,3 +238,4 @@ void test_writeInstructionToMemory_given_0xf6f370ff_address_0x08000000_should_lo
   TEST_ASSERT_EQUAL(0xff, memoryBlock[virtualMemToPhysicalMem(0x08000002)] );
   TEST_ASSERT_EQUAL(0x70, memoryBlock[virtualMemToPhysicalMem(0x08000003)] );
 }
+

@@ -460,6 +460,7 @@ void initFloatingPoint32FPLoadStore()
   tabulateTable("01X01XXXX", FloatingPointLoadStore, VLDM ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X11XXXX", FloatingPointLoadStore, VLDM ,  createTableException(1, 0b000001111, 0b1101) );
   tabulateTable("10X11XXXX", FloatingPointLoadStore, VLDM ,  createTableException(NO_EXCEPTION) );
+  tabulateTable("1XX01XXXX", FloatingPointLoadStore, VLDR ,  createTableException(NO_EXCEPTION) );
   tabulateTable("01X111101", FloatingPointLoadStore, VPOP ,  createTableException(NO_EXCEPTION) );
 }
 

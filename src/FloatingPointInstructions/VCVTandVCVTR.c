@@ -234,27 +234,27 @@ void VCVTT2(uint32_t instruction)
   {
     if( checkCondition(cond) )
     {
-      // if(toFixed)
-      // {
-        // if(dpOperation)
-          // ThrowError();
-        // else
-        // {
-          // result = FPToFixed(fpuSinglePrecision[d], size, fracBits, unsign, roundZero, fPSCR);
-          // if(unsign)
-            // writeSinglePrecision(d, result);
-          // else
-            // writeSinglePrecision(d, signExtend(result, 32) );
-        // }
-      // }
-      // else
-      // {
-        // if(dpOperation)
-          // ThrowError();
-        // else
-          // result = FixedToFP( getBits(fpuSinglePrecision[d], (size-1), 0), 32, fracBits, unsign, roundNearest, fPSCR);
-        // writeSinglePrecision(d, result);
-      // }
+      if(toFixed)
+      {
+        if(dpOperation)
+          ThrowError();
+        else
+        {
+          result = FPToFixed(fpuSinglePrecision[d], size, fracBits, unsign, roundZero, fPSCR);
+          if(unsign)
+            writeSinglePrecision(d, result);
+          else
+            writeSinglePrecision(d, signExtend(result, 32) );
+        }
+      }
+      else
+      {
+        if(dpOperation)
+          ThrowError();
+        else
+          result = FixedToFP( getBits(fpuSinglePrecision[d], (size-1), 0), 32, fracBits, unsign, roundNearest, fPSCR);
+        writeSinglePrecision(d, result);
+      }
     }
     
     shiftITState();
