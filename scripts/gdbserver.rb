@@ -108,6 +108,8 @@ config_dll = {
 
 GDBSERVER_FILE = "build/release/gdbserver.exe"
 MYFLASH_FILE   = "build/release/myFlash.exe"
+ARM_M_PROFILE_XML = "data/arm-m-profile.xml"
+ARM_VFPV2_XML = "data/arm-vfpv2.xml"
 
 def auto_locate_coide_gdbserver_path(default)
   name = 'start_gdbserver.bat'
@@ -137,6 +139,12 @@ namespace :gdbserver do
   gdb_config_file = File.join(coide_gdbserver_path, 'GDBServerConfig.ini')
   elfLocation_file = File.join(coide_gdbserver_path, 'ElfLocation.txt')
   dll_file = File.join(coide_gdbserver_path, 'gdbserver.dll')
+  
+  arm_profile_target = File.join(coide_gdbserver_path, 'target_desc/arm-m-profile.xml')
+  vfpv2_target = File.join(coide_gdbserver_path, 'target_desc/arm-vfpv2.xml')
+  
+  original_arm_profile = File.join(coide_gdbserver_path, 'target_desc/arm-m-profileOriginal.xml')
+  original_vfpv2 = File.join(coide_gdbserver_path, 'target_desc/arm-vfpv2Original.xml')
 
   desc 'Release gdbserver'
   task :release do
@@ -158,7 +166,7 @@ namespace :gdbserver do
   end
 
   desc 'Build and deploy gdbserver + coflash'
-  task :deploy => :release do
+  task :deploy_all => :release do
     if !up_to_date?(gdb_target, GDBSERVER_FILE)
       if !(File.exists? original_gdb)
         sh "mv #{gdb_target} #{original_gdb}"     #rename the original executable file
@@ -169,10 +177,22 @@ namespace :gdbserver do
 
     if !up_to_date?(flash_target, MYFLASH_FILE)
       if !File.exists? original_flash
-        sh "mv #{flash_target} #{original_flash}"   #rename the original executable file
+        sh "mv #{flash_target} #{original_flash}" #rename the original executable file
       end
       puts "updating coflash.exe..."
       sh "cp #{MYFLASH_FILE} #{flash_target}"     #move to desire destination
+    end
+
+    if !File.exists? original_arm_profile
+        sh "mv #{arm_profile_target} #{original_arm_profile}"
+        puts "updating arm-m-profile.xml..."
+        sh "cp #{ARM_M_PROFILE_XML} #{arm_profile_target}"
+    end
+    
+    if !File.exists? original_vfpv2
+        sh "mv #{vfpv2_target} #{original_vfpv2}"
+        puts "updating arm-vfpv2.xml..."
+        sh "cp #{ARM_VFPV2_XML} #{vfpv2_target}"
     end
 
     sh "cp config #{config_file}"
@@ -181,7 +201,7 @@ namespace :gdbserver do
   end
 
   desc 'Revert to original gdbserver + coflash'
-  task :revert do
+  task :revert_all do
     if File.exists? original_gdb
       puts "reverting gdbserver.exe..."
       sh "mv #{original_gdb} #{gdb_target}"
@@ -202,6 +222,15 @@ namespace :gdbserver do
     if File.exists? dll_file
       sh "rm #{dll_file}"
     end
+
+    if File.exists? original_arm_profile
+      puts "reverting arm-m-profile.xml..."
+      sh "mv #{original_arm_profile} #{arm_profile_target}"
+    end
+    if File.exists? original_vfpv2
+      puts "reverting arm-vfpv2.xml..."
+      sh "mv #{original_vfpv2} #{vfpv2_target}"
+    end
   end
 end
 
@@ -212,7 +241,7 @@ namespace :build do
     dep_list = compile_all(['src/GDB',
                             'src/GDB/dll',
                             'src/GDB/main',
-                            'src/ARMSimulator', 
+                            'src/ARMSimulator',
                             'src/ElfReader',
                             'src/FloatingPointInstructions',
                             'src'],

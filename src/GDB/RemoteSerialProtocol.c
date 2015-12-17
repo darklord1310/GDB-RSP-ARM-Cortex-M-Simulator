@@ -520,7 +520,6 @@ char *cont(char *data)
         Try
         {
             armStep();
-            printf("PC: %x\n", coreReg[PC]);
         }
         Catch(armException)
         {
@@ -561,13 +560,6 @@ int hitBreakpoint(Breakpoint *breakpoint)
             return 1;
         else
           hitBreakpoint(breakpoint->next);
-        /* {
-            if(breakpoint->next != NULL)
-            {
-                if(coreReg[PC] > breakpoint->addr)
-                    hitBreakpoint(breakpoint->next);
-            }
-        } */
     }
 
     return 0;

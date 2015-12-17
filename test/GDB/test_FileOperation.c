@@ -13,12 +13,69 @@ void tearDown(void)
 {
 }
 
+void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
+{
+  FILE *file;
+  char *filename = "TEST2.txt", *str, str1[100];
+  char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
+  char buffer[1024] = "";
+
+	writeFile(filename, "w", elfPath);
+
+  file = fopen(filename, "r");
+
+  if(file == NULL)
+  {
+    printf("error: cannot open the file %s\n", filename);
+    return;
+  }
+
+  str = fgets(buffer, 1024, file);   // fget from the file for test
+  sscanf(str, "%s", str1);
+
+  TEST_ASSERT_EQUAL_STRING(elfPath, str1);
+
+  // Close the file
+  fclose(file);
+}
+
+void test_writeFile_should_write_a_string_to_a_text(void)
+{
+  FILE *file;
+  char *filename = "TEST2.txt", *str, elfPath[100], secondStr[100];
+  char strToWrite[] = "HelloJackson";
+  char buffer[1024] = "";
+
+	writeFile(filename, "a", strToWrite);
+
+  file = fopen(filename, "r");
+
+  if(file == NULL)
+  {
+    printf("error: cannot open the file %s\n", filename);
+    return;
+  }
+
+  str = fgets(buffer, 1024, file);   // fget from the file for test
+  sscanf(str, "%s %s", elfPath, secondStr);
+
+  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf", elfPath);
+  TEST_ASSERT_EQUAL_STRING(strToWrite, secondStr);
+
+  // Close the file
+  fclose(file);
+}
+
 void test_readFile_should_obtain_all_the_data_from_the_file(void)
 {
   char *filename = "TEST1.txt", *str, str1[100], str2[100];
   char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
   char device[] = "STM32F429ZI";
 
+  // write file to the text
+  writeFile(filename, "w", elfPath);
+  writeFile(filename, "a", device);
+  
   // read file from the text that was written
 	str = readFile(filename, "r");
   sscanf(str, "%s %s", str1, str2);
@@ -80,59 +137,6 @@ void test_readGdbServerConfigFile_should_return_port_number(void)
   TEST_ASSERT_EQUAL(2009, gdbServerInfo->port);
 
   destroyGdbServerInfo(gdbServerInfo);
-}
-
-void test_writeFile_should_write_the_path_contain_the_elf_file_to_a_text(void)
-{
-  FILE *file;
-  char *filename = "TEST2.txt", *str, str1[100];
-  char elfPath[] = "C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf";
-  char buffer[1024] = "";
-
-	writeFile(filename, "w", elfPath);
-
-  file = fopen(filename, "r");
-
-  if(file == NULL)
-  {
-    printf("error: cannot open the file %s\n", filename);
-    return;
-  }
-
-  str = fgets(buffer, 1024, file);   // fget from the file for test
-  sscanf(str, "%s", str1);
-
-  TEST_ASSERT_EQUAL_STRING(elfPath, str1);
-
-  // Close the file
-  fclose(file);
-}
-
-void test_writeFile_should_write_a_string_to_a_text(void)
-{
-  FILE *file;
-  char *filename = "TEST2.txt", *str, elfPath[100], secondStr[100];
-  char strToWrite[] = "HelloJackson";
-  char buffer[1024] = "";
-
-	writeFile(filename, "a", strToWrite);
-
-  file = fopen(filename, "r");
-
-  if(file == NULL)
-  {
-    printf("error: cannot open the file %s\n", filename);
-    return;
-  }
-
-  str = fgets(buffer, 1024, file);   // fget from the file for test
-  sscanf(str, "%s %s", elfPath, secondStr);
-
-  TEST_ASSERT_EQUAL_STRING("C:/Users/Asus/Desktop/CoIDE/workspace/BlinkyLED/Test01/Debug/bin/Test01.elf", elfPath);
-  TEST_ASSERT_EQUAL_STRING(strToWrite, secondStr);
-
-  // Close the file
-  fclose(file);
 }
 
 void test_getDirectoryName_given_a_path_name_should_return_the_directory(void)
