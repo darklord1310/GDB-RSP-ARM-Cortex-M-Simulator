@@ -520,6 +520,7 @@ char *cont(char *data)
         Try
         {
             armStep();
+            printf("PC: %x\n", coreReg[PC]);
         }
         Catch(armException)
         {
@@ -537,6 +538,7 @@ char *cont(char *data)
         sprintf(asciiString, "S%02d", GDB_SIGNAL_TRAP);
 
     packet = gdbCreateMsgPacket(asciiString);
+    puts(packet);
 
     return packet;
 }
@@ -558,13 +560,14 @@ int hitBreakpoint(Breakpoint *breakpoint)
         if(coreReg[PC] == breakpoint->addr)
             return 1;
         else
-        {
+          hitBreakpoint(breakpoint->next);
+        /* {
             if(breakpoint->next != NULL)
             {
                 if(coreReg[PC] > breakpoint->addr)
                     hitBreakpoint(breakpoint->next);
             }
-        }
+        } */
     }
 
     return 0;

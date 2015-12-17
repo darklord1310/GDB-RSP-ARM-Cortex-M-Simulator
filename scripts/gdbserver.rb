@@ -177,7 +177,7 @@ namespace :gdbserver do
 
     sh "cp config #{config_file}"
     sh "cp GDBServerConfig.ini #{gdb_config_file}"
-    sh "cp build/release/dll/gdbserver.dll #{dll_file}"
+    # sh "cp build/release/dll/gdbserver.dll #{dll_file}"
   end
 
   desc 'Revert to original gdbserver + coflash'

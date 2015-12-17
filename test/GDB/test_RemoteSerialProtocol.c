@@ -1181,8 +1181,9 @@ void test_hitBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_s
 void test_hitBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_should_return_1_when_it_reach_during_while_loop(void)
 {
     resetMemoryBlock();
-    coreReg[PC] = 0x80009d0;
-    addBreakpoint(&breakpointList, 0x80009d6);
+    coreReg[PC] = 0x8000674;
+    addBreakpoint(&breakpointList, 0x8000230);
+    addBreakpoint(&breakpointList, 0x800067a);
 
     while(!hitBreakpoint(breakpointList))
     {
@@ -1191,8 +1192,10 @@ void test_hitBreakpoint_given_0x80009d6_in_breakpoint_lits_and_PC_is_0x80009d0_s
 
     TEST_ASSERT_EQUAL(1, hitBreakpoint(breakpointList));
     TEST_ASSERT_NOT_NULL(breakpointList);
-    TEST_ASSERT_NULL(breakpointList->next);
-    TEST_ASSERT_EQUAL(0x80009d6, breakpointList->addr);
+    TEST_ASSERT_NOT_NULL(breakpointList->next);
+    TEST_ASSERT_NULL(breakpointList->next->next);
+    TEST_ASSERT_EQUAL(0x8000230, breakpointList->addr);
+    TEST_ASSERT_EQUAL(0x800067a, breakpointList->next->addr);
 
     deleteAllBreakpoint(&breakpointList);
 }
